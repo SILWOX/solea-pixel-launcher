@@ -1,0 +1,60 @@
+.log-console-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background: #0c0c0c;
+  color: #b0b0b0;
+  font: 12px/1.45 ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+.log-console-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #222;
+  background: #0e0e0e;
+}
+
+.log-console-title {
+  margin: 0;
+  font: 600 13px system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #eee;
+}
+
+.log-console-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.log-console-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ddd;
+  font: 600 12px system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.log-console-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.log-console-btn-primary {
+  border-color: rgba(255, 106, 26, 0.45);
+  color: #ffb38a;
+}
+
+.log-console-pre {
+  flex: 1;
+  margin: 0;
+  padding: 12px 14px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

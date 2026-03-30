@@ -1,0 +1,186 @@
+:root {
+  --bg-void: #050505;
+  --bg-sidebar: #0a0a0a;
+  --bg-panel: rgba(12, 12, 14, 0.72);
+  --bg-card: #141414;
+  --bg-card-hover: #1a1a1a;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f5f5f5;
+  --text-muted: #9a9a9a;
+  --accent-orange: var(--accent, #ff6a1a);
+  --accent-orange-hover: color-mix(in srgb, var(--accent-orange) 85%, white);
+  --accent-glow: rgba(255, 106, 26, 0.45);
+  --glass: rgba(20, 20, 22, 0.55);
+  /* Hiérarchie typographique */
+  --font-detail: 'Inter', system-ui, sans-serif;
+  --font-minecraft: 'Mac Minecraft', 'Segoe UI', sans-serif;
+  --font-display: 'Minecraft Fifty Solid', 'Mac Minecraft', fantasy;
+  --font: var(--font-detail);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mc {
+  font-family: var(--font-minecraft);
+}
+
+.font-detail {
+  font-family: var(--font-detail);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-detail);
+  color: var(--text);
+  background: var(--bg-void);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* Scrollbars — thème sombre (Firefox) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 106, 26, 0.55) rgba(255, 255, 255, 0.05);
+}
+
+/* Chromium / Electron */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 100px;
+  margin: 3px 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 120, 55, 0.55) 0%,
+    rgba(255, 85, 25, 0.45) 100%
+  );
+  border-radius: 100px;
+  border: 2px solid rgba(8, 8, 10, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 140, 75, 0.75) 0%,
+    rgba(255, 100, 35, 0.65) 100%
+  );
+  box-shadow: 0 0 14px rgba(255, 106, 26, 0.25);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, rgba(255, 150, 90, 0.85), rgba(255, 110, 45, 0.75));
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input[type='text'],
+input[type='number'],
+textarea {
+  font-family: var(--font-detail);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--text);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+/* Select : thème launcher (flèche custom, bordure accent — le popup natif reste partiellement OS-dépendant). */
+select {
+  font-family: var(--font-detail);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 106, 26, 0.28);
+  background-color: rgba(8, 8, 10, 0.94);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6l5-4.5' fill='none' stroke='%23c4c4cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 11px 7px;
+  color: var(--text);
+  padding: 0.55rem 2.15rem 0.55rem 0.75rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  accent-color: var(--accent-orange);
+  color-scheme: dark;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+select:hover:not(:disabled) {
+  border-color: rgba(255, 106, 26, 0.48);
+  background-color: rgba(14, 14, 18, 0.98);
+}
+
+select:focus {
+  outline: none;
+  border-color: rgba(255, 106, 26, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 2px rgba(255, 106, 26, 0.18);
+}
+
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+option,
+optgroup {
+  background-color: var(--bg-card);
+  color: var(--text);
+  font-family: var(--font-detail);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(255, 106, 26, 0.5);
+}
+
+textarea {
+  resize: vertical;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+a {
+  color: var(--accent-orange);
+}

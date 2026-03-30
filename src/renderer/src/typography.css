@@ -1,0 +1,47 @@
+/* Inter — UI, petits textes, légendes (SIL Open Font License) */
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/inter/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/inter/Inter-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/inter/Inter-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Mac's Extended Minecraft — titres de sections, navigation, ambiance jeu */
+@font-face {
+  font-family: 'Mac Minecraft';
+  src: url('./assets/fonts/mac-minecraft/MacMinecraft.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mac Minecraft';
+  src: url('./assets/fonts/mac-minecraft/MacMinecraft-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Minecraft Fifty Solid — gros titres, marque */
+@font-face {
+  font-family: 'Minecraft Fifty Solid';
+  src: url('./assets/fonts/fifty/MinecraftFifty-Solid.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

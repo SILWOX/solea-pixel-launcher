@@ -1,0 +1,142 @@
+import { contextBridge, ipcRenderer } from 'electron'
+
+export type InstallProgressPayload = {
+  phase: string
+  current: number
+  total: number
+  detail?: string
+}
+
+const api = {
+  windowMinimize: () => ipcRenderer.invoke('window:minimize'),
+  windowToggleMaximize: () => ipcRenderer.invoke('window:toggle-maximize'),
+  windowClose: () => ipcRenderer.invoke('window:close'),
+  windowIsMaximized: () => ipcRenderer.invoke('window:is-maximized') as Promise<boolean>,
+  onWindowMaximized: (cb: (maximized: boolean) => void) => {
+    const listener = (_e: Electron.IpcRendererEvent, maximized: boolean) => cb(maximized)
+    ipcRenderer.on('window-maximized', listener)
+    return () => ipcRenderer.removeListener('window-maximized', listener)
+  },
+  getPaths: () => ipcRenderer.invoke('app:get-paths'),
+  setActiveModpack: (id: string) => ipcRenderer.invoke('modpack:set-active', id),
+  getSkinHead: (uuid: string, size?: number) =>
+    ipcRenderer.invoke('skin:get-head', uuid, size) as Promise<string | null>,
+  getSkinPreview: (uuid: string) =>
+    ipcRenderer.invoke('skin:get-preview', uuid) as Promise<{
+      source: 'local' | 'remote'
+      dataUrl: string
+      model: 'slim' | 'default' | 'auto-detect'
+      capeDataUrl: string | null
+    } | null>,
+  getSkinPresetsState: (uuid: string) =>
+    ipcRenderer.invoke('skin:presets-state', uuid) as Promise<{
+      activePresetId: string | null
+      presets: {
+        id: string
+        name: string
+        model: 'slim' | 'default'
+        thumbDataUrl: string
+      }[]
+    } | null>,
+  setActiveSkinPreset: (uuid: string, presetId: string | null) =>
+    ipcRenderer.invoke('skin:set-active-preset', uuid, presetId) as Promise<
+      { ok: true; skinSyncError?: string } | { ok: false; error: string }
+    >,
+  deleteSkinPreset: (uuid: string, presetId: string) =>
+    ipcRenderer.invoke('skin:delete-preset', uuid, presetId) as Promise<
+      { ok: true; skinSyncError?: string } | { ok: false; error: string }
+    >,
+  updateSkinPresetModel: (uuid: string, presetId: string, model: 'slim' | 'default') =>
+    ipcRenderer.invoke('skin:update-preset-model', uuid, presetId, model) as Promise<
+      { ok: true; skinSyncError?: string } | { ok: false; error: string }
+    >,
+  importSkinPreset: (model: 'slim' | 'default', displayName: string) =>
+    ipcRenderer.invoke('skin:import-preset', model, displayName) as Promise<
+      | { ok: true; presetId: string; skinSyncError?: string }
+      | { ok: false; error: string }
+    >,
+  listAccountCapes: () =>
+    ipcRenderer.invoke('profile:list-capes') as Promise<
+      | {
+          ok: true
+          capes: { id: string; alias: string; state: string; url: string | null; dataUrl: string | null }[]
+          activeCapeId: string | null
+        }
+      | { ok: false; error: string }
+    >,
+  setAccountActiveCape: (capeId: string | null) =>
+    ipcRenderer.invoke('profile:set-active-cape', capeId) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
+  getAuthState: () => ipcRenderer.invoke('auth:get-state'),
+  listAccounts: () => ipcRenderer.invoke('auth:list-accounts'),
+  getActiveAccount: () => ipcRenderer.invoke('auth:get-active'),
+  addAccount: () => ipcRenderer.invoke('auth:add-account'),
+  setActiveAccount: (uuid: string) => ipcRenderer.invoke('auth:set-active', uuid),
+  removeAccount: (uuid: string) => ipcRenderer.invoke('auth:remove-account', uuid),
+  refreshActiveAccount: () => ipcRenderer.invoke('auth:refresh-active'),
+  getSettings: () => ipcRenderer.invoke('settings:get'),
+  saveSettings: (partial: Record<string, unknown>) => ipcRenderer.invoke('settings:save', partial),
+  resetSettings: () => ipcRenderer.invoke('settings:reset'),
+  installModpack: () => ipcRenderer.invoke('modpack:install'),
+  reinstallModpack: (id: string) =>
+    ipcRenderer.invoke('modpack:reinstall', id) as Promise<{ ok: true } | { ok: false; error: string }>,
+  uninstallModpack: (id: string) =>
+    ipcRenderer.invoke('modpack:uninstall', id) as Promise<{ ok: true } | { ok: false; error: string }>,
+  openExternalUrl: (url: string) => ipcRenderer.invoke('shell:open-external', url),
+  verifyModpack: () => ipcRenderer.invoke('modpack:verify'),
+  getModpackActionInfo: () => ipcRenderer.invoke('modpack:action-info'),
+  isGameRunning: () => ipcRenderer.invoke('game:is-running') as Promise<boolean>,
+  stopGame: () =>
+    ipcRenderer.invoke('game:stop') as Promise<{ ok: true } | { ok: false; error: string }>,
+  launch: () => ipcRenderer.invoke('game:launch'),
+  openInstanceFolder: () => ipcRenderer.invoke('shell:open-instance-folder'),
+  openUserDataFolder: () => ipcRenderer.invoke('shell:open-userdata-folder'),
+  onInstallProgress: (cb: (p: InstallProgressPayload) => void) => {
+    const listener = (_e: Electron.IpcRendererEvent, p: InstallProgressPayload) => cb(p)
+    ipcRenderer.on('install-progress', listener)
+    return () => ipcRenderer.removeListener('install-progress', listener)
+  },
+  onGameLog: (cb: (line: string) => void) => {
+    const listener = (_e: Electron.IpcRendererEvent, line: string) => cb(line)
+    ipcRenderer.on('game-log', listener)
+    return () => ipcRenderer.removeListener('game-log', listener)
+  },
+  getGameLogSnapshot: () => ipcRenderer.invoke('game-log:get-snapshot') as Promise<string>,
+  openGameLogWindow: () => ipcRenderer.invoke('game-log-window:open') as Promise<{ ok: true }>,
+  onGameExited: (cb: () => void) => {
+    const listener = () => cb()
+    ipcRenderer.on('game-exited', listener)
+    return () => ipcRenderer.removeListener('game-exited', listener)
+  },
+  getAppVersion: () => ipcRenderer.invoke('app:get-version') as Promise<string>,
+  checkForUpdates: () =>
+    ipcRenderer.invoke('updater:check') as Promise<{ ok: true; started: boolean }>,
+  downloadUpdate: () =>
+    ipcRenderer.invoke('updater:download') as Promise<{ ok: true } | { ok: false; error: string }>,
+  quitAndInstall: () => ipcRenderer.invoke('updater:quit-and-install') as Promise<{ ok: true }>,
+  onUpdaterAvailable: (
+    cb: (payload: { version: string; releaseNotes?: string | string[] | null }) => void
+  ) => {
+    const listener = (_e: Electron.IpcRendererEvent, p: unknown) => cb(p as never)
+    ipcRenderer.on('updater:available', listener)
+    return () => ipcRenderer.removeListener('updater:available', listener)
+  },
+  onUpdaterNotAvailable: (cb: () => void) => {
+    const listener = () => cb()
+    ipcRenderer.on('updater:not-available', listener)
+    return () => ipcRenderer.removeListener('updater:not-available', listener)
+  },
+  onUpdaterDownloaded: (cb: () => void) => {
+    const listener = () => cb()
+    ipcRenderer.on('updater:downloaded', listener)
+    return () => ipcRenderer.removeListener('updater:downloaded', listener)
+  },
+  onUpdaterError: (cb: (msg: string) => void) => {
+    const listener = (_e: Electron.IpcRendererEvent, msg: string) => cb(msg)
+    ipcRenderer.on('updater:error', listener)
+    return () => ipcRenderer.removeListener('updater:error', listener)
+  }
+}
+
+contextBridge.exposeInMainWorld('solea', api)

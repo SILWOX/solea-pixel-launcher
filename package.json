@@ -1,0 +1,97 @@
+{
+  "name": "solea-pixel-launcher",
+  "version": "26.0.3",
+  "description": "Launcher Solea Pixel — modpack Modrinth, NeoForge 1.21.1",
+  "main": "out/main/index.js",
+  "type": "module",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "dev:test": "cross-env SOLEA_TEST_MODE=1 electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "predist": "node scripts/generate-icon.mjs",
+    "dist": "npm run predist && npm run build && electron-builder",
+    "dist:dir": "npm run predist && npm run build && electron-builder --dir",
+    "test:smoke": "npm run build && node scripts/ci-smoke.mjs"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "discord-rpc": "^4.0.1",
+    "electron-updater": "^6.8.3",
+    "minecraft-java-core": "^4.2.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "skinview3d": "^3.4.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^10.1.0",
+    "electron": "^33.2.0",
+    "electron-builder": "^26.8.1",
+    "electron-vite": "^2.3.0",
+    "rcedit": "^5.0.2",
+    "sharp": "^0.34.5",
+    "to-ico": "^1.1.5",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  },
+  "build": {
+    "appId": "fr.solea.pixel.launcher",
+    "productName": "Solea Pixel",
+    "copyright": "Copyright © Solea Pixel",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/app-icon.png",
+        "to": "app-icon.png"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "afterPack": "./scripts/after-pack-win-icon.mjs",
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Solea Pixel"
+    },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://solea-pixel-updates.replace-me.invalid/"
+      }
+    ]
+  }
+}
