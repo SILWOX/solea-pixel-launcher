@@ -17,7 +17,16 @@ export interface ModpackGameProfile {
 export type UiLanguage = 'en' | 'fr'
 export type UiTheme = 'light' | 'dark' | 'system'
 export type UiFontScale = 's' | 'm' | 'l'
-export type SkinViewerAnimation = 'none' | 'idle' | 'walk'
+export type SkinViewerAnimation =
+  | 'none'
+  | 'idle'
+  | 'walk'
+  | 'run'
+  | 'fly'
+  | 'wave'
+  | 'wave_left'
+  | 'crouch'
+  | 'hit'
 export type UpdateChannel = 'stable' | 'beta'
 
 export interface LauncherSettings {
@@ -58,7 +67,18 @@ export interface LauncherSettings {
   discordRichPresence: boolean
   updateChannel: UpdateChannel
   skinViewerAnimation: SkinViewerAnimation
-  skinViewerBackground: string
+  /** Raccourcis (format type Electron : CommandOrControl+Comma). */
+  uiShortcutOpenSettings: string
+  uiShortcutGoNews: string
+  uiShortcutGoAccount: string
+  /** Notifications système (Windows / macOS) pour install finie, maj dispo. */
+  nativeNotifications: boolean
+  /** Lancement avec tas JVM réduit (support / debug). */
+  diagnosticLaunch: boolean
+  /** Limite les téléchargements parallèles (réseau lent). */
+  networkSlowDownloads: boolean
+  /** Barre titre + sidebar vitrées (flou + transparence). */
+  uiChromeGlass: boolean
 }
 
 export const DEFAULT_SETTINGS: LauncherSettings = {
@@ -66,7 +86,7 @@ export const DEFAULT_SETTINGS: LauncherSettings = {
   memoryMax: '6G',
   jvmArgs: '',
   gameArgs: '',
-  downloadThreads: 8,
+  downloadThreads: 12,
   networkTimeoutMs: 20000,
   javaPath: '',
   javaVersion: '21',
@@ -87,13 +107,35 @@ export const DEFAULT_SETTINGS: LauncherSettings = {
   uiSoundVolume: 1,
   uiSoundInstall: true,
   uiSoundLaunch: true,
-  discordRichPresence: false,
+  discordRichPresence: true,
   updateChannel: 'stable',
   skinViewerAnimation: 'none',
-  skinViewerBackground: '#141416'
+  uiShortcutOpenSettings: 'CommandOrControl+Comma',
+  uiShortcutGoNews: 'CommandOrControl+Shift+KeyH',
+  uiShortcutGoAccount: 'CommandOrControl+Shift+KeyU',
+  nativeNotifications: true,
+  diagnosticLaunch: false,
+  networkSlowDownloads: false,
+  uiChromeGlass: false
 }
 
 const RAM_RE = /^[0-9]+[mMgG]$/
+
+/** Accélérateur type Electron (ex. CommandOrControl+Shift+KeyH). */
+export function isValidUiShortcutAccel(s: string): boolean {
+  const t = s.trim()
+  if (t.length < 2 || t.length > 120) return false
+  const parts = t.split('+').map((p) => p.trim())
+  if (parts.length < 2) return false
+  const mods = parts.slice(0, -1)
+  const key = parts[parts.length - 1]!
+  if (!key || !/^(Key[A-Z]|Digit[0-9]|F[1-9]|F1[0-2]|Comma|Period|Minus|Equal|Slash|BracketLeft|BracketRight|Backslash|Semicolon|Quote|Backquote|Tab|Space|Enter|Escape|Backspace|Delete|Insert|Home|End|PageUp|PageDown|ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Numpad[0-9]|NumpadAdd|NumpadSubtract|Plus|IntlBackslash)$/.test(key)) {
+    return false
+  }
+  const allowedMod = (m: string) =>
+    ['CommandOrControl', 'CmdOrCtrl', 'Control', 'Ctrl', 'Command', 'Cmd', 'Shift', 'Alt', 'Option'].includes(m)
+  return mods.length > 0 && mods.every(allowedMod)
+}
 
 export function isValidRam(s: string): boolean {
   return RAM_RE.test(s.trim())
@@ -130,15 +172,26 @@ export function getGameSettingsForModpack(s: LauncherSettings, modpackId: string
   return normalized.modpackProfiles[id] ?? legacyGameSlice(s)
 }
 
+function normalizeShortcutFields(s: LauncherSettings): LauncherSettings {
+  const fix = (v: string, d: string) => (isValidUiShortcutAccel(v) ? v.trim() : d)
+  return {
+    ...s,
+    uiShortcutOpenSettings: fix(s.uiShortcutOpenSettings, DEFAULT_SETTINGS.uiShortcutOpenSettings),
+    uiShortcutGoNews: fix(s.uiShortcutGoNews, DEFAULT_SETTINGS.uiShortcutGoNews),
+    uiShortcutGoAccount: fix(s.uiShortcutGoAccount, DEFAULT_SETTINGS.uiShortcutGoAccount)
+  }
+}
+
 export function loadSettings(): LauncherSettings {
   const p = settingsPath()
-  if (!existsSync(p)) return normalizeModpackProfiles({ ...DEFAULT_SETTINGS })
+  if (!existsSync(p)) return normalizeShortcutFields(normalizeModpackProfiles({ ...DEFAULT_SETTINGS }))
   try {
     const raw = JSON.parse(readFileSync(p, 'utf8')) as unknown
     const parsed = parseLauncherSettingsFromDisk(raw)
-    return normalizeModpackProfiles({ ...DEFAULT_SETTINGS, ...parsed } as LauncherSettings)
+    const merged = normalizeModpackProfiles({ ...DEFAULT_SETTINGS, ...parsed } as LauncherSettings)
+    return normalizeShortcutFields(merged)
   } catch {
-    return normalizeModpackProfiles({ ...DEFAULT_SETTINGS })
+    return normalizeShortcutFields(normalizeModpackProfiles({ ...DEFAULT_SETTINGS }))
   }
 }
 
@@ -186,6 +239,7 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
   }
   if (typeof next.uiReduceMotion !== 'boolean') next.uiReduceMotion = DEFAULT_SETTINGS.uiReduceMotion
   if (typeof next.uiCompact !== 'boolean') next.uiCompact = DEFAULT_SETTINGS.uiCompact
+  if (typeof next.uiChromeGlass !== 'boolean') next.uiChromeGlass = DEFAULT_SETTINGS.uiChromeGlass
   if (typeof next.uiSounds !== 'boolean') next.uiSounds = DEFAULT_SETTINGS.uiSounds
   if (typeof next.uiSoundVolume !== 'number' || Number.isNaN(next.uiSoundVolume)) {
     next.uiSoundVolume = DEFAULT_SETTINGS.uiSoundVolume
@@ -199,15 +253,41 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
   if (next.updateChannel !== 'stable' && next.updateChannel !== 'beta') {
     return { ok: false, error: 'Canal de mise à jour invalide.' }
   }
-  if (
-    next.skinViewerAnimation !== 'none' &&
-    next.skinViewerAnimation !== 'idle' &&
-    next.skinViewerAnimation !== 'walk'
-  ) {
+  const animOk: SkinViewerAnimation[] = [
+    'none',
+    'idle',
+    'walk',
+    'run',
+    'fly',
+    'wave',
+    'wave_left',
+    'crouch',
+    'hit'
+  ]
+  if (!animOk.includes(next.skinViewerAnimation)) {
     return { ok: false, error: 'Animation skin invalide.' }
   }
-  if (typeof next.skinViewerBackground !== 'string' || !next.skinViewerBackground.trim()) {
-    next.skinViewerBackground = DEFAULT_SETTINGS.skinViewerBackground
+  const accelKeys: (keyof LauncherSettings)[] = [
+    'uiShortcutOpenSettings',
+    'uiShortcutGoNews',
+    'uiShortcutGoAccount'
+  ]
+  for (const k of accelKeys) {
+    const v = next[k]
+    if (typeof v !== 'string' || !isValidUiShortcutAccel(v)) {
+      ;(next as Record<string, unknown>)[k as string] = DEFAULT_SETTINGS[k]
+    } else {
+      ;(next as Record<string, unknown>)[k as string] = v.trim()
+    }
+  }
+  if (typeof next.nativeNotifications !== 'boolean') {
+    next.nativeNotifications = DEFAULT_SETTINGS.nativeNotifications
+  }
+  if (typeof next.diagnosticLaunch !== 'boolean') {
+    next.diagnosticLaunch = DEFAULT_SETTINGS.diagnosticLaunch
+  }
+  if (typeof next.networkSlowDownloads !== 'boolean') {
+    next.networkSlowDownloads = DEFAULT_SETTINGS.networkSlowDownloads
   }
   next.activeModpackId = resolveModpackId(
     typeof next.activeModpackId === 'string' ? next.activeModpackId : DEFAULT_SETTINGS.activeModpackId

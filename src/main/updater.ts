@@ -1,5 +1,7 @@
 import { createRequire } from 'module'
 import { app, BrowserWindow } from 'electron'
+import { loadSettings } from './settings.js'
+import { showNativeNotification } from './notifications.js'
 
 /** electron-updater est CJS : pas d’import ESM nommé fiable dans le bundle main. */
 const requireUpdater = createRequire(import.meta.url)
@@ -24,6 +26,15 @@ export function setupAutoUpdater(mainWindow: BrowserWindow | null, channel: 'sta
   const wc = mainWindow?.webContents
   autoUpdater.on('update-available', (info) => {
     wc?.send('updater:available', { version: info.version, releaseNotes: info.releaseNotes })
+    const st = loadSettings()
+    if (st.nativeNotifications) {
+      showNativeNotification(
+        st.uiLanguage === 'fr' ? 'Mise à jour Solea Pixel' : 'Solea Pixel update',
+        st.uiLanguage === 'fr'
+          ? `Version ${info.version} disponible.`
+          : `Version ${info.version} is available.`
+      )
+    }
   })
   autoUpdater.on('update-not-available', () => {
     wc?.send('updater:not-available')

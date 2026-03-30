@@ -3,6 +3,8 @@
  * Toute URL doit être https://. Ajouter ici les domaines nécessaires à l’auth ou aux ressources officielles.
  */
 const ALLOWED_HOSTS = new Set<string>([
+  'github.com',
+  'www.github.com',
   'discord.gg',
   'modrinth.com',
   'www.modrinth.com',
@@ -16,7 +18,10 @@ const ALLOWED_HOSTS = new Set<string>([
   'xbox.com',
   'minecraft.net',
   'www.minecraft.net',
-  'help.minecraft.net'
+  'help.minecraft.net',
+  'adoptium.net',
+  'www.adoptium.net',
+  'api.adoptium.net'
 ])
 
 function hostAllowed(hostname: string): boolean {

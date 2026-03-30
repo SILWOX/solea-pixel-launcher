@@ -1,5 +1,20 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.1.3': {
+    en: 'UI & settings: dedicated Audio section, cleaner volume and RAM sliders, single-row play bar, larger boot logo/bar with animated loading dots, social buttons refined. Discord Rich Presence: Download (GitHub releases) and Watch (Modrinth pack page) buttons. Debug window overhaul. Frosted chrome and settings sidebar readability. Custom keyboard shortcuts. Skin preview fixed background. GitHub allowed for external links.',
+    fr:
+      'UI & paramètres : section Audio dédiée, curseurs volume et RAM repensés, rangée Jouer / Vérifier / compte sur une ligne, écran de démarrage (logo + barre + points animés), boutons sociaux ajustés. Discord Rich Presence : boutons Télécharger (releases GitHub) et Regarder (Modrinth). Refonte fenêtre debug. Chrome givré et lisibilité barre latérale paramètres. Raccourcis clavier personnalisables. Fond d’aperçu skin fixe. github.com autorisé pour les liens externes.'
+  },
+  '26.1.2': {
+    en: 'Packaging: NSIS installer filename matches latest.yml (Solea-Pixel-Setup-…) so GitHub auto-updates download correctly. Includes .connector integrity exemption from 26.1.1.',
+    fr:
+      'Paquet : nom de l’installateur NSIS aligné sur latest.yml (Solea-Pixel-Setup-…) pour que les mises à jour GitHub se téléchargent. Inclut l’exception mods/.connector de la 26.1.1.'
+  },
+  '26.1.1': {
+    en: 'Integrity: ignore Sinytra Connector cache JARs under mods/.connector/ (e.g. Continuity remapped jars) so the pack can launch.',
+    fr:
+      'Intégrité : les JAR générés par Sinytra Connector dans mods/.connector/ (ex. Continuity) sont ignorés pour permettre le lancement du pack.'
+  },
   '26.1.0': {
     en: 'First official Release (26.1): GitHub auto-updates, stable channel, integrity checks enabled for launch.',
     fr:

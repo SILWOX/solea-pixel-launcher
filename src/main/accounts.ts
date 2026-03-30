@@ -108,6 +108,12 @@ export function listAccountSummaries(): { uuid: string; name: string }[] {
   return loadStore().accounts.map((a) => ({ uuid: a.uuid, name: a.name }))
 }
 
+export function findStoredAccountByUuid(uuid: string): MicrosoftAuthResponse | null {
+  const store = loadStore()
+  const target = normalizeUuid(uuid)
+  return store.accounts.find((a) => normalizeUuid(a.uuid) === target) ?? null
+}
+
 export function hasAnyAccount(): boolean {
   return loadStore().accounts.length > 0
 }

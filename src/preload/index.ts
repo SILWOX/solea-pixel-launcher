@@ -18,6 +18,10 @@ const api = {
     return () => ipcRenderer.removeListener('window-maximized', listener)
   },
   getPaths: () => ipcRenderer.invoke('app:get-paths'),
+  getModpackActivity: () =>
+    ipcRenderer.invoke('modpack:activity-get') as Promise<
+      Record<string, { lastPlayAt?: string; lastInstallAt?: string }>
+    >,
   setActiveModpack: (id: string) => ipcRenderer.invoke('modpack:set-active', id),
   getSkinHead: (uuid: string, size?: number) =>
     ipcRenderer.invoke('skin:get-head', uuid, size) as Promise<string | null>,
@@ -86,11 +90,40 @@ const api = {
   openExternalUrl: (url: string) => ipcRenderer.invoke('shell:open-external', url),
   verifyModpack: () => ipcRenderer.invoke('modpack:verify'),
   getModpackActionInfo: () => ipcRenderer.invoke('modpack:action-info'),
+  getAllModpacksActionInfo: () => ipcRenderer.invoke('modpack:all-action-info'),
   isGameRunning: () => ipcRenderer.invoke('game:is-running') as Promise<boolean>,
   stopGame: () =>
     ipcRenderer.invoke('game:stop') as Promise<{ ok: true } | { ok: false; error: string }>,
   launch: () => ipcRenderer.invoke('game:launch'),
   openInstanceFolder: () => ipcRenderer.invoke('shell:open-instance-folder'),
+  openModpackInstanceFolder: (id: string) =>
+    ipcRenderer.invoke('shell:open-modpack-instance-folder', id) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
+  getModpackInstanceDetails: (id: string) =>
+    ipcRenderer.invoke('modpack:get-instance-details', id) as Promise<{
+      installed: boolean
+      folderExists: boolean
+      sizeBytes: number | null
+      instanceRoot: string
+    }>,
+  openLatestCrashReport: () =>
+    ipcRenderer.invoke('shell:open-latest-crash') as Promise<{ ok: true } | { ok: false; error: string }>,
+  getCacheStats: () =>
+    ipcRenderer.invoke('system:cache-stats') as Promise<{
+      gradleCachesBytes: number
+      launcherLogsBytes: number
+    }>,
+  clearCache: (target: 'gradleCaches' | 'launcherLogs') =>
+    ipcRenderer.invoke('system:cache-clear', target) as Promise<
+      { ok: true; freedBytes: number } | { ok: false; error: string }
+    >,
+  openJavaDownloadPage: () =>
+    ipcRenderer.invoke('app:open-java-download-page') as Promise<{ ok: boolean }>,
+  getCustomLaunchSoundDataUrl: () =>
+    ipcRenderer.invoke('app:get-custom-launch-sound-data-url') as Promise<
+      { ok: true; dataUrl: string } | { ok: false }
+    >,
   openUserDataFolder: () => ipcRenderer.invoke('shell:open-userdata-folder'),
   onInstallProgress: (cb: (p: InstallProgressPayload) => void) => {
     const listener = (_e: Electron.IpcRendererEvent, p: InstallProgressPayload) => cb(p)
@@ -110,6 +143,8 @@ const api = {
     return () => ipcRenderer.removeListener('game-exited', listener)
   },
   getAppVersion: () => ipcRenderer.invoke('app:get-version') as Promise<string>,
+  getMemoryStats: () =>
+    ipcRenderer.invoke('app:get-memory-stats') as Promise<{ totalBytes: number; totalGiB: number }>,
   checkForUpdates: () =>
     ipcRenderer.invoke('updater:check') as Promise<{ ok: true; started: boolean }>,
   downloadUpdate: () =>
@@ -136,7 +171,15 @@ const api = {
     const listener = (_e: Electron.IpcRendererEvent, msg: string) => cb(msg)
     ipcRenderer.on('updater:error', listener)
     return () => ipcRenderer.removeListener('updater:error', listener)
-  }
+  },
+  openDebugWindow: () => ipcRenderer.invoke('debug-window:open') as Promise<{ ok: true }>,
+  getDebugSnapshot: () => ipcRenderer.invoke('debug:get-snapshot'),
+  reloadMainLauncher: () =>
+    ipcRenderer.invoke('debug:reload-main') as Promise<{ ok: true } | { ok: false; error: string }>,
+  debugOpenKnownFolder: (kind: 'userData' | 'instanceRoot') =>
+    ipcRenderer.invoke('debug:open-known-folder', kind) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >
 }
 
 contextBridge.exposeInMainWorld('solea', api)

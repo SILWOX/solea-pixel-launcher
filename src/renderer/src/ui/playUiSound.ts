@@ -13,12 +13,31 @@ export type UiSoundPrefs = {
 }
 
 /**
- * Sons Mixkit (fichiers locaux). Respecte le volume global et les types d’événements.
+ * Sons Mixkit (fichiers locaux). Lancement : `~/Downloads/clickplay.wav` si présent (lu via IPC main).
  */
-export function playUiSound(kind: UiSoundKind, prefs: UiSoundPrefs): void {
-  if (!prefs.master || prefs.reduceMotion) return
+export async function playUiSound(kind: UiSoundKind, prefs: UiSoundPrefs): Promise<void> {
+  if (prefs.reduceMotion) return
   if (kind === 'install' && !prefs.onInstall) return
   if (kind === 'launch' && !prefs.onLaunch) return
+
+  if (kind === 'launch') {
+    try {
+      const r = await window.solea.getCustomLaunchSoundDataUrl()
+      if (r.ok) {
+        const base = 0.38
+        const vol = base * Math.max(0, Math.min(1, prefs.volume))
+        if (vol <= 0) return
+        const a = new Audio(r.dataUrl)
+        a.volume = vol
+        await a.play().catch(() => {})
+        return
+      }
+    } catch {
+      /* fallback default */
+    }
+  }
+
+  if (!prefs.master) return
 
   const src = kind === 'launch' ? launchPopUrl : installPopUrl
   const base = kind === 'launch' ? 0.38 : 0.44
@@ -28,9 +47,7 @@ export function playUiSound(kind: UiSoundKind, prefs: UiSoundPrefs): void {
   try {
     const a = new Audio(src)
     a.volume = vol
-    void a.play().catch(() => {
-      /* autoplay / decode */
-    })
+    await a.play().catch(() => {})
   } catch {
     /* ignore */
   }

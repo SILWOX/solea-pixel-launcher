@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App'
 import { LogConsoleApp } from './LogConsoleApp'
+import { DebugApp } from './DebugApp'
 import { I18nProvider } from './i18n/I18nContext'
 import { ToastProvider } from './ui/ToastContext'
 import './typography.css'
@@ -16,6 +17,14 @@ if (soleaMode === 'log') {
     <React.StrictMode>
       <I18nProvider>
         <LogConsoleApp />
+      </I18nProvider>
+    </React.StrictMode>
+  )
+} else if (soleaMode === 'debug') {
+  ReactDOM.createRoot(rootEl).render(
+    <React.StrictMode>
+      <I18nProvider>
+        <DebugApp />
       </I18nProvider>
     </React.StrictMode>
   )

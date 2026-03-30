@@ -247,3 +247,113 @@ html[data-reduce-motion='1'] .account-viewer-skeleton {
   color: var(--text-muted);
 }
 
+/* Modpack reinstall / uninstall — in-app confirm (replaces window.confirm) */
+.pack-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 26000;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.pack-confirm-modal {
+  max-width: 440px;
+  width: 100%;
+  padding: 1.35rem 1.45rem 1.25rem;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  color: var(--text);
+  font-family: var(--font-detail);
+}
+
+.pack-confirm-modal--cache {
+  border-top: 3px solid var(--accent-orange);
+}
+
+.pack-confirm-modal--reinstall {
+  border-top: 3px solid var(--accent-orange);
+}
+
+.pack-confirm-modal--updates {
+  border-top: 3px solid var(--accent-orange);
+}
+
+.modpack-updates-modal-list {
+  margin: 0 0 1.25rem;
+  padding-left: 1.15rem;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.modpack-updates-modal-list li {
+  margin: 0.35rem 0;
+}
+
+.pack-confirm-modal--uninstall {
+  border-top: 3px solid rgba(255, 100, 120, 0.9);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.5), 0 0 32px rgba(220, 38, 38, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.pack-confirm-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  font-family: var(--font-minecraft);
+}
+
+.pack-confirm-title {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-minecraft);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.pack-confirm-body {
+  margin: 0 0 1.35rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.pack-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.pack-confirm-btn-cancel {
+  min-width: 5.75rem;
+}
+
+.pack-confirm-btn-primary {
+  min-width: 7.5rem;
+  box-shadow: 0 10px 32px var(--accent-glow);
+}
+
+.pack-confirm-btn-danger {
+  min-width: 7.5rem;
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%) !important;
+  box-shadow: 0 10px 32px rgba(220, 38, 38, 0.42);
+}
+
+.pack-confirm-btn-danger:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 12px 38px rgba(239, 68, 68, 0.48);
+}
+

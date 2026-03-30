@@ -1,24 +1,69 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { LauncherSettingsUI, ModpackGameProfileUI, SkinViewerAnimation } from './launcherTypes'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode
+} from 'react'
+import type {
+  LauncherSettingsUI,
+  ModpackActionInfoRow,
+  ModpackGameProfileUI,
+  SkinViewerAnimation
+} from './launcherTypes'
 import logoUrl from './assets/branding/logo.png?url'
 import loginWallpaperUrl from './assets/branding/login-wallpaper.png?url'
-import soleaWordmarkUrl from './assets/branding/solea-pixel-wordmark.png?url'
+import soleaLoginLogoUrl from './assets/branding/solea-pixel-login-logo.png?url'
 import bootLogoUrl from './assets/branding/boot-logo.png?url'
+import newsWallpaperUrl from './assets/branding/news-wallpaper.png?url'
 import './App.css'
 import { MODPACK_THEME, isModpackId, type ModpackIdUi } from './modpackTheme'
 import { AccountSkinViewer, type AccountSkinViewerHandle } from './AccountSkinViewer'
 import { AccountCapeModal } from './AccountCapeModal'
+import { PackMaintConfirmModal } from './PackMaintConfirmModal'
+import { ModpackUpdatesModal } from './ModpackUpdatesModal'
+import { CacheClearConfirmModal, type CacheClearKind } from './CacheClearConfirmModal'
 import { applyAppearanceSettings, subscribeSystemTheme } from './appearance'
 import { useI18n } from './i18n/I18nContext'
 import { LauncherSelect } from './ui/LauncherSelect'
+import { MemoryRamSlider } from './MemoryRamSlider'
+import { allocGbToMinMaxStrings, ramStringToGb } from './memoryRam'
 import { useToast } from './ui/ToastContext'
 import { playUiSound, type UiSoundPrefs } from './ui/playUiSound'
 import { useFocusTrap } from './a11y/useFocusTrap'
+import { LAUNCHER_CHANGELOG } from './launcherChangelog'
+import {
+  acceleratorMatches,
+  formatAcceleratorForDisplay,
+  keyboardEventToAcceleratorString
+} from './keyboardAccelerator'
 
 const LOGO = logoUrl
 /** Fond dédié à l’écran Microsoft (distinct du fond Palamod sur l’accueil). */
 const LOGIN_WALLPAPER = loginWallpaperUrl
-const SOLEA_WORDMARK = soleaWordmarkUrl
+const SOLEA_LOGIN_LOGO = soleaLoginLogoUrl
+/** Fond de l’onglet Accueil & actus. */
+const NEWS_WALLPAPER = newsWallpaperUrl
+
+/** 5 clics rapides sur l’icône Paramètres ouvrent la fenêtre debug (développeur). */
+const SETTINGS_DEBUG_TAPS = 5
+/** Fenêtre de temps pour enchaîner les clics (sidebar + logo orange Paramètres). */
+const SETTINGS_DEBUG_WINDOW_MS = 3200
+
+/** Options du sélecteur d’animation (aperçu skin / cape) — libellés via i18n `labelKey`. */
+const SKIN_ANIM_UI_OPTIONS: { value: SkinViewerAnimation; labelKey: string }[] = [
+  { value: 'none', labelKey: 'settings.skinAnimNone' },
+  { value: 'idle', labelKey: 'settings.skinAnimIdle' },
+  { value: 'walk', labelKey: 'settings.skinAnimWalk' },
+  { value: 'run', labelKey: 'settings.skinAnimRun' },
+  { value: 'fly', labelKey: 'settings.skinAnimFly' },
+  { value: 'wave', labelKey: 'settings.skinAnimWaveRight' },
+  { value: 'wave_left', labelKey: 'settings.skinAnimWaveLeft' },
+  { value: 'crouch', labelKey: 'settings.skinAnimCrouch' },
+  { value: 'hit', labelKey: 'settings.skinAnimHit' }
+]
 
 /** Titre sur deux lignes (maquette) : coupe équilibrée pour les noms longs. */
 function packTitleLines(displayName: string): { first: string; second: string | null } {
@@ -32,15 +77,33 @@ function packTitleLines(displayName: string): { first: string; second: string | 
 
 /** Tête joueur : data URL via le processus principal (les <img https://…> échouent souvent dans Electron). */
 
+/**
+ * Une texture haute résolution par joueur : si on mettait en cache la première requête (ex. 28px),
+ * l’agrandissement en 112px floutait tout. On demande toujours au moins 160px au service.
+ */
+const SKIN_HEAD_FETCH_PX = 256
+const skinHeadCache = new Map<string, string>()
+const SKIN_HEAD_CACHE_CAP = 48
+
+function skinHeadCacheSet(uuid: string, dataUrl: string) {
+  if (skinHeadCache.size >= SKIN_HEAD_CACHE_CAP) {
+    const oldest = skinHeadCache.keys().next().value
+    if (oldest !== undefined) skinHeadCache.delete(oldest)
+  }
+  skinHeadCache.set(uuid, dataUrl)
+}
+
 function SkinHead({
   uuid,
-  sizePx,
+  sizePx: _displaySizeHint,
   className
 }: {
   uuid: string | undefined | null
+  /** Conservé pour l’API ; la résolution réseau est fixe (évite cache basse déf). */
   sizePx: number
   className?: string
 }) {
+  void _displaySizeHint
   const [src, setSrc] = useState<string>(LOGO)
 
   useEffect(() => {
@@ -48,17 +111,26 @@ function SkinHead({
       setSrc(LOGO)
       return
     }
+    const id = uuid.trim()
+    const hit = skinHeadCache.get(id)
+    if (hit) {
+      setSrc(hit)
+      return
+    }
     let cancelled = false
-    void window.solea.getSkinHead(uuid.trim(), sizePx).then((dataUrl) => {
+    void window.solea.getSkinHead(id, SKIN_HEAD_FETCH_PX).then((dataUrl) => {
       if (cancelled) return
-      setSrc(dataUrl ?? LOGO)
+      const next = dataUrl ?? LOGO
+      skinHeadCacheSet(id, next)
+      setSrc(next)
     })
     return () => {
       cancelled = true
     }
-  }, [uuid, sizePx])
+  }, [uuid])
 
-  return <img src={src} alt="" className={className} />
+  const cls = className ? `mc-face-img ${className}` : 'mc-face-img'
+  return <img src={src} alt="" className={cls} />
 }
 
 type SkinPresetsStateUi = {
@@ -78,7 +150,8 @@ function SkinAccountPreview({
   viewerBackground,
   skinAnim,
   reduceMotion,
-  onRefresh
+  onRefresh,
+  onSkinAnimationChange
 }: {
   uuid: string
   refreshKey: number
@@ -87,6 +160,7 @@ function SkinAccountPreview({
   skinAnim: SkinViewerAnimation
   reduceMotion: boolean
   onRefresh: () => void
+  onSkinAnimationChange: (v: SkinViewerAnimation) => void
 }) {
   const { t } = useI18n()
   const { pushToast } = useToast()
@@ -222,6 +296,14 @@ function SkinAccountPreview({
     <>
       <div className="account-skins-modrinth">
         <div className="account-viewer-column">
+          <label className="account-skin-anim-field">
+            <span className="account-skin-anim-label">{t('settings.skinAnim')}</span>
+            <LauncherSelect
+              value={skinAnim}
+              onChange={(v) => onSkinAnimationChange(v as SkinViewerAnimation)}
+              options={SKIN_ANIM_UI_OPTIONS.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
+            />
+          </label>
           <div className="account-viewer-inner">
             {loadingPreview ? (
               <div
@@ -450,6 +532,29 @@ function emptyPackProfile(): ModpackGameProfileUI {
   }
 }
 
+function serializeLauncherSettingsForIpc(settings: LauncherSettingsUI): LauncherSettingsUI {
+  const normProf = (p: ModpackGameProfileUI): ModpackGameProfileUI => ({
+    ...p,
+    screenWidth: p.screenWidth === null || p.screenWidth === undefined ? null : Number(p.screenWidth),
+    screenHeight: p.screenHeight === null || p.screenHeight === undefined ? null : Number(p.screenHeight)
+  })
+  const modpackProfiles = Object.fromEntries(
+    Object.entries(settings.modpackProfiles).map(([id, p]) => [id, normProf(p)])
+  ) as LauncherSettingsUI['modpackProfiles']
+  const activeId = isModpackId(settings.activeModpackId) ? settings.activeModpackId : 'palamod-recreated'
+  const ap = modpackProfiles[activeId] ?? emptyPackProfile()
+  return {
+    ...settings,
+    modpackProfiles,
+    memoryMin: ap.memoryMin,
+    memoryMax: ap.memoryMax,
+    gameArgs: ap.gameArgs,
+    screenWidth: ap.screenWidth,
+    screenHeight: ap.screenHeight,
+    fullscreen: ap.fullscreen
+  }
+}
+
 function emptySettings(): LauncherSettingsUI {
   const packs = emptyPackProfile()
   return {
@@ -457,7 +562,7 @@ function emptySettings(): LauncherSettingsUI {
     memoryMax: '6G',
     jvmArgs: '',
     gameArgs: '',
-    downloadThreads: 8,
+    downloadThreads: 12,
     networkTimeoutMs: 20000,
     javaPath: '',
     javaVersion: '21',
@@ -481,10 +586,16 @@ function emptySettings(): LauncherSettingsUI {
     uiSoundVolume: 1,
     uiSoundInstall: true,
     uiSoundLaunch: true,
-    discordRichPresence: false,
+    discordRichPresence: true,
     updateChannel: 'stable',
     skinViewerAnimation: 'none',
-    skinViewerBackground: '#141416'
+    uiShortcutOpenSettings: 'CommandOrControl+Comma',
+    uiShortcutGoNews: 'CommandOrControl+Shift+KeyH',
+    uiShortcutGoAccount: 'CommandOrControl+Shift+KeyU',
+    nativeNotifications: true,
+    diagnosticLaunch: false,
+    networkSlowDownloads: false,
+    uiChromeGlass: false
   }
 }
 
@@ -523,11 +634,13 @@ function IconSettingsNav() {
 function SettingsToggle({
   checked,
   onChange,
-  label
+  label,
+  description
 }: {
   checked: boolean
   onChange: (next: boolean) => void
   label: string
+  description?: string
 }) {
   return (
     <label className="settings-toggle-row">
@@ -542,7 +655,10 @@ function SettingsToggle({
           <span className="settings-toggle-thumb" />
         </span>
       </span>
-      <span className="settings-toggle-text">{label}</span>
+      <span className="settings-toggle-text">
+        {label}
+        {description ? <span className="settings-toggle-desc">{description}</span> : null}
+      </span>
     </label>
   )
 }
@@ -556,9 +672,9 @@ function IconUser() {
   )
 }
 
-function IconDiscord() {
+function IconDiscord({ className }: { className?: string } = {}) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
     </svg>
   )
@@ -566,8 +682,92 @@ function IconDiscord() {
 
 const DISCORD_INVITE_URL = 'https://discord.gg/jVGq5aZ6Wc'
 
-/** Libellé affiché dans l’UI (affichage marketing ; la version technique = package.json / getVersion). */
-const LAUNCHER_VERSION_DISPLAY = '26.1 | Release'
+type NewsHubSocialId = 'modrinth' | 'youtube' | 'x' | 'discord' | 'bmc'
+
+/** Liens onglet Accueil (ordre d’affichage). Chaîne vide = bouton masqué. */
+const NEWS_HUB_SOCIAL_DEF: { id: NewsHubSocialId; url: string }[] = [
+  { id: 'modrinth', url: 'https://modrinth.com/organization/soleapixel' },
+  { id: 'youtube', url: 'https://www.youtube.com/@SILWOX' },
+  { id: 'x', url: 'https://x.com/Silwox_OFF' },
+  { id: 'discord', url: DISCORD_INVITE_URL },
+  { id: 'bmc', url: 'https://buymeacoffee.com/silwox' }
+]
+
+function newsHubSocialRows(): { id: NewsHubSocialId; url: string }[] {
+  return NEWS_HUB_SOCIAL_DEF.filter((r) => r.url.trim().length > 0)
+}
+
+function IconYouTube({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2 30 30 0 000 12a30 30 0 00.5 5.8 3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1 30 30 0 00.5-5.8 30 30 0 00-.5-5.8zM9.6 15.5V8.5L15.8 12l-6.2 3.5z" />
+    </svg>
+  )
+}
+
+function IconXLogo({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  )
+}
+
+function IconModrinth({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 2l8 4.6v10.8L12 22l-8-4.6V6.6L12 2zm0 2.2L6.2 7.35v9.3L12 19.8l5.8-4.15v-9.3L12 4.2zm0 3.1l4.65 2.65v5.1L12 17.7l-4.65-2.65v-5.1L12 7.3z" />
+    </svg>
+  )
+}
+
+function IconBuyMeACoffee({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M6 9h11v1.2c0 2.2-1.5 4-3.4 4.3l-.3 2.5H9.7l-.3-2.5C7.5 14.2 6 12.4 6 10.2V9zm2 .8v.4c0 1.4.9 2.6 2.2 2.9h3.6c1.3-.3 2.2-1.5 2.2-2.9v-.4H8zm12.2-.5h1.1c.6 0 1 .5 1 1.1 0 .6-.4 1.1-1 1.1h-1.1V9.3zM7.5 6h9v1.2h-9V6z" />
+    </svg>
+  )
+}
+
+const NEWS_HUB_LABEL_KEYS: Record<NewsHubSocialId, string> = {
+  modrinth: 'newsView.socialModrinth',
+  youtube: 'newsView.socialYoutube',
+  x: 'newsView.socialX',
+  discord: 'newsView.socialDiscord',
+  bmc: 'newsView.socialBmc'
+}
+
+function newsHubSocialLabelKey(id: NewsHubSocialId): string {
+  return NEWS_HUB_LABEL_KEYS[id]
+}
+
+function NewsHubSocialIcon({
+  id,
+  className
+}: {
+  id: NewsHubSocialId
+  className?: string
+}) {
+  const icons: Record<NewsHubSocialId, ReactNode> = {
+    modrinth: <IconModrinth className={className} />,
+    youtube: <IconYouTube className={className} />,
+    discord: <IconDiscord className={className} />,
+    x: <IconXLogo className={className} />,
+    bmc: <IconBuyMeACoffee className={className} />
+  }
+  return icons[id]
+}
+
+/** Libellé affiché dans l’UI (détail visuel « | Release » ; semver = package.json / getVersion). */
+const LAUNCHER_VERSION_DISPLAY = '26.1.3 | Release'
+
+function formatBytes(n: number): string {
+  if (!Number.isFinite(n) || n < 0) return '—'
+  if (n < 1024) return `${Math.round(n)} o`
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} Ko`
+  if (n < 1024 ** 3) return `${(n / 1024 / 1024).toFixed(1)} Mo`
+  return `${(n / 1024 ** 3).toFixed(2)} Go`
+}
 
 const MIN_BOOT_MS = 1650
 
@@ -583,6 +783,61 @@ function IconStop() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor">
       <rect x="6" y="6" width="12" height="12" rx="1.5" />
+    </svg>
+  )
+}
+
+function IconChevronDown({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M6 9l6 6 6-6"
+        stroke="currentColor"
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconCheckMenu({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M20 6L9 17l-5-5"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconPlusMenu({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 5v14M5 12h14"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function IconTrashMenu({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M3 6h18M9 6V4h6v2m-7 5v9a2 2 0 002 2h4a2 2 0 002-2v-9M10 11v6M14 11v6"
+        stroke="currentColor"
+        strokeWidth="1.85"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -661,10 +916,74 @@ function TitleBar() {
   )
 }
 
-function LoginGate({ testMode, onLoggedIn }: { testMode: boolean; onLoggedIn: () => void }) {
-  const { t } = useI18n()
+function FlagUs({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 20 14" aria-hidden>
+      <rect width="20" height="14" rx="1.5" fill="#b22234" />
+      <path fill="#fff" d="M0 2h20v1.5H0V2zm0 3h20v1.5H0V5zm0 3h20v1.5H0V8zm0 3h20v1.5H0V11zm0 3h14v1.5H0z" />
+      <rect width="8.5" height="7.5" fill="#3c3b6e" />
+      <g fill="#fff">
+        <circle cx="1.4" cy="1.25" r="0.45" />
+        <circle cx="3.4" cy="1.25" r="0.45" />
+        <circle cx="5.4" cy="1.25" r="0.45" />
+        <circle cx="7.4" cy="1.25" r="0.45" />
+        <circle cx="2.4" cy="2.5" r="0.45" />
+        <circle cx="4.4" cy="2.5" r="0.45" />
+        <circle cx="6.4" cy="2.5" r="0.45" />
+        <circle cx="1.4" cy="3.75" r="0.45" />
+        <circle cx="3.4" cy="3.75" r="0.45" />
+        <circle cx="5.4" cy="3.75" r="0.45" />
+        <circle cx="7.4" cy="3.75" r="0.45" />
+        <circle cx="2.4" cy="5" r="0.45" />
+        <circle cx="4.4" cy="5" r="0.45" />
+        <circle cx="6.4" cy="5" r="0.45" />
+        <circle cx="1.4" cy="6.25" r="0.45" />
+        <circle cx="3.4" cy="6.25" r="0.45" />
+        <circle cx="5.4" cy="6.25" r="0.45" />
+        <circle cx="7.4" cy="6.25" r="0.45" />
+      </g>
+    </svg>
+  )
+}
+
+function FlagFr({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 20 14" aria-hidden>
+      <rect width="20" height="14" rx="1.5" fill="#202020" />
+      <rect x="0" y="0" width="6.67" height="14" fill="#002395" />
+      <rect x="6.67" y="0" width="6.66" height="14" fill="#fff" />
+      <rect x="13.33" y="0" width="6.67" height="14" fill="#e1000f" />
+    </svg>
+  )
+}
+
+function LoginGate({
+  testMode,
+  onLoggedIn,
+  onPersistLocale
+}: {
+  testMode: boolean
+  onLoggedIn: () => void
+  onPersistLocale: (l: 'en' | 'fr') => void
+}) {
+  const { t, locale, setLocale } = useI18n()
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  const [langOpen, setLangOpen] = useState(false)
+
+  useEffect(() => {
+    if (!langOpen) return
+    const close = () => setLangOpen(false)
+    document.addEventListener('click', close)
+    return () => document.removeEventListener('click', close)
+  }, [langOpen])
+
+  const pickLang = (l: 'en' | 'fr') => {
+    setLocale(l)
+    setLangOpen(false)
+    onPersistLocale(l)
+    void window.solea.saveSettings({ uiLanguage: l })
+  }
 
   const connect = async () => {
     setBusy(true)
@@ -683,8 +1002,73 @@ function LoginGate({ testMode, onLoggedIn }: { testMode: boolean; onLoggedIn: ()
           {t('login.testMode')} <code style={{ color: '#ffcc66' }}>test/electron-user-data</code>
         </div>
       )}
+      <div className="login-lang-switch" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          className="login-lang-trigger"
+          aria-expanded={langOpen}
+          aria-haspopup="listbox"
+          aria-label={t('login.langAria')}
+          onClick={(e) => {
+            e.stopPropagation()
+            setLangOpen((o) => !o)
+          }}
+        >
+          <span className="login-lang-flag" aria-hidden>
+            {locale === 'fr' ? <FlagFr /> : <FlagUs />}
+          </span>
+          <span className="login-lang-code">{locale === 'fr' ? 'FR' : 'US'}</span>
+          <svg className="login-lang-chev" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M6 9l6 6 6-6"
+              stroke="currentColor"
+              strokeWidth="2.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        {langOpen && (
+          <ul className="login-lang-menu" role="listbox" aria-label={t('login.langAria')}>
+            <li role="none">
+              <button
+                type="button"
+                role="option"
+                aria-selected={locale === 'en'}
+                className={`login-lang-option${locale === 'en' ? ' is-active' : ''}`}
+                onClick={() => pickLang('en')}
+              >
+                <span className="login-lang-flag" aria-hidden>
+                  <FlagUs />
+                </span>
+                <span className="login-lang-option-label">
+                  <span className="login-lang-option-code">US</span>
+                  <span className="login-lang-option-name">{t('login.langEnglish')}</span>
+                </span>
+              </button>
+            </li>
+            <li role="none">
+              <button
+                type="button"
+                role="option"
+                aria-selected={locale === 'fr'}
+                className={`login-lang-option${locale === 'fr' ? ' is-active' : ''}`}
+                onClick={() => pickLang('fr')}
+              >
+                <span className="login-lang-flag" aria-hidden>
+                  <FlagFr />
+                </span>
+                <span className="login-lang-option-label">
+                  <span className="login-lang-option-code">FR</span>
+                  <span className="login-lang-option-name">{t('login.langFrench')}</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        )}
+      </div>
       <div className="login-card">
-        <img src={SOLEA_WORDMARK} alt="Solea Pixel" className="login-wordmark" />
+        <img src={SOLEA_LOGIN_LOGO} alt="" className="login-wordmark" />
         <h2 className="login-welcome-title">{t('login.title')}</h2>
         <p className="login-lead">{t('login.lead')}</p>
         <p className="login-welcome-extra">{t('login.extra')}</p>
@@ -699,13 +1083,19 @@ function LoginGate({ testMode, onLoggedIn }: { testMode: boolean; onLoggedIn: ()
 }
 
 export function App() {
-  const { t, setLocale, formatPercent } = useI18n()
+  const { t, setLocale, formatPercent, formatDate } = useI18n()
   const { pushToast } = useToast()
   const [screen, setScreen] = useState<'boot' | 'login' | 'app'>('boot')
   const [testMode, setTestMode] = useState(false)
   const [modpackName, setModpackName] = useState('Palamod Recreated')
-  const [view, setView] = useState<'home' | 'settings' | 'account'>('home')
+  /** Par défaut : onglet Accueil (actus). Les modpacks restent sur `home`. */
+  const [view, setView] = useState<'home' | 'news' | 'settings' | 'account'>('news')
   const [settingsTab, setSettingsTab] = useState<'launcher' | ModpackIdUi>('launcher')
+  const [shortcutCapture, setShortcutCapture] = useState<null | 'open' | 'news' | 'account'>(null)
+  /** Onglet modpack dont le panneau lourd (RAM, etc.) est monté — retardé pour éviter le freeze au clic. */
+  const [modpackSettingsReadyId, setModpackSettingsReadyId] = useState<ModpackIdUi | null>(null)
+  const modpackPanelRaf2Ref = useRef(0)
+  const settingsDebugTapRef = useRef({ n: 0, until: 0 })
   const [accounts, setAccounts] = useState<{ uuid: string; name: string }[]>([])
   const [activeAcc, setActiveAcc] = useState<{ name: string; uuid: string } | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -715,12 +1105,19 @@ export function App() {
   const [settings, setSettings] = useState<LauncherSettingsUI>(emptySettings)
   const [settingsFb, setSettingsFb] = useState<{ text: string; ok: boolean } | null>(null)
   const [launchPhase, setLaunchPhase] = useState<'idle' | 'launching' | 'running'>('idle')
-  const [modpackUi, setModpackUi] = useState<{
-    loading: boolean
-    needsInstall: boolean
-    needsUpdate: boolean
-    error?: string
-  }>({ loading: true, needsInstall: false, needsUpdate: false })
+  const [launchDots, setLaunchDots] = useState(1)
+  const [memoryStats, setMemoryStats] = useState<{ totalGiB: number } | null>(null)
+  const [packInstanceDetails, setPackInstanceDetails] = useState<{
+    installed: boolean
+    sizeBytes: number | null
+  } | null>(null)
+  const [cacheStats, setCacheStats] = useState<{
+    gradleCachesBytes: number
+    launcherLogsBytes: number
+  } | null>(null)
+  const [allModpacksAction, setAllModpacksAction] = useState<ModpackActionInfoRow[] | null>(null)
+  const [showModpackUpdatesModal, setShowModpackUpdatesModal] = useState(false)
+  const modpackUpdatesModalShownRef = useRef(false)
   const [activeModpackId, setActiveModpackId] = useState<ModpackIdUi>('palamod-recreated')
   const [modpacksList, setModpacksList] = useState<{ id: string; displayName: string }[]>([])
   const [packSwitching, setPackSwitching] = useState(false)
@@ -730,7 +1127,16 @@ export function App() {
     | { ok: false; reason: string; detail?: string; paths?: string[] }
   >(null)
   const [packMaintBusy, setPackMaintBusy] = useState(false)
+  const [packMaintConfirm, setPackMaintConfirm] = useState<
+    null | { kind: 'reinstall' | 'uninstall'; packId: ModpackIdUi }
+  >(null)
+  const [cacheClearConfirm, setCacheClearConfirm] = useState<null | CacheClearKind>(null)
+  const [launcherVersion, setLauncherVersion] = useState('')
+  const [modpackActivityById, setModpackActivityById] = useState<
+    Record<string, { lastPlayAt?: string; lastInstallAt?: string }>
+  >({})
   const [bootProgress, setBootProgress] = useState(0)
+  const [bootDots, setBootDots] = useState(1)
   const [accountSkinKey, setAccountSkinKey] = useState(0)
   const [accountFb, setAccountFb] = useState<string | null>(null)
   const [updateDownloaded, setUpdateDownloaded] = useState(false)
@@ -742,6 +1148,34 @@ export function App() {
   const manualUpdateCheckRef = useRef(false)
   const installBusyRef = useRef(false)
   const launchBusyRef = useRef(false)
+
+  const modpackUi = useMemo(() => {
+    if (allModpacksAction === null) {
+      return {
+        loading: true,
+        needsInstall: false,
+        needsUpdate: false,
+        error: undefined as string | undefined
+      }
+    }
+    const cur = allModpacksAction.find((p) => p.id === activeModpackId)
+    if (!cur) {
+      return {
+        loading: false,
+        needsInstall: true,
+        needsUpdate: false,
+        error: undefined as string | undefined
+      }
+    }
+    return {
+      loading: false,
+      needsInstall: cur.needsInstall,
+      needsUpdate: cur.needsUpdate,
+      error: cur.error
+    }
+  }, [allModpacksAction, activeModpackId])
+
+  const packNeedsAction = modpackUi.needsInstall || modpackUi.needsUpdate
 
   const reduceMotionEffective = useMemo(
     () => settings.uiReduceMotion || prefersRm,
@@ -768,15 +1202,47 @@ export function App() {
     ]
   )
 
-  const refreshModpackUi = useCallback(async () => {
-    setModpackUi((s) => ({ ...s, loading: true }))
-    const r = await window.solea.getModpackActionInfo()
-    setModpackUi({
-      loading: false,
-      needsInstall: r.needsInstall,
-      needsUpdate: r.needsUpdate,
-      error: r.error
-    })
+  const chromeWallpaperUrl = useMemo(() => {
+    if (view === 'settings') return LOGIN_WALLPAPER
+    if (view === 'news') return NEWS_WALLPAPER
+    if (view === 'home' && isModpackId(activeModpackId)) return MODPACK_THEME[activeModpackId].wallpaper
+    if (isModpackId(activeModpackId)) return MODPACK_THEME[activeModpackId].wallpaper
+    return NEWS_WALLPAPER
+  }, [view, activeModpackId])
+
+  const persistSkinViewerAnimation = useCallback(
+    async (v: SkinViewerAnimation) => {
+      const merged = { ...settingsRef.current, skinViewerAnimation: v }
+      setSettings(merged)
+      const r = await window.solea.saveSettings(serializeLauncherSettingsForIpc(merged))
+      if (!r.ok) {
+        pushToast(r.error, 'error')
+        void window.solea.getSettings().then(setSettings)
+      }
+    },
+    [pushToast]
+  )
+
+  const refreshAllModpacksAction = useCallback(async () => {
+    try {
+      const r = await window.solea.getAllModpacksActionInfo()
+      setAllModpacksAction(r.packs)
+    } catch {
+      setAllModpacksAction([])
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!allModpacksAction?.length) return
+    const hasOutdated = allModpacksAction.some((p) => p.needsUpdate && !p.needsInstall)
+    if (!hasOutdated || modpackUpdatesModalShownRef.current) return
+    modpackUpdatesModalShownRef.current = true
+    setShowModpackUpdatesModal(true)
+  }, [allModpacksAction])
+
+  const refreshModpackActivity = useCallback(async () => {
+    const m = await window.solea.getModpackActivity()
+    setModpackActivityById(m)
   }, [])
 
   const refreshAuth = useCallback(async () => {
@@ -796,6 +1262,11 @@ export function App() {
       void loadAccounts()
     }
   }, [view, loadAccounts])
+
+  useEffect(() => {
+    if (screen !== 'app' || view !== 'home') return
+    void refreshModpackActivity()
+  }, [screen, view, refreshModpackActivity])
 
   useEffect(() => {
     applyAppearanceSettings(settings)
@@ -843,8 +1314,14 @@ export function App() {
     })
 
     const authP = window.solea.getAuthState()
+    const settingsP = window.solea
+      .getSettings()
+      .then((s) => {
+        if (!cancelled) setSettings(s)
+      })
+      .catch(() => {})
 
-    void Promise.all([pathsP, authP])
+    void Promise.all([pathsP, authP, settingsP])
       .then(([, auth]) => {
         if (cancelled) return
         const elapsed = performance.now() - start
@@ -875,8 +1352,8 @@ export function App() {
     if (screen !== 'app') return
     void loadAccounts()
     void window.solea.getSettings().then(setSettings)
-    void refreshModpackUi()
-    void window.solea.getAppVersion()
+    void refreshAllModpacksAction()
+    void window.solea.getAppVersion().then(setLauncherVersion)
     void window.solea.isGameRunning().then((run) => {
       if (run) setLaunchPhase('running')
     })
@@ -885,7 +1362,7 @@ export function App() {
       if (p.modpacks?.length) setModpacksList(p.modpacks)
       if (p.activeModpackId && isModpackId(p.activeModpackId)) setActiveModpackId(p.activeModpackId)
     })
-  }, [screen, loadAccounts, refreshModpackUi])
+  }, [screen, loadAccounts, refreshAllModpacksAction])
 
   useEffect(() => {
     if (screen !== 'app') return
@@ -927,6 +1404,7 @@ export function App() {
   }, [screen, t, pushToast])
 
   const selectModpack = async (id: ModpackIdUi) => {
+    setView('home')
     if (id === activeModpackId) return
     setPackSwitching(true)
     setVerifyResult(null)
@@ -940,7 +1418,8 @@ export function App() {
     setActiveModpackId(r.activeModpackId as ModpackIdUi)
     const p = await window.solea.getPaths()
     if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
-    await refreshModpackUi()
+    await refreshAllModpacksAction()
+    void refreshModpackActivity()
     void window.solea.isGameRunning().then((run) => setLaunchPhase(run ? 'running' : 'idle'))
     window.setTimeout(() => setPackSwitching(false), 360)
   }
@@ -960,6 +1439,93 @@ export function App() {
   }, [launchPhase])
 
   useEffect(() => {
+    void window.solea.getMemoryStats().then(
+      (s) => setMemoryStats({ totalGiB: s.totalGiB }),
+      () => setMemoryStats({ totalGiB: 16 })
+    )
+  }, [])
+
+  useEffect(() => {
+    cancelAnimationFrame(modpackPanelRaf2Ref.current)
+    modpackPanelRaf2Ref.current = 0
+    if (view !== 'settings' || settingsTab === 'launcher' || !isModpackId(settingsTab)) {
+      setModpackSettingsReadyId(null)
+      return
+    }
+    setModpackSettingsReadyId(null)
+    const target = settingsTab
+    let cancelled = false
+    const id1 = requestAnimationFrame(() => {
+      if (cancelled) return
+      modpackPanelRaf2Ref.current = requestAnimationFrame(() => {
+        modpackPanelRaf2Ref.current = 0
+        if (!cancelled) setModpackSettingsReadyId(target)
+      })
+    })
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(id1)
+      cancelAnimationFrame(modpackPanelRaf2Ref.current)
+      modpackPanelRaf2Ref.current = 0
+    }
+  }, [view, settingsTab])
+
+  useEffect(() => {
+    if (view !== 'settings' || !isModpackId(settingsTab)) {
+      setPackInstanceDetails(null)
+      return
+    }
+    const packId = settingsTab
+    setPackInstanceDetails(null)
+    let cancelled = false
+    void window.solea.getModpackInstanceDetails(packId).then((d) => {
+      if (cancelled) return
+      setPackInstanceDetails({ installed: d.installed, sizeBytes: d.sizeBytes })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [view, settingsTab, packMaintBusy, phase])
+
+  useEffect(() => {
+    if (view !== 'settings' || settingsTab !== 'launcher') {
+      setCacheStats(null)
+      return
+    }
+    let cancelled = false
+    void window.solea.getCacheStats().then((s) => {
+      if (!cancelled) setCacheStats(s)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [view, settingsTab])
+
+  useEffect(() => {
+    if (launchPhase !== 'launching') {
+      setLaunchDots(1)
+      return
+    }
+    if (settings.uiReduceMotion) return
+    const id = window.setInterval(() => {
+      setLaunchDots((d) => (d % 3) + 1)
+    }, 450)
+    return () => window.clearInterval(id)
+  }, [launchPhase, settings.uiReduceMotion])
+
+  useEffect(() => {
+    if (screen !== 'boot') {
+      setBootDots(1)
+      return
+    }
+    if (reduceMotionEffective) return
+    const id = window.setInterval(() => {
+      setBootDots((d) => (d % 3) + 1)
+    }, 450)
+    return () => window.clearInterval(id)
+  }, [screen, reduceMotionEffective])
+
+  useEffect(() => {
     const off = window.solea.onInstallProgress((p) => {
       setInstallLine(p.detail ?? p.phase)
       if (p.total > 0) setInstallPct(Math.round((p.current / p.total) * 100))
@@ -970,18 +1536,36 @@ export function App() {
   useEffect(() => {
     if (!menuOpen) return
     const close = () => setMenuOpen(false)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close()
+    }
     document.addEventListener('click', close)
-    return () => document.removeEventListener('click', close)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('click', close)
+      document.removeEventListener('keydown', onKey)
+    }
   }, [menuOpen])
 
   useEffect(() => {
     if (screen !== 'app') return
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return
-      if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+      const s = settingsRef.current
+      if (acceleratorMatches(s.uiShortcutOpenSettings, e)) {
         e.preventDefault()
         setView('settings')
         setSettingsTab('launcher')
+        return
+      }
+      if (acceleratorMatches(s.uiShortcutGoNews, e)) {
+        e.preventDefault()
+        setView('news')
+        return
+      }
+      if (acceleratorMatches(s.uiShortcutGoAccount, e)) {
+        e.preventDefault()
+        setView('account')
       }
     }
     window.addEventListener('keydown', onKey)
@@ -994,6 +1578,16 @@ export function App() {
     document.body.classList.toggle('solea-global-busy', busy)
     return () => document.body.classList.remove('solea-global-busy')
   }, [phase, launchPhase, packMaintBusy])
+
+  const homeActivityLabels = useMemo(() => {
+    const a = isModpackId(activeModpackId) ? modpackActivityById[activeModpackId] : undefined
+    const fmt = (iso?: string) => {
+      if (!iso?.trim()) return null as string | null
+      const d = new Date(iso)
+      return Number.isNaN(d.getTime()) ? null : formatDate(d)
+    }
+    return { lastPlay: fmt(a?.lastPlayAt), lastInstall: fmt(a?.lastInstallAt) }
+  }, [activeModpackId, modpackActivityById, formatDate])
 
   const setNum = (key: keyof LauncherSettingsUI, v: string, allowNull = false) => {
     if (allowNull && v === '') {
@@ -1038,6 +1632,10 @@ export function App() {
     }))
   }
 
+  const patchPackRamFromSliderGb = (packId: ModpackIdUi, gb: number) => {
+    patchPackProfile(packId, allocGbToMinMaxStrings(gb))
+  }
+
   const onSelectAccount = async (uuid: string) => {
     const r = await window.solea.setActiveAccount(uuid)
     if (r.ok) {
@@ -1074,8 +1672,9 @@ export function App() {
       const r = await window.solea.installModpack()
       if (r.ok) {
         pushToast(t('toast.installDone'), 'success')
-        playUiSound('install', uiSoundPrefs)
-        void refreshModpackUi()
+        void playUiSound('install', uiSoundPrefs)
+        void refreshAllModpacksAction()
+        void refreshModpackActivity()
       } else pushToast(r.error, 'error')
     } finally {
       setPhase('idle')
@@ -1083,10 +1682,7 @@ export function App() {
     }
   }
 
-  const onReinstallModpack = async (packId: ModpackIdUi) => {
-    if (!window.confirm(t('confirm.reinstall'))) {
-      return
-    }
+  const executeReinstallModpack = async (packId: ModpackIdUi) => {
     setPackMaintBusy(true)
     setPhase('installing')
     setInstallPct(0)
@@ -1099,14 +1695,12 @@ export function App() {
       return
     }
     pushToast(t('toast.reinstalled'), 'success')
-    playUiSound('install', uiSoundPrefs)
-    void refreshModpackUi()
+    void playUiSound('install', uiSoundPrefs)
+    void refreshAllModpacksAction()
+    void refreshModpackActivity()
   }
 
-  const onUninstallModpack = async (packId: ModpackIdUi) => {
-    if (!window.confirm(t('confirm.uninstall'))) {
-      return
-    }
+  const executeUninstallModpack = async (packId: ModpackIdUi) => {
     setPackMaintBusy(true)
     const r = await window.solea.uninstallModpack(packId)
     setPackMaintBusy(false)
@@ -1115,8 +1709,49 @@ export function App() {
       return
     }
     pushToast(t('toast.uninstalled'), 'success')
-    void refreshModpackUi()
+    void refreshAllModpacksAction()
   }
+
+  const onReinstallModpack = (packId: ModpackIdUi) => {
+    setPackMaintConfirm({ kind: 'reinstall', packId })
+  }
+
+  const onUninstallModpack = (packId: ModpackIdUi) => {
+    setPackMaintConfirm({ kind: 'uninstall', packId })
+  }
+
+  const onPackMaintConfirmResolved = () => {
+    if (!packMaintConfirm) return
+    const { kind, packId } = packMaintConfirm
+    setPackMaintConfirm(null)
+    void (kind === 'reinstall' ? executeReinstallModpack(packId) : executeUninstallModpack(packId))
+  }
+
+  const onCacheClearConfirmResolved = () => {
+    if (!cacheClearConfirm) return
+    const kind = cacheClearConfirm
+    setCacheClearConfirm(null)
+    const cacheKey = kind === 'gradle' ? 'gradleCaches' : 'launcherLogs'
+    void window.solea.clearCache(cacheKey).then((r) => {
+      if (r.ok) {
+        pushToast(t('settings.cacheFreed', { n: formatBytes(r.freedBytes) }), 'success')
+        void window.solea.getCacheStats().then(setCacheStats)
+      } else pushToast(r.error, 'error')
+    })
+  }
+
+  const bumpSettingsDebugTap = useCallback(() => {
+    const r = settingsDebugTapRef.current
+    const now = Date.now()
+    if (now > r.until) r.n = 0
+    r.n += 1
+    r.until = now + SETTINGS_DEBUG_WINDOW_MS
+    if (r.n < SETTINGS_DEBUG_TAPS) return
+    r.n = 0
+    void window.solea.openDebugWindow().catch((err) => {
+      pushToast(err instanceof Error ? err.message : String(err), 'error')
+    })
+  }, [pushToast])
 
   const onLaunchOrClose = async () => {
     if (launchPhase === 'running') {
@@ -1136,7 +1771,8 @@ export function App() {
         return
       }
       setLaunchPhase('running')
-      playUiSound('launch', uiSoundPrefs)
+      void playUiSound('launch', uiSoundPrefs)
+      void refreshModpackActivity()
     } finally {
       launchBusyRef.current = false
     }
@@ -1170,27 +1806,7 @@ export function App() {
 
   const saveAllSettings = async () => {
     setSettingsFb(null)
-    const normProf = (p: ModpackGameProfileUI): ModpackGameProfileUI => ({
-      ...p,
-      screenWidth: p.screenWidth === null || p.screenWidth === undefined ? null : Number(p.screenWidth),
-      screenHeight: p.screenHeight === null || p.screenHeight === undefined ? null : Number(p.screenHeight)
-    })
-    const modpackProfiles = Object.fromEntries(
-      Object.entries(settings.modpackProfiles).map(([id, p]) => [id, normProf(p)])
-    ) as LauncherSettingsUI['modpackProfiles']
-    const activeId = isModpackId(settings.activeModpackId) ? settings.activeModpackId : 'palamod-recreated'
-    const ap = modpackProfiles[activeId] ?? emptyPackProfile()
-    const payload: LauncherSettingsUI = {
-      ...settings,
-      modpackProfiles,
-      memoryMin: ap.memoryMin,
-      memoryMax: ap.memoryMax,
-      gameArgs: ap.gameArgs,
-      screenWidth: ap.screenWidth,
-      screenHeight: ap.screenHeight,
-      fullscreen: ap.fullscreen
-    }
-    const r = await window.solea.saveSettings(payload)
+    const r = await window.solea.saveSettings(serializeLauncherSettingsForIpc(settings))
     setSettingsFb(
       r.ok
         ? { text: t('settings.saved'), ok: true }
@@ -1207,11 +1823,20 @@ export function App() {
     } else setSettingsFb({ text: r.error, ok: false })
   }
 
+  const homePackReadyA11y =
+    view === 'home' &&
+    !modpackUi.loading &&
+    !modpackUi.error &&
+    !modpackUi.needsInstall &&
+    !modpackUi.needsUpdate &&
+    launchPhase === 'idle'
+
   if (screen === 'boot') {
     return (
       <div className="app-chrome">
-        <TitleBar />
-        <div className="app-fill">
+        <div className="app-chrome-body">
+          <TitleBar />
+          <div className="app-fill">
           <div className="boot-screen">
             <div className="boot-screen-inner">
               <img src={bootLogoUrl} alt="Solea Pixel" className="boot-logo" />
@@ -1226,9 +1851,13 @@ export function App() {
               >
                 <div className="boot-progress-fill" style={{ width: `${bootProgress}%` }} />
               </div>
-              <span className="boot-progress-label">{t('boot.loading')}</span>
+              <span className="boot-progress-label" aria-live="polite">
+                {t('boot.loadingBase')}
+                {reduceMotionEffective ? '…' : '.'.repeat(bootDots)}
+              </span>
             </div>
           </div>
+        </div>
         </div>
       </div>
     )
@@ -1237,9 +1866,18 @@ export function App() {
   if (screen === 'login') {
     return (
       <div className="app-chrome">
-        <TitleBar />
-        <div className="app-fill">
-          <LoginGate testMode={testMode} onLoggedIn={() => setScreen('app')} />
+        <div className="app-chrome-body">
+          <TitleBar />
+          <div className="app-fill">
+          <LoginGate
+            testMode={testMode}
+            onLoggedIn={() => {
+              setScreen('app')
+              setView('news')
+            }}
+            onPersistLocale={(l) => setSettings((s) => ({ ...s, uiLanguage: l }))}
+          />
+        </div>
         </div>
       </div>
     )
@@ -1247,17 +1885,26 @@ export function App() {
 
   return (
     <div className="app-chrome">
-      <TitleBar />
-      <div className="app-fill">
+      {settings.uiChromeGlass ? (
+        <div
+          key={view === 'home' && isModpackId(activeModpackId) ? activeModpackId : view}
+          className="app-chrome-wallpaper"
+          style={{ backgroundImage: `url(${chromeWallpaperUrl})` }}
+          aria-hidden
+        />
+      ) : null}
+      <div className="app-chrome-body">
+        <TitleBar />
+        <div className="app-fill">
     <div className="shell">
       <aside className="shell-sidebar">
         <div className="sb-top">
           <button
             type="button"
-            className={`sb-btn ${view === 'home' ? 'active' : ''}`}
+            className={`sb-btn ${view === 'news' ? 'active' : ''}`}
             title={t('shell.home')}
             aria-label={t('shell.home')}
-            onClick={() => setView('home')}
+            onClick={() => setView('news')}
           >
             <IconHome />
           </button>
@@ -1266,7 +1913,10 @@ export function App() {
             className={`sb-btn ${view === 'settings' ? 'active' : ''}`}
             title={t('shell.settings')}
             aria-label={t('shell.settings')}
-            onClick={() => setView('settings')}
+            onClick={() => {
+              setView('settings')
+              bumpSettingsDebugTap()
+            }}
           >
             <IconGear />
           </button>
@@ -1309,7 +1959,9 @@ export function App() {
       </aside>
 
       <div
-        className={`shell-main ${view === 'settings' || view === 'account' ? 'settings-mode' : ''} ${
+        className={`shell-main ${
+          view === 'settings' || view === 'account' ? 'settings-mode' : ''
+        } ${view === 'news' ? 'shell-main-news' : ''} ${
           view === 'home' && isModpackId(activeModpackId) ? MODPACK_THEME[activeModpackId].themeClass : ''
         } ${packSwitching && view === 'home' ? 'pack-switching' : ''}`}
       >
@@ -1318,6 +1970,13 @@ export function App() {
             key={activeModpackId}
             className="shell-main-wallpaper"
             style={{ backgroundImage: `url(${MODPACK_THEME[activeModpackId].wallpaper})` }}
+            aria-hidden
+          />
+        )}
+        {view === 'news' && (
+          <div
+            className="shell-main-wallpaper"
+            style={{ backgroundImage: `url(${NEWS_WALLPAPER})` }}
             aria-hidden
           />
         )}
@@ -1341,38 +2000,60 @@ export function App() {
                 })()}
                 <p className="lead">{t('home.lead')}</p>
 
+                {!modpackUi.loading && modpackUi.error && (
+                  <p className="home-pack-status home-pack-status-err" role="status">
+                    {modpackUi.error}
+                  </p>
+                )}
                 <div className="play-row">
-                  <button
-                    type="button"
-                    className={`btn-play${launchPhase === 'running' ? ' btn-play-close' : ''}`}
-                    disabled={
-                      launchPhase === 'launching' ||
-                      phase === 'installing' ||
-                      phase === 'busy' ||
-                      modpackUi.loading ||
-                      modpackUi.needsInstall
-                    }
-                    onClick={() => void onLaunchOrClose()}
-                  >
-                    {launchPhase === 'running' ? <IconStop /> : <IconPlay />}
-                    {launchPhase === 'launching'
-                      ? t('home.playLaunching')
-                      : launchPhase === 'running'
-                        ? t('home.playClose')
-                        : t('home.play')}
-                  </button>
-                  {!modpackUi.loading && (modpackUi.needsInstall || modpackUi.needsUpdate) && (
+                  {homePackReadyA11y ? (
+                    <span id="home-pack-ready-sr" className="sr-only">
+                      {t('home.packReady')}
+                    </span>
+                  ) : null}
+                  {packNeedsAction ? (
+                    <div className="play-row-primary">
+                      <p className="home-pack-action-title">
+                        {modpackUi.needsInstall ? t('home.ctaInstallTitle') : t('home.ctaUpdateTitle')}
+                      </p>
+                      <button
+                        type="button"
+                        className="btn-play"
+                        disabled={phase !== 'idle' || launchPhase !== 'idle'}
+                        aria-describedby={homePackReadyA11y ? 'home-pack-ready-sr' : undefined}
+                        onClick={() => void onInstall()}
+                      >
+                        {modpackUi.needsInstall ? t('home.ctaInstallAction') : t('home.ctaUpdateAction')}
+                      </button>
+                    </div>
+                  ) : (
                     <button
                       type="button"
-                      className="btn-quiet"
-                      disabled={phase !== 'idle' || launchPhase !== 'idle'}
-                      onClick={() => void onInstall()}
+                      className={`btn-play${launchPhase === 'running' ? ' btn-play-close' : ''}`}
+                      disabled={
+                        launchPhase === 'launching' ||
+                        phase === 'installing' ||
+                        phase === 'busy' ||
+                        modpackUi.loading ||
+                        modpackUi.needsInstall ||
+                        modpackUi.needsUpdate
+                      }
+                      aria-describedby={homePackReadyA11y ? 'home-pack-ready-sr' : undefined}
+                      aria-label={
+                        launchPhase === 'launching'
+                          ? t('home.playLaunchingAria')
+                          : launchPhase === 'running'
+                            ? t('home.playClose')
+                            : t('home.play')
+                      }
+                      onClick={() => void onLaunchOrClose()}
                     >
-                      {phase === 'installing'
-                        ? t('home.installBusy')
-                        : modpackUi.needsInstall
-                          ? t('home.installFirst')
-                          : t('home.installUpdate')}
+                      {launchPhase === 'running' ? <IconStop /> : <IconPlay />}
+                      {launchPhase === 'launching'
+                        ? `${t('home.playLaunchingBase')}${settings.uiReduceMotion ? '…' : '.'.repeat(launchDots)}`
+                        : launchPhase === 'running'
+                          ? t('home.playClose')
+                          : t('home.play')}
                     </button>
                   )}
                   <button
@@ -1384,6 +2065,103 @@ export function App() {
                   >
                     {t('home.verify')}
                   </button>
+                  <div className="play-row-account">
+                    <div className="profile-bar-wrap">
+                        <button
+                          type="button"
+                          className={`profile-bar${menuOpen ? ' profile-bar--open' : ''}`}
+                          aria-expanded={menuOpen}
+                          aria-haspopup="menu"
+                          aria-controls={menuOpen ? 'home-account-menu' : undefined}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setMenuOpen((o) => !o)
+                          }}
+                        >
+                          <span className="profile-bar-avatar-ring">
+                            <SkinHead uuid={activeAcc?.uuid} sizePx={64} className="profile-bar-head" />
+                          </span>
+                          <span className="profile-bar-name">
+                            {activeAcc?.name ?? t('home.profileFallback')}
+                          </span>
+                          <span className="profile-bar-chev" aria-hidden>
+                            <IconChevronDown className="profile-bar-chev-svg" />
+                          </span>
+                        </button>
+                        {menuOpen && (
+                          <div
+                            className="profile-menu"
+                            id="home-account-menu"
+                            role="menu"
+                            aria-labelledby="home-account-menu-label"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="profile-menu-inner">
+                              <div className="profile-menu-accent" aria-hidden />
+                              <p className="profile-menu-kicker" id="home-account-menu-label">
+                                {t('home.accountMenuHeading')}
+                              </p>
+                              <ul className="profile-menu-accounts" role="none">
+                                {accounts.map((a) => {
+                                  const sel = activeAcc?.uuid === a.uuid
+                                  return (
+                                    <li key={a.uuid} role="none">
+                                      <button
+                                        type="button"
+                                        role="menuitemradio"
+                                        aria-checked={sel}
+                                        className={`profile-menu-account${sel ? ' profile-menu-account--active' : ''}`}
+                                        onClick={() => void onSelectAccount(a.uuid)}
+                                      >
+                                        <span className="profile-menu-account-avatar">
+                                          <SkinHead uuid={a.uuid} sizePx={40} className="profile-menu-head" />
+                                        </span>
+                                        <span className="profile-menu-account-name">{a.name}</span>
+                                        <span
+                                          className={`profile-menu-account-check${sel ? '' : ' profile-menu-account-check--empty'}`}
+                                          aria-hidden
+                                        >
+                                          {sel ? <IconCheckMenu /> : null}
+                                        </span>
+                                      </button>
+                                    </li>
+                                  )
+                                })}
+                              </ul>
+                              <div className="profile-menu-actions" role="none">
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  className="profile-menu-action"
+                                  onClick={() => void onAddAccount()}
+                                >
+                                  <span
+                                    className="profile-menu-action-icon profile-menu-action-icon--accent"
+                                    aria-hidden
+                                  >
+                                    <IconPlusMenu />
+                                  </span>
+                                  {t('home.addAccount')}
+                                </button>
+                                {activeAcc ? (
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    className="profile-menu-action profile-menu-action--danger"
+                                    onClick={() => void onRemoveAccount(activeAcc.uuid)}
+                                  >
+                                    <span className="profile-menu-action-icon" aria-hidden>
+                                      <IconTrashMenu />
+                                    </span>
+                                    {t('home.removeAccount')}
+                                  </button>
+                                ) : null}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                 </div>
 
                 {verifyResult && (
@@ -1417,45 +2195,6 @@ export function App() {
                   </div>
                 )}
 
-                <div className="profile-bar-wrap">
-                  <button
-                    type="button"
-                    className="profile-bar"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setMenuOpen((o) => !o)
-                    }}
-                  >
-                    <SkinHead uuid={activeAcc?.uuid} sizePx={56} className="profile-bar-head" />
-                    <span>{activeAcc?.name ?? t('home.profileFallback')}</span>
-                    <span className="chev">▾</span>
-                  </button>
-                  {menuOpen && (
-                    <div className="profile-menu" onClick={(e) => e.stopPropagation()}>
-                      {accounts.map((a) => (
-                        <button
-                          key={a.uuid}
-                          type="button"
-                          className={activeAcc?.uuid === a.uuid ? 'active-acc' : ''}
-                          onClick={() => void onSelectAccount(a.uuid)}
-                        >
-                          <SkinHead uuid={a.uuid} sizePx={28} className="profile-menu-head" />
-                          {a.name}
-                        </button>
-                      ))}
-                      <div className="sep" />
-                      <button type="button" onClick={() => void onAddAccount()}>
-                        {t('home.addAccount')}
-                      </button>
-                      {activeAcc && (
-                        <button type="button" onClick={() => void onRemoveAccount(activeAcc.uuid)}>
-                          {t('home.removeAccount')}
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-
                 {phase === 'installing' && (
                   <div className="progress-block">
                     <div
@@ -1473,13 +2212,7 @@ export function App() {
                   </div>
                 )}
 
-                <p className="progress-label" style={{ marginTop: 12 }} title={t('home.ramTooltip')}>
-                  {t('home.ram')}{' '}
-                  {settings.modpackProfiles[activeModpackId]?.memoryMin ?? settings.memoryMin} —{' '}
-                  {settings.modpackProfiles[activeModpackId]?.memoryMax ?? settings.memoryMax}
-                </p>
-
-                {(launchPhase === 'launching' || launchPhase === 'running') && (
+                {launchPhase === 'launching' && (
                   <button
                     type="button"
                     className="btn-quiet home-log-console-btn"
@@ -1488,6 +2221,22 @@ export function App() {
                     {t('home.logConsole')}
                   </button>
                 )}
+
+                {(homeActivityLabels.lastInstall || homeActivityLabels.lastPlay) && (
+                  <div className="home-last-activity">
+                    <p className="home-last-activity-label">{t('home.lastActivityTitle')}</p>
+                    <ul className="home-last-activity-list">
+                      {homeActivityLabels.lastInstall ? (
+                        <li>
+                          {t('home.lastInstall', { date: homeActivityLabels.lastInstall })}
+                        </li>
+                      ) : null}
+                      {homeActivityLabels.lastPlay ? (
+                        <li>{t('home.lastPlay', { date: homeActivityLabels.lastPlay })}</li>
+                      ) : null}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1495,13 +2244,153 @@ export function App() {
           </>
         )}
 
+        {view === 'news' && (
+          <>
+            <div className="shell-content shell-content-news news-hub-layout">
+              {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
+              <div className="news-hub-grid">
+                <aside className="news-hub-col news-hub-col--profile">
+                  <div className="news-hub-card news-hub-profile-card">
+                    <h3 className="news-hub-profile-heading">{t('account.title')}</h3>
+                    <div className="news-hub-skin-wrap">
+                      <SkinHead uuid={activeAcc?.uuid} sizePx={112} className="news-hub-skin" />
+                    </div>
+                    <p className="news-hub-username">{activeAcc?.name ?? t('home.profileFallback')}</p>
+
+                    <p className="news-hub-acc-nav-label">{t('newsView.accountsNav')}</p>
+                    <nav className="news-hub-acc-list" aria-label={t('newsView.accountsNav')}>
+                      {accounts.map((a) => (
+                        <button
+                          key={a.uuid}
+                          type="button"
+                          className={`news-hub-acc-tab ${activeAcc?.uuid === a.uuid ? 'on' : ''}`}
+                          onClick={() => void onSelectAccount(a.uuid)}
+                        >
+                          <SkinHead uuid={a.uuid} sizePx={28} className="news-hub-acc-tab-head" />
+                          <span className="news-hub-acc-tab-name">{a.name}</span>
+                        </button>
+                      ))}
+                    </nav>
+
+                    <div className="news-hub-acc-actions">
+                      <button
+                        type="button"
+                        className="btn-quiet news-hub-acc-btn"
+                        onClick={() => void onAddAccount()}
+                      >
+                        {t('home.addAccount')}
+                      </button>
+                      {activeAcc ? (
+                        <button
+                          type="button"
+                          className="btn-quiet news-hub-acc-btn news-hub-acc-btn--danger"
+                          onClick={() => void onRemoveAccount(activeAcc.uuid)}
+                        >
+                          {t('home.removeAccount')}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                </aside>
+
+                <main className="news-hub-col news-hub-col--feed">
+                  <div className="news-hub-card news-hub-feed-card">
+                    <div className="news-hub-feed-header">
+                      <h2 className="news-hub-feed-title">{t('shell.news')}</h2>
+                    </div>
+                    <section
+                      className="home-news news-view-feed launcher-changelog"
+                      aria-label={t('changelog.panelTitle')}
+                    >
+                      <div className="home-news-head">
+                        <h3 className="home-news-title">{t('changelog.panelTitle')}</h3>
+                      </div>
+                      <p className="launcher-changelog-lead">{t('changelog.lead')}</p>
+                      {launcherVersion.trim() ? (
+                        <p className="launcher-changelog-installed">
+                          {t('changelog.installedVersion', { version: launcherVersion.trim() })}
+                        </p>
+                      ) : null}
+                      {LAUNCHER_CHANGELOG.length === 0 ? (
+                        <p className="home-news-muted">{t('changelog.empty')}</p>
+                      ) : (
+                        <div className="launcher-changelog-entries">
+                          {LAUNCHER_CHANGELOG.map((entry) => (
+                            <article
+                              key={entry.version}
+                              className="launcher-changelog-release"
+                            >
+                              <h4 className="launcher-changelog-release-head">
+                                <span className="launcher-changelog-ver">{entry.version}</span>
+                                {entry.date ? (
+                                  <span className="launcher-changelog-date">{entry.date}</span>
+                                ) : null}
+                              </h4>
+                              {(
+                                ['added', 'changed', 'removed', 'fixed'] as const
+                              ).map((key) => {
+                                const lines = entry[key]
+                                if (!lines?.length) return null
+                                return (
+                                  <div
+                                    key={key}
+                                    className={`launcher-changelog-block launcher-changelog-block--${key}`}
+                                  >
+                                    <h5 className="launcher-changelog-block-title">
+                                      {t(`changelog.${key}`)}
+                                    </h5>
+                                    <ul className="launcher-changelog-list">
+                                      {lines.map((line, i) => (
+                                        <li key={i}>{line}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )
+                              })}
+                            </article>
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  </div>
+                </main>
+
+                <aside className="news-hub-col news-hub-col--social">
+                  <div className="news-hub-card news-hub-social-card">
+                    <h3 className="news-hub-social-heading">{t('newsView.followUs')}</h3>
+                    <div className="news-hub-social-list">
+                      {newsHubSocialRows().map((row) => (
+                        <button
+                          key={row.id}
+                          type="button"
+                          className={`news-hub-social-btn news-hub-social-btn--${row.id}`}
+                          onClick={() => void window.solea.openExternalUrl(row.url)}
+                        >
+                          <NewsHubSocialIcon id={row.id} className="news-hub-social-icon" />
+                          <span>{t(newsHubSocialLabelKey(row.id))}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </aside>
+              </div>
+            </div>
+            <footer className="shell-footer">{t('home.footer', { name: modpackName })}</footer>
+          </>
+        )}
+
         {view === 'settings' && (
           <div className="settings-layout" style={{ flex: 1, minHeight: 0 }}>
             <nav className="settings-nav">
               <div className="settings-nav-brand">
-                <span className="settings-nav-brand-icon" aria-hidden>
+                <button
+                  type="button"
+                  className="settings-nav-brand-icon"
+                  aria-label={t('settings.title')}
+                  onClick={() => bumpSettingsDebugTap()}
+                >
                   <IconSettingsNav />
-                </span>
+                </button>
                 <h3 className="settings-nav-brand-title">{t('settings.title')}</h3>
               </div>
               <button
@@ -1527,9 +2416,6 @@ export function App() {
               <div className="nav-bottom">
                 <button type="button" className="nav-item" onClick={() => void window.solea.openUserDataFolder()}>
                   {t('settings.userData')}
-                </button>
-                <button type="button" className="nav-item" onClick={() => void window.solea.openInstanceFolder()}>
-                  {t('settings.instanceFolder')}
                 </button>
               </div>
             </nav>
@@ -1665,6 +2551,69 @@ export function App() {
                         />
                       </label>
                     </div>
+                    <div className="inner settings-net-extras">
+                      <div className="settings-toggle-stack">
+                        <SettingsToggle
+                          checked={settings.networkSlowDownloads === true}
+                          onChange={(next) => setSettings((s) => ({ ...s, networkSlowDownloads: next }))}
+                          label={t('settings.networkSlowDownloads')}
+                        />
+                        <SettingsToggle
+                          checked={settings.diagnosticLaunch === true}
+                          onChange={(next) => setSettings((s) => ({ ...s, diagnosticLaunch: next }))}
+                          label={t('settings.diagnosticLaunch')}
+                        />
+                      </div>
+                      <p className="settings-roadmap-hint">{t('settings.networkRoadmapHint')}</p>
+                      <button
+                        type="button"
+                        className="btn-muted settings-java-dl-btn"
+                        onClick={() => void window.solea.openJavaDownloadPage()}
+                      >
+                        {t('settings.javaDownloadTemurin')}
+                      </button>
+                    </div>
+                  </details>
+
+                  <details className="set-card">
+                    <summary>
+                      <div>
+                        {t('settings.cacheMaintenance')}
+                        <div className="sub">{t('settings.cacheMaintenanceSub')}</div>
+                      </div>
+                      <span>▾</span>
+                    </summary>
+                    <div className="inner cache-maintenance-panel">
+                      {cacheStats ? (
+                        <>
+                          <p className="cache-line">
+                            <strong>{t('settings.cacheGradle')}</strong> {formatBytes(cacheStats.gradleCachesBytes)}
+                          </p>
+                          <p className="cache-line">
+                            <strong>{t('settings.cacheLauncherLogs')}</strong>{' '}
+                            {formatBytes(cacheStats.launcherLogsBytes)}
+                          </p>
+                          <div className="cache-actions">
+                            <button
+                              type="button"
+                              className="btn-danger-outline"
+                              onClick={() => setCacheClearConfirm('gradle')}
+                            >
+                              {t('settings.cacheClearGradle')}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-danger-outline"
+                              onClick={() => setCacheClearConfirm('logs')}
+                            >
+                              {t('settings.cacheClearLogs')}
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="cache-loading">{t('settings.cacheLoading')}</p>
+                      )}
+                    </div>
                   </details>
 
                   <details className="set-card" open>
@@ -1706,6 +2655,14 @@ export function App() {
                           ]}
                         />
                       </label>
+                      <div className="full settings-theme-glass-block">
+                        <SettingsToggle
+                          checked={settings.uiChromeGlass}
+                          onChange={(next) => setSettings((s) => ({ ...s, uiChromeGlass: next }))}
+                          label={t('settings.chromeGlass')}
+                          description={t('settings.chromeGlassSub')}
+                        />
+                      </div>
                       <label className="full">
                         {t('settings.fontScale')}
                         <LauncherSelect
@@ -1732,50 +2689,15 @@ export function App() {
                           label={t('settings.uiCompact')}
                         />
                         <SettingsToggle
-                          checked={settings.uiSounds}
-                          onChange={(next) => setSettings((s) => ({ ...s, uiSounds: next }))}
-                          label={t('settings.uiSounds')}
+                          checked={settings.nativeNotifications !== false}
+                          onChange={(next) => setSettings((s) => ({ ...s, nativeNotifications: next }))}
+                          label={t('settings.nativeNotifications')}
                         />
-                        {settings.uiSounds ? (
-                          <>
-                            <label className="full settings-sound-volume">
-                              <span className="settings-sound-volume-label">
-                                {t('settings.uiSoundVolume')}{' '}
-                                <span className="settings-sound-volume-val">
-                                  {Math.round((settings.uiSoundVolume ?? 1) * 100)}%
-                                </span>
-                              </span>
-                              <input
-                                type="range"
-                                min={0}
-                                max={100}
-                                value={Math.round((settings.uiSoundVolume ?? 1) * 100)}
-                                onChange={(e) =>
-                                  setSettings((s) => ({
-                                    ...s,
-                                    uiSoundVolume: Number(e.target.value) / 100
-                                  }))
-                                }
-                              />
-                            </label>
-                            <SettingsToggle
-                              checked={settings.uiSoundInstall !== false}
-                              onChange={(next) => setSettings((s) => ({ ...s, uiSoundInstall: next }))}
-                              label={t('settings.uiSoundInstall')}
-                            />
-                            <SettingsToggle
-                              checked={settings.uiSoundLaunch !== false}
-                              onChange={(next) => setSettings((s) => ({ ...s, uiSoundLaunch: next }))}
-                              label={t('settings.uiSoundLaunch')}
-                            />
-                          </>
-                        ) : null}
                         <SettingsToggle
                           checked={settings.discordRichPresence}
                           onChange={(next) => setSettings((s) => ({ ...s, discordRichPresence: next }))}
                           label={t('settings.discordRp')}
                         />
-                        <p className="settings-discord-hint">{t('settings.discordRpHint')}</p>
                       </div>
                       <label className="full">
                         {t('settings.updateChannel')}
@@ -1806,33 +2728,72 @@ export function App() {
                           </button>
                         ) : null}
                       </div>
-                      <label className="full">
-                        {t('settings.skinAnim')}
-                        <LauncherSelect
-                          value={settings.skinViewerAnimation}
-                          onChange={(v) =>
-                            setSettings((s) => ({
-                              ...s,
-                              skinViewerAnimation: v as SkinViewerAnimation
-                            }))
-                          }
-                          options={[
-                            { value: 'none', label: t('settings.skinAnimNone') },
-                            { value: 'idle', label: t('settings.skinAnimIdle') },
-                            { value: 'walk', label: t('settings.skinAnimWalk') }
-                          ]}
+                    </div>
+                  </details>
+
+                  <details className="set-card" open>
+                    <summary>
+                      <div>
+                        {t('settings.audio')}
+                        <div className="sub">{t('settings.audioSub')}</div>
+                      </div>
+                      <span>▾</span>
+                    </summary>
+                    <div className="inner field-grid">
+                      <div className="full settings-toggle-stack">
+                        <SettingsToggle
+                          checked={settings.uiSounds}
+                          onChange={(next) => setSettings((s) => ({ ...s, uiSounds: next }))}
+                          label={t('settings.uiSounds')}
                         />
-                      </label>
-                      <label className="full">
-                        {t('settings.skinBg')}
-                        <input
-                          type="text"
-                          value={settings.skinViewerBackground}
-                          onChange={(e) => setSettings((s) => ({ ...s, skinViewerBackground: e.target.value }))}
-                          placeholder="#141416"
-                          spellCheck={false}
-                        />
-                      </label>
+                        {settings.uiSounds ? (
+                          <>
+                            <div
+                              className="full settings-volume-control"
+                              style={
+                                {
+                                  ['--settings-vol-pct' as string]: `${Math.round((settings.uiSoundVolume ?? 1) * 100)}%`
+                                } as CSSProperties
+                              }
+                            >
+                              <div className="settings-volume-header">
+                                <span className="settings-volume-title">{t('settings.uiSoundVolume')}</span>
+                                <span className="settings-volume-pct" aria-live="polite">
+                                  {Math.round((settings.uiSoundVolume ?? 1) * 100)}%
+                                </span>
+                              </div>
+                              <div className="settings-volume-row">
+                                <span className="settings-volume-cap">0</span>
+                                <input
+                                  type="range"
+                                  className="settings-volume-range"
+                                  min={0}
+                                  max={100}
+                                  value={Math.round((settings.uiSoundVolume ?? 1) * 100)}
+                                  onChange={(e) =>
+                                    setSettings((s) => ({
+                                      ...s,
+                                      uiSoundVolume: Number(e.target.value) / 100
+                                    }))
+                                  }
+                                  aria-label={t('settings.uiSoundVolume')}
+                                />
+                                <span className="settings-volume-cap">100</span>
+                              </div>
+                            </div>
+                            <SettingsToggle
+                              checked={settings.uiSoundInstall !== false}
+                              onChange={(next) => setSettings((s) => ({ ...s, uiSoundInstall: next }))}
+                              label={t('settings.uiSoundInstall')}
+                            />
+                            <SettingsToggle
+                              checked={settings.uiSoundLaunch !== false}
+                              onChange={(next) => setSettings((s) => ({ ...s, uiSoundLaunch: next }))}
+                              label={t('settings.uiSoundLaunch')}
+                            />
+                          </>
+                        ) : null}
+                      </div>
                     </div>
                   </details>
 
@@ -1845,10 +2806,56 @@ export function App() {
                       <span>▾</span>
                     </summary>
                     <div className="inner settings-shortcuts-panel">
+                      {shortcutCapture ? (
+                        <p className="settings-shortcut-listening" role="status">
+                          {t('settings.shortcutListening')}
+                        </p>
+                      ) : null}
                       <dl className="settings-shortcuts-dl">
-                        <div>
+                        <div className="settings-shortcut-row">
                           <dt>{t('settings.shortcutOpenSettings')}</dt>
-                          <dd>Ctrl + ,</dd>
+                          <dd>
+                            <kbd className="settings-shortcut-kbd">
+                              {formatAcceleratorForDisplay(settings.uiShortcutOpenSettings)}
+                            </kbd>
+                            <button
+                              type="button"
+                              className="btn-muted settings-shortcut-change"
+                              onClick={() => setShortcutCapture('open')}
+                            >
+                              {t('settings.shortcutChange')}
+                            </button>
+                          </dd>
+                        </div>
+                        <div className="settings-shortcut-row">
+                          <dt>{t('settings.shortcutGoNews')}</dt>
+                          <dd>
+                            <kbd className="settings-shortcut-kbd">
+                              {formatAcceleratorForDisplay(settings.uiShortcutGoNews)}
+                            </kbd>
+                            <button
+                              type="button"
+                              className="btn-muted settings-shortcut-change"
+                              onClick={() => setShortcutCapture('news')}
+                            >
+                              {t('settings.shortcutChange')}
+                            </button>
+                          </dd>
+                        </div>
+                        <div className="settings-shortcut-row">
+                          <dt>{t('settings.shortcutGoAccount')}</dt>
+                          <dd>
+                            <kbd className="settings-shortcut-kbd">
+                              {formatAcceleratorForDisplay(settings.uiShortcutGoAccount)}
+                            </kbd>
+                            <button
+                              type="button"
+                              className="btn-muted settings-shortcut-change"
+                              onClick={() => setShortcutCapture('account')}
+                            >
+                              {t('settings.shortcutChange')}
+                            </button>
+                          </dd>
                         </div>
                       </dl>
                     </div>
@@ -1856,7 +2863,16 @@ export function App() {
                 </>
               )}
 
-              {settingsTab !== 'launcher' && isModpackId(settingsTab) && (
+              {isModpackId(settingsTab) && modpackSettingsReadyId !== settingsTab ? (
+                <div
+                  className="settings-modpack-deferred-skeleton"
+                  role="status"
+                  aria-busy="true"
+                  aria-label={t('settings.modpackPanelLoading')}
+                />
+              ) : null}
+
+              {modpackSettingsReadyId !== null && isModpackId(modpackSettingsReadyId) ? (
                 <>
                   <details className="set-card" open title={t('settings.ramAllocTooltip')}>
                     <summary>
@@ -1866,25 +2882,14 @@ export function App() {
                       </div>
                       <span>▾</span>
                     </summary>
-                    <div className="inner field-grid">
-                      <label title={t('settings.ramAllocTooltip')}>
-                        {t('settings.ramMin')}
-                        <input
-                          type="text"
-                          value={settings.modpackProfiles[settingsTab]?.memoryMin ?? ''}
-                          onChange={(e) => patchPackProfile(settingsTab, { memoryMin: e.target.value })}
-                          spellCheck={false}
-                        />
-                      </label>
-                      <label title={t('settings.ramAllocTooltip')}>
-                        {t('settings.ramMax')}
-                        <input
-                          type="text"
-                          value={settings.modpackProfiles[settingsTab]?.memoryMax ?? ''}
-                          onChange={(e) => patchPackProfile(settingsTab, { memoryMax: e.target.value })}
-                          spellCheck={false}
-                        />
-                      </label>
+                    <div className="inner memory-ram-settings-inner" title={t('settings.ramAllocTooltip')}>
+                      <MemoryRamSlider
+                        allocGb={ramStringToGb(
+                          settings.modpackProfiles[modpackSettingsReadyId]?.memoryMax ?? settings.memoryMax
+                        )}
+                        totalGiB={memoryStats?.totalGiB ?? 16}
+                        onChangeAllocGb={(gb) => patchPackRamFromSliderGb(modpackSettingsReadyId, gb)}
+                      />
                     </div>
                   </details>
 
@@ -1901,8 +2906,10 @@ export function App() {
                         {t('settings.width')}
                         <input
                           type="number"
-                          value={settings.modpackProfiles[settingsTab]?.screenWidth ?? ''}
-                          onChange={(e) => setPackNum(settingsTab, 'screenWidth', e.target.value, true)}
+                          value={settings.modpackProfiles[modpackSettingsReadyId]?.screenWidth ?? ''}
+                          onChange={(e) =>
+                            setPackNum(modpackSettingsReadyId, 'screenWidth', e.target.value, true)
+                          }
                           placeholder="1920"
                         />
                       </label>
@@ -1910,15 +2917,19 @@ export function App() {
                         {t('settings.height')}
                         <input
                           type="number"
-                          value={settings.modpackProfiles[settingsTab]?.screenHeight ?? ''}
-                          onChange={(e) => setPackNum(settingsTab, 'screenHeight', e.target.value, true)}
+                          value={settings.modpackProfiles[modpackSettingsReadyId]?.screenHeight ?? ''}
+                          onChange={(e) =>
+                            setPackNum(modpackSettingsReadyId, 'screenHeight', e.target.value, true)
+                          }
                           placeholder="1080"
                         />
                       </label>
                       <div className="full settings-toggle-stack">
                         <SettingsToggle
-                          checked={settings.modpackProfiles[settingsTab]?.fullscreen ?? false}
-                          onChange={(next) => patchPackProfile(settingsTab, { fullscreen: next })}
+                          checked={settings.modpackProfiles[modpackSettingsReadyId]?.fullscreen ?? false}
+                          onChange={(next) =>
+                            patchPackProfile(modpackSettingsReadyId, { fullscreen: next })
+                          }
                           label={t('settings.fullscreen')}
                         />
                       </div>
@@ -1936,14 +2947,16 @@ export function App() {
                     <div className="inner">
                       <textarea
                         rows={3}
-                        value={settings.modpackProfiles[settingsTab]?.gameArgs ?? ''}
-                        onChange={(e) => patchPackProfile(settingsTab, { gameArgs: e.target.value })}
+                        value={settings.modpackProfiles[modpackSettingsReadyId]?.gameArgs ?? ''}
+                        onChange={(e) =>
+                          patchPackProfile(modpackSettingsReadyId, { gameArgs: e.target.value })
+                        }
                         spellCheck={false}
                       />
                     </div>
                   </details>
 
-                  <details className="set-card">
+                  <details className="set-card" open>
                     <summary>
                       <div>
                         {t('settings.install')}
@@ -1951,27 +2964,73 @@ export function App() {
                       </div>
                       <span>▾</span>
                     </summary>
-                    <div className="inner modpack-maint-actions">
+                    <div className="inner modpack-maint-panel">
+                      <div className="modpack-storage-row">
+                        <span className="modpack-storage-label">{t('settings.packStorage')}</span>
+                        <span className="modpack-storage-value">
+                          {packInstanceDetails === null
+                            ? t('settings.packStorageLoading')
+                            : packInstanceDetails.installed && packInstanceDetails.sizeBytes != null
+                              ? formatBytes(packInstanceDetails.sizeBytes)
+                              : t('settings.packNotInstalled')}
+                        </span>
+                      </div>
+                      {packInstanceDetails && !packInstanceDetails.installed ? (
+                        <p className="modpack-maint-hint">{t('settings.packMaintDisabledHint')}</p>
+                      ) : null}
                       <button
                         type="button"
-                        className="btn-muted"
-                        disabled={packMaintBusy || phase === 'installing' || launchPhase !== 'idle'}
-                        onClick={() => void onReinstallModpack(settingsTab)}
+                        className="btn-muted modpack-open-folder-btn"
+                        disabled={!packInstanceDetails?.installed || packMaintBusy}
+                        title={
+                          !packInstanceDetails?.installed ? t('settings.packFolderDisabledHint') : undefined
+                        }
+                        onClick={() =>
+                          void window.solea.openModpackInstanceFolder(modpackSettingsReadyId).then((r) => {
+                            if (!r.ok) pushToast(r.error, 'error')
+                          })
+                        }
                       >
-                        {t('settings.reinstall')}
+                        {t('settings.packOpenFolder')}
                       </button>
-                      <button
-                        type="button"
-                        className="btn-danger-outline"
-                        disabled={packMaintBusy || phase === 'installing' || launchPhase !== 'idle'}
-                        onClick={() => void onUninstallModpack(settingsTab)}
-                      >
-                        {t('settings.uninstall')}
-                      </button>
+                      <div className="modpack-maint-actions">
+                        <button
+                          type="button"
+                          className="btn-muted"
+                          disabled={
+                            !packInstanceDetails?.installed ||
+                            packMaintBusy ||
+                            phase === 'installing' ||
+                            launchPhase !== 'idle'
+                          }
+                          title={
+                            !packInstanceDetails?.installed ? t('settings.packMaintDisabledHintShort') : undefined
+                          }
+                          onClick={() => void onReinstallModpack(modpackSettingsReadyId)}
+                        >
+                          {t('settings.reinstall')}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-danger-outline"
+                          disabled={
+                            !packInstanceDetails?.installed ||
+                            packMaintBusy ||
+                            phase === 'installing' ||
+                            launchPhase !== 'idle'
+                          }
+                          title={
+                            !packInstanceDetails?.installed ? t('settings.packMaintDisabledHintShort') : undefined
+                          }
+                          onClick={() => void onUninstallModpack(modpackSettingsReadyId)}
+                        >
+                          {t('settings.uninstall')}
+                        </button>
+                      </div>
                     </div>
                   </details>
                 </>
-              )}
+              ) : null}
 
               <div className="actions-bar">
                 <button type="button" className="btn-save" onClick={() => void saveAllSettings()}>
@@ -1980,7 +3039,7 @@ export function App() {
                 <button type="button" className="btn-muted" onClick={() => void resetAllSettings()}>
                   {t('settings.reset')}
                 </button>
-                <button type="button" className="btn-muted" onClick={() => setView('home')}>
+                <button type="button" className="btn-muted" onClick={() => setView('news')}>
                   {t('settings.back')}
                 </button>
               </div>
@@ -2007,10 +3066,11 @@ export function App() {
                     uuid={activeAcc.uuid}
                     refreshKey={accountSkinKey}
                     playerName={activeAcc.name}
-                    viewerBackground={settings.skinViewerBackground}
+                    viewerBackground="#141416"
                     skinAnim={settings.skinViewerAnimation}
                     reduceMotion={reduceMotionEffective}
                     onRefresh={() => setAccountSkinKey((k) => k + 1)}
+                    onSkinAnimationChange={(v) => void persistSkinViewerAnimation(v)}
                   />
 
                   <div className="account-actions">
@@ -2079,7 +3139,7 @@ export function App() {
                   {accountFb && <div className="account-feedback">{accountFb}</div>}
 
                   <div className="actions-bar account-footer-actions">
-                    <button type="button" className="btn-muted" onClick={() => setView('home')}>
+                    <button type="button" className="btn-muted" onClick={() => setView('news')}>
                       {t('account.back')}
                     </button>
                   </div>
@@ -2091,12 +3151,34 @@ export function App() {
           </div>
         )}
         </div>
+        <ModpackUpdatesModal
+          open={showModpackUpdatesModal}
+          packs={allModpacksAction ?? []}
+          onClose={() => setShowModpackUpdatesModal(false)}
+        />
+        {packMaintConfirm ? (
+          <PackMaintConfirmModal
+            open
+            variant={packMaintConfirm.kind}
+            onConfirm={onPackMaintConfirmResolved}
+            onCancel={() => setPackMaintConfirm(null)}
+          />
+        ) : null}
+        {cacheClearConfirm ? (
+          <CacheClearConfirmModal
+            open
+            kind={cacheClearConfirm}
+            onConfirm={onCacheClearConfirmResolved}
+            onCancel={() => setCacheClearConfirm(null)}
+          />
+        ) : null}
         <div className="launcher-version-badge" role="status">
           {LAUNCHER_VERSION_DISPLAY}
         </div>
       </div>
     </div>
       </div>
+    </div>
     </div>
   )
 }

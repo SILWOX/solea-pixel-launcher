@@ -4,6 +4,10 @@ export const SPX = {
   LAUNCH_AUTH: 'SPX-311',
   LAUNCH_NOT_INSTALLED: 'SPX-312',
   LAUNCH_LOADER: 'SPX-313',
+  /** Un autre modpack a déjà Minecraft ouvert. */
+  LAUNCH_BUSY_OTHER: 'SPX-314',
+  /** Ce modpack a déjà Minecraft ouvert. */
+  LAUNCH_ALREADY: 'SPX-315',
   LAUNCH_GENERIC: 'SPX-319'
 } as const
 

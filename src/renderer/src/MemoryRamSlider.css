@@ -1,0 +1,163 @@
+.memory-ram-slider {
+  --ram-accent: var(--spx-accent, var(--accent-orange, #ff6a1a));
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.memory-ram-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.04em;
+}
+
+.memory-ram-cap-label--pc {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.memory-ram-hero {
+  display: flex;
+  justify-content: center;
+}
+
+.memory-ram-value-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8.5rem;
+  padding: 0.38rem 0.95rem;
+  border-radius: 10px;
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  background: rgba(255, 106, 26, 0.16);
+  border: 1px solid rgba(255, 106, 26, 0.35);
+  color: var(--ram-accent);
+  box-shadow: 0 2px 12px rgba(255, 106, 26, 0.12);
+}
+
+.memory-ram-range-shell {
+  padding: 0.35rem 0 0.15rem;
+}
+
+.memory-ram-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 14px;
+  margin: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    var(--ram-accent) 0%,
+    var(--ram-accent) var(--ram-pct, 0%),
+    rgba(255, 255, 255, 0.1) var(--ram-pct, 0%),
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.memory-ram-range:focus-visible {
+  outline: 2px solid rgba(255, 106, 26, 0.55);
+  outline-offset: 3px;
+}
+
+.memory-ram-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffb347 0%, var(--ram-accent) 55%, #c94e00 100%);
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.memory-ram-range::-moz-range-track {
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.memory-ram-range::-moz-range-progress {
+  height: 14px;
+  border-radius: 999px;
+  background: var(--ram-accent);
+}
+
+.memory-ram-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffb347 0%, var(--ram-accent) 55%, #c94e00 100%);
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.memory-ram-quick-label {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.memory-ram-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.memory-ram-quick-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.memory-ram-quick-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 106, 26, 0.35);
+  color: #fff;
+}
+
+.memory-ram-quick-btn--active {
+  background: rgba(255, 106, 26, 0.22);
+  border-color: rgba(255, 106, 26, 0.5);
+  color: #ffd4b8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-ram-quick-btn {
+    transition: none;
+  }
+}

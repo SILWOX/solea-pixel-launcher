@@ -17,6 +17,8 @@ export interface ModpackSpec {
    * Si absente, Rich Presence utilise l’image « logo ».
    */
   discordLargeImageKey?: string
+  /** Invitation Discord affichée sur le panneau d’accueil. */
+  discordUrl?: string
 }
 
 export const MODPACKS: ModpackSpec[] = [
@@ -27,7 +29,8 @@ export const MODPACKS: ModpackSpec[] = [
     gameVersion: '1.21.1',
     loader: 'neoforge',
     recommendedJava: '21',
-    discordLargeImageKey: 'solea_pack_palamod'
+    discordLargeImageKey: 'solea_pack_palamod',
+    discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
   },
   {
     id: 'wither-storm',
@@ -36,9 +39,15 @@ export const MODPACKS: ModpackSpec[] = [
     gameVersion: '1.20.1',
     loader: 'forge',
     recommendedJava: '17',
-    discordLargeImageKey: 'solea_pack_wither'
+    discordLargeImageKey: 'solea_pack_wither',
+    discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
   }
 ]
+
+/** Page Modrinth du modpack (slug projet). */
+export function modrinthModpackPageUrl(spec: ModpackSpec): string {
+  return `https://modrinth.com/modpack/${spec.projectSlug}`
+}
 
 export const DEFAULT_MODPACK_ID: ModpackId = 'palamod-recreated'
 

@@ -83,7 +83,11 @@ export type SoleaApi = {
     modpackDisplayName: string
     activeModpackId: string
     modpacks: { id: string; displayName: string }[]
+    homeLinks: { modrinthUrl: string; discordUrl?: string }
   }>
+  getModpackActivity: () => Promise<
+    Record<string, { lastPlayAt?: string; lastInstallAt?: string }>
+  >
   setActiveModpack: (
     id: string
   ) => Promise<{ ok: true; activeModpackId: string } | { ok: false; error: string }>
@@ -113,10 +117,27 @@ export type SoleaApi = {
     latestVersionNumber?: string
     error?: string
   }>
+  getAllModpacksActionInfo: () => Promise<{
+    packs: import('./launcherTypes').ModpackActionInfoRow[]
+  }>
   isGameRunning: () => Promise<boolean>
   stopGame: () => Promise<{ ok: true } | { ok: false; error: string }>
   launch: () => Promise<{ ok: true } | { ok: false; error: string }>
   openInstanceFolder: () => Promise<{ ok: true } | { ok: false; error: string }>
+  openModpackInstanceFolder: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>
+  getModpackInstanceDetails: (id: string) => Promise<{
+    installed: boolean
+    folderExists: boolean
+    sizeBytes: number | null
+    instanceRoot: string
+  }>
+  openLatestCrashReport: () => Promise<{ ok: true } | { ok: false; error: string }>
+  getCacheStats: () => Promise<{ gradleCachesBytes: number; launcherLogsBytes: number }>
+  clearCache: (target: 'gradleCaches' | 'launcherLogs') => Promise<
+    { ok: true; freedBytes: number } | { ok: false; error: string }
+  >
+  openJavaDownloadPage: () => Promise<{ ok: boolean }>
+  getCustomLaunchSoundDataUrl: () => Promise<{ ok: true; dataUrl: string } | { ok: false }>
   openUserDataFolder: () => Promise<{ ok: true } | { ok: false; error: string }>
   onInstallProgress: (cb: (p: InstallProgressPayload) => void) => () => void
   onGameLog: (cb: (line: string) => void) => () => void
@@ -124,6 +145,7 @@ export type SoleaApi = {
   openGameLogWindow: () => Promise<{ ok: true }>
   onGameExited: (cb: () => void) => () => void
   getAppVersion: () => Promise<string>
+  getMemoryStats: () => Promise<{ totalBytes: number; totalGiB: number }>
   checkForUpdates: () => Promise<{ ok: true; started: boolean }>
   downloadUpdate: () => Promise<{ ok: true } | { ok: false; error: string }>
   quitAndInstall: () => Promise<{ ok: true }>
@@ -133,6 +155,12 @@ export type SoleaApi = {
   onUpdaterNotAvailable: (cb: () => void) => () => void
   onUpdaterDownloaded: (cb: () => void) => () => void
   onUpdaterError: (cb: (msg: string) => void) => () => void
+  openDebugWindow: () => Promise<{ ok: true }>
+  getDebugSnapshot: () => Promise<import('./debugTypes').DebugSnapshotUi>
+  reloadMainLauncher: () => Promise<{ ok: true } | { ok: false; error: string }>
+  debugOpenKnownFolder: (
+    kind: 'userData' | 'instanceRoot'
+  ) => Promise<{ ok: true } | { ok: false; error: string }>
 }
 
 declare global {

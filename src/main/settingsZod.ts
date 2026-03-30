@@ -33,8 +33,26 @@ export const launcherSettingsStoredSchema = z
     uiSoundLaunch: z.boolean().optional(),
     discordRichPresence: z.boolean().optional(),
     updateChannel: z.enum(['stable', 'beta']).optional(),
-    skinViewerAnimation: z.enum(['none', 'idle', 'walk']).optional(),
-    skinViewerBackground: z.string().optional()
+    skinViewerAnimation: z
+      .enum([
+        'none',
+        'idle',
+        'walk',
+        'run',
+        'fly',
+        'wave',
+        'wave_left',
+        'crouch',
+        'hit'
+      ])
+      .optional(),
+    uiShortcutOpenSettings: z.string().optional(),
+    uiShortcutGoNews: z.string().optional(),
+    uiShortcutGoAccount: z.string().optional(),
+    nativeNotifications: z.boolean().optional(),
+    diagnosticLaunch: z.boolean().optional(),
+    networkSlowDownloads: z.boolean().optional(),
+    uiChromeGlass: z.boolean().optional()
   })
   .strip()
 

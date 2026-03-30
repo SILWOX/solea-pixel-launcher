@@ -274,6 +274,14 @@ export type IntegrityResult =
       paths?: string[]
     }
 
+/** Chemins relatifs (normalisés /) générés au runtime, absents du mrpack — ne pas compter comme mods « en trop ». */
+const IGNORED_EXTRA_MOD_REL_PREFIXES = ['mods/.connector/']
+
+function isIgnoredRuntimeModJar(rel: string): boolean {
+  const n = rel.replace(/\\/g, '/').toLowerCase()
+  return IGNORED_EXTRA_MOD_REL_PREFIXES.some((p) => n.startsWith(p))
+}
+
 export async function verifyInstanceIntegrity(instanceRoot: string): Promise<IntegrityResult> {
   const lock = loadIntegrityLock(instanceRoot)
   if (!lock) return { ok: false, reason: 'no_lock', detail: 'Installez le modpack avant de lancer.' }
@@ -297,7 +305,7 @@ export async function verifyInstanceIntegrity(instanceRoot: string): Promise<Int
         if (statSync(full).isDirectory()) walkMods(full, sub ? `${sub}/${name}` : name)
         else if (name.endsWith('.jar')) {
           const rel = `mods/${sub ? `${sub}/` : ''}${name}`.replace(/\\/g, '/')
-          if (!allowedModJars.has(rel.toLowerCase())) extras.push(rel)
+          if (!allowedModJars.has(rel.toLowerCase()) && !isIgnoredRuntimeModJar(rel)) extras.push(rel)
         }
       }
     }

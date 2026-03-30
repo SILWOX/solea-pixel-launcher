@@ -1,6 +1,6 @@
 {
   "name": "solea-pixel-launcher",
-  "version": "26.1.0",
+  "version": "26.1.3",
   "description": "Launcher Solea Pixel — modpack Modrinth, NeoForge 1.21.1",
   "main": "out/main/index.js",
   "type": "module",
@@ -11,6 +11,7 @@
     "url": "https://github.com/SILWOX/solea-pixel-launcher.git"
   },
   "scripts": {
+    "predev": "node scripts/generate-icon.mjs",
     "dev": "electron-vite dev",
     "dev:test": "cross-env SOLEA_TEST_MODE=1 electron-vite dev",
     "build": "electron-vite build",
@@ -62,6 +63,10 @@
       {
         "from": "resources/app-icon.png",
         "to": "app-icon.png"
+      },
+      {
+        "from": "build/icon.ico",
+        "to": "app-icon.ico"
       }
     ],
     "win": {
@@ -90,7 +95,8 @@
       "uninstallerIcon": "build/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Solea Pixel"
+      "shortcutName": "Solea Pixel",
+      "artifactName": "Solea-Pixel-Setup-${version}.${ext}"
     },
     "publish": [
       {

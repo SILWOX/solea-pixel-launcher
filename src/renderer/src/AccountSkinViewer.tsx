@@ -1,5 +1,15 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import { IdleAnimation, NameTagObject, RunningAnimation, SkinViewer } from 'skinview3d'
+import {
+  CrouchAnimation,
+  FlyingAnimation,
+  HitAnimation,
+  IdleAnimation,
+  NameTagObject,
+  RunningAnimation,
+  SkinViewer,
+  WalkingAnimation,
+  WaveAnimation
+} from 'skinview3d'
 import type { SkinViewerAnimation } from './launcherTypes'
 
 export type AccountSkinViewerHandle = {
@@ -101,11 +111,34 @@ export const AccountSkinViewer = forwardRef<AccountSkinViewerHandle, AccountSkin
         v.animation = null
         return
       }
-      if (animation === 'idle') {
-        v.animation = new IdleAnimation()
-        return
+      switch (animation) {
+        case 'idle':
+          v.animation = new IdleAnimation()
+          break
+        case 'walk':
+          v.animation = new WalkingAnimation()
+          break
+        case 'run':
+          v.animation = new RunningAnimation()
+          break
+        case 'fly':
+          v.animation = new FlyingAnimation()
+          break
+        case 'wave':
+          v.animation = new WaveAnimation('right')
+          break
+        case 'wave_left':
+          v.animation = new WaveAnimation('left')
+          break
+        case 'crouch':
+          v.animation = new CrouchAnimation()
+          break
+        case 'hit':
+          v.animation = new HitAnimation()
+          break
+        default:
+          v.animation = null
       }
-      v.animation = new RunningAnimation()
     }, [animation, reduceMotion])
 
     useEffect(() => {

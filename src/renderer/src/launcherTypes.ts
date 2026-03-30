@@ -10,7 +10,19 @@ export type ModpackGameProfileUI = {
 export type UiLanguage = 'en' | 'fr'
 export type UiTheme = 'light' | 'dark' | 'system'
 export type UiFontScale = 's' | 'm' | 'l'
-export type SkinViewerAnimation = 'none' | 'idle' | 'walk'
+/** Valeurs persistées ; alignées sur skinview3d. */
+export const SKIN_VIEWER_ANIMATION_VALUES = [
+  'none',
+  'idle',
+  'walk',
+  'run',
+  'fly',
+  'wave',
+  'wave_left',
+  'crouch',
+  'hit'
+] as const
+export type SkinViewerAnimation = (typeof SKIN_VIEWER_ANIMATION_VALUES)[number]
 export type UpdateChannel = 'stable' | 'beta'
 
 export type LauncherSettingsUI = {
@@ -36,6 +48,8 @@ export type LauncherSettingsUI = {
   uiReduceMotion: boolean
   /** Marges réduites (petits écrans). */
   uiCompact: boolean
+  /** Barre titre + sidebar semi-transparentes avec flou ; le fond s’étend derrière. */
+  uiChromeGlass: boolean
   uiSounds: boolean
   /** 0–1 */
   uiSoundVolume: number
@@ -44,5 +58,21 @@ export type LauncherSettingsUI = {
   discordRichPresence: boolean
   updateChannel: UpdateChannel
   skinViewerAnimation: SkinViewerAnimation
-  skinViewerBackground: string
+  uiShortcutOpenSettings: string
+  uiShortcutGoNews: string
+  uiShortcutGoAccount: string
+  nativeNotifications: boolean
+  diagnosticLaunch: boolean
+  networkSlowDownloads: boolean
+}
+
+/** Ligne renvoyée par `modpack:all-action-info` (un entrée par modpack déclaré). */
+export type ModpackActionInfoRow = {
+  id: string
+  displayName: string
+  needsInstall: boolean
+  needsUpdate: boolean
+  error?: string
+  installedVersionNumber?: string
+  latestVersionNumber?: string
 }

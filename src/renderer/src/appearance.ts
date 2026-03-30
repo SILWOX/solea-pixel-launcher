@@ -15,6 +15,7 @@ export function applyAppearanceSettings(s: LauncherSettingsUI): void {
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   root.dataset.reduceMotion = s.uiReduceMotion || prefersReduced ? '1' : '0'
   root.dataset.density = s.uiCompact ? 'compact' : 'comfortable'
+  root.dataset.chromeGlass = s.uiChromeGlass ? '1' : '0'
   /* Accent fixe (orange launcher) — plus d’option utilisateur. */
   root.style.setProperty('--accent', '#ff6a1a')
   const scale = s.uiFontScale === 's' ? '0.92' : s.uiFontScale === 'l' ? '1.08' : '1'

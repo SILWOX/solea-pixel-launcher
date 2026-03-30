@@ -2,7 +2,8 @@ import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electro
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { Worker } from 'node:worker_threads'
-import { existsSync, readFileSync, writeFileSync, rmSync, mkdirSync } from 'fs'
+import os from 'node:os'
+import { existsSync, readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync, statSync } from 'fs'
 import { createRequire } from 'module'
 import type { MicrosoftAuthResponse } from 'minecraft-java-core'
 
@@ -25,7 +26,8 @@ import {
   installMrpackFromModrinth,
   verifyInstanceIntegrity,
   getModpackActionInfo,
-  type InstallProgress
+  type InstallProgress,
+  type IntegrityResult
 } from './modrinth.js'
 import { isMinecraftRunning, killMinecraftForInstance } from './gameProcess.js'
 import { SKIP_MOD_INTEGRITY_FOR_LAUNCH } from './config.js'
@@ -45,12 +47,14 @@ import {
   listAccountSummaries,
   removeAccount,
   setActiveUuid,
-  updateAccountTokens
+  updateAccountTokens,
+  findStoredAccountByUuid
 } from './accounts.js'
 import {
   fetchMinecraftHeadDataUrl,
   fetchMinecraftSkinDataUrl,
-  fetchMinecraftCapeDataUrl
+  fetchMinecraftCapeDataUrl,
+  headDataUrlFromStoredAccount
 } from './skinHead.js'
 import {
   activeCapeDataUrlFromToken,
@@ -70,10 +74,24 @@ import {
   setActivePreset,
   updatePresetModel
 } from './skinPresets.js'
-import { getModpackSpec, listModpackSummaries, resolveModpackId, type ModpackId } from './modpacks.js'
+import {
+  getModpackSpec,
+  listModpackSummaries,
+  modrinthModpackPageUrl,
+  MODPACKS,
+  resolveModpackId,
+  type ModpackId
+} from './modpacks.js'
+import {
+  getModpackActivityMap,
+  recordModpackLastInstall,
+  recordModpackLastPlay
+} from './modpackActivity.js'
+import { getDebugSnapshot } from './debugSnapshot.js'
 import { setupAutoUpdater, checkForUpdatesManual, quitAndInstall, downloadUpdate } from './updater.js'
 import {
   initDiscordRpcIfNeeded,
+  reconnectDiscordRpcIfNeeded,
   setInGamePresence,
   setMenuPresence,
   clearDiscordPresence,
@@ -81,6 +99,8 @@ import {
   type RichPresencePack
 } from './discordRpc.js'
 import { isUrlAllowedForExternalOpen } from './safeOpenExternal.js'
+import { directorySizeAsync, directorySizeSync, rmDirContentsIfExists } from './diskUsage.js'
+import { showNativeNotification } from './notifications.js'
 import { logMain } from './logger.js'
 import { errWithCode, SPX } from './supportCodes.js'
 
@@ -97,13 +117,42 @@ function getInstanceRootForModpack(modpackId: ModpackId): string {
   return join(app.getPath('userData'), 'instances', spec.projectSlug)
 }
 
+/** True si au moins une instance Solea a un processus Minecraft lié à son dossier. */
+function isAnySoleaMinecraftRunning(): boolean {
+  for (const m of MODPACKS) {
+    if (isMinecraftRunning(getInstanceRootForModpack(m.id))) return true
+  }
+  return false
+}
+
+/** Arrête tous les Minecraft détectés pour les dossiers d’instances Solea (un seul jeu à la fois). */
+function killAllSoleaMinecraftInstances(): void {
+  for (const m of MODPACKS) {
+    killMinecraftForInstance(getInstanceRootForModpack(m.id))
+  }
+}
+
+function isSoleaInstanceInstalled(instanceRoot: string): boolean {
+  return existsSync(join(instanceRoot, '.solea-installed.json'))
+}
+
+function pushInstallDoneNotification(): void {
+  const st = loadSettings()
+  if (!st.nativeNotifications) return
+  showNativeNotification(
+    'Solea Pixel',
+    st.uiLanguage === 'fr' ? 'Installation du modpack terminée.' : 'Modpack installation finished.'
+  )
+}
+
 function discordPresenceForActivePack(): RichPresencePack {
   const st = loadSettings()
   const spec = getActiveModpackSpec()
   return {
     modpackName: spec.displayName,
     largeImageKey: spec.discordLargeImageKey ?? 'logo',
-    locale: st.uiLanguage
+    locale: st.uiLanguage,
+    modrinthPackUrl: modrinthModpackPageUrl(spec)
   }
 }
 
@@ -112,7 +161,10 @@ async function runModpackInstallForSpec(
   spec: ReturnType<typeof getModpackSpec>,
   instanceRoot: string
 ): Promise<void> {
-  const downloadConcurrency = loadSettings().downloadThreads
+  const st = loadSettings()
+  const downloadConcurrency = st.networkSlowDownloads
+    ? Math.min(2, Math.max(1, st.downloadThreads))
+    : Math.max(1, Math.min(32, st.downloadThreads))
   await installMrpackFromModrinth({
     projectSlug: spec.projectSlug,
     gameVersion: spec.gameVersion,
@@ -146,11 +198,19 @@ function resolveLaunchJavaVersion(
   return raw
 }
 
-/** Icône fenêtre / barre des tâches (logo Solea). */
+/** Icône fenêtre / barre des tâches (logo Solea). Sous Windows, un .ico multi-tailles évite l’ancienne icône PNG mal prise en charge par la barre des tâches. */
 function getAppIconPath(): string | undefined {
   if (app.isPackaged) {
+    if (process.platform === 'win32') {
+      const ico = join(process.resourcesPath, 'app-icon.ico')
+      if (existsSync(ico)) return ico
+    }
     const extra = join(process.resourcesPath, 'app-icon.png')
     if (existsSync(extra)) return extra
+  }
+  if (process.platform === 'win32') {
+    const devIco = join(projectRoot, 'build', 'icon.ico')
+    if (existsSync(devIco)) return devIco
   }
   const candidates = [
     join(projectRoot, 'src', 'renderer', 'src', 'assets', 'branding', 'logo.png'),
@@ -325,12 +385,17 @@ async function getCapeDataUrlForPreview(accountUuid: string): Promise<string | n
   return null
 }
 
+/** Titre OS (barre des tâches, Alt+Tab) — identique au bandeau custom ; ne pas le faire changer au chargement. */
+const MAIN_WINDOW_TITLE = 'SOLEA PIXEL LAUNCHER'
+
 let mainWindow: BrowserWindow | null = null
+let discordPresenceRetryInterval: ReturnType<typeof setInterval> | null = null
 
 /** Logs du dernier lancement — fenêtre console + buffer pour rechargement. */
 const MAX_GAME_LOG_BYTES = 1_200_000
 let gameLogBuffer = ''
 let logConsoleWindow: BrowserWindow | null = null
+let debugWindow: BrowserWindow | null = null
 
 function clearGameLogBuffer(): void {
   gameLogBuffer = ''
@@ -373,6 +438,7 @@ function createWindow(): void {
     minHeight: 600,
     show: false,
     frame: false,
+    title: MAIN_WINDOW_TITLE,
     backgroundColor: '#07050c',
     autoHideMenuBar: true,
     ...(icon && !icon.isEmpty() ? { icon } : {}),
@@ -383,6 +449,16 @@ function createWindow(): void {
     }
   })
 
+  // Sous Windows, l’icône barre des tâches ne suit pas toujours le constructeur ; setIcon après création aide.
+  if (process.platform === 'win32' && icon && !icon.isEmpty()) {
+    mainWindow.setIcon(icon)
+  }
+
+  mainWindow.webContents.on('page-title-updated', (event) => {
+    event.preventDefault()
+  })
+  mainWindow.setTitle(MAIN_WINDOW_TITLE)
+
   const gameWin = getGameSettingsForModpack(settings, settings.activeModpackId)
   if (gameWin.screenWidth && gameWin.screenHeight) {
     mainWindow.setSize(gameWin.screenWidth, gameWin.screenHeight)
@@ -392,7 +468,12 @@ function createWindow(): void {
   mainWindow.on('unmaximize', broadcastMaximizedState)
   mainWindow.webContents.on('did-finish-load', broadcastMaximizedState)
 
-  mainWindow.on('ready-to-show', () => mainWindow?.show())
+  mainWindow.on('ready-to-show', () => {
+    if (process.platform === 'win32' && icon && !icon.isEmpty()) {
+      mainWindow?.setIcon(icon)
+    }
+    mainWindow?.show()
+  })
 
   if (process.env.ELECTRON_RENDERER_URL) {
     mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
@@ -401,10 +482,21 @@ function createWindow(): void {
   }
 
   mainWindow.webContents.once('did-finish-load', () => {
+    mainWindow?.setTitle(MAIN_WINDOW_TITLE)
     const st = loadSettings()
     if (st.discordRichPresence) {
       void initDiscordRpcIfNeeded().then(() => void setMenuPresence(discordPresenceForActivePack()))
     }
+  })
+
+  let discordFocusTimer: ReturnType<typeof setTimeout> | null = null
+  mainWindow.on('focus', () => {
+    if (!loadSettings().discordRichPresence) return
+    if (discordFocusTimer) clearTimeout(discordFocusTimer)
+    discordFocusTimer = setTimeout(() => {
+      discordFocusTimer = null
+      void reconnectDiscordRpcIfNeeded().then(() => void setMenuPresence(discordPresenceForActivePack()))
+    }, 500)
   })
 }
 
@@ -414,11 +506,17 @@ function sendProgress(p: InstallProgress): void {
 
 app.whenReady().then(() => {
   logMain('info', 'Application ready', { version: readAppVersion() })
+  // Même AUMID que l’app installée en dev → Windows réutilise l’icône du raccourci / cache (souvent l’ancien visuel).
   if (process.platform === 'win32') {
-    app.setAppUserModelId('fr.solea.pixel.launcher')
+    app.setAppUserModelId(app.isPackaged ? 'fr.solea.pixel.launcher' : 'fr.solea.pixel.launcher.dev')
   }
   createWindow()
   setupAutoUpdater(mainWindow, loadSettings().updateChannel)
+
+  discordPresenceRetryInterval = setInterval(() => {
+    if (!loadSettings().discordRichPresence) return
+    void reconnectDiscordRpcIfNeeded().then(() => void setMenuPresence(discordPresenceForActivePack()))
+  }, 30_000)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -426,6 +524,10 @@ app.whenReady().then(() => {
 })
 
 app.on('before-quit', () => {
+  if (discordPresenceRetryInterval) {
+    clearInterval(discordPresenceRetryInterval)
+    discordPresenceRetryInterval = null
+  }
   shutdownDiscordRpc()
 })
 
@@ -452,6 +554,12 @@ ipcMain.handle('window:is-maximized', () => mainWindow?.isMaximized() ?? false)
 
 ipcMain.handle('app:get-version', () => app.getVersion())
 
+ipcMain.handle('app:get-memory-stats', () => {
+  const totalBytes = os.totalmem()
+  const totalGiB = totalBytes / (1024 * 1024 * 1024)
+  return { totalBytes, totalGiB }
+})
+
 ipcMain.handle('updater:check', () => {
   const started = checkForUpdatesManual()
   return { ok: true as const, started }
@@ -475,7 +583,12 @@ ipcMain.handle('updater:quit-and-install', () => {
 ipcMain.handle('skin:get-head', async (_e, uuid: string, size?: number) => {
   if (typeof uuid !== 'string' || !uuid.trim()) return null
   const n = typeof size === 'number' && Number.isFinite(size) ? size : 64
-  return fetchMinecraftHeadDataUrl(uuid.trim(), n)
+  const trimmed = uuid.trim()
+  /** Crafatar / mc-heads d’abord : rendu « tête » net comme l’UI d’avant (pas un crop 8×8 étiré). */
+  const fromNet = await fetchMinecraftHeadDataUrl(trimmed, n)
+  if (fromNet) return fromNet
+  const acc = findStoredAccountByUuid(trimmed)
+  return headDataUrlFromStoredAccount(acc, n)
 })
 
 ipcMain.handle('skin:get-preview', async (_e, uuid: string) => {
@@ -595,6 +708,10 @@ ipcMain.handle('profile:set-active-cape', async (_e, capeId: string | null) => {
 
 ipcMain.handle('app:get-paths', () => {
   const spec = getActiveModpackSpec()
+  const homeLinks: { modrinthUrl: string; discordUrl?: string } = {
+    modrinthUrl: modrinthModpackPageUrl(spec)
+  }
+  if (spec.discordUrl?.trim()) homeLinks.discordUrl = spec.discordUrl.trim()
   return {
     userData: app.getPath('userData'),
     instanceRoot: getInstanceRoot(),
@@ -603,9 +720,12 @@ ipcMain.handle('app:get-paths', () => {
     version: readAppVersion(),
     modpackDisplayName: spec.displayName,
     activeModpackId: spec.id,
-    modpacks: listModpackSummaries()
+    modpacks: listModpackSummaries(),
+    homeLinks
   }
 })
+
+ipcMain.handle('modpack:activity-get', () => getModpackActivityMap())
 
 ipcMain.handle('auth:get-state', () => ({
   /** true = aucun compte : l’UI doit afficher uniquement la connexion Microsoft */
@@ -617,11 +737,30 @@ ipcMain.handle('settings:get', (): LauncherSettings => loadSettings())
 ipcMain.handle('settings:save', (_e, partial: Partial<LauncherSettings>) => {
   const cur = loadSettings()
   const next: LauncherSettings = { ...cur, ...partial }
-  return saveSettings(next)
+  const r = saveSettings(next)
+  if (r.ok) {
+    if (next.discordRichPresence) {
+      void initDiscordRpcIfNeeded().then(() => void setMenuPresence(discordPresenceForActivePack()))
+    } else {
+      void clearDiscordPresence()
+      shutdownDiscordRpc()
+    }
+  }
+  return r
 })
 
 ipcMain.handle('settings:reset', () => {
-  return saveSettings({ ...DEFAULT_SETTINGS })
+  const r = saveSettings({ ...DEFAULT_SETTINGS })
+  if (r.ok) {
+    const st = loadSettings()
+    if (st.discordRichPresence) {
+      void initDiscordRpcIfNeeded().then(() => void setMenuPresence(discordPresenceForActivePack()))
+    } else {
+      void clearDiscordPresence()
+      shutdownDiscordRpc()
+    }
+  }
+  return r
 })
 
 ipcMain.handle('auth:list-accounts', () => listAccountSummaries())
@@ -685,6 +824,8 @@ ipcMain.handle('modpack:install', async () => {
   const root = getInstanceRoot()
   try {
     await runModpackInstallForSpec(spec, root)
+    recordModpackLastInstall(spec.id)
+    pushInstallDoneNotification()
     return { ok: true as const }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
@@ -707,6 +848,8 @@ ipcMain.handle('modpack:reinstall', async (_e, id: string) => {
     if (existsSync(root)) rmSync(root, { recursive: true, force: true })
     mkdirSync(root, { recursive: true })
     await runModpackInstallForSpec(spec, root)
+    recordModpackLastInstall(resolved)
+    pushInstallDoneNotification()
     return { ok: true as const }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
@@ -756,9 +899,53 @@ ipcMain.handle('modpack:action-info', async () => {
   }
 })
 
-ipcMain.handle('game:is-running', () => isMinecraftRunning(getInstanceRoot()))
+ipcMain.handle('modpack:all-action-info', async () => {
+  const packs: {
+    id: ModpackId
+    displayName: string
+    needsInstall: boolean
+    needsUpdate: boolean
+    error?: string
+    installedVersionNumber?: string
+    latestVersionNumber?: string
+  }[] = []
+  for (const m of MODPACKS) {
+    try {
+      const root = getInstanceRootForModpack(m.id)
+      const info = await getModpackActionInfo({
+        instanceRoot: root,
+        projectSlug: m.projectSlug,
+        gameVersion: m.gameVersion,
+        loader: m.loader
+      })
+      packs.push({
+        id: m.id,
+        displayName: m.displayName,
+        needsInstall: info.needsInstall,
+        needsUpdate: info.needsUpdate,
+        error: info.error,
+        installedVersionNumber: info.installedVersionNumber,
+        latestVersionNumber: info.latestVersionNumber
+      })
+    } catch (e) {
+      packs.push({
+        id: m.id,
+        displayName: m.displayName,
+        needsInstall: true,
+        needsUpdate: false,
+        error: e instanceof Error ? e.message : String(e)
+      })
+    }
+  }
+  return { packs }
+})
 
-ipcMain.handle('game:stop', () => killMinecraftForInstance(getInstanceRoot()))
+ipcMain.handle('game:is-running', () => isAnySoleaMinecraftRunning())
+
+ipcMain.handle('game:stop', () => {
+  killAllSoleaMinecraftInstances()
+  return { ok: true as const }
+})
 
 ipcMain.handle('game-log:get-snapshot', () => gameLogBuffer)
 
@@ -796,23 +983,97 @@ ipcMain.handle('game-log-window:open', () => {
   return { ok: true as const }
 })
 
+ipcMain.handle('debug-window:open', () => {
+  if (debugWindow && !debugWindow.isDestroyed()) {
+    debugWindow.focus()
+    return { ok: true as const }
+  }
+  const iconPath = getAppIconPath()
+  const icon = iconPath ? nativeImage.createFromPath(iconPath) : undefined
+  debugWindow = new BrowserWindow({
+    width: 980,
+    height: 760,
+    minWidth: 560,
+    minHeight: 480,
+    title: 'Solea — Debug',
+    backgroundColor: '#0f0f12',
+    autoHideMenuBar: true,
+    ...(icon && !icon.isEmpty() ? { icon } : {}),
+    webPreferences: {
+      preload: join(mainDir, '../preload/index.mjs'),
+      contextIsolation: true,
+      sandbox: false
+    }
+  })
+  debugWindow.on('closed', () => {
+    debugWindow = null
+  })
+  if (process.env.ELECTRON_RENDERER_URL) {
+    const base = process.env.ELECTRON_RENDERER_URL.replace(/\/$/, '')
+    void debugWindow.loadURL(`${base}/index.html?solea=debug`)
+  } else {
+    void debugWindow.loadFile(join(mainDir, '../renderer/index.html'), { query: { solea: 'debug' } })
+  }
+  return { ok: true as const }
+})
+
+ipcMain.handle('debug:get-snapshot', () =>
+  getDebugSnapshot(getInstanceRoot, isAnySoleaMinecraftRunning)
+)
+
+ipcMain.handle('debug:reload-main', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.reload()
+    return { ok: true as const }
+  }
+  return { ok: false as const, error: 'Main window missing.' }
+})
+
+ipcMain.handle('debug:open-known-folder', async (_e, kind: unknown) => {
+  if (kind === 'userData') {
+    const p = app.getPath('userData')
+    const err = await shell.openPath(p)
+    if (err) return { ok: false as const, error: err }
+    return { ok: true as const }
+  }
+  if (kind === 'instanceRoot') {
+    const root = getInstanceRoot()
+    const err = await shell.openPath(root)
+    if (err) return { ok: false as const, error: err }
+    return { ok: true as const }
+  }
+  return { ok: false as const, error: 'Invalid folder kind.' }
+})
+
 ipcMain.handle('game:launch', async () => {
   clearGameLogBuffer()
   const settings = loadSettings()
   const spec = getActiveModpackSpec()
   const root = getInstanceRoot()
-  if (!SKIP_MOD_INTEGRITY_FOR_LAUNCH) {
-    const integ = await verifyInstanceIntegrity(root)
-    if (!integ.ok) {
-      const base =
-        integ.reason === 'extra_mod'
-          ? `Mods non autorisés détectés : ${(integ.paths ?? []).join(', ')}. Retirez-les ou réinstallez le pack.`
-          : integ.reason === 'hash_mismatch'
-            ? `Fichier modifié : ${integ.detail ?? 'inconnu'}. Réinstallez le pack.`
-            : integ.reason === 'missing_file'
-              ? `Fichier manquant : ${integ.detail ?? ''}. Réinstallez le pack.`
-              : integ.detail ?? 'Intégrité : échec de vérification.'
-      return { ok: false as const, error: errWithCode(SPX.LAUNCH_INTEGRITY, base) }
+
+  for (const m of MODPACKS) {
+    const instRoot = getInstanceRootForModpack(m.id)
+    if (!isMinecraftRunning(instRoot)) continue
+    const fr = settings.uiLanguage === 'fr'
+    if (instRoot === root) {
+      return {
+        ok: false as const,
+        error: errWithCode(
+          SPX.LAUNCH_ALREADY,
+          fr
+            ? 'Minecraft est déjà lancé pour ce modpack. Fermez le jeu avant de relancer.'
+            : 'Minecraft is already running for this modpack. Close the game before launching again.'
+        )
+      }
+    }
+    return {
+      ok: false as const,
+      error: errWithCode(
+        SPX.LAUNCH_BUSY_OTHER,
+        fr
+          ? `Le modpack « ${m.displayName} » est déjà en cours d’exécution. Fermez Minecraft avant d’en lancer un autre.`
+          : `"${m.displayName}" is already running. Close Minecraft before launching another modpack.`
+      )
     }
   }
 
@@ -827,8 +1088,31 @@ ipcMain.handle('game:launch', async () => {
     }
   }
 
+  const verifyP: Promise<IntegrityResult> = SKIP_MOD_INTEGRITY_FOR_LAUNCH
+    ? Promise.resolve({ ok: true })
+    : verifyInstanceIntegrity(root)
+
   const ms = makeMicrosoft()
-  const refreshed = await ms.refresh(acc)
+  const refreshP = ms.refresh(acc)
+  const [integ, refreshed] = await Promise.all([verifyP, refreshP])
+
+  if (!isAuthError(refreshed)) {
+    acc = refreshed as MicrosoftAuthResponse
+    updateAccountTokens(acc)
+  }
+
+  if (!SKIP_MOD_INTEGRITY_FOR_LAUNCH && !integ.ok) {
+    const base =
+      integ.reason === 'extra_mod'
+        ? `Mods non autorisés détectés : ${(integ.paths ?? []).join(', ')}. Retirez-les ou réinstallez le pack.`
+        : integ.reason === 'hash_mismatch'
+          ? `Fichier modifié : ${integ.detail ?? 'inconnu'}. Réinstallez le pack.`
+          : integ.reason === 'missing_file'
+            ? `Fichier manquant : ${integ.detail ?? ''}. Réinstallez le pack.`
+            : integ.detail ?? 'Intégrité : échec de vérification.'
+    return { ok: false as const, error: errWithCode(SPX.LAUNCH_INTEGRITY, base) }
+  }
+
   if (isAuthError(refreshed)) {
     return {
       ok: false as const,
@@ -838,8 +1122,6 @@ ipcMain.handle('game:launch', async () => {
       )
     }
   }
-  acc = refreshed as MicrosoftAuthResponse
-  updateAccountTokens(acc)
 
   const installedPath = join(root, '.solea-installed.json')
   if (!existsSync(installedPath)) {
@@ -888,8 +1170,17 @@ ipcMain.handle('game:launch', async () => {
 
   const game = getGameSettingsForModpack(settings, spec.id)
   const jvmExtra = parseArgsBlock(settings.jvmArgs)
+  if (settings.diagnosticLaunch) {
+    jvmExtra.push('-XX:+UnlockDiagnosticVMOptions')
+  }
   const gameExtra = parseArgsBlock(game.gameArgs)
   const javaVer = resolveLaunchJavaVersion(settings, spec)
+
+  const memMin = settings.diagnosticLaunch ? '512M' : game.memoryMin
+  const memMax = settings.diagnosticLaunch ? '1G' : game.memoryMax
+  const downloadMult = settings.diagnosticLaunch
+    ? Math.min(2, Math.max(1, settings.downloadThreads))
+    : settings.downloadThreads
 
   const launchOpts = {
     path: root,
@@ -898,7 +1189,7 @@ ipcMain.handle('game:launch', async () => {
     instance: null,
     detached: true,
     timeout: settings.networkTimeoutMs,
-    downloadFileMultiple: settings.downloadThreads,
+    downloadFileMultiple: downloadMult,
     loader: {
       type: loaderType,
       enable: true,
@@ -920,20 +1211,22 @@ ipcMain.handle('game:launch', async () => {
       fullscreen: game.fullscreen
     },
     memory: {
-      min: game.memoryMin,
-      max: game.memoryMax
+      min: memMin,
+      max: memMax
     }
   }
 
   try {
     await runMinecraftLaunchInWorker(launchOpts as unknown as Record<string, unknown>)
+    recordModpackLastPlay(spec.id)
 
     if (settings.discordRichPresence) {
       void initDiscordRpcIfNeeded().then(() =>
         void setInGamePresence({
           modpackName: spec.displayName,
           largeImageKey: spec.discordLargeImageKey ?? 'logo',
-          locale: settings.uiLanguage
+          locale: settings.uiLanguage,
+          modrinthPackUrl: modrinthModpackPageUrl(spec)
         })
       )
     }
@@ -959,9 +1252,140 @@ ipcMain.handle('shell:open-external', async (_e, url: string) => {
 })
 
 ipcMain.handle('shell:open-instance-folder', async () => {
-  const err = await shell.openPath(getInstanceRoot())
+  const root = getInstanceRoot()
+  if (!existsSync(root) || !isSoleaInstanceInstalled(root)) {
+    return {
+      ok: false as const,
+      error: 'Instance non installée — installe le modpack depuis l’accueil.'
+    }
+  }
+  const err = await shell.openPath(root)
   if (err) return { ok: false as const, error: err }
   return { ok: true as const }
+})
+
+ipcMain.handle('shell:open-modpack-instance-folder', async (_e, id: string) => {
+  if (typeof id !== 'string') return { ok: false as const, error: 'Modpack invalide.' }
+  const root = getInstanceRootForModpack(resolveModpackId(id))
+  if (!existsSync(root) || !isSoleaInstanceInstalled(root)) {
+    return {
+      ok: false as const,
+      error: 'Instance non installée — installe le modpack depuis l’accueil.'
+    }
+  }
+  const err = await shell.openPath(root)
+  if (err) return { ok: false as const, error: err }
+  return { ok: true as const }
+})
+
+ipcMain.handle('modpack:get-instance-details', async (_e, id: string) => {
+  if (typeof id !== 'string') {
+    return { installed: false, folderExists: false, sizeBytes: null as number | null, instanceRoot: '' }
+  }
+  const resolved = resolveModpackId(id)
+  const root = getInstanceRootForModpack(resolved)
+  const folderExists = existsSync(root)
+  const installed = folderExists && isSoleaInstanceInstalled(root)
+  const sizeBytes = installed ? await directorySizeAsync(root) : null
+  return { installed, folderExists, sizeBytes, instanceRoot: root }
+})
+
+ipcMain.handle('shell:open-latest-crash', async () => {
+  const root = getInstanceRoot()
+  const cr = join(root, 'crash-reports')
+  if (!existsSync(cr)) {
+    return { ok: false as const, error: 'Dossier crash-reports introuvable (lance le jeu au moins une fois).' }
+  }
+  const names = readdirSync(cr).filter((f) => f.endsWith('.txt'))
+  if (names.length === 0) {
+    return { ok: false as const, error: 'Aucun fichier crash-report (.txt).' }
+  }
+  let best = ''
+  let bestT = 0
+  for (const f of names) {
+    const p = join(cr, f)
+    try {
+      const t = statSync(p).mtimeMs
+      if (t >= bestT) {
+        bestT = t
+        best = p
+      }
+    } catch {
+      /* skip */
+    }
+  }
+  if (!best) return { ok: false as const, error: 'Impossible de lire les crash-reports.' }
+  const err = await shell.openPath(best)
+  if (err) return { ok: false as const, error: err }
+  return { ok: true as const }
+})
+
+ipcMain.handle('system:cache-stats', async () => {
+  const gradle = join(os.homedir(), '.gradle', 'caches')
+  const logs = join(app.getPath('userData'), 'logs')
+  const gradleCachesBytes = existsSync(gradle) ? await directorySizeAsync(gradle) : 0
+  const launcherLogsBytes = existsSync(logs) ? await directorySizeAsync(logs) : 0
+  return { gradleCachesBytes, launcherLogsBytes }
+})
+
+ipcMain.handle('system:cache-clear', (_e, target: string) => {
+  if (target === 'gradleCaches') {
+    const gradle = join(os.homedir(), '.gradle', 'caches')
+    return rmDirContentsIfExists(gradle)
+  }
+  if (target === 'launcherLogs') {
+    const logs = join(app.getPath('userData'), 'logs')
+    if (!existsSync(logs)) return { ok: true as const, freedBytes: 0 }
+    let freed = 0
+    for (const name of readdirSync(logs)) {
+      if (!/\.log(\.[12])?$/.test(name)) continue
+      const p = join(logs, name)
+      try {
+        freed += statSync(p).size
+        rmSync(p, { force: true })
+      } catch {
+        /* ignore */
+      }
+    }
+    return { ok: true as const, freedBytes: freed }
+  }
+  return { ok: false as const, error: 'Cible inconnue.' }
+})
+
+ipcMain.handle('app:open-java-download-page', async () => {
+  const v = loadSettings().javaVersion?.trim() || '21'
+  const url = `https://adoptium.net/temurin/releases/?version=${encodeURIComponent(v)}&os=windows&arch=x64&package=jre`
+  if (!isUrlAllowedForExternalOpen(url)) return { ok: false as const }
+  await shell.openExternal(url)
+  return { ok: true as const }
+})
+
+/** Son au clic Play : fichier fourni par l’utilisateur dans Téléchargements. */
+function playClickWavPath(): string {
+  return join(os.homedir(), 'Downloads', 'clickplay.wav')
+}
+
+ipcMain.handle('app:get-custom-launch-sound-data-url', () => {
+  const p = playClickWavPath()
+  if (!existsSync(p)) return { ok: false as const }
+  let st: ReturnType<typeof statSync>
+  try {
+    st = statSync(p)
+  } catch {
+    return { ok: false as const }
+  }
+  if (!st.isFile() || st.size > 900_000) return { ok: false as const }
+  const low = p.toLowerCase()
+  let mime = 'audio/wav'
+  if (low.endsWith('.mp3')) mime = 'audio/mpeg'
+  else if (low.endsWith('.ogg')) mime = 'audio/ogg'
+  try {
+    const buf = readFileSync(p)
+    const dataUrl = `data:${mime};base64,${buf.toString('base64')}`
+    return { ok: true as const, dataUrl }
+  } catch {
+    return { ok: false as const }
+  }
 })
 
 ipcMain.handle('shell:open-userdata-folder', async () => {
