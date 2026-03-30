@@ -10,8 +10,8 @@ const { autoUpdater } = requireUpdater('electron-updater') as {
 let started = false
 
 /**
- * Mises à jour (electron-updater). Configure `publish` dans package.json (generic URL).
- * electron-updater vérifie les empreintes SHA512 du fichier latest.yml lors du téléchargement.
+ * Mises à jour via electron-updater + GitHub Releases (voir `build.publish` et `repository` dans package.json).
+ * Les builds publiées incluent `latest.yml` ; le client vérifie les SHA-512 avant d’appliquer la mise à jour.
  */
 export function setupAutoUpdater(mainWindow: BrowserWindow | null, channel: 'stable' | 'beta'): void {
   if (!app.isPackaged || started) return
@@ -35,7 +35,7 @@ export function setupAutoUpdater(mainWindow: BrowserWindow | null, channel: 'sta
     wc?.send('updater:error', err.message)
   })
 
-  window.setTimeout(() => {
+  setTimeout(() => {
     void autoUpdater.checkForUpdates().catch(() => wc?.send('updater:error', 'checkForUpdates failed'))
   }, 8000)
 }

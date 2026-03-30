@@ -1,5 +1,10 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.1.0': {
+    en: 'First official Release (26.1): GitHub auto-updates, stable channel, integrity checks enabled for launch.',
+    fr:
+      'Première version officielle Release (26.1) : mises à jour via GitHub, canal stable, vérification d’intégrité des mods à lancement.'
+  },
   '26.0.3': {
     en: 'Build 26.0.3: version bump and packaging refresh.',
     fr: 'Build 26.0.3 : incrément de version et regénération du paquet.'

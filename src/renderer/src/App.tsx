@@ -566,8 +566,8 @@ function IconDiscord() {
 
 const DISCORD_INVITE_URL = 'https://discord.gg/jVGq5aZ6Wc'
 
-/** Libellé affiché dans les paramètres (indépendant du version du package.json). */
-const LAUNCHER_VERSION_DISPLAY = '26.0.3 | Bêta'
+/** Libellé affiché dans l’UI (affichage marketing ; la version technique = package.json / getVersion). */
+const LAUNCHER_VERSION_DISPLAY = '26.1 | Release'
 
 const MIN_BOOT_MS = 1650
 

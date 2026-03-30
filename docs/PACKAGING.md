@@ -15,6 +15,10 @@
 - Le champ `signAndEditExecutable` est à `false` par défaut. Pour la distribution publique, configurez **electron-builder** avec votre certificat Authenticode (variables d’environnement `CSC_LINK` / `CSC_KEY_PASSWORD` ou équivalent selon votre CI).
 - Sans signature, Windows SmartScreen peut afficher un avertissement « application non reconnue ».
 
-## Mises à jour
+## Mises à jour (GitHub Releases)
 
-- `publish.url` dans `package.json` doit pointer vers un hébergeur qui sert `latest.yml` et les artefacts générés par `electron-builder`. Les clients vérifient les empreintes via **electron-updater** (SHA-512 dans le manifeste).
+1. Le dépôt GitHub est référencé dans **`repository.url`** et dans **`build.publish`** (`owner` / `repo`) : ils doivent rester alignés avec le repo réel (ex. `SILWOX/solea-pixel-launcher`).
+2. Build local sans upload : `npm run dist` (dossier `release/`).
+3. Publication CI : pousse un tag `v*` dont la version correspond à **`version`** dans `package.json` (ex. `26.1.0` → tag `v26.1.0`). Le workflow `.github/workflows/release.yml` lance `npm run dist:publish` avec `GH_TOKEN` pour créer la release et y attacher NSIS, portable et `latest.yml`.
+4. **electron-updater** interroge l’API GitHub des releases, compare la version packagée à la dernière release (ou *prerelease* si le canal « beta » est choisi dans les réglages), télécharge l’installateur et vérifie les empreintes SHA-512.
+5. Les mises à jour automatiques complètes (téléchargement + `quitAndInstall`) ciblent surtout l’**installateur NSIS**. L’exe **portable** peut être proposé en téléchargement manuel sur la même release ; le flux auto-update standard est pensé pour une app installée via NSIS.

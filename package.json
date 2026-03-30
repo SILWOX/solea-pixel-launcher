@@ -1,11 +1,15 @@
 {
   "name": "solea-pixel-launcher",
-  "version": "26.0.3",
+  "version": "26.1.0",
   "description": "Launcher Solea Pixel — modpack Modrinth, NeoForge 1.21.1",
   "main": "out/main/index.js",
   "type": "module",
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SILWOX/solea-pixel-launcher.git"
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "dev:test": "cross-env SOLEA_TEST_MODE=1 electron-vite dev",
@@ -13,6 +17,7 @@
     "preview": "electron-vite preview",
     "predist": "node scripts/generate-icon.mjs",
     "dist": "npm run predist && npm run build && electron-builder",
+    "dist:publish": "npm run predist && npm run build && electron-builder --publish always",
     "dist:dir": "npm run predist && npm run build && electron-builder --dir",
     "test:smoke": "npm run build && node scripts/ci-smoke.mjs"
   },
@@ -89,8 +94,10 @@
     },
     "publish": [
       {
-        "provider": "generic",
-        "url": "https://solea-pixel-updates.replace-me.invalid/"
+        "provider": "github",
+        "owner": "SILWOX",
+        "repo": "solea-pixel-launcher",
+        "releaseType": "release"
       }
     ]
   }
