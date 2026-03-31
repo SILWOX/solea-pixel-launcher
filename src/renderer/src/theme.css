@@ -106,6 +106,63 @@ html[data-reduce-motion='1'] *::after {
   border: 1px solid var(--border);
 }
 
+.toast-item--with-action {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+  padding: 0.65rem 0.8rem;
+}
+
+.toast-item-text {
+  display: block;
+}
+
+.toast-item-action {
+  flex-shrink: 0;
+  align-self: flex-end;
+  margin-top: 0.05rem;
+  padding: 0.42rem 0.85rem;
+  border-radius: 8px;
+  font-family: var(--font-detail);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: filter 0.12s ease, transform 0.1s ease;
+}
+
+.toast-item-action:hover {
+  filter: brightness(1.06);
+}
+
+.toast-item-action:active {
+  transform: scale(0.98);
+}
+
+html[data-reduce-motion='1'] .toast-item-action:active {
+  transform: none;
+}
+
+.toast-item-info .toast-item-action {
+  background: linear-gradient(180deg, #f59e34 0%, #c2410c 100%);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-orange) 35%, transparent);
+}
+
+.toast-item-success .toast-item-action {
+  background: #fff;
+  color: #166534;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.toast-item-error .toast-item-action {
+  background: rgba(255, 255, 255, 0.95);
+  color: #991b1b;
+}
+
 .toast-item-info {
   background: var(--bg-card);
   color: var(--text);
@@ -283,6 +340,176 @@ html[data-reduce-motion='1'] .account-viewer-skeleton {
 
 .pack-confirm-modal--updates {
   border-top: 3px solid var(--accent-orange);
+}
+
+.pack-confirm-modal--login-info {
+  max-width: min(520px, calc(100vw - 2rem));
+  border-top: 3px solid var(--accent-orange);
+  padding: 1.5rem 1.55rem 1.35rem;
+}
+
+.pack-confirm-modal--support {
+  max-width: min(560px, calc(100vw - 2rem));
+  border-top: 3px solid var(--accent-orange);
+  padding: 1.45rem 1.5rem 1.3rem;
+}
+
+.pack-confirm-modal--crash {
+  max-width: min(500px, calc(100vw - 2rem));
+  border-top: 3px solid rgba(167, 139, 250, 0.95);
+}
+
+.login-info-modal-scroll {
+  margin: 0 0 1.35rem;
+  max-height: min(56vh, 420px);
+  overflow-y: auto;
+  padding-right: 0.45rem;
+}
+
+.login-info-modal-lead {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 500;
+}
+
+.login-info-modal-points {
+  margin: 0 0 1.1rem;
+  padding: 0 0 0 1.05rem;
+  list-style: disc;
+}
+
+.login-info-modal-points li {
+  margin: 0 0 0.78rem;
+  padding-left: 0.2rem;
+  font-size: 0.88rem;
+  line-height: 1.62;
+  color: var(--text-muted);
+}
+
+.login-info-modal-points li::marker {
+  color: color-mix(in srgb, var(--accent-orange) 75%, white);
+}
+
+.login-info-point-strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+}
+
+.login-info-point-text {
+  display: block;
+}
+
+.login-info-modal-p {
+  margin: 0 0 0.85rem;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.login-info-modal-p:last-child {
+  margin-bottom: 0;
+}
+
+.login-info-modal-p--foot {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.58;
+  opacity: 0.9;
+}
+
+.pack-confirm-actions--login-info {
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.pack-confirm-actions--login-info .login-info-btn-docs,
+.pack-confirm-actions--login-info .login-info-btn-close {
+  flex: 1 1 auto;
+  min-width: min(100%, 11rem);
+}
+
+.login-info-btn-docs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.78rem 1.15rem;
+  min-height: 2.85rem;
+  border-radius: 12px;
+  font-family: var(--font-minecraft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, rgba(42, 42, 50, 0.95) 0%, rgba(22, 22, 28, 0.98) 100%);
+  color: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.15s ease,
+    box-shadow 0.18s ease;
+}
+
+.login-info-btn-docs:hover {
+  border-color: color-mix(in srgb, var(--accent-orange) 55%, rgba(255, 255, 255, 0.25));
+  background: linear-gradient(180deg, rgba(52, 48, 44, 0.98) 0%, rgba(30, 28, 32, 1) 100%);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.42), 0 0 0 1px color-mix(in srgb, var(--accent-orange) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.login-info-btn-docs:active {
+  transform: scale(0.98);
+}
+
+.login-info-btn-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.78rem 1.25rem;
+  min-height: 2.85rem;
+  border-radius: 12px;
+  font-family: var(--font-minecraft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(180deg, #f59e34 0%, #d9770a 48%, #b45309 100%);
+  box-shadow: 0 10px 36px color-mix(in srgb, var(--accent-orange) 45%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transition: filter 0.15s ease, transform 0.15s ease, box-shadow 0.18s ease;
+}
+
+.login-info-btn-close:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--accent-orange) 55%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.login-info-btn-close:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-info-btn-docs,
+  .login-info-btn-close {
+    transition: none;
+  }
+
+  .login-info-btn-docs:active,
+  .login-info-btn-close:active {
+    transform: none;
+  }
 }
 
 .modpack-updates-modal-list {

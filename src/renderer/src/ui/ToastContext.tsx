@@ -10,10 +10,12 @@ import {
 
 export type ToastKind = 'info' | 'success' | 'error'
 
-type ToastItem = { id: number; message: string; kind: ToastKind }
+export type ToastAction = { label: string; onClick: () => void }
+
+type ToastItem = { id: number; message: string; kind: ToastKind; action?: ToastAction }
 
 type ToastCtx = {
-  pushToast: (message: string, kind?: ToastKind, durationMs?: number) => void
+  pushToast: (message: string, kind?: ToastKind, durationMs?: number, action?: ToastAction) => void
 }
 
 const Ctx = createContext<ToastCtx | null>(null)
@@ -31,10 +33,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const pushToast = useCallback(
-    (message: string, kind: ToastKind = 'info', durationMs = 5200) => {
+    (message: string, kind: ToastKind = 'info', durationMs = 5200, action?: ToastAction) => {
       const id = ++idRef.current
-      setItems((prev) => [...prev.slice(-4), { id, message, kind }])
-      const tid = window.setTimeout(() => remove(id), durationMs) as unknown as number
+      const effectiveMs = action ? Math.max(durationMs, 16_000) : durationMs
+      setItems((prev) => [...prev.slice(-4), { id, message, kind, action }])
+      const tid = window.setTimeout(() => remove(id), effectiveMs) as unknown as number
       timers.current.set(id, tid)
     },
     [remove]
@@ -47,8 +50,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div className="toast-stack" aria-live="polite">
         {items.map((t) => (
-          <div key={t.id} className={`toast-item toast-item-${t.kind}`} role="status">
-            {t.message}
+          <div
+            key={t.id}
+            className={`toast-item toast-item-${t.kind}${t.action ? ' toast-item--with-action' : ''}`}
+            role="status"
+          >
+            <span className="toast-item-text">{t.message}</span>
+            {t.action ? (
+              <button
+                type="button"
+                className="toast-item-action"
+                onClick={() => {
+                  t.action?.onClick()
+                  remove(t.id)
+                }}
+              >
+                {t.action.label}
+              </button>
+            ) : null}
           </div>
         ))}
       </div>

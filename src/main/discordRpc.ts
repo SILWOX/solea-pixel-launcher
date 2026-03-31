@@ -10,8 +10,8 @@ const require = createRequire(import.meta.url)
 type RpcClient = {
   login: (o: { clientId: string }) => Promise<void>
   setActivity: (a: Record<string, unknown>) => Promise<void>
-  clearActivity: () => Promise<void>
-  destroy: () => void
+  clearActivity: (pid?: number) => Promise<void>
+  destroy: () => Promise<void>
   request: (cmd: string, args: Record<string, unknown>) => Promise<unknown>
 }
 
@@ -108,12 +108,13 @@ export async function reconnectDiscordRpcIfNeeded(): Promise<void> {
 export const SOLEA_LAUNCHER_RELEASES_URL =
   'https://github.com/SILWOX/solea-pixel-launcher/releases'
 
+/** Invitation Discord Solea Pixel (même URL que dans l’UI du launcher). */
+export const SOLEA_DISCORD_INVITE_URL = 'https://discord.gg/jVGq5aZ6Wc'
+
 export type RichPresencePack = {
   modpackName: string
   largeImageKey: string
   locale: 'en' | 'fr'
-  /** Page Modrinth du modpack actif (bouton « Regarder » / « Watch »). */
-  modrinthPackUrl: string
 }
 
 function clip(s: string, max: number): string {
@@ -143,20 +144,16 @@ export async function setLauncherPresence(opts: RichPresencePack & { inGame: boo
 
   const largeKey = (opts.largeImageKey || 'logo').trim() || 'logo'
 
-  const modrinth = String(opts.modrinthPackUrl ?? '').trim()
-  const buttons =
-    modrinth.startsWith('https://') && modrinth.length <= 512
-      ? [
-          {
-            label: opts.locale === 'fr' ? 'Télécharger' : 'Download',
-            url: SOLEA_LAUNCHER_RELEASES_URL
-          },
-          {
-            label: opts.locale === 'fr' ? 'Regarder' : 'Watch',
-            url: modrinth
-          }
-        ]
-      : [{ label: opts.locale === 'fr' ? 'Télécharger' : 'Download', url: SOLEA_LAUNCHER_RELEASES_URL }]
+  const buttons = [
+    {
+      label: opts.locale === 'fr' ? 'Installer le launcher' : 'Install launcher',
+      url: SOLEA_LAUNCHER_RELEASES_URL
+    },
+    {
+      label: opts.locale === 'fr' ? 'Rejoindre Discord' : 'Join Discord',
+      url: SOLEA_DISCORD_INVITE_URL
+    }
+  ]
 
   const baseActivity: Record<string, unknown> = {
     type: 0,
@@ -214,19 +211,30 @@ export async function setMenuPresence(opts: RichPresencePack): Promise<void> {
 }
 
 export async function clearDiscordPresence(): Promise<void> {
-  if (!client || !ready) return
+  if (!client) return
   try {
-    await client.clearActivity()
+    await client.clearActivity(process.pid)
   } catch {
-    /* ignore */
+    try {
+      await client.request('SET_ACTIVITY', { pid: process.pid })
+    } catch {
+      /* ignore */
+    }
   }
 }
 
-export function shutdownDiscordRpc(): void {
-  try {
-    client?.destroy()
-  } catch {
-    /* ignore */
+/**
+ * Efface la présence Discord puis ferme le transport RPC (les deux sont asynchrones dans discord-rpc).
+ * À appeler avant `app.quit()` pour que Discord retire le statut « Playing ».
+ */
+export async function shutdownDiscordRpc(): Promise<void> {
+  await clearDiscordPresence()
+  if (client) {
+    try {
+      await client.destroy()
+    } catch {
+      /* ignore */
+    }
   }
   client = null
   ready = false

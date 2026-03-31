@@ -95,7 +95,9 @@ export type SoleaApi = {
   listAccounts: () => Promise<{ uuid: string; name: string }[]>
   getActiveAccount: () => Promise<{ name: string; uuid: string } | null>
   addAccount: () => Promise<
-    { ok: true; name: string; uuid: string } | { ok: false; reason: string; detail?: string }
+    | { ok: true; name: string; uuid: string }
+    | { ok: false; reason: 'cancelled' }
+    | { ok: false; reason: 'error'; detail?: string }
   >
   setActiveAccount: (uuid: string) => Promise<{ ok: true } | { ok: false; error: string }>
   removeAccount: (uuid: string) => Promise<{ ok: true }>
@@ -132,6 +134,30 @@ export type SoleaApi = {
     instanceRoot: string
   }>
   openLatestCrashReport: () => Promise<{ ok: true } | { ok: false; error: string }>
+  getLatestCrashText: () => Promise<
+    | { ok: true; text: string; fileName: string }
+    | { ok: false; error: string }
+  >
+  getLatestScreenshot: (modpackId: string) => Promise<
+    | { ok: true; thumbDataUrl: string; fileName: string; folderPath: string }
+    | { ok: false; error?: string; reason?: 'no_folder' | 'empty' | 'invalid_image' | 'read_error' }
+  >
+  openScreenshotsFolder: (modpackId: string) => Promise<{ ok: true } | { ok: false; error: string }>
+  listModpackScreenshots: (
+    modpackId: string
+  ) => Promise<
+    | { ok: true; items: { fileName: string; thumbDataUrl: string }[] }
+    | { ok: false; error: string }
+  >
+  getModpackScreenshotFull: (
+    modpackId: string,
+    fileName: string
+  ) => Promise<{ ok: true; dataUrl: string } | { ok: false; error: string }>
+  saveDataUrlAsPng: (
+    dataUrl: string,
+    defaultFileName: string
+  ) => Promise<{ ok: true; path: string } | { ok: false; error: string }>
+  submitReportDiscordWebhook: (content: string) => Promise<{ ok: true } | { ok: false; error: string }>
   getCacheStats: () => Promise<{ gradleCachesBytes: number; launcherLogsBytes: number }>
   clearCache: (target: 'gradleCaches' | 'launcherLogs') => Promise<
     { ok: true; freedBytes: number } | { ok: false; error: string }

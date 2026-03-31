@@ -75,7 +75,12 @@ const api = {
   getAuthState: () => ipcRenderer.invoke('auth:get-state'),
   listAccounts: () => ipcRenderer.invoke('auth:list-accounts'),
   getActiveAccount: () => ipcRenderer.invoke('auth:get-active'),
-  addAccount: () => ipcRenderer.invoke('auth:add-account'),
+  addAccount: () =>
+    ipcRenderer.invoke('auth:add-account') as Promise<
+      | { ok: true; name: string; uuid: string }
+      | { ok: false; reason: 'cancelled' }
+      | { ok: false; reason: 'error'; detail: string }
+    >,
   setActiveAccount: (uuid: string) => ipcRenderer.invoke('auth:set-active', uuid),
   removeAccount: (uuid: string) => ipcRenderer.invoke('auth:remove-account', uuid),
   refreshActiveAccount: () => ipcRenderer.invoke('auth:refresh-active'),
@@ -109,6 +114,44 @@ const api = {
     }>,
   openLatestCrashReport: () =>
     ipcRenderer.invoke('shell:open-latest-crash') as Promise<{ ok: true } | { ok: false; error: string }>,
+  getLatestCrashText: () =>
+    ipcRenderer.invoke('diagnostic:get-latest-crash-text') as Promise<
+      | { ok: true; text: string; fileName: string }
+      | { ok: false; error: string }
+    >,
+  getLatestScreenshot: (modpackId: string) =>
+    ipcRenderer.invoke('modpack:get-latest-screenshot', modpackId) as Promise<
+      | {
+          ok: true
+          thumbDataUrl: string
+          fileName: string
+          folderPath: string
+        }
+      | { ok: false; error?: string; reason?: 'no_folder' | 'empty' | 'invalid_image' | 'read_error' }
+    >,
+  openScreenshotsFolder: (modpackId: string) =>
+    ipcRenderer.invoke('shell:open-screenshots-folder', modpackId) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
+  listModpackScreenshots: (modpackId: string) =>
+    ipcRenderer.invoke('modpack:list-screenshots', modpackId) as Promise<
+      | { ok: true; items: { fileName: string; thumbDataUrl: string }[] }
+      | { ok: false; error: string }
+    >,
+  getModpackScreenshotFull: (modpackId: string, fileName: string) =>
+    ipcRenderer.invoke('modpack:get-screenshot-full', modpackId, fileName) as Promise<
+      | { ok: true; dataUrl: string }
+      | { ok: false; error: string }
+    >,
+  saveDataUrlAsPng: (dataUrl: string, defaultFileName: string) =>
+    ipcRenderer.invoke('shell:save-data-url-as', { dataUrl, defaultFileName }) as Promise<
+      | { ok: true; path: string }
+      | { ok: false; error: string }
+    >,
+  submitReportDiscordWebhook: (content: string) =>
+    ipcRenderer.invoke('report:submit-discord-webhook', { content }) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
   getCacheStats: () =>
     ipcRenderer.invoke('system:cache-stats') as Promise<{
       gradleCachesBytes: number

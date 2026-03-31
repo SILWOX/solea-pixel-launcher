@@ -1,9 +1,15 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
-  '26.1.3': {
-    en: 'UI & settings: dedicated Audio section, cleaner volume and RAM sliders, single-row play bar, larger boot logo/bar with animated loading dots, social buttons refined. Discord Rich Presence: Download (GitHub releases) and Watch (Modrinth pack page) buttons. Debug window overhaul. Frosted chrome and settings sidebar readability. Custom keyboard shortcuts. Skin preview fixed background. GitHub allowed for external links.',
+  '26.1.4': {
+    en:
+      'Reporting: REPORT card under Follow us (orange CTA). Modal with Launcher vs modpack instance, full category lists (instance: launch, install, account, verify files, mods; launcher: UI, Microsoft login, updates, downloads/cache, performance), themed LauncherSelects, collapsible help (?), Discord button, orange tech-details checkbox, copy/send/close. Discord: SOLEA_REPORT_WEBHOOK_URL or solea-report-webhook.url (first line) in userData; docs/REPORTING.md; .gitignore for the secret file. Main process validates Discord webhook URLs only, truncates payload (~1900 chars), surfaces HTTP/network errors; focus trap + Escape; clipboard errors to toast. Hero recentred; Follow us tightened.',
     fr:
-      'UI & paramètres : section Audio dédiée, curseurs volume et RAM repensés, rangée Jouer / Vérifier / compte sur une ligne, écran de démarrage (logo + barre + points animés), boutons sociaux ajustés. Discord Rich Presence : boutons Télécharger (releases GitHub) et Regarder (Modrinth). Refonte fenêtre debug. Chrome givré et lisibilité barre latérale paramètres. Raccourcis clavier personnalisables. Fond d’aperçu skin fixe. github.com autorisé pour les liens externes.'
+      'Signalement : carte REPORT sous Follow us (CTA orange). Modal Launcher / instance modpack, listes de catégories complètes (instance : lancement, install, compte, vérif fichiers, mods ; launcher : UI, login Microsoft, mises à jour, téléchargements/cache, perfs), LauncherSelect thémés, aide repliable (?), Discord, case orange contexte technique, copier/envoyer/fermer. Discord : SOLEA_REPORT_WEBHOOK_URL ou solea-report-webhook.url (1re ligne) dans userData ; docs/REPORTING.md ; .gitignore pour le fichier secret. Process principal : validation URL webhooks Discord uniquement, troncature ~1900 car., erreurs HTTP/réseau remontées ; piège à focus + Échap ; erreur presse-papiers en toast. Hero recentré ; Follow us resserré.'
+  },
+  '26.1.3': {
+    en: 'UI & settings: dedicated Audio section, cleaner volume and RAM sliders, single-row play bar, larger boot logo/bar with animated loading dots, social buttons refined. Discord Rich Presence: Install launcher (GitHub releases) and Join Discord buttons. Debug window overhaul. Frosted chrome and settings sidebar readability. Custom keyboard shortcuts. Skin preview fixed background. GitHub allowed for external links.',
+    fr:
+      'UI & paramètres : section Audio dédiée, curseurs volume et RAM repensés, rangée Jouer / Vérifier / compte sur une ligne, écran de démarrage (logo + barre + points animés), boutons sociaux ajustés. Discord Rich Presence : boutons Installer le launcher (releases GitHub) et Rejoindre Discord. Refonte fenêtre debug. Chrome givré et lisibilité barre latérale paramètres. Raccourcis clavier personnalisables. Fond d’aperçu skin fixe. github.com autorisé pour les liens externes.'
   },
   '26.1.2': {
     en: 'Packaging: NSIS installer filename matches latest.yml (Solea-Pixel-Setup-…) so GitHub auto-updates download correctly. Includes .connector integrity exemption from 26.1.1.',

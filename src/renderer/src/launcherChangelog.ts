@@ -13,10 +13,34 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.1.4',
+    date: '2026-03-30',
+    added: [
+      'Signalement depuis l’accueil : carte **REPORT** (titre + court texte d’intro) sous « Follow us », bouton d’action orange pour ouvrir le formulaire.',
+      'Modal de signalement : segment **Launcher** / **Instance (modpack)** avec rappel contextuel ; au changement de portée, la catégorie repasse sur la première entrée de la liste.',
+      'Catégories **instance** : lancement / crash, installation / mise à jour, compte en jeu, vérification des fichiers / intégrité, mods / crash en jeu, autre.',
+      'Catégories **launcher** : interface / affichage, connexion Microsoft / compte launcher, mises à jour du launcher, téléchargements / cache, gels / lenteur, autre.',
+      'Sélecteur d’instance et liste des catégories via le même composant que le reste du launcher (**LauncherSelect**), styles dédiés dans la modal (clair / sombre, focus visible).',
+      'Panneau d’aide repliable (bouton **?**) expliquant copie / envoi ; bouton **Rejoindre Discord** ; zone de détails libre ; case à cocher mise en avant (orange) pour joindre version launcher, modpack (si instance) et OS.',
+      'Actions **Copier le rapport** (Markdown dans le presse-papiers), **Envoyer à l’équipe** (si configuré), **Fermer** ; piège à focus dans la modal et **Échap** pour fermer.',
+      'Envoi vers Discord : **SOLEA_REPORT_WEBHOOK_URL** (environnement) ou fichier **solea-report-webhook.url** dans userData (première ligne = URL) ; documentation **docs/REPORTING.md** ; entrée **.gitignore** pour ne pas versionner le fichier secret.'
+    ],
+    changed: [
+      'Accueil & actus : bloc « Follow us » un peu plus compact ; en-tête hero recentré (le signalement n’est plus dans le bandeau du hero).',
+      'Interface du signalement : libellés et aide rédigés sans jargon « webhook » ; le toast si l’envoi n’est pas configuré renvoie vers la doc (variable ou fichier local).'
+    ],
+    fixed: [
+      'Côté process principal : seules les URL de webhooks **discord.com** / **canary.discord.com** sont acceptées ; fichier ou variable ignorés si vide ou invalide (évite les requêtes vers une mauvaise cible).',
+      'Corps du message tronqué (~1900 caractères) avant envoi pour rester dans les limites Discord.',
+      'Erreurs réseau ou HTTP renvoyées au renderer avec extrait de réponse pour le toast d’échec ; contenu vide refusé proprement.',
+      'Échec de copie presse-papiers : toast d’erreur dédié au lieu d’un silence.'
+    ]
+  },
+  {
     version: '26.1.3',
     date: '2026-03-31',
     added: [
-      'Discord Rich Presence : boutons « Télécharger » (releases GitHub du launcher) et « Regarder » (page Modrinth du modpack actif).',
+      'Discord Rich Presence : boutons « Installer le launcher » (releases GitHub) et « Rejoindre Discord » (invitation Solea Pixel).',
       'Paramètres : section **Audio** dédiée (séparée d’Apparence & langue) pour les sons d’interface, le volume et les options fin d’install / lancement.',
       'Réglages modpack : repères RAM rapides en boutons (6G / 8G / 12G) sous le curseur.',
       'Raccourcis clavier personnalisables (Paramètres → Raccourcis) pour ouvrir les paramètres, Accueil & actus et le compte.',

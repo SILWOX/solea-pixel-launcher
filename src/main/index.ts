@@ -1,8 +1,9 @@
 import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron'
-import { join, dirname } from 'path'
+import { join, dirname, basename, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { Worker } from 'node:worker_threads'
 import os from 'node:os'
+import { Buffer } from 'node:buffer'
 import { existsSync, readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync, statSync } from 'fs'
 import { createRequire } from 'module'
 import type { MicrosoftAuthResponse } from 'minecraft-java-core'
@@ -19,6 +20,7 @@ const { Microsoft } = requireMjc('minecraft-java-core') as {
   Microsoft: new (clientId?: string, redirectUri?: string) => {
     getAuth: (type?: string) => Promise<unknown>
     refresh: (acc: MicrosoftAuthResponse) => Promise<unknown>
+    exchangeCodeForToken: (code: string) => Promise<unknown>
   }
 }
 
@@ -98,6 +100,11 @@ import {
   shutdownDiscordRpc,
   type RichPresencePack
 } from './discordRpc.js'
+import {
+  buildMicrosoftAuthorizeUrl,
+  getMicrosoftAuthCodeEmbedded,
+  MICROSOFT_OAUTH_REDIRECT_DESKTOP
+} from './microsoftAuthCode.js'
 import { isUrlAllowedForExternalOpen } from './safeOpenExternal.js'
 import { directorySizeAsync, directorySizeSync, rmDirContentsIfExists } from './diskUsage.js'
 import { showNativeNotification } from './notifications.js'
@@ -151,8 +158,7 @@ function discordPresenceForActivePack(): RichPresencePack {
   return {
     modpackName: spec.displayName,
     largeImageKey: spec.discordLargeImageKey ?? 'logo',
-    locale: st.uiLanguage,
-    modrinthPackUrl: modrinthModpackPageUrl(spec)
+    locale: st.uiLanguage
   }
 }
 
@@ -390,6 +396,8 @@ const MAIN_WINDOW_TITLE = 'SOLEA PIXEL LAUNCHER'
 
 let mainWindow: BrowserWindow | null = null
 let discordPresenceRetryInterval: ReturnType<typeof setInterval> | null = null
+/** Évite une boucle : le 2ᵉ `before-quit` doit laisser la fermeture se terminer après nettoyage RPC. */
+let isQuittingPastDiscordCleanup = false
 
 /** Logs du dernier lancement — fenêtre console + buffer pour rechargement. */
 const MAX_GAME_LOG_BYTES = 1_200_000
@@ -523,12 +531,27 @@ app.whenReady().then(() => {
   })
 })
 
-app.on('before-quit', () => {
+app.on('before-quit', (event) => {
   if (discordPresenceRetryInterval) {
     clearInterval(discordPresenceRetryInterval)
     discordPresenceRetryInterval = null
   }
-  shutdownDiscordRpc()
+
+  if (isQuittingPastDiscordCleanup) return
+
+  event.preventDefault()
+  isQuittingPastDiscordCleanup = true
+
+  void (async () => {
+    try {
+      await Promise.race([
+        shutdownDiscordRpc(),
+        new Promise<void>((resolve) => setTimeout(resolve, 3500))
+      ])
+    } finally {
+      app.quit()
+    }
+  })()
 })
 
 app.on('window-all-closed', () => {
@@ -734,7 +757,7 @@ ipcMain.handle('auth:get-state', () => ({
 
 ipcMain.handle('settings:get', (): LauncherSettings => loadSettings())
 
-ipcMain.handle('settings:save', (_e, partial: Partial<LauncherSettings>) => {
+ipcMain.handle('settings:save', async (_e, partial: Partial<LauncherSettings>) => {
   const cur = loadSettings()
   const next: LauncherSettings = { ...cur, ...partial }
   const r = saveSettings(next)
@@ -742,22 +765,20 @@ ipcMain.handle('settings:save', (_e, partial: Partial<LauncherSettings>) => {
     if (next.discordRichPresence) {
       void initDiscordRpcIfNeeded().then(() => void setMenuPresence(discordPresenceForActivePack()))
     } else {
-      void clearDiscordPresence()
-      shutdownDiscordRpc()
+      await shutdownDiscordRpc()
     }
   }
   return r
 })
 
-ipcMain.handle('settings:reset', () => {
+ipcMain.handle('settings:reset', async () => {
   const r = saveSettings({ ...DEFAULT_SETTINGS })
   if (r.ok) {
     const st = loadSettings()
     if (st.discordRichPresence) {
       void initDiscordRpcIfNeeded().then(() => void setMenuPresence(discordPresenceForActivePack()))
     } else {
-      void clearDiscordPresence()
-      shutdownDiscordRpc()
+      await shutdownDiscordRpc()
     }
   }
   return r
@@ -772,9 +793,21 @@ ipcMain.handle('auth:get-active', () => {
 })
 
 ipcMain.handle('auth:add-account', async () => {
+  const settings = loadSettings()
+  const clientId = getEffectiveMicrosoftClientId(settings) || '00000000402b5328'
+  const redirectUri = MICROSOFT_OAUTH_REDIRECT_DESKTOP
+  const authUrl = buildMicrosoftAuthorizeUrl(clientId, redirectUri)
   const ms = makeMicrosoft()
-  const result = await ms.getAuth('electron')
-  if (result === false) return { ok: false as const, reason: 'cancelled' }
+  const msAuthTitle =
+    settings.uiLanguage === 'fr'
+      ? 'Connexion Microsoft — Solea Pixel'
+      : 'Microsoft sign-in — Solea Pixel'
+  const code = await getMicrosoftAuthCodeEmbedded(authUrl, redirectUri, mainWindow, {
+    windowTitle: msAuthTitle,
+    iconPath: getAppIconPath()
+  })
+  if (code === 'cancel') return { ok: false as const, reason: 'cancelled' }
+  const result = await ms.exchangeCodeForToken(code)
   if (isAuthError(result)) return { ok: false as const, reason: 'error', detail: result.error }
   addOrUpdateAccount(result as MicrosoftAuthResponse)
   const r = result as MicrosoftAuthResponse
@@ -1225,8 +1258,7 @@ ipcMain.handle('game:launch', async () => {
         void setInGamePresence({
           modpackName: spec.displayName,
           largeImageKey: spec.discordLargeImageKey ?? 'logo',
-          locale: settings.uiLanguage,
-          modrinthPackUrl: modrinthModpackPageUrl(spec)
+          locale: settings.uiLanguage
         })
       )
     }
@@ -1318,6 +1350,273 @@ ipcMain.handle('shell:open-latest-crash', async () => {
   const err = await shell.openPath(best)
   if (err) return { ok: false as const, error: err }
   return { ok: true as const }
+})
+
+ipcMain.handle('diagnostic:get-latest-crash-text', async () => {
+  const root = getInstanceRoot()
+  const cr = join(root, 'crash-reports')
+  if (!existsSync(cr)) {
+    return { ok: false as const, error: 'no_crash_folder' }
+  }
+  const names = readdirSync(cr).filter((f) => f.endsWith('.txt'))
+  if (names.length === 0) {
+    return { ok: false as const, error: 'no_crash_file' }
+  }
+  let best = ''
+  let bestT = 0
+  for (const f of names) {
+    const p = join(cr, f)
+    try {
+      const t = statSync(p).mtimeMs
+      if (t >= bestT) {
+        bestT = t
+        best = p
+      }
+    } catch {
+      /* skip */
+    }
+  }
+  if (!best) return { ok: false as const, error: 'no_crash_file' }
+  try {
+    const text = readFileSync(best, 'utf8')
+    return { ok: true as const, text: text.slice(0, 48_000), fileName: basename(best) }
+  } catch {
+    return { ok: false as const, error: 'read_error' }
+  }
+})
+
+ipcMain.handle('modpack:get-latest-screenshot', async (_e, id: string) => {
+  if (typeof id !== 'string') return { ok: false as const, error: 'invalid_id' }
+  const resolved = resolveModpackId(id)
+  const root = getInstanceRootForModpack(resolved)
+  const shots = join(root, 'screenshots')
+  if (!existsSync(shots)) {
+    return { ok: false as const, reason: 'no_folder' as const }
+  }
+  const names = readdirSync(shots).filter((f) => /\.(png|jpe?g)$/i.test(f))
+  if (names.length === 0) {
+    return { ok: false as const, reason: 'empty' as const }
+  }
+  let best = ''
+  let bestT = 0
+  for (const f of names) {
+    const p = join(shots, f)
+    try {
+      const t = statSync(p).mtimeMs
+      if (t >= bestT) {
+        bestT = t
+        best = p
+      }
+    } catch {
+      /* skip */
+    }
+  }
+  if (!best) return { ok: false as const, reason: 'empty' as const }
+  try {
+    const img = nativeImage.createFromPath(best)
+    if (img.isEmpty()) return { ok: false as const, reason: 'invalid_image' as const }
+    const sz = img.getSize()
+    const maxW = 320
+    const thumb =
+      sz.width > maxW
+        ? img.resize({ width: maxW, height: Math.max(1, Math.round((sz.height * maxW) / sz.width)) })
+        : img
+    return {
+      ok: true as const,
+      thumbDataUrl: thumb.toDataURL(),
+      fileName: basename(best),
+      folderPath: shots
+    }
+  } catch {
+    return { ok: false as const, reason: 'read_error' as const }
+  }
+})
+
+ipcMain.handle('shell:open-screenshots-folder', async (_e, id: string) => {
+  if (typeof id !== 'string') return { ok: false as const, error: 'invalid_id' }
+  const resolved = resolveModpackId(id)
+  const root = getInstanceRootForModpack(resolved)
+  if (!existsSync(root) || !isSoleaInstanceInstalled(root)) {
+    return {
+      ok: false as const,
+      error: 'Instance non installée — installe le modpack depuis l’accueil.'
+    }
+  }
+  const shots = join(root, 'screenshots')
+  if (!existsSync(shots)) {
+    mkdirSync(shots, { recursive: true })
+  }
+  const err = await shell.openPath(shots)
+  if (err) return { ok: false as const, error: err }
+  return { ok: true as const }
+})
+
+function safeScreenshotFileName(name: string): boolean {
+  if (typeof name !== 'string' || !name.trim()) return false
+  const b = basename(name)
+  if (b !== name || name.includes('..')) return false
+  return /\.(png|jpe?g)$/i.test(name)
+}
+
+ipcMain.handle('modpack:list-screenshots', async (_e, id: string) => {
+  if (typeof id !== 'string') return { ok: false as const, error: 'invalid_id' }
+  const resolved = resolveModpackId(id)
+  const root = getInstanceRootForModpack(resolved)
+  const shots = join(root, 'screenshots')
+  if (!existsSync(shots)) {
+    return { ok: true as const, items: [] as { fileName: string; thumbDataUrl: string }[] }
+  }
+  const names = readdirSync(shots).filter((f) => /\.(png|jpe?g)$/i.test(f))
+  const scored: { f: string; t: number }[] = []
+  for (const f of names) {
+    const p = join(shots, f)
+    try {
+      scored.push({ f, t: statSync(p).mtimeMs })
+    } catch {
+      /* skip */
+    }
+  }
+  scored.sort((a, b) => b.t - a.t)
+  const items: { fileName: string; thumbDataUrl: string }[] = []
+  const maxFiles = 100
+  const maxW = 220
+  for (const { f } of scored.slice(0, maxFiles)) {
+    const p = join(shots, f)
+    try {
+      const img = nativeImage.createFromPath(p)
+      if (img.isEmpty()) continue
+      const sz = img.getSize()
+      const thumb =
+        sz.width > maxW
+          ? img.resize({
+              width: maxW,
+              height: Math.max(1, Math.round((sz.height * maxW) / sz.width))
+            })
+          : img
+      items.push({ fileName: f, thumbDataUrl: thumb.toDataURL() })
+    } catch {
+      /* skip */
+    }
+  }
+  return { ok: true as const, items }
+})
+
+ipcMain.handle('modpack:get-screenshot-full', async (_e, id: string, fileName: string) => {
+  if (typeof id !== 'string' || !safeScreenshotFileName(String(fileName))) {
+    return { ok: false as const, error: 'invalid' }
+  }
+  const resolved = resolveModpackId(id)
+  const root = getInstanceRootForModpack(resolved)
+  const shots = join(root, 'screenshots')
+  const p = join(shots, basename(fileName))
+  const shotsAbs = resolve(shots)
+  const fileAbs = resolve(p)
+  if (!fileAbs.startsWith(shotsAbs) || !existsSync(fileAbs)) {
+    return { ok: false as const, error: 'missing' }
+  }
+  try {
+    const st = statSync(fileAbs)
+    if (st.size > 14 * 1024 * 1024) {
+      return { ok: false as const, error: 'too_large' }
+    }
+    const img = nativeImage.createFromPath(fileAbs)
+    if (img.isEmpty()) return { ok: false as const, error: 'invalid' }
+    return { ok: true as const, dataUrl: img.toDataURL() }
+  } catch {
+    return { ok: false as const, error: 'read_error' }
+  }
+})
+
+ipcMain.handle(
+  'shell:save-data-url-as',
+  async (e, payload: { dataUrl: string; defaultFileName: string }) => {
+    const dataUrl = typeof payload?.dataUrl === 'string' ? payload.dataUrl : ''
+    if (!dataUrl.startsWith('data:image/png;base64,')) {
+      return { ok: false as const, error: 'bad_data' }
+    }
+    const comma = dataUrl.indexOf(',')
+    const b64 = comma >= 0 ? dataUrl.slice(comma + 1) : ''
+    let buf: Buffer
+    try {
+      buf = Buffer.from(b64, 'base64')
+    } catch {
+      return { ok: false as const, error: 'decode' }
+    }
+    if (buf.length > 25 * 1024 * 1024) {
+      return { ok: false as const, error: 'too_large' }
+    }
+    const rawName =
+      typeof payload?.defaultFileName === 'string' && payload.defaultFileName.trim()
+        ? basename(payload.defaultFileName.trim())
+        : 'screenshot.png'
+    const safeName = rawName.replace(/[^\w.\-]+/g, '_') || 'screenshot.png'
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const { canceled, filePath } = await dialog.showSaveDialog(win ?? undefined, {
+      defaultPath: safeName.endsWith('.png') ? safeName : `${safeName}.png`,
+      filters: [
+        { name: 'PNG', extensions: ['png'] },
+        { name: 'JPEG', extensions: ['jpg', 'jpeg'] }
+      ]
+    })
+    if (canceled || !filePath) return { ok: false as const, error: 'cancelled' }
+    try {
+      writeFileSync(filePath, buf)
+      return { ok: true as const, path: filePath }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      return { ok: false as const, error: msg }
+    }
+  }
+)
+
+/** Webhook signalements : env `SOLEA_REPORT_WEBHOOK_URL` ou fichier `solea-report-webhook.url` (1ère ligne) dans userData. */
+function getReportDiscordWebhookUrl(): string | undefined {
+  const fromEnv = process.env.SOLEA_REPORT_WEBHOOK_URL?.trim()
+  if (fromEnv) return fromEnv
+  try {
+    const p = join(app.getPath('userData'), 'solea-report-webhook.url')
+    if (!existsSync(p)) return undefined
+    const line = readFileSync(p, 'utf8').split(/\r?\n/u)[0]?.trim() ?? ''
+    if (
+      !line ||
+      !/^https:\/\/(?:canary\.)?discord\.com\/api\/webhooks\//iu.test(line)
+    ) {
+      return undefined
+    }
+    return line
+  } catch {
+    return undefined
+  }
+}
+
+ipcMain.handle('report:submit-discord-webhook', async (_e, payload: { content: string }) => {
+  const url = getReportDiscordWebhookUrl()
+  if (!url) {
+    return { ok: false as const, error: 'no_webhook_env' }
+  }
+  const content =
+    typeof payload?.content === 'string' ? payload.content.trim().slice(0, 1900) : ''
+  if (!content) {
+    return { ok: false as const, error: 'empty_content' }
+  }
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    })
+    if (!r.ok) {
+      const t = await r.text()
+      return {
+        ok: false as const,
+        error: `HTTP ${r.status}: ${t.slice(0, 160)}`
+      }
+    }
+    return { ok: true as const }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return { ok: false as const, error: msg }
+  }
 })
 
 ipcMain.handle('system:cache-stats', async () => {

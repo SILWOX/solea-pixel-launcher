@@ -24,6 +24,7 @@ import { AccountSkinViewer, type AccountSkinViewerHandle } from './AccountSkinVi
 import { AccountCapeModal } from './AccountCapeModal'
 import { PackMaintConfirmModal } from './PackMaintConfirmModal'
 import { ModpackUpdatesModal } from './ModpackUpdatesModal'
+import { LoginInfoModal } from './LoginInfoModal'
 import { CacheClearConfirmModal, type CacheClearKind } from './CacheClearConfirmModal'
 import { applyAppearanceSettings, subscribeSystemTheme } from './appearance'
 import { useI18n } from './i18n/I18nContext'
@@ -34,6 +35,11 @@ import { useToast } from './ui/ToastContext'
 import { playUiSound, type UiSoundPrefs } from './ui/playUiSound'
 import { useFocusTrap } from './a11y/useFocusTrap'
 import { LAUNCHER_CHANGELOG } from './launcherChangelog'
+import { ScreenshotsView } from './ScreenshotsView'
+import {
+  SettingsGlossaryTrigger,
+  type SettingsGlossaryKey
+} from './settingsGlossary'
 import {
   acceleratorMatches,
   formatAcceleratorForDisplay,
@@ -672,6 +678,16 @@ function IconUser() {
   )
 }
 
+function IconScreenshots() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M7 15l3-3 3 3 4-5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="8.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
 function IconDiscord({ className }: { className?: string } = {}) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -681,6 +697,11 @@ function IconDiscord({ className }: { className?: string } = {}) {
 }
 
 const DISCORD_INVITE_URL = 'https://discord.gg/jVGq5aZ6Wc'
+
+/** Catégories rapport instance (jeu / modpack). */
+const REPORT_INSTANCE_CATEGORIES = ['launch', 'install', 'account', 'verify', 'mods', 'other'] as const
+/** Catégories rapport launcher (app). */
+const REPORT_LAUNCHER_CATEGORIES = ['ui', 'login', 'updates', 'downloads', 'performance', 'other'] as const
 
 type NewsHubSocialId = 'modrinth' | 'youtube' | 'x' | 'discord' | 'bmc'
 
@@ -741,6 +762,59 @@ function newsHubSocialLabelKey(id: NewsHubSocialId): string {
   return NEWS_HUB_LABEL_KEYS[id]
 }
 
+/** Rend les segments **gras** du changelog (données statiques). */
+function formatChangelogLine(line: string): ReactNode {
+  const nodes: ReactNode[] = []
+  const re = /\*\*([^*]+)\*\*/g
+  let last = 0
+  let m: RegExpExecArray | null
+  let k = 0
+  while ((m = re.exec(line)) !== null) {
+    if (m.index > last) nodes.push(line.slice(last, m.index))
+    nodes.push(<strong key={`cl${k++}`}>{m[1]}</strong>)
+    last = m.index + m[0].length
+  }
+  if (last < line.length) nodes.push(line.slice(last))
+  return nodes.length > 0 ? <>{nodes}</> : line
+}
+
+type ChangelogKind = 'added' | 'changed' | 'removed' | 'fixed'
+
+function ChangelogKindIcon({ kind }: { kind: ChangelogKind }) {
+  const cls = 'news-hub-kind-icon'
+  switch (kind) {
+    case 'added':
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+          <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+        </svg>
+      )
+    case 'changed':
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+          <path d="M4 9h12M9 5l-4 4 4 4" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M20 15H8M15 11l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'removed':
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+          <path d="M5 12h14" strokeLinecap="round" />
+        </svg>
+      )
+    case 'fixed':
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+          <path
+            d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )
+  }
+}
+
 function NewsHubSocialIcon({
   id,
   className
@@ -758,8 +832,16 @@ function NewsHubSocialIcon({
   return icons[id]
 }
 
+function IconNewsHubReport({ className }: { className?: string } = {}) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+    </svg>
+  )
+}
+
 /** Libellé affiché dans l’UI (détail visuel « | Release » ; semver = package.json / getVersion). */
-const LAUNCHER_VERSION_DISPLAY = '26.1.3 | Release'
+const LAUNCHER_VERSION_DISPLAY = '26.1.4 | Release'
 
 function formatBytes(n: number): string {
   if (!Number.isFinite(n) || n < 0) return '—'
@@ -970,6 +1052,7 @@ function LoginGate({
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const [langOpen, setLangOpen] = useState(false)
+  const [infoOpen, setInfoOpen] = useState(false)
 
   useEffect(() => {
     if (!langOpen) return
@@ -1067,6 +1150,24 @@ function LoginGate({
           </ul>
         )}
       </div>
+      <button
+        type="button"
+        className="login-info-trigger"
+        aria-label={t('login.infoAria')}
+        aria-haspopup="dialog"
+        aria-expanded={infoOpen}
+        aria-controls="login-info-dialog"
+        onClick={(e) => {
+          e.stopPropagation()
+          setInfoOpen(true)
+        }}
+      >
+        <span className="login-info-trigger-icon" aria-hidden>
+          i
+        </span>
+        <span>{t('login.infoTrigger')}</span>
+      </button>
+      <LoginInfoModal open={infoOpen} onClose={() => setInfoOpen(false)} />
       <div className="login-card">
         <img src={SOLEA_LOGIN_LOGO} alt="" className="login-wordmark" />
         <h2 className="login-welcome-title">{t('login.title')}</h2>
@@ -1089,7 +1190,7 @@ export function App() {
   const [testMode, setTestMode] = useState(false)
   const [modpackName, setModpackName] = useState('Palamod Recreated')
   /** Par défaut : onglet Accueil (actus). Les modpacks restent sur `home`. */
-  const [view, setView] = useState<'home' | 'news' | 'settings' | 'account'>('news')
+  const [view, setView] = useState<'home' | 'news' | 'settings' | 'account' | 'screenshots'>('news')
   const [settingsTab, setSettingsTab] = useState<'launcher' | ModpackIdUi>('launcher')
   const [shortcutCapture, setShortcutCapture] = useState<null | 'open' | 'news' | 'account'>(null)
   /** Onglet modpack dont le panneau lourd (RAM, etc.) est monté — retardé pour éviter le freeze au clic. */
@@ -1139,6 +1240,16 @@ export function App() {
   const [bootDots, setBootDots] = useState(1)
   const [accountSkinKey, setAccountSkinKey] = useState(0)
   const [accountFb, setAccountFb] = useState<string | null>(null)
+  const [accountSessionWarn, setAccountSessionWarn] = useState(false)
+  const [reportModalOpen, setReportModalOpen] = useState(false)
+  const [reportScope, setReportScope] = useState<'launcher' | 'instance'>('instance')
+  const [reportHelpOpen, setReportHelpOpen] = useState(false)
+  const [reportModpackId, setReportModpackId] = useState<string>('palamod-recreated')
+  const [reportCategory, setReportCategory] = useState<string>('launch')
+  const [reportDetails, setReportDetails] = useState('')
+  const [reportIncludeTech, setReportIncludeTech] = useState(true)
+  const [reportSending, setReportSending] = useState(false)
+  const [settingsGlossaryKey, setSettingsGlossaryKey] = useState<SettingsGlossaryKey | null>(null)
   const [updateDownloaded, setUpdateDownloaded] = useState(false)
   const [prefersRm, setPrefersRm] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -1148,7 +1259,7 @@ export function App() {
   const manualUpdateCheckRef = useRef(false)
   const installBusyRef = useRef(false)
   const launchBusyRef = useRef(false)
-
+  const reportModalRef = useRef<HTMLDivElement>(null)
   const modpackUi = useMemo(() => {
     if (allModpacksAction === null) {
       return {
@@ -1177,6 +1288,27 @@ export function App() {
 
   const packNeedsAction = modpackUi.needsInstall || modpackUi.needsUpdate
 
+  const reportInstanceSelectOptions = useMemo(
+    () =>
+      modpacksList
+        .filter((m) => isModpackId(m.id))
+        .map((m) => ({ value: m.id, label: m.displayName })),
+    [modpacksList]
+  )
+
+  const reportCategorySelectOptions = useMemo(() => {
+    if (reportScope === 'launcher') {
+      return REPORT_LAUNCHER_CATEGORIES.map((value) => ({
+        value,
+        label: t(`home.report.catLauncher.${value}`)
+      }))
+    }
+    return REPORT_INSTANCE_CATEGORIES.map((value) => ({
+      value,
+      label: t(`home.report.cat.${value}`)
+    }))
+  }, [reportScope, t])
+
   const reduceMotionEffective = useMemo(
     () => settings.uiReduceMotion || prefersRm,
     [settings.uiReduceMotion, prefersRm]
@@ -1204,7 +1336,7 @@ export function App() {
 
   const chromeWallpaperUrl = useMemo(() => {
     if (view === 'settings') return LOGIN_WALLPAPER
-    if (view === 'news') return NEWS_WALLPAPER
+    if (view === 'news' || view === 'screenshots') return NEWS_WALLPAPER
     if (view === 'home' && isModpackId(activeModpackId)) return MODPACK_THEME[activeModpackId].wallpaper
     if (isModpackId(activeModpackId)) return MODPACK_THEME[activeModpackId].wallpaper
     return NEWS_WALLPAPER
@@ -1267,6 +1399,45 @@ export function App() {
     if (screen !== 'app' || view !== 'home') return
     void refreshModpackActivity()
   }, [screen, view, refreshModpackActivity])
+
+  useEffect(() => {
+    if (screen !== 'app' || view !== 'home' || !activeAcc) {
+      setAccountSessionWarn(false)
+      return
+    }
+    let cancelled = false
+    void window.solea.refreshActiveAccount().then((r) => {
+      if (cancelled) return
+      setAccountSessionWarn(!r.ok)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [screen, view, activeAcc?.uuid])
+
+  useEffect(() => {
+    if (!settingsGlossaryKey || view !== 'settings') return
+    const onDoc = (e: MouseEvent) => {
+      const tgt = e.target
+      if (tgt instanceof Element && tgt.closest('.settings-glossary-wrap')) return
+      setSettingsGlossaryKey(null)
+    }
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
+  }, [settingsGlossaryKey, view])
+
+  useEffect(() => {
+    if (!settingsGlossaryKey) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSettingsGlossaryKey(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [settingsGlossaryKey])
+
+  useEffect(() => {
+    if (view !== 'settings') setSettingsGlossaryKey(null)
+  }, [view])
 
   useEffect(() => {
     applyAppearanceSettings(settings)
@@ -1368,9 +1539,13 @@ export function App() {
     if (screen !== 'app') return
     const offA = window.solea.onUpdaterAvailable((p) => {
       manualUpdateCheckRef.current = false
-      pushToast(t('updater.available', { version: p.version }), 'info', 7000)
-      void window.solea.downloadUpdate().then((r) => {
-        if (!r.ok) pushToast(r.error, 'error')
+      pushToast(t('updater.available', { version: p.version }), 'info', 18_000, {
+        label: t('updater.toastDownloadNow'),
+        onClick: () => {
+          void window.solea.downloadUpdate().then((r) => {
+            if (!r.ok) pushToast(r.error, 'error')
+          })
+        }
       })
     })
     const offN = window.solea.onUpdaterNotAvailable(() => {
@@ -1380,7 +1555,12 @@ export function App() {
     })
     const offD = window.solea.onUpdaterDownloaded(() => {
       setUpdateDownloaded(true)
-      pushToast(t('updater.downloaded'), 'success', 8500)
+      pushToast(t('updater.downloaded'), 'success', 14_000, {
+        label: t('updater.restartNow'),
+        onClick: () => {
+          void window.solea.quitAndInstall()
+        }
+      })
     })
     const offE = window.solea.onUpdaterError((msg) => {
       if (manualUpdateCheckRef.current) manualUpdateCheckRef.current = false
@@ -1794,6 +1974,102 @@ export function App() {
     if (r.reason !== 'extra_mod') pushToast(r.detail ?? r.reason, 'error')
   }
 
+  const onVerifyRepair = () => {
+    if (modpackUi.needsInstall || modpackUi.needsUpdate) {
+      void onInstall()
+      return
+    }
+    if (isModpackId(activeModpackId)) onReinstallModpack(activeModpackId)
+  }
+
+  const buildReportBody = useCallback(async () => {
+    const paths = await window.solea.getPaths()
+    const catLabel =
+      reportScope === 'launcher'
+        ? t(`home.report.catLauncher.${reportCategory}`)
+        : t(`home.report.cat.${reportCategory}`)
+    const instLabel =
+      modpacksList.find((m) => m.id === reportModpackId)?.displayName ?? reportModpackId
+    const scopeLine =
+      reportScope === 'launcher'
+        ? `**${t('home.report.md.scope')}:** ${t('home.report.scopeLauncher')}`
+        : `**${t('home.report.md.scope')}:** ${t('home.report.scopeInstance')}`
+    const instanceLine =
+      reportScope === 'launcher'
+        ? `**${t('home.report.md.instance')}:** ${t('home.report.md.instanceNA')}`
+        : `**${t('home.report.md.instance')}:** ${instLabel} (\`${reportModpackId}\`)`
+    const lines = [
+      '## Solea Pixel — Report',
+      scopeLine,
+      instanceLine,
+      `**${t('home.report.md.category')}:** ${catLabel}`,
+      '',
+      reportDetails.trim() || '(no details)',
+      ''
+    ]
+    if (reportIncludeTech) {
+      lines.push(
+        '---',
+        `**Launcher:** ${launcherVersion.trim() || LAUNCHER_VERSION_DISPLAY}`,
+        `**UI pack (context):** ${modpackName} (${activeModpackId})`,
+        `**OS:** ${navigator.userAgent}`
+      )
+      if (reportScope === 'instance') {
+        lines.push(`**Modrinth:** ${paths.homeLinks?.modrinthUrl ?? '—'}`)
+      }
+    }
+    return lines.join('\n')
+  }, [
+    reportScope,
+    reportCategory,
+    reportDetails,
+    reportIncludeTech,
+    launcherVersion,
+    modpackName,
+    activeModpackId,
+    reportModpackId,
+    modpacksList,
+    t
+  ])
+
+  const openReportModal = () => {
+    setReportScope('instance')
+    setReportHelpOpen(false)
+    setReportModpackId(activeModpackId)
+    setReportCategory('launch')
+    setReportDetails('')
+    setReportIncludeTech(true)
+    setReportModalOpen(true)
+  }
+
+  const copyReportToClipboard = async () => {
+    try {
+      const body = await buildReportBody()
+      await navigator.clipboard.writeText(body)
+      pushToast(t('home.report.copied'), 'success')
+    } catch {
+      pushToast(t('home.report.clipboardFail'), 'error')
+    }
+  }
+
+  const sendReportDiscord = async () => {
+    setReportSending(true)
+    try {
+      const body = await buildReportBody()
+      const r = await window.solea.submitReportDiscordWebhook(body)
+      if (r.ok) {
+        pushToast(t('home.report.sent'), 'success')
+        setReportModalOpen(false)
+      } else if (r.error === 'no_webhook_env') {
+        pushToast(t('home.report.sendDisabled'), 'info')
+      } else {
+        pushToast(t('home.report.sendFail', { detail: r.error }), 'error')
+      }
+    } finally {
+      setReportSending(false)
+    }
+  }
+
   const onCheckUpdates = async () => {
     const r = await window.solea.checkForUpdates()
     if (!r.started) {
@@ -1822,6 +2098,10 @@ export function App() {
       setSettingsFb({ text: t('settings.resetOk'), ok: true })
     } else setSettingsFb({ text: r.error, ok: false })
   }
+
+  useFocusTrap(reportModalOpen, reportModalRef, {
+    onEscape: () => setReportModalOpen(false)
+  })
 
   const homePackReadyA11y =
     view === 'home' &&
@@ -1939,6 +2219,15 @@ export function App() {
         <div className="sb-bottom">
           <button
             type="button"
+            className={`sb-btn ${view === 'screenshots' ? 'active' : ''}`}
+            title={t('shell.screenshots')}
+            aria-label={t('shell.screenshots')}
+            onClick={() => setView('screenshots')}
+          >
+            <IconScreenshots />
+          </button>
+          <button
+            type="button"
             className={`sb-btn ${view === 'account' ? 'active' : ''}`}
             title={t('shell.account')}
             aria-label={t('shell.account')}
@@ -1961,7 +2250,7 @@ export function App() {
       <div
         className={`shell-main ${
           view === 'settings' || view === 'account' ? 'settings-mode' : ''
-        } ${view === 'news' ? 'shell-main-news' : ''} ${
+        } ${view === 'news' || view === 'screenshots' ? 'shell-main-news' : ''} ${
           view === 'home' && isModpackId(activeModpackId) ? MODPACK_THEME[activeModpackId].themeClass : ''
         } ${packSwitching && view === 'home' ? 'pack-switching' : ''}`}
       >
@@ -1973,7 +2262,7 @@ export function App() {
             aria-hidden
           />
         )}
-        {view === 'news' && (
+        {(view === 'news' || view === 'screenshots') && (
           <div
             className="shell-main-wallpaper"
             style={{ backgroundImage: `url(${NEWS_WALLPAPER})` }}
@@ -2000,11 +2289,12 @@ export function App() {
                 })()}
                 <p className="lead">{t('home.lead')}</p>
 
-                {!modpackUi.loading && modpackUi.error && (
-                  <p className="home-pack-status home-pack-status-err" role="status">
+                {!modpackUi.loading && modpackUi.error ? (
+                  <p className="home-modpack-err" role="alert">
                     {modpackUi.error}
                   </p>
-                )}
+                ) : null}
+
                 <div className="play-row">
                   {homePackReadyA11y ? (
                     <span id="home-pack-ready-sr" className="sr-only">
@@ -2018,7 +2308,7 @@ export function App() {
                       </p>
                       <button
                         type="button"
-                        className="btn-play"
+                        className={`btn-play btn-play--pack-action${reduceMotionEffective ? '' : ' btn-play--pulse-soft'} btn-play--muted`}
                         disabled={phase !== 'idle' || launchPhase !== 'idle'}
                         aria-describedby={homePackReadyA11y ? 'home-pack-ready-sr' : undefined}
                         onClick={() => void onInstall()}
@@ -2029,7 +2319,17 @@ export function App() {
                   ) : (
                     <button
                       type="button"
-                      className={`btn-play${launchPhase === 'running' ? ' btn-play-close' : ''}`}
+                      className={`btn-play${launchPhase === 'running' ? ' btn-play-close' : ''}${
+                        launchPhase === 'idle' && homePackReadyA11y && !reduceMotionEffective
+                          ? ' btn-play--ready'
+                          : ''
+                      }${
+                        launchPhase === 'idle' &&
+                        !packNeedsAction &&
+                        (modpackUi.loading || Boolean(modpackUi.error))
+                          ? ' btn-play--muted'
+                          : ''
+                      }`}
                       disabled={
                         launchPhase === 'launching' ||
                         phase === 'installing' ||
@@ -2069,10 +2369,13 @@ export function App() {
                     <div className="profile-bar-wrap">
                         <button
                           type="button"
-                          className={`profile-bar${menuOpen ? ' profile-bar--open' : ''}`}
+                          className={`profile-bar${menuOpen ? ' profile-bar--open' : ''}${
+                            accountSessionWarn ? ' profile-bar--session-warn' : ''
+                          }`}
                           aria-expanded={menuOpen}
                           aria-haspopup="menu"
                           aria-controls={menuOpen ? 'home-account-menu' : undefined}
+                          title={accountSessionWarn ? t('home.account.sessionWarn') : undefined}
                           onClick={(e) => {
                             e.stopPropagation()
                             setMenuOpen((o) => !o)
@@ -2166,32 +2469,63 @@ export function App() {
 
                 {verifyResult && (
                   <div
-                    className={`verify-banner ${verifyResult.ok ? 'ok' : 'fail'}`}
+                    className={`verify-banner ${verifyResult.ok ? 'ok' : 'fail'} verify-banner--with-actions`}
                     role="status"
                     aria-live="polite"
                   >
-                    {verifyResult.ok ? (
-                      <>{t('home.verifyOk')}</>
-                    ) : verifyResult.reason === 'extra_mod' ? (
-                      <>
-                        <strong>{t('home.verifyExtraTitle')}</strong> — {t('home.verifyExtraBody')}
-                        <ul>
-                          {(verifyResult.paths ?? []).map((path) => (
-                            <li key={path}>{path}</li>
-                          ))}
-                        </ul>
-                      </>
-                    ) : verifyResult.reason === 'hash_mismatch' ? (
-                      <>{t('home.verifyHash', { detail: verifyResult.detail ?? '—' })}</>
-                    ) : verifyResult.reason === 'missing_file' ? (
-                      <>{t('home.verifyMissing', { detail: verifyResult.detail ?? '' })}</>
-                    ) : verifyResult.reason === 'no_lock' ? (
-                      <>{t('home.verifyNoLock')}</>
-                    ) : verifyResult.reason === 'read_error' ? (
-                      <>{t('home.verifyRead', { detail: verifyResult.detail ?? verifyResult.reason })}</>
-                    ) : (
-                      <>{verifyResult.detail ?? verifyResult.reason}</>
-                    )}
+                    <div className="verify-banner-body">
+                      {verifyResult.ok ? (
+                        <>{t('home.verifyOk')}</>
+                      ) : verifyResult.reason === 'extra_mod' ? (
+                        <>
+                          <strong>{t('home.verifyExtraTitle')}</strong> — {t('home.verifyExtraBody')}
+                          <ul>
+                            {(verifyResult.paths ?? []).map((path) => (
+                              <li key={path}>{path}</li>
+                            ))}
+                          </ul>
+                        </>
+                      ) : verifyResult.reason === 'hash_mismatch' ? (
+                        <>{t('home.verifyHash', { detail: verifyResult.detail ?? '—' })}</>
+                      ) : verifyResult.reason === 'missing_file' ? (
+                        <>{t('home.verifyMissing', { detail: verifyResult.detail ?? '' })}</>
+                      ) : verifyResult.reason === 'no_lock' ? (
+                        <>{t('home.verifyNoLock')}</>
+                      ) : verifyResult.reason === 'read_error' ? (
+                        <>{t('home.verifyRead', { detail: verifyResult.detail ?? verifyResult.reason })}</>
+                      ) : (
+                        <>{verifyResult.detail ?? verifyResult.reason}</>
+                      )}
+                    </div>
+                    <div className="verify-banner-actions">
+                      {!verifyResult.ok ? (
+                        <>
+                          <button
+                            type="button"
+                            className="btn-quiet verify-banner-btn"
+                            disabled={phase !== 'idle' || launchPhase !== 'idle'}
+                            onClick={() => void onVerify()}
+                          >
+                            {t('home.verify.retry')}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-quiet verify-banner-btn"
+                            disabled={phase !== 'idle' || launchPhase !== 'idle' || packMaintBusy}
+                            onClick={onVerifyRepair}
+                          >
+                            {t('home.verify.repair')}
+                          </button>
+                        </>
+                      ) : null}
+                      <button
+                        type="button"
+                        className="btn-quiet verify-banner-btn"
+                        onClick={() => setVerifyResult(null)}
+                      >
+                        {t('home.verify.dismiss')}
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -2248,30 +2582,38 @@ export function App() {
           <>
             <div className="shell-content shell-content-news news-hub-layout">
               {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
+              <header className="news-hub-page-hero">
+                <h2 className="news-hub-page-title">{t('shell.news')}</h2>
+                <p className="news-hub-page-tagline">{t('newsView.heroSubtitle')}</p>
+              </header>
               <div className="news-hub-grid">
                 <aside className="news-hub-col news-hub-col--profile">
                   <div className="news-hub-card news-hub-profile-card">
-                    <h3 className="news-hub-profile-heading">{t('account.title')}</h3>
-                    <div className="news-hub-skin-wrap">
-                      <SkinHead uuid={activeAcc?.uuid} sizePx={112} className="news-hub-skin" />
+                    <header className="news-hub-profile-top">
+                      <h3 className="news-hub-profile-heading">{t('account.title')}</h3>
+                      <div className="news-hub-profile-user">
+                        <div className="news-hub-skin-wrap">
+                          <SkinHead uuid={activeAcc?.uuid} sizePx={112} className="news-hub-skin" />
+                        </div>
+                        <p className="news-hub-username">{activeAcc?.name ?? t('home.profileFallback')}</p>
+                      </div>
+                    </header>
+                    <div className="news-hub-profile-mid">
+                      <p className="news-hub-acc-nav-label">{t('newsView.accountsNav')}</p>
+                      <nav className="news-hub-acc-list" aria-label={t('newsView.accountsNav')}>
+                        {accounts.map((a) => (
+                          <button
+                            key={a.uuid}
+                            type="button"
+                            className={`news-hub-acc-tab ${activeAcc?.uuid === a.uuid ? 'on' : ''}`}
+                            onClick={() => void onSelectAccount(a.uuid)}
+                          >
+                            <SkinHead uuid={a.uuid} sizePx={28} className="news-hub-acc-tab-head" />
+                            <span className="news-hub-acc-tab-name">{a.name}</span>
+                          </button>
+                        ))}
+                      </nav>
                     </div>
-                    <p className="news-hub-username">{activeAcc?.name ?? t('home.profileFallback')}</p>
-
-                    <p className="news-hub-acc-nav-label">{t('newsView.accountsNav')}</p>
-                    <nav className="news-hub-acc-list" aria-label={t('newsView.accountsNav')}>
-                      {accounts.map((a) => (
-                        <button
-                          key={a.uuid}
-                          type="button"
-                          className={`news-hub-acc-tab ${activeAcc?.uuid === a.uuid ? 'on' : ''}`}
-                          onClick={() => void onSelectAccount(a.uuid)}
-                        >
-                          <SkinHead uuid={a.uuid} sizePx={28} className="news-hub-acc-tab-head" />
-                          <span className="news-hub-acc-tab-name">{a.name}</span>
-                        </button>
-                      ))}
-                    </nav>
-
                     <div className="news-hub-acc-actions">
                       <button
                         type="button"
@@ -2295,60 +2637,62 @@ export function App() {
 
                 <main className="news-hub-col news-hub-col--feed">
                   <div className="news-hub-card news-hub-feed-card">
-                    <div className="news-hub-feed-header">
-                      <h2 className="news-hub-feed-title">{t('shell.news')}</h2>
-                    </div>
                     <section
-                      className="home-news news-view-feed launcher-changelog"
+                      className="news-hub-changelog"
                       aria-label={t('changelog.panelTitle')}
                     >
-                      <div className="home-news-head">
-                        <h3 className="home-news-title">{t('changelog.panelTitle')}</h3>
+                      <div className="news-hub-changelog-toolbar">
+                        <h3 className="news-hub-changelog-title">{t('changelog.panelTitle')}</h3>
+                        {launcherVersion.trim() ? (
+                          <span className="news-hub-version-pill" title={launcherVersion.trim()}>
+                            {launcherVersion.trim()}
+                          </span>
+                        ) : null}
                       </div>
-                      <p className="launcher-changelog-lead">{t('changelog.lead')}</p>
-                      {launcherVersion.trim() ? (
-                        <p className="launcher-changelog-installed">
-                          {t('changelog.installedVersion', { version: launcherVersion.trim() })}
-                        </p>
-                      ) : null}
+                      <p className="news-hub-changelog-lead">{t('changelog.lead')}</p>
                       {LAUNCHER_CHANGELOG.length === 0 ? (
-                        <p className="home-news-muted">{t('changelog.empty')}</p>
+                        <p className="news-hub-changelog-empty">{t('changelog.empty')}</p>
                       ) : (
-                        <div className="launcher-changelog-entries">
-                          {LAUNCHER_CHANGELOG.map((entry) => (
-                            <article
-                              key={entry.version}
-                              className="launcher-changelog-release"
-                            >
-                              <h4 className="launcher-changelog-release-head">
-                                <span className="launcher-changelog-ver">{entry.version}</span>
-                                {entry.date ? (
-                                  <span className="launcher-changelog-date">{entry.date}</span>
-                                ) : null}
-                              </h4>
-                              {(
-                                ['added', 'changed', 'removed', 'fixed'] as const
-                              ).map((key) => {
-                                const lines = entry[key]
-                                if (!lines?.length) return null
-                                return (
-                                  <div
-                                    key={key}
-                                    className={`launcher-changelog-block launcher-changelog-block--${key}`}
-                                  >
-                                    <h5 className="launcher-changelog-block-title">
-                                      {t(`changelog.${key}`)}
-                                    </h5>
-                                    <ul className="launcher-changelog-list">
-                                      {lines.map((line, i) => (
-                                        <li key={i}>{line}</li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )
-                              })}
-                            </article>
-                          ))}
+                        <div className="news-hub-changelog-scroll">
+                          <div className="news-hub-releases">
+                            {LAUNCHER_CHANGELOG.map((entry, releaseIdx) => (
+                              <article
+                                key={entry.version}
+                                className={`news-hub-release${releaseIdx === 0 ? ' news-hub-release--latest' : ''}`}
+                              >
+                                <div className="news-hub-release-head">
+                                  <span className="news-hub-release-ver">{entry.version}</span>
+                                  {entry.date ? (
+                                    <time className="news-hub-release-date" dateTime={entry.date}>
+                                      {entry.date}
+                                    </time>
+                                  ) : null}
+                                </div>
+                                {(['added', 'changed', 'removed', 'fixed'] as const).map((key) => {
+                                  const lines = entry[key]
+                                  if (!lines?.length) return null
+                                  return (
+                                    <div
+                                      key={key}
+                                      className={`news-hub-change news-hub-change--${key}`}
+                                    >
+                                      <div className="news-hub-change-head">
+                                        <span className="news-hub-change-icon" aria-hidden>
+                                          <ChangelogKindIcon kind={key} />
+                                        </span>
+                                        <h4 className="news-hub-change-title">{t(`changelog.${key}`)}</h4>
+                                      </div>
+                                      <ul className="news-hub-change-list">
+                                        {lines.map((line, i) => (
+                                          <li key={i}>{formatChangelogLine(line)}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )
+                                })}
+                              </article>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </section>
@@ -2356,25 +2700,50 @@ export function App() {
                 </main>
 
                 <aside className="news-hub-col news-hub-col--social">
-                  <div className="news-hub-card news-hub-social-card">
-                    <h3 className="news-hub-social-heading">{t('newsView.followUs')}</h3>
-                    <div className="news-hub-social-list">
-                      {newsHubSocialRows().map((row) => (
-                        <button
-                          key={row.id}
-                          type="button"
-                          className={`news-hub-social-btn news-hub-social-btn--${row.id}`}
-                          onClick={() => void window.solea.openExternalUrl(row.url)}
-                        >
-                          <NewsHubSocialIcon id={row.id} className="news-hub-social-icon" />
-                          <span>{t(newsHubSocialLabelKey(row.id))}</span>
-                        </button>
-                      ))}
+                  <div className="news-hub-col-social-stack">
+                    <div className="news-hub-card news-hub-social-card news-hub-social-card--compact">
+                      <h3 className="news-hub-social-heading">{t('newsView.followUs')}</h3>
+                      <div className="news-hub-social-body">
+                        <div className="news-hub-social-list">
+                          {newsHubSocialRows().map((row) => (
+                            <button
+                              key={row.id}
+                              type="button"
+                              className={`news-hub-social-btn news-hub-social-btn--${row.id}`}
+                              onClick={() => void window.solea.openExternalUrl(row.url)}
+                            >
+                              <NewsHubSocialIcon id={row.id} className="news-hub-social-icon" />
+                              <span>{t(newsHubSocialLabelKey(row.id))}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="news-hub-card news-hub-report-card">
+                      <h3 className="news-hub-social-heading news-hub-report-heading">
+                        {t('newsView.reportSection')}
+                      </h3>
+                      <p className="news-hub-report-hint">{t('newsView.reportHint')}</p>
+                      <button
+                        type="button"
+                        className="news-hub-report-cta"
+                        onClick={openReportModal}
+                      >
+                        <IconNewsHubReport className="news-hub-report-cta-icon" />
+                        <span>{t('home.help.report')}</span>
+                      </button>
                     </div>
                   </div>
                 </aside>
               </div>
             </div>
+            <footer className="shell-footer">{t('home.footer', { name: modpackName })}</footer>
+          </>
+        )}
+
+        {view === 'screenshots' && (
+          <>
+            <ScreenshotsView modpacksList={modpacksList} initialModpackId={activeModpackId} />
             <footer className="shell-footer">{t('home.footer', { name: modpackName })}</footer>
           </>
         )}
@@ -2414,6 +2783,9 @@ export function App() {
                 ) : null
               )}
               <div className="nav-bottom">
+                <button type="button" className="nav-item" onClick={openReportModal}>
+                  {t('home.help.report')}
+                </button>
                 <button type="button" className="nav-item" onClick={() => void window.solea.openUserDataFolder()}>
                   {t('settings.userData')}
                 </button>
@@ -2463,9 +2835,18 @@ export function App() {
                 <>
                   <details className="set-card" open>
                     <summary>
-                      <div>
-                        {t('settings.afterLaunch')}
-                        <div className="sub">{t('settings.afterLaunchSub')}</div>
+                      <div className="settings-summary-with-help">
+                        <div>
+                          {t('settings.afterLaunch')}
+                          <div className="sub">{t('settings.afterLaunchSub')}</div>
+                        </div>
+                        <SettingsGlossaryTrigger
+                          gkey="afterLaunch"
+                          openKey={settingsGlossaryKey}
+                          setOpenKey={setSettingsGlossaryKey}
+                          t={t}
+                          discordUrl={DISCORD_INVITE_URL}
+                        />
                       </div>
                       <span>▾</span>
                     </summary>
@@ -2485,15 +2866,33 @@ export function App() {
 
                   <details className="set-card" open>
                     <summary>
-                      <div>
-                        {t('settings.network')}
-                        <div className="sub">{t('settings.networkSub')}</div>
+                      <div className="settings-summary-with-help">
+                        <div>
+                          {t('settings.network')}
+                          <div className="sub">{t('settings.networkSub')}</div>
+                        </div>
+                        <SettingsGlossaryTrigger
+                          gkey="networkCard"
+                          openKey={settingsGlossaryKey}
+                          setOpenKey={setSettingsGlossaryKey}
+                          t={t}
+                          discordUrl={DISCORD_INVITE_URL}
+                        />
                       </div>
                       <span>▾</span>
                     </summary>
                     <div className="inner field-grid">
                       <label>
-                        {t('settings.downloadThreads')}
+                        <span className="settings-label-help-row">
+                          {t('settings.downloadThreads')}
+                          <SettingsGlossaryTrigger
+                            gkey="downloadThreads"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </span>
                         <input
                           type="number"
                           min={1}
@@ -2503,7 +2902,16 @@ export function App() {
                         />
                       </label>
                       <label>
-                        {t('settings.timeout')}
+                        <span className="settings-label-help-row">
+                          {t('settings.timeout')}
+                          <SettingsGlossaryTrigger
+                            gkey="networkTimeout"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </span>
                         <input
                           type="number"
                           min={5000}
@@ -2514,7 +2922,16 @@ export function App() {
                         />
                       </label>
                       <label className="full">
-                        {t('settings.javaPath')}
+                        <span className="settings-label-help-row">
+                          {t('settings.javaPath')}
+                          <SettingsGlossaryTrigger
+                            gkey="javaPath"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </span>
                         <input
                           type="text"
                           value={settings.javaPath}
@@ -2523,7 +2940,16 @@ export function App() {
                         />
                       </label>
                       <label>
-                        {t('settings.javaVersion')}
+                        <span className="settings-label-help-row">
+                          {t('settings.javaVersion')}
+                          <SettingsGlossaryTrigger
+                            gkey="javaVersion"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </span>
                         <input
                           type="text"
                           value={settings.javaVersion}
@@ -2532,7 +2958,16 @@ export function App() {
                         />
                       </label>
                       <label className="full" title={t('settings.jvmArgsTooltip')}>
-                        {t('settings.jvmArgs')}
+                        <span className="settings-label-help-row">
+                          {t('settings.jvmArgs')}
+                          <SettingsGlossaryTrigger
+                            gkey="jvmArgs"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </span>
                         <textarea
                           rows={4}
                           value={settings.jvmArgs}
@@ -2542,7 +2977,16 @@ export function App() {
                         />
                       </label>
                       <label className="full">
-                        {t('settings.azureId')}
+                        <span className="settings-label-help-row">
+                          {t('settings.azureId')}
+                          <SettingsGlossaryTrigger
+                            gkey="azureId"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </span>
                         <input
                           type="text"
                           value={settings.azureClientId}
@@ -2553,16 +2997,34 @@ export function App() {
                     </div>
                     <div className="inner settings-net-extras">
                       <div className="settings-toggle-stack">
-                        <SettingsToggle
-                          checked={settings.networkSlowDownloads === true}
-                          onChange={(next) => setSettings((s) => ({ ...s, networkSlowDownloads: next }))}
-                          label={t('settings.networkSlowDownloads')}
-                        />
-                        <SettingsToggle
-                          checked={settings.diagnosticLaunch === true}
-                          onChange={(next) => setSettings((s) => ({ ...s, diagnosticLaunch: next }))}
-                          label={t('settings.diagnosticLaunch')}
-                        />
+                        <div className="settings-toggle-with-help">
+                          <SettingsToggle
+                            checked={settings.networkSlowDownloads === true}
+                            onChange={(next) => setSettings((s) => ({ ...s, networkSlowDownloads: next }))}
+                            label={t('settings.networkSlowDownloads')}
+                          />
+                          <SettingsGlossaryTrigger
+                            gkey="networkSlow"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </div>
+                        <div className="settings-toggle-with-help">
+                          <SettingsToggle
+                            checked={settings.diagnosticLaunch === true}
+                            onChange={(next) => setSettings((s) => ({ ...s, diagnosticLaunch: next }))}
+                            label={t('settings.diagnosticLaunch')}
+                          />
+                          <SettingsGlossaryTrigger
+                            gkey="diagLaunch"
+                            openKey={settingsGlossaryKey}
+                            setOpenKey={setSettingsGlossaryKey}
+                            t={t}
+                            discordUrl={DISCORD_INVITE_URL}
+                          />
+                        </div>
                       </div>
                       <p className="settings-roadmap-hint">{t('settings.networkRoadmapHint')}</p>
                       <button
@@ -2876,9 +3338,18 @@ export function App() {
                 <>
                   <details className="set-card" open title={t('settings.ramAllocTooltip')}>
                     <summary>
-                      <div>
-                        {t('settings.ram')}
-                        <div className="sub">{t('settings.ramSub')}</div>
+                      <div className="settings-summary-with-help">
+                        <div>
+                          {t('settings.ram')}
+                          <div className="sub">{t('settings.ramSub')}</div>
+                        </div>
+                        <SettingsGlossaryTrigger
+                          gkey="ram"
+                          openKey={settingsGlossaryKey}
+                          setOpenKey={setSettingsGlossaryKey}
+                          t={t}
+                          discordUrl={DISCORD_INVITE_URL}
+                        />
                       </div>
                       <span>▾</span>
                     </summary>
@@ -2895,9 +3366,18 @@ export function App() {
 
                   <details className="set-card" open>
                     <summary>
-                      <div>
-                        {t('settings.resolution')}
-                        <div className="sub">{t('settings.resolutionSub')}</div>
+                      <div className="settings-summary-with-help">
+                        <div>
+                          {t('settings.resolution')}
+                          <div className="sub">{t('settings.resolutionSub')}</div>
+                        </div>
+                        <SettingsGlossaryTrigger
+                          gkey="resolution"
+                          openKey={settingsGlossaryKey}
+                          setOpenKey={setSettingsGlossaryKey}
+                          t={t}
+                          discordUrl={DISCORD_INVITE_URL}
+                        />
                       </div>
                       <span>▾</span>
                     </summary>
@@ -2978,21 +3458,40 @@ export function App() {
                       {packInstanceDetails && !packInstanceDetails.installed ? (
                         <p className="modpack-maint-hint">{t('settings.packMaintDisabledHint')}</p>
                       ) : null}
-                      <button
-                        type="button"
-                        className="btn-muted modpack-open-folder-btn"
-                        disabled={!packInstanceDetails?.installed || packMaintBusy}
-                        title={
-                          !packInstanceDetails?.installed ? t('settings.packFolderDisabledHint') : undefined
-                        }
-                        onClick={() =>
-                          void window.solea.openModpackInstanceFolder(modpackSettingsReadyId).then((r) => {
-                            if (!r.ok) pushToast(r.error, 'error')
-                          })
-                        }
-                      >
-                        {t('settings.packOpenFolder')}
-                      </button>
+                      <div className="modpack-folder-help-row">
+                        <button
+                          type="button"
+                          className="btn-muted modpack-open-folder-btn"
+                          disabled={!packInstanceDetails?.installed || packMaintBusy}
+                          title={
+                            !packInstanceDetails?.installed ? t('settings.packFolderDisabledHint') : undefined
+                          }
+                          onClick={() =>
+                            void window.solea.openModpackInstanceFolder(modpackSettingsReadyId).then((r) => {
+                              if (!r.ok) pushToast(r.error, 'error')
+                            })
+                          }
+                        >
+                          {t('settings.packOpenFolder')}
+                        </button>
+                        <SettingsGlossaryTrigger
+                          gkey="instanceFolder"
+                          openKey={settingsGlossaryKey}
+                          setOpenKey={setSettingsGlossaryKey}
+                          t={t}
+                          discordUrl={DISCORD_INVITE_URL}
+                        />
+                      </div>
+                      <p className="settings-label-help-row modpack-verify-glossary">
+                        {t('settings.verifyFilesGlossaryLabel')}
+                        <SettingsGlossaryTrigger
+                          gkey="verifyFiles"
+                          openKey={settingsGlossaryKey}
+                          setOpenKey={setSettingsGlossaryKey}
+                          t={t}
+                          discordUrl={DISCORD_INVITE_URL}
+                        />
+                      </p>
                       <div className="modpack-maint-actions">
                         <button
                           type="button"
@@ -3151,6 +3650,180 @@ export function App() {
           </div>
         )}
         </div>
+        {reportModalOpen ? (
+          <div
+            className="pack-confirm-backdrop"
+            role="presentation"
+            onClick={() => {
+              setReportHelpOpen(false)
+              setReportModalOpen(false)
+            }}
+          >
+            <div
+              ref={reportModalRef}
+              className="pack-confirm-modal pack-confirm-modal--support home-report-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="home-report-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="home-report-heading">
+                <div className="home-report-heading-main">
+                  <p className="pack-confirm-eyebrow">{t('home.help.report')}</p>
+                  <h2 id="home-report-title" className="pack-confirm-title home-report-title">
+                    {t('home.report.title')}
+                  </h2>
+                </div>
+                <div className="home-report-heading-actions">
+                  <button
+                    type="button"
+                    className={`home-report-icon-btn${reportHelpOpen ? ' is-active' : ''}`}
+                    aria-expanded={reportHelpOpen}
+                    aria-controls="home-report-help"
+                    title={t('home.report.helpAria')}
+                    onClick={() => setReportHelpOpen((o) => !o)}
+                  >
+                    <svg className="home-report-icon-btn-svg" viewBox="0 0 24 24" fill="none" aria-hidden>
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                      <path
+                        d="M9.5 9.5a2.5 2.5 0 015 0c0 2-2.5 1.5-2.5 4M12 17h.01"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="home-report-discord-btn"
+                    onClick={() => void window.solea.openExternalUrl(DISCORD_INVITE_URL)}
+                  >
+                    <IconDiscord className="home-report-discord-ico" />
+                    <span>{t('home.report.joinDiscord')}</span>
+                  </button>
+                </div>
+              </div>
+              {reportHelpOpen ? (
+                <div
+                  id="home-report-help"
+                  className="home-report-help"
+                  role="region"
+                  aria-label={t('home.report.helpTitle')}
+                >
+                  <p className="home-report-help-title">{t('home.report.helpTitle')}</p>
+                  <p className="home-report-help-body">{t('home.report.helpBody')}</p>
+                </div>
+              ) : null}
+              <p className="pack-confirm-body home-report-lead">{t('home.report.lead')}</p>
+              <div className="home-report-panel">
+                <div className="home-report-section">
+                  <span className="home-report-section-label">{t('home.report.scopeLabel')}</span>
+                  <div
+                    className="home-report-segment"
+                    role="group"
+                    aria-label={t('home.report.scopeLabel')}
+                  >
+                    <button
+                      type="button"
+                      className={reportScope === 'launcher' ? 'is-active' : ''}
+                      onClick={() => {
+                        setReportScope('launcher')
+                        setReportCategory(REPORT_LAUNCHER_CATEGORIES[0])
+                      }}
+                    >
+                      {t('home.report.scopeLauncher')}
+                    </button>
+                    <button
+                      type="button"
+                      className={reportScope === 'instance' ? 'is-active' : ''}
+                      onClick={() => {
+                        setReportScope('instance')
+                        setReportCategory(REPORT_INSTANCE_CATEGORIES[0])
+                      }}
+                    >
+                      {t('home.report.scopeInstance')}
+                    </button>
+                  </div>
+                  <p className="home-report-section-hint">{t('home.report.scopeHint')}</p>
+                </div>
+                <div className="home-report-fields">
+                  {reportScope === 'instance' ? (
+                    <>
+                      <span className="home-report-label">{t('home.report.instance')}</span>
+                      <LauncherSelect
+                        className="home-report-launcher-select"
+                        aria-label={t('home.report.instance')}
+                        value={reportModpackId}
+                        onChange={setReportModpackId}
+                        options={reportInstanceSelectOptions}
+                        disabled={reportInstanceSelectOptions.length === 0}
+                      />
+                    </>
+                  ) : null}
+                  <span className="home-report-label">{t('home.report.category')}</span>
+                  <LauncherSelect
+                    key={reportScope}
+                    className="home-report-launcher-select"
+                    aria-label={t('home.report.category')}
+                    value={reportCategory}
+                    onChange={setReportCategory}
+                    options={reportCategorySelectOptions}
+                  />
+                  <label className="home-report-label" htmlFor="home-report-details">
+                    {t('home.report.details')}
+                  </label>
+                  <textarea
+                    id="home-report-details"
+                    className="home-report-textarea"
+                    rows={5}
+                    value={reportDetails}
+                    onChange={(e) => setReportDetails(e.target.value)}
+                  />
+                  <label className="home-report-check home-report-check--themed">
+                    <input
+                      type="checkbox"
+                      className="home-report-check-input"
+                      checked={reportIncludeTech}
+                      onChange={(e) => setReportIncludeTech(e.target.checked)}
+                    />
+                    <span className="home-report-check-box" aria-hidden />
+                    <span className="home-report-check-text">
+                      {t(
+                        reportScope === 'launcher'
+                          ? 'home.report.includeTechLauncher'
+                          : 'home.report.includeTech'
+                      )}
+                    </span>
+                  </label>
+                </div>
+              </div>
+              <div className="pack-confirm-actions home-report-actions">
+                <button
+                  type="button"
+                  className="btn-muted pack-confirm-btn-cancel"
+                  onClick={() => setReportModalOpen(false)}
+                >
+                  {t('home.report.close')}
+                </button>
+                <button
+                  type="button"
+                  className="btn-muted"
+                  onClick={() => void copyReportToClipboard()}
+                >
+                  {t('home.report.copy')}
+                </button>
+                <button
+                  type="button"
+                  className="btn-save pack-confirm-btn-primary"
+                  disabled={reportSending}
+                  onClick={() => void sendReportDiscord()}
+                >
+                  {t('home.report.send')}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
         <ModpackUpdatesModal
           open={showModpackUpdatesModal}
           packs={allModpacksAction ?? []}
