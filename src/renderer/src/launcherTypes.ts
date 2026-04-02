@@ -76,3 +76,10 @@ export type ModpackActionInfoRow = {
   installedVersionNumber?: string
   latestVersionNumber?: string
 }
+
+/** Options envoyées au process principal lors d’une réinstallation (conserver des données locales). */
+export type ReinstallPreserveOptions = {
+  keepSaves: boolean
+  keepScreenshots: boolean
+  keepOptions: boolean
+}

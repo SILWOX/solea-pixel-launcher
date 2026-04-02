@@ -1,5 +1,11 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.2.0': {
+    en:
+      'AETHER UI on Home & news: full-page scroll, themed scrollbar, hero eyebrow, spotlight card for the latest release, release history column for older versions only. Screenshots library: matching AETHER cards, top accent, page scroll. Launcher version 26.2 | Release (package 26.2.0).',
+    fr:
+      'AETHER UI — Accueil & actus : défilement pleine page, barre de défilement thémée, eyebrow du hero, carte spotlight pour la dernière version, colonne historique pour les versions précédentes uniquement. Bibliothèque captures : cartes AETHER assorties, bandeau supérieur, défilement page. Launcher 26.2 | Release (paquet 26.2.0).'
+  },
   '26.1.4': {
     en:
       'Reporting: REPORT card under Follow us (orange CTA). Modal with Launcher vs modpack instance, full category lists (instance: launch, install, account, verify files, mods; launcher: UI, Microsoft login, updates, downloads/cache, performance), themed LauncherSelects, collapsible help (?), Discord button, orange tech-details checkbox, copy/send/close. Discord: SOLEA_REPORT_WEBHOOK_URL or solea-report-webhook.url (first line) in userData; docs/REPORTING.md; .gitignore for the secret file. Main process validates Discord webhook URLs only, truncates payload (~1900 chars), surfaces HTTP/network errors; focus trap + Escape; clipboard errors to toast. Hero recentred; Follow us tightened.',

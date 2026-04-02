@@ -51,6 +51,7 @@ export const FR: Record<string, string> = {
   'shell.discord': 'Discord Solea Pixel',
   'shell.screenshots': 'Captures (toutes les instances)',
   'shell.navPacks': 'Modpacks',
+  'shell.sidebarAria': 'Navigation principale',
   'screenshots.title': 'Captures d’écran',
   'screenshots.eyebrow': 'Bibliothèque',
   'screenshots.subtitle':
@@ -104,6 +105,12 @@ export const FR: Record<string, string> = {
   'newsView.socialBmc': 'Buy Me a Coffee',
   'newsView.accountsNav': 'Comptes enregistrés',
   'newsView.heroSubtitle': 'Notes de version, liens et compte — tout au même endroit.',
+  'newsView.heroEyebrow': 'AETHER · Hub',
+  'newsView.spotlightEyebrow': 'Dernière version',
+  'newsView.spotlightTitle': 'Nouveautés — {{version}}',
+  'newsView.spotlightFooter': 'Les versions précédentes sont dans la colonne historique ci-dessous.',
+  'newsView.noOlderReleases': 'Tu es sur la première entrée documentée de cette liste — rien de plus ancien à afficher.',
+  'newsView.historyLabel': 'Historique des versions',
   'newsView.reportSection': 'Signalement',
   'newsView.reportHint':
     'Envoie bugs et retours à l’équipe — ou passe par Discord pour une réponse rapide.',
@@ -131,10 +138,14 @@ export const FR: Record<string, string> = {
   'home.updatesModalEyebrow': 'Modpacks',
   'home.updatesModalTitle': 'Mises à jour disponibles',
   'home.updatesModalLead':
-    'Un ou plusieurs modpacks ont une version plus récente sur Modrinth. Tu peux quand même lancer un pack qui est à jour. Pour mettre à jour un pack, sélectionne-le (paramètres), ouvre l’accueil et utilise le bouton principal Installer / Mettre à jour.',
+    'Un ou plusieurs modpacks ont une version plus récente sur Modrinth. Tu peux quand même lancer un pack qui est à jour. Pour mettre à jour le pack sélectionné depuis l’accueil, utilise le bouton actualiser à côté de Jouer (vérifie Modrinth et applique la mise à jour automatiquement).',
   'home.updatesModalOk': 'OK',
   'home.updatesModalLine': '{{name}} — {{installed}} → {{latest}}',
-  'home.verify': 'Vérifier les fichiers',
+  'home.checkUpdateAria': 'Vérifier les mises à jour sur Modrinth',
+  'home.checkUpdateTooltip':
+    'Vérifie sur Modrinth s’il existe une version plus récente de ce modpack. Si une installation ou mise à jour est nécessaire, elle démarre automatiquement.',
+  'home.checkUpdateUpToDate': 'Ce modpack est déjà à jour sur Modrinth.',
+  'home.checkUpdateApplying': 'Mise à jour disponible — téléchargement et application…',
   'home.logConsole': 'Console de lancement…',
   'logConsole.windowTitle': 'Console — Solea Pixel',
   'logConsole.heading': 'Console de lancement',
@@ -318,8 +329,6 @@ export const FR: Record<string, string> = {
   'home.account.sessionWarn':
     'La session a peut-être expiré — rafraîchis le compte depuis l’écran compte si le lancement échoue.',
   'home.help.report': 'Signaler un problème',
-  'home.verifyTooltip':
-    'Compare les fichiers installés au pack Modrinth (empreintes et liste des mods). Utile après une modification manuelle ou si le jeu plante.',
   'home.footer':
     '{{name}} — Launcher tiers. Non affilié Mojang AB ni Microsoft. minecraft-java-core : licence CC BY-NC.',
   'changelog.panelTitle': 'Notes de version',
@@ -331,37 +340,28 @@ export const FR: Record<string, string> = {
   'changelog.changed': 'Modifications',
   'changelog.removed': 'Retraits',
   'changelog.fixed': 'Corrections',
-  'settings.verifyFilesGlossaryLabel': 'Vérifier les fichiers installés (depuis l’écran Jouer) :',
+  'settings.verifyFilesGlossaryLabel': 'Vérifier les fichiers installés par rapport au pack Modrinth officiel :',
+  'settings.verifyFilesBtn': 'Vérifier les fichiers',
+  'settings.verifyFilesTooltip':
+    'Compare tes mods et fichiers installés au pack Modrinth officiel (empreintes et liste des mods). Utile après une modification manuelle ou un crash bizarre.',
   'settings.glossary.afterLaunch.title': 'Après le lancement',
   'settings.glossary.afterLaunch.body':
     'Comportement de la fenêtre du launcher une fois Minecraft démarré : rester visible ou se réduire.',
-  'settings.glossary.networkCard.title': 'Réseau & Java',
+  'settings.glossary.networkCard.title': 'Réseau',
   'settings.glossary.networkCard.body':
-    'Parallélisme des téléchargements, délais, Java utilisé pour le jeu et arguments JVM. Une mauvaise version Java bloque souvent le démarrage.',
+    'Règle l’agressivité des téléchargements et le délai max par requête. Le Java utilisé pour Minecraft dépend de chaque modpack au moment du lancement — ce n’est pas réglé ici.',
   'settings.glossary.downloadThreads.title': 'Téléchargements parallèles',
   'settings.glossary.downloadThreads.body':
     'Nombre de fichiers téléchargés en même temps. Plus élevé = plus rapide sur bonne connexion ; plus bas peut aider le Wi‑Fi fragile.',
   'settings.glossary.networkTimeout.title': 'Timeout',
   'settings.glossary.networkTimeout.body':
     'Temps d’attente max par requête réseau. Augmente si les téléchargements échouent souvent.',
-  'settings.glossary.javaPath.title': 'Chemin Java',
-  'settings.glossary.javaPath.body':
-    'Vide = détection auto. Renseigne seulement si tu utilises un JDK précis (compatible avec la version Minecraft).',
-  'settings.glossary.javaVersion.title': 'Version Java',
-  'settings.glossary.javaVersion.body':
-    'Version majeure attendue (souvent 21 pour les packs récents NeoForge / 1.21.x).',
-  'settings.glossary.jvmArgs.title': 'Arguments JVM',
-  'settings.glossary.jvmArgs.body':
-    'Options supplémentaires pour Java (une par ligne). Réservé aux utilisateurs avancés.',
   'settings.glossary.azureId.title': 'ID client Azure',
   'settings.glossary.azureId.body':
     'Client OAuth Microsoft optionnel. Laisse vide sauf demande du support.',
   'settings.glossary.networkSlow.title': 'Téléchargements plus lents',
   'settings.glossary.networkSlow.body':
     'Moins de connexions en parallèle — souvent plus stable sur réseau faible.',
-  'settings.glossary.diagLaunch.title': 'Lancement diagnostic',
-  'settings.glossary.diagLaunch.body':
-    'Tas mémoire réduit et journaux détaillés pour le débogage, sur demande du support.',
   'settings.glossary.ram.title': 'RAM',
   'settings.glossary.ram.body':
     'Mémoire allouée à Minecraft pour cette instance. Trop peu = crash ; trop peut ralentir le PC.',
@@ -373,9 +373,31 @@ export const FR: Record<string, string> = {
     'Dossier des sauvegardes, captures, config et mods de ce pack — séparé des autres instances.',
   'settings.glossary.verifyFiles.title': 'Vérifier les fichiers',
   'settings.glossary.verifyFiles.body':
-    'Sur l’écran Jouer, « Vérifier » compare tes fichiers au pack Modrinth officiel (empreintes). Utile après modif manuelle ou crash bizarre.',
+    'Dans les paramètres de ce modpack, « Vérifier les fichiers » compare tes fichiers au pack Modrinth officiel (empreintes). Utile après modif manuelle ou crash bizarre.',
   'settings.title': 'PARAMÈTRES',
+  'settings.pageEyebrow': 'AETHER · Réglages',
+  'settings.navSectionGeneral': 'Général',
+  'settings.navSectionPacks': 'Modpacks',
+  'settings.navSectionMore': 'Plus',
   'settings.navLauncher': 'Launcher',
+  'settings.creditsNav': 'Crédits',
+  'settings.creditsEyebrow': 'Crédits',
+  'settings.creditsStudio': 'SOLEA PIXEL STUDIO',
+  'settings.creditsTagline': 'Launcher Minecraft — modpacks',
+  'settings.creditsCreatorHeading': '# Créateur',
+  'settings.creditsCreatorName': 'SILWOX',
+  'settings.creditsCreatorRole': 'Création principale & direction du launcher',
+  'settings.creditsAboutTitle': 'À propos',
+  'settings.creditsDetails':
+    'Solea Pixel est développé par Solea Pixel Studio. Les bibliothèques tierces et les éléments liés à Minecraft restent la propriété de leurs auteurs respectifs.',
+  'settings.creditsUiTitle': 'Interface',
+  'settings.creditsUiLine': 'Thème d’interface : AETHER UI — V1',
+  'settings.creditsUiBadge': 'AETHER UI',
+  'settings.creditsUiVersion': 'Version 1',
+  'settings.creditsLicenseTitle': 'Avis de licence',
+  'settings.creditsLicenseBody':
+    'Ce launcher et son code source (y compris la couche AETHER UI) sont propriétaires. La redistribution du code, les copies ou forks non autorisés du launcher, ainsi que la réutilisation commerciale sans autorisation écrite du titulaire des droits sont interdites. Les builds officiels sont diffusés uniquement via les canaux autorisés par Solea Pixel Studio.',
+  'settings.creditsClose': 'Fermer',
   'settings.userData': 'Dossier données',
   'settings.instanceFolder': 'Dossier du jeu',
   'settings.headerLauncher': 'Launcher',
@@ -384,23 +406,27 @@ export const FR: Record<string, string> = {
   'settings.afterLaunchSub': 'Que fait cette fenêtre une fois Minecraft démarré ?',
   'settings.afterKeep': 'Rester ouvert',
   'settings.afterMinimize': 'Réduire',
-  'settings.network': 'Réseau & Java',
-  'settings.networkSub': 'Téléchargements, timeout, exécutable Java',
+  'settings.network': 'Réseau',
+  'settings.networkSub': 'Téléchargements, délais, identifiant d’app Microsoft (optionnel)',
+  'settings.networkIntro':
+    'Ces options concernent la façon dont le launcher télécharge les fichiers des modpacks et parle aux serveurs. La version de Java et le runtime du jeu dépendent de chaque modpack — ce n’est pas configuré ici.',
+  'settings.networkDownloadsSection': 'Téléchargements',
+  'settings.networkMicrosoftSection': 'Connexion Microsoft (avancé)',
+  'settings.azureSectionHint':
+    'Laisse vide sauf si le support t’a demandé d’utiliser une application Azure OAuth personnalisée.',
+  'settings.azurePlaceholder': 'Vide = réglage par défaut',
   'settings.networkSlowDownloads':
     'Téléchargements plus lents (moins de connexions en parallèle — mieux sur connexion faible)',
-  'settings.diagnosticLaunch':
-    'Lancement diagnostic (tas JVM réduit, logs Java détaillés — pour le support)',
   'settings.networkRoadmapHint':
     'Limitation de débit et téléchargements en heures creuses pour les gros fichiers sont prévus plus tard.',
-  'settings.javaDownloadTemurin': 'Ouvrir la page de téléchargement Eclipse Temurin (Java)',
   'settings.cacheMaintenance': 'Cache & journaux',
   'settings.cacheMaintenanceSub':
-    'Caches Gradle et journaux du launcher — les tailles s’affichent avant suppression',
-  'settings.cacheGradle': 'Caches Gradle :',
+    'Cache disque du launcher (Chromium) et journaux — les tailles s’affichent avant suppression',
+  'settings.cacheLauncherDisk': 'Cache du launcher :',
   'settings.cacheLauncherLogs': 'Journaux du launcher :',
-  'settings.cacheClearGradle': 'Vider les caches Gradle',
-  'settings.cacheClearGradleConfirm':
-    'Vider tous les caches Gradle utilisés par le launcher ? Libère de l’espace ; les prochaines installs peuvent retélécharger des dépendances.',
+  'settings.cacheClearLauncher': 'Vider le cache',
+  'settings.cacheClearLauncherConfirm':
+    'Vider le cache disque du launcher (cache d’affichage, code, GPU) et le cache HTTP en mémoire ? Libère de l’espace et peut fluidifier l’interface ; comptes, réglages et modpacks ne sont pas supprimés.',
   'settings.cacheClearLogs': 'Supprimer les journaux du launcher',
   'settings.cacheClearLogsConfirm':
     'Supprimer les fichiers de log ? De nouveaux journaux seront créés en utilisant le launcher.',
@@ -419,13 +445,8 @@ export const FR: Record<string, string> = {
   'settings.modpackPanelLoading': 'Chargement des réglages du modpack…',
   'settings.downloadThreads': 'Téléchargements parallèles',
   'settings.timeout': 'Timeout (ms)',
-  'settings.javaPath': 'Chemin Java (vide = auto)',
-  'settings.javaVersion': 'Version Java',
-  'settings.jvmArgs': 'Arguments JVM (une ligne = un argument)',
-  'settings.jvmArgsTooltip':
-    'Options Java supplémentaires pour le jeu (ex. ramasse-miettes). Une option par ligne. Des valeurs incorrectes peuvent empêcher le lancement.',
   'settings.ramAllocTooltip':
-    'De 2G jusqu’à la RAM totale de ton PC (à droite). Clic sur 6G / 8G / 12G pour des repères. Le min/max JVM est calculé automatiquement.',
+    'De 2G jusqu’à la RAM totale de ton PC (à droite). Clic sur 6G / 8G / 12G pour des repères. La mémoire appliquée au jeu est définie au lancement.',
   'settings.azureId': 'Azure Client ID (optionnel)',
   'settings.appearance': 'Apparence & langue',
   'settings.appearanceSub': 'Thème, chrome givré, taille du texte, animations, notifications, mises à jour, Discord',
@@ -501,6 +522,7 @@ export const FR: Record<string, string> = {
   'settings.back': 'Retour',
   'settings.saved': 'Enregistré.',
   'settings.resetOk': 'Valeurs par défaut.',
+  'account.pageEyebrow': 'AETHER · Profil',
   'account.title': 'Compte',
   'account.lead': 'Profil Minecraft lié à ce launcher',
   'account.copyUuid': 'Copier l’UUID',
@@ -514,6 +536,13 @@ export const FR: Record<string, string> = {
   'account.back': 'Retour',
   'account.empty': 'Aucun compte actif. Reconnecte-toi depuis l’accueil si besoin.',
   'skins.loadingPresets': 'Chargement des presets de skin',
+  'skins.sectionPreviewEyebrow': 'Aperçu',
+  'skins.sectionPreviewTitle': 'Aperçu 3D du skin',
+  'skins.sectionPreviewDesc':
+    'Ce que tu vois ici correspond à ce que les autres joueurs voient (skin + cape de ton compte).',
+  'skins.sectionLibraryEyebrow': 'Bibliothèque',
+  'skins.sectionCapeEyebrow': 'Cosmétiques',
+  'skins.capeLead': 'Choisis la cape liée à ton compte Microsoft (comme sur minecraft.net).',
   'skins.title': 'Skins',
   'skins.beta': 'BÊTA',
   'skins.sub': 'Presets enregistrés sur ce PC',
@@ -575,7 +604,12 @@ export const FR: Record<string, string> = {
   'confirm.packDialogEyebrow': 'Modpack',
   'confirm.packSureQuestion': 'Es-tu sûr ?',
   'confirm.packReinstallDetail':
-    'Réinstaller supprime tout le dossier de ce modpack puis retélécharge la version Modrinth.',
+    'Réinstaller efface le dossier de ce modpack puis retélécharge le pack Modrinth. Tu peux conserver certaines données ci-dessous.',
+  'confirm.packReinstallPreserveLead': 'Conserver après réinstallation :',
+  'confirm.packReinstallPreserveGroup': 'Données à conserver lors de la réinstallation',
+  'confirm.packReinstallKeepSaves': 'Mondes (dossier saves)',
+  'confirm.packReinstallKeepScreenshots': 'Captures d’écran',
+  'confirm.packReinstallKeepOptions': 'Options du jeu (options.txt, OptiFine, shaders)',
   'confirm.packUninstallDetail':
     'La désinstallation supprime définitivement le dossier de ce modpack (mondes, options, mods et données locales).',
   'confirm.packCancel': 'Annuler',

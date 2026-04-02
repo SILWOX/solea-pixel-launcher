@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import type { CSSProperties } from 'react'
 import { useI18n } from './i18n/I18nContext'
 import { RAM_RECOMMENDED_GB, clampGbToRange, clampRamAllocRange } from './memoryRam'

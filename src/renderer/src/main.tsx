@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App'

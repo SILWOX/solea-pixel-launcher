@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import { useRef } from 'react'
 import type { ModpackActionInfoRow } from './launcherTypes'
 import { useI18n } from './i18n/I18nContext'

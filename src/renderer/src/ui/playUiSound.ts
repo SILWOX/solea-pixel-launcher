@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import installPopUrl from '../assets/sounds/mixkit-message-pop-alert-2354.mp3?url'
 import launchPopUrl from '../assets/sounds/mixkit-long-pop-2358.wav?url'
 

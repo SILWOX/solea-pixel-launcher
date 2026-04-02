@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import type { TFunction } from './i18n/I18nContext'
 
 export type SettingsGlossaryKey =
@@ -5,12 +6,8 @@ export type SettingsGlossaryKey =
   | 'networkCard'
   | 'downloadThreads'
   | 'networkTimeout'
-  | 'javaPath'
-  | 'javaVersion'
-  | 'jvmArgs'
   | 'azureId'
   | 'networkSlow'
-  | 'diagLaunch'
   | 'ram'
   | 'resolution'
   | 'instanceFolder'

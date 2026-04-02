@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import { type RefObject, useEffect, useRef } from 'react'
 
 const FOCUSABLE_SELECTOR = [

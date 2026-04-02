@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { AccountSkinViewer } from './AccountSkinViewer'

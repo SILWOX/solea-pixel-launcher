@@ -1,6 +1,9 @@
-import { execFileSync } from 'child_process'
+import { execFile as execFileCb } from 'node:child_process'
+import { promisify } from 'node:util'
 
-export function findMinecraftJavaPids(instanceRoot: string): number[] {
+const execFile = promisify(execFileCb)
+
+export async function findMinecraftJavaPids(instanceRoot: string): Promise<number[]> {
   const root = instanceRoot.trim()
   if (!root) return []
 
@@ -14,14 +17,18 @@ export function findMinecraftJavaPids(instanceRoot: string): number[] {
       }
     `
     try {
-      const out = execFileSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', cmd], {
-        encoding: 'utf8',
-        windowsHide: true,
-        timeout: 20000,
-        maxBuffer: 2 * 1024 * 1024,
-        env: { ...process.env, SOLEA_INSTANCE_ROOT: root }
-      })
-      return out
+      const { stdout } = await execFile(
+        'powershell.exe',
+        ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', cmd],
+        {
+          encoding: 'utf8',
+          windowsHide: true,
+          timeout: 20000,
+          maxBuffer: 2 * 1024 * 1024,
+          env: { ...process.env, SOLEA_INSTANCE_ROOT: root }
+        }
+      )
+      return String(stdout)
         .split(/\r?\n/)
         .map((l) => parseInt(l.trim(), 10))
         .filter((n) => !Number.isNaN(n) && n > 0)
@@ -31,8 +38,8 @@ export function findMinecraftJavaPids(instanceRoot: string): number[] {
   }
 
   try {
-    const out = execFileSync('pgrep', ['-f', root], { encoding: 'utf8' })
-    return out
+    const { stdout } = await execFile('pgrep', ['-f', root], { encoding: 'utf8' })
+    return String(stdout)
       .split(/\r?\n/)
       .map((l) => parseInt(l.trim(), 10))
       .filter((n) => !Number.isNaN(n) && n > 0)
@@ -41,17 +48,23 @@ export function findMinecraftJavaPids(instanceRoot: string): number[] {
   }
 }
 
-export function isMinecraftRunning(instanceRoot: string): boolean {
-  return findMinecraftJavaPids(instanceRoot).length > 0
+export async function isMinecraftRunning(instanceRoot: string): Promise<boolean> {
+  const pids = await findMinecraftJavaPids(instanceRoot)
+  return pids.length > 0
 }
 
-export function killMinecraftForInstance(instanceRoot: string): { ok: true } | { ok: false; error: string } {
-  const pids = findMinecraftJavaPids(instanceRoot)
+export async function killMinecraftForInstance(
+  instanceRoot: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const pids = await findMinecraftJavaPids(instanceRoot)
   if (pids.length === 0) return { ok: true }
   if (process.platform === 'win32') {
     for (const pid of pids) {
       try {
-        execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, timeout: 15000 })
+        await execFile('taskkill', ['/PID', String(pid), '/T', '/F'], {
+          windowsHide: true,
+          timeout: 15000
+        })
       } catch {
         /* continue */
       }

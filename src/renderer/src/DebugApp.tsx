@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/I18nContext'
 import type { DebugSnapshotUi } from './debugTypes'

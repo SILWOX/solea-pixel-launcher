@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import type { LauncherSettingsUI } from './launcherTypes'
 
 function resolveTheme(theme: LauncherSettingsUI['uiTheme']): 'light' | 'dark' {

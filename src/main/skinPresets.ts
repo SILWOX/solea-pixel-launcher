@@ -181,22 +181,31 @@ export async function getPreviewBundle(
   fetchMojangSkin: (u: string) => Promise<string | null>,
   getCapeDataUrl: (accountUuid: string) => Promise<string | null>
 ): Promise<PreviewBundle | null> {
-  const m = loadManifest(accountUuid)
+  let m = loadManifest(accountUuid)
   const capeDataUrl = await getCapeDataUrl(accountUuid)
 
   if (m.activePresetId) {
     const pr = m.presets.find((x) => x.id === m.activePresetId)
-    if (!pr) return null
-    const png = presetPngPath(accountUuid, pr.id)
-    if (!existsSync(png)) return null
-    const buf = readFileSync(png)
-    return {
-      kind: 'preset',
-      dataUrl: bufToDataUrl(buf),
-      model: pr.model,
-      capeDataUrl
+    const png = pr ? presetPngPath(accountUuid, pr.id) : ''
+    if (pr && png && existsSync(png)) {
+      try {
+        const buf = readFileSync(png)
+        if (isLikelyPng(buf)) {
+          return {
+            kind: 'preset',
+            dataUrl: bufToDataUrl(buf),
+            model: pr.model,
+            capeDataUrl
+          }
+        }
+      } catch {
+        /* repair manifest + fallback Mojang */
+      }
     }
+    m = { ...m, activePresetId: null }
+    saveManifest(accountUuid, m)
   }
+
   const skin = await fetchMojangSkin(accountUuid)
   if (!skin) return null
   return {
@@ -225,6 +234,7 @@ export function getPresetsState(accountUuid: string): {
     if (!existsSync(png)) continue
     try {
       const buf = readFileSync(png)
+      if (!isLikelyPng(buf)) continue
       presets.push({
         id: pr.id,
         name: pr.name,
@@ -235,8 +245,13 @@ export function getPresetsState(accountUuid: string): {
       /* skip */
     }
   }
+  let activePresetId = m.activePresetId
+  if (activePresetId && !presets.some((p) => p.id === activePresetId)) {
+    activePresetId = null
+    saveManifest(accountUuid, { ...m, activePresetId: null })
+  }
   return {
-    activePresetId: m.activePresetId,
+    activePresetId,
     presets
   }
 }

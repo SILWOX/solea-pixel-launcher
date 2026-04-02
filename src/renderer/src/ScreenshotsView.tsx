@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { isModpackId } from './modpackTheme'
 import { useI18n } from './i18n/I18nContext'
@@ -156,12 +157,14 @@ export function ScreenshotsView({
   if (!packOptions.length) {
     return (
       <div className="shell-content shell-content-news screenshots-view">
-        <div className="screenshots-page-inner">
+        <div className="screenshots-scroll">
+          <div className="screenshots-page-inner">
           <section className="screenshots-card screenshots-card--solo">
             <p className="screenshots-eyebrow">{t('screenshots.eyebrow')}</p>
             <h2 className="screenshots-h2">{t('screenshots.title')}</h2>
             <p className="screenshots-muted-block">{t('screenshots.noPacks')}</p>
           </section>
+          </div>
         </div>
       </div>
     )
@@ -169,7 +172,8 @@ export function ScreenshotsView({
 
   return (
     <div className="shell-content shell-content-news screenshots-view">
-      <div className="screenshots-page-inner">
+      <div className="screenshots-scroll">
+        <div className="screenshots-page-inner">
         <section className="screenshots-card screenshots-card--intro" aria-labelledby="shots-title">
           <p className="screenshots-eyebrow">{t('screenshots.eyebrow')}</p>
           <h2 id="shots-title" className="screenshots-h2">
@@ -280,6 +284,7 @@ export function ScreenshotsView({
             </>
           )}
         </section>
+        </div>
       </div>
 
       {preview ? (

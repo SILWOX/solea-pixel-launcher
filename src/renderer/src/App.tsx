@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import {
   useCallback,
   useEffect,
@@ -11,6 +12,7 @@ import type {
   LauncherSettingsUI,
   ModpackActionInfoRow,
   ModpackGameProfileUI,
+  ReinstallPreserveOptions,
   SkinViewerAnimation
 } from './launcherTypes'
 import logoUrl from './assets/branding/logo.png?url'
@@ -26,15 +28,16 @@ import { PackMaintConfirmModal } from './PackMaintConfirmModal'
 import { ModpackUpdatesModal } from './ModpackUpdatesModal'
 import { LoginInfoModal } from './LoginInfoModal'
 import { CacheClearConfirmModal, type CacheClearKind } from './CacheClearConfirmModal'
+import { CreditsModal } from './CreditsModal'
 import { applyAppearanceSettings, subscribeSystemTheme } from './appearance'
-import { useI18n } from './i18n/I18nContext'
+import { useI18n, type TFunction } from './i18n/I18nContext'
 import { LauncherSelect } from './ui/LauncherSelect'
 import { MemoryRamSlider } from './MemoryRamSlider'
 import { allocGbToMinMaxStrings, ramStringToGb } from './memoryRam'
 import { useToast } from './ui/ToastContext'
 import { playUiSound, type UiSoundPrefs } from './ui/playUiSound'
 import { useFocusTrap } from './a11y/useFocusTrap'
-import { LAUNCHER_CHANGELOG } from './launcherChangelog'
+import { LAUNCHER_CHANGELOG, type LauncherChangelogEntry } from './launcherChangelog'
 import { ScreenshotsView } from './ScreenshotsView'
 import {
   SettingsGlossaryTrigger,
@@ -206,7 +209,7 @@ function SkinAccountPreview({
     ]).then(([p, s]) => {
       if (cancelled) return
       setPreview(p)
-      setPresetsState(s)
+      setPresetsState(s ?? { activePresetId: null, presets: [] })
       setLoadingPreview(false)
     })
     return () => {
@@ -220,7 +223,10 @@ function SkinAccountPreview({
 
   const selectMojang = () => {
     void window.solea.setActiveSkinPreset(uuid, null).then((r) => {
-      if (!r.ok) return
+      if (!r.ok) {
+        pushToast(r.error, 'error')
+        return
+      }
       onRefresh()
       if (r.skinSyncError) {
         pushToast(t('skins.syncMojang', { error: r.skinSyncError }), 'error')
@@ -230,7 +236,10 @@ function SkinAccountPreview({
 
   const selectPreset = (presetId: string) => {
     void window.solea.setActiveSkinPreset(uuid, presetId).then((r) => {
-      if (!r.ok) return
+      if (!r.ok) {
+        pushToast(r.error, 'error')
+        return
+      }
       onRefresh()
       if (r.skinSyncError) {
         pushToast(t('skins.syncUpload', { error: r.skinSyncError }), 'error')
@@ -301,54 +310,71 @@ function SkinAccountPreview({
   return (
     <>
       <div className="account-skins-modrinth">
-        <div className="account-viewer-column">
-          <label className="account-skin-anim-field">
-            <span className="account-skin-anim-label">{t('settings.skinAnim')}</span>
-            <LauncherSelect
-              value={skinAnim}
-              onChange={(v) => onSkinAnimationChange(v as SkinViewerAnimation)}
-              options={SKIN_ANIM_UI_OPTIONS.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
-            />
-          </label>
-          <div className="account-viewer-inner">
-            {loadingPreview ? (
-              <div
-                className={`account-viewer-skeleton ${reduceMotion ? 'account-viewer-skeleton--static' : ''}`}
-                aria-hidden
+        <section className="account-aether-card account-aether-card--preview" aria-labelledby="account-preview-title">
+          <header className="account-aether-card-head">
+            <p className="account-aether-eyebrow">{t('skins.sectionPreviewEyebrow')}</p>
+            <h3 id="account-preview-title" className="account-aether-card-title">
+              {t('skins.sectionPreviewTitle')}
+            </h3>
+            <p className="account-aether-card-desc">{t('skins.sectionPreviewDesc')}</p>
+          </header>
+          <div className="account-viewer-column">
+            <label className="account-skin-anim-field">
+              <span className="account-skin-anim-label">{t('settings.skinAnim')}</span>
+              <LauncherSelect
+                value={skinAnim}
+                onChange={(v) => onSkinAnimationChange(v as SkinViewerAnimation)}
+                options={SKIN_ANIM_UI_OPTIONS.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
               />
-            ) : (
-              <AccountSkinViewer
-                ref={viewerRef}
-                skinDataUrl={preview?.dataUrl ?? null}
-                model={preview?.model ?? 'auto-detect'}
-                capeDataUrl={preview?.capeDataUrl ?? null}
-                playerName={playerName}
-                viewerBackground={viewerBackground}
-                animation={skinAnim}
-                reduceMotion={reduceMotion}
-              />
+            </label>
+            <div className="account-viewer-inner">
+              {loadingPreview ? (
+                <div
+                  className={`account-viewer-skeleton ${reduceMotion ? 'account-viewer-skeleton--static' : ''}`}
+                  aria-hidden
+                />
+              ) : (
+                <AccountSkinViewer
+                  ref={viewerRef}
+                  skinDataUrl={preview?.dataUrl ?? null}
+                  model={preview?.model ?? 'auto-detect'}
+                  capeDataUrl={preview?.capeDataUrl ?? null}
+                  playerName={playerName}
+                  viewerBackground={viewerBackground}
+                  animation={skinAnim}
+                  reduceMotion={reduceMotion}
+                />
+              )}
+            </div>
+            <p className="account-viewer-hint">{t('skins.hint')}</p>
+            {!loadingPreview && (
+              <button type="button" className="btn-muted account-export-png" onClick={() => exportSkinPng()}>
+                {t('skins.exportPng')}
+              </button>
             )}
+            <p className="account-skin-caption account-skin-caption-under">
+              {preview?.source === 'local'
+                ? t('skins.captionLocal')
+                : preview
+                  ? t('skins.captionRemote')
+                  : null}
+            </p>
           </div>
-          <p className="account-viewer-hint">{t('skins.hint')}</p>
-          {!loadingPreview && (
-            <button type="button" className="btn-muted account-export-png" onClick={() => exportSkinPng()}>
-              {t('skins.exportPng')}
-            </button>
-          )}
-          <p className="account-skin-caption account-skin-caption-under">
-            {preview?.source === 'local'
-              ? t('skins.captionLocal')
-              : preview
-                ? t('skins.captionRemote')
-                : null}
-          </p>
-        </div>
-        <div className="account-skins-sidebar">
-          <div className="account-skins-sidebar-head">
-            <h3 className="account-skins-heading">{t('skins.title')}</h3>
-            <span className="account-skins-beta">{t('skins.beta')}</span>
-          </div>
-          <p className="account-skins-sub">{t('skins.sub')}</p>
+        </section>
+
+        <aside className="account-aether-card account-aether-card--library" aria-labelledby="account-library-title">
+          <header className="account-aether-card-head account-aether-card-head--compact">
+            <div className="account-skins-sidebar-head">
+              <p className="account-aether-eyebrow">{t('skins.sectionLibraryEyebrow')}</p>
+              <div className="account-library-title-row">
+                <h3 id="account-library-title" className="account-aether-card-title account-aether-card-title--sm">
+                  {t('skins.title')}
+                </h3>
+                <span className="account-skins-beta">{t('skins.beta')}</span>
+              </div>
+            </div>
+            <p className="account-aether-card-desc">{t('skins.sub')}</p>
+          </header>
           {loadingPreview ? (
             <div
               className={`account-skin-tiles account-skin-tiles-skeleton ${reduceMotion ? 'account-skin-tiles-skeleton--static' : ''}`}
@@ -443,12 +469,14 @@ function SkinAccountPreview({
           ) : null}
 
           <div className="account-cape-block">
+            <p className="account-aether-eyebrow account-cape-eyebrow">{t('skins.sectionCapeEyebrow')}</p>
             <h4 className="account-cape-title">{t('skins.cape')}</h4>
+            <p className="account-cape-lead">{t('skins.capeLead')}</p>
             <button type="button" className="btn-save account-cape-open-btn" onClick={() => setCapeModalOpen(true)}>
               {t('skins.changeCape')}
             </button>
           </div>
-        </div>
+        </aside>
       </div>
 
       <AccountCapeModal
@@ -815,6 +843,38 @@ function ChangelogKindIcon({ kind }: { kind: ChangelogKind }) {
   }
 }
 
+function ChangelogEntrySections({
+  entry,
+  t
+}: {
+  entry: LauncherChangelogEntry
+  t: TFunction
+}) {
+  return (
+    <>
+      {(['added', 'changed', 'removed', 'fixed'] as const).map((key) => {
+        const lines = entry[key]
+        if (!lines?.length) return null
+        return (
+          <div key={key} className={`news-hub-change news-hub-change--${key}`}>
+            <div className="news-hub-change-head">
+              <span className="news-hub-change-icon" aria-hidden>
+                <ChangelogKindIcon kind={key} />
+              </span>
+              <h4 className="news-hub-change-title">{t(`changelog.${key}`)}</h4>
+            </div>
+            <ul className="news-hub-change-list">
+              {lines.map((line, i) => (
+                <li key={i}>{formatChangelogLine(line)}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      })}
+    </>
+  )
+}
+
 function NewsHubSocialIcon({
   id,
   className
@@ -841,7 +901,10 @@ function IconNewsHubReport({ className }: { className?: string } = {}) {
 }
 
 /** Libellé affiché dans l’UI (détail visuel « | Release » ; semver = package.json / getVersion). */
-const LAUNCHER_VERSION_DISPLAY = '26.1.4 | Release'
+const LAUNCHER_VERSION_DISPLAY = '26.2 | Release'
+
+const NEWS_CHANGELOG_LATEST = LAUNCHER_CHANGELOG[0]
+const NEWS_CHANGELOG_OLDER = LAUNCHER_CHANGELOG.slice(1)
 
 function formatBytes(n: number): string {
   if (!Number.isFinite(n) || n < 0) return '—'
@@ -853,9 +916,31 @@ function formatBytes(n: number): string {
 
 const MIN_BOOT_MS = 1650
 
+function IconCheckUpdates({ className }: { className?: string } = {}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      width={20}
+      height={20}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+      <path d="M3 21v-5h5" />
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+      <path d="M21 3v5h-5" />
+    </svg>
+  )
+}
+
 function IconPlay() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor">
+    <svg className="btn-play-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M8 5v14l11-7z" />
     </svg>
   )
@@ -863,7 +948,7 @@ function IconPlay() {
 
 function IconStop() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor">
+    <svg className="btn-play-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <rect x="6" y="6" width="12" height="12" rx="1.5" />
     </svg>
   )
@@ -1213,7 +1298,7 @@ export function App() {
     sizeBytes: number | null
   } | null>(null)
   const [cacheStats, setCacheStats] = useState<{
-    gradleCachesBytes: number
+    launcherCachesBytes: number
     launcherLogsBytes: number
   } | null>(null)
   const [allModpacksAction, setAllModpacksAction] = useState<ModpackActionInfoRow[] | null>(null)
@@ -1222,11 +1307,12 @@ export function App() {
   const [activeModpackId, setActiveModpackId] = useState<ModpackIdUi>('palamod-recreated')
   const [modpacksList, setModpacksList] = useState<{ id: string; displayName: string }[]>([])
   const [packSwitching, setPackSwitching] = useState(false)
-  const [verifyResult, setVerifyResult] = useState<
+  const [settingsVerifyResult, setSettingsVerifyResult] = useState<
     | null
     | { ok: true }
     | { ok: false; reason: string; detail?: string; paths?: string[] }
   >(null)
+  const [checkUpdateBusy, setCheckUpdateBusy] = useState(false)
   const [packMaintBusy, setPackMaintBusy] = useState(false)
   const [packMaintConfirm, setPackMaintConfirm] = useState<
     null | { kind: 'reinstall' | 'uninstall'; packId: ModpackIdUi }
@@ -1241,6 +1327,7 @@ export function App() {
   const [accountSkinKey, setAccountSkinKey] = useState(0)
   const [accountFb, setAccountFb] = useState<string | null>(null)
   const [accountSessionWarn, setAccountSessionWarn] = useState(false)
+  const [creditsModalOpen, setCreditsModalOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
   const [reportScope, setReportScope] = useState<'launcher' | 'instance'>('instance')
   const [reportHelpOpen, setReportHelpOpen] = useState(false)
@@ -1285,6 +1372,10 @@ export function App() {
       error: cur.error
     }
   }, [allModpacksAction, activeModpackId])
+
+  useEffect(() => {
+    if (modpackUi.needsInstall) setMenuOpen(false)
+  }, [modpackUi.needsInstall])
 
   const packNeedsAction = modpackUi.needsInstall || modpackUi.needsUpdate
 
@@ -1587,7 +1678,6 @@ export function App() {
     setView('home')
     if (id === activeModpackId) return
     setPackSwitching(true)
-    setVerifyResult(null)
     await new Promise((r) => setTimeout(r, 90))
     const r = await window.solea.setActiveModpack(id)
     if (!r.ok) {
@@ -1600,7 +1690,14 @@ export function App() {
     if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
     await refreshAllModpacksAction()
     void refreshModpackActivity()
-    void window.solea.isGameRunning().then((run) => setLaunchPhase(run ? 'running' : 'idle'))
+    void window.solea.isGameRunning().then((run) => {
+      setLaunchPhase((prev) => {
+        if (run) return 'running'
+        // Pendant le lancement, isGameRunning est souvent encore false : ne pas repasser à Play.
+        if (prev === 'launching') return 'launching'
+        return 'idle'
+      })
+    })
     window.setTimeout(() => setPackSwitching(false), 360)
   }
 
@@ -1649,6 +1746,10 @@ export function App() {
       modpackPanelRaf2Ref.current = 0
     }
   }, [view, settingsTab])
+
+  useEffect(() => {
+    setSettingsVerifyResult(null)
+  }, [modpackSettingsReadyId])
 
   useEffect(() => {
     if (view !== 'settings' || !isModpackId(settingsTab)) {
@@ -1753,11 +1854,12 @@ export function App() {
   }, [screen])
 
   useEffect(() => {
-    const busy =
-      phase === 'installing' || phase === 'busy' || launchPhase === 'launching' || packMaintBusy
+    // Pas de cursor:wait global pendant le lancement jeu — le bouton Jouer indique déjà l’état ;
+    // sinon le curseur peut rester en « chargement » de façon gênante.
+    const busy = phase === 'installing' || phase === 'busy' || packMaintBusy
     document.body.classList.toggle('solea-global-busy', busy)
     return () => document.body.classList.remove('solea-global-busy')
-  }, [phase, launchPhase, packMaintBusy])
+  }, [phase, packMaintBusy])
 
   const homeActivityLabels = useMemo(() => {
     const a = isModpackId(activeModpackId) ? modpackActivityById[activeModpackId] : undefined
@@ -1842,14 +1944,14 @@ export function App() {
     } else if (r.reason !== 'cancelled') pushToast(r.detail ?? t('toast.accountFail'), 'error')
   }
 
-  const onInstall = async () => {
+  const installModpackForId = async (packId: ModpackIdUi) => {
     if (installBusyRef.current) return
     installBusyRef.current = true
     setPhase('installing')
     setInstallPct(0)
     setInstallLine(t('install.prepare'))
     try {
-      const r = await window.solea.installModpack()
+      const r = await window.solea.installModpackPack(packId)
       if (r.ok) {
         pushToast(t('toast.installDone'), 'success')
         void playUiSound('install', uiSoundPrefs)
@@ -1862,12 +1964,38 @@ export function App() {
     }
   }
 
-  const executeReinstallModpack = async (packId: ModpackIdUi) => {
+  const onInstall = async () => {
+    await installModpackForId(activeModpackId)
+  }
+
+  const onCheckModrinthUpdate = async () => {
+    if (checkUpdateBusy || installBusyRef.current || phase !== 'idle' || launchPhase !== 'idle') return
+    if (!isModpackId(activeModpackId)) return
+    setCheckUpdateBusy(true)
+    try {
+      await refreshAllModpacksAction()
+      const info = await window.solea.getModpackActionInfo()
+      if (info.error) {
+        pushToast(info.error, 'error')
+        return
+      }
+      if (info.needsInstall || info.needsUpdate) {
+        pushToast(t('home.checkUpdateApplying'), 'info', 5200)
+        await installModpackForId(activeModpackId)
+        return
+      }
+      pushToast(t('home.checkUpdateUpToDate'), 'success', 4200)
+    } finally {
+      setCheckUpdateBusy(false)
+    }
+  }
+
+  const executeReinstallModpack = async (packId: ModpackIdUi, preserve: ReinstallPreserveOptions) => {
     setPackMaintBusy(true)
     setPhase('installing')
     setInstallPct(0)
     setInstallLine(t('install.reinstall'))
-    const r = await window.solea.reinstallModpack(packId)
+    const r = await window.solea.reinstallModpack(packId, preserve)
     setPhase('idle')
     setPackMaintBusy(false)
     if (!r.ok) {
@@ -1900,18 +2028,11 @@ export function App() {
     setPackMaintConfirm({ kind: 'uninstall', packId })
   }
 
-  const onPackMaintConfirmResolved = () => {
-    if (!packMaintConfirm) return
-    const { kind, packId } = packMaintConfirm
-    setPackMaintConfirm(null)
-    void (kind === 'reinstall' ? executeReinstallModpack(packId) : executeUninstallModpack(packId))
-  }
-
   const onCacheClearConfirmResolved = () => {
     if (!cacheClearConfirm) return
     const kind = cacheClearConfirm
     setCacheClearConfirm(null)
-    const cacheKey = kind === 'gradle' ? 'gradleCaches' : 'launcherLogs'
+    const cacheKey = kind === 'launcher' ? 'launcherCaches' : 'launcherLogs'
     void window.solea.clearCache(cacheKey).then((r) => {
       if (r.ok) {
         pushToast(t('settings.cacheFreed', { n: formatBytes(r.freedBytes) }), 'success')
@@ -1958,14 +2079,15 @@ export function App() {
     }
   }
 
-  const onVerify = async () => {
-    setVerifyResult(null)
-    const r = await window.solea.verifyModpack()
+  const onSettingsVerify = async () => {
+    if (!modpackSettingsReadyId || !isModpackId(modpackSettingsReadyId)) return
+    setSettingsVerifyResult(null)
+    const r = await window.solea.verifyModpackFor(modpackSettingsReadyId)
     if (r.ok) {
-      setVerifyResult({ ok: true })
+      setSettingsVerifyResult({ ok: true })
       return
     }
-    setVerifyResult({
+    setSettingsVerifyResult({
       ok: false,
       reason: r.reason,
       detail: r.detail,
@@ -1974,12 +2096,14 @@ export function App() {
     if (r.reason !== 'extra_mod') pushToast(r.detail ?? r.reason, 'error')
   }
 
-  const onVerifyRepair = () => {
-    if (modpackUi.needsInstall || modpackUi.needsUpdate) {
-      void onInstall()
+  const onSettingsVerifyRepair = () => {
+    if (!modpackSettingsReadyId || !isModpackId(modpackSettingsReadyId)) return
+    const row = allModpacksAction?.find((p) => p.id === modpackSettingsReadyId)
+    if (row?.needsInstall || row?.needsUpdate) {
+      void installModpackForId(modpackSettingsReadyId)
       return
     }
-    if (isModpackId(activeModpackId)) onReinstallModpack(activeModpackId)
+    onReinstallModpack(modpackSettingsReadyId)
   }
 
   const buildReportBody = useCallback(async () => {
@@ -2177,8 +2301,8 @@ export function App() {
         <TitleBar />
         <div className="app-fill">
     <div className="shell">
-      <aside className="shell-sidebar">
-        <div className="sb-top">
+      <aside className="shell-sidebar" aria-label={t('shell.sidebarAria')}>
+        <div className="sb-rail-section sb-rail-section--top">
           <button
             type="button"
             className={`sb-btn ${view === 'news' ? 'active' : ''}`}
@@ -2201,13 +2325,13 @@ export function App() {
             <IconGear />
           </button>
         </div>
-        <div className="sb-packs" role="navigation" aria-label={t('shell.navPacks')}>
+        <div className="sb-rail-section sb-rail-section--middle" role="navigation" aria-label={t('shell.navPacks')}>
           {modpacksList.map((m) =>
             isModpackId(m.id) ? (
               <button
                 key={m.id}
                 type="button"
-                className={`sb-btn sb-btn-pack ${activeModpackId === m.id ? 'active' : ''}`}
+                className={`sb-btn sb-btn-pack ${view === 'home' && activeModpackId === m.id ? 'active' : ''}`}
                 title={m.displayName}
                 onClick={() => void selectModpack(m.id)}
               >
@@ -2216,7 +2340,7 @@ export function App() {
             ) : null
           )}
         </div>
-        <div className="sb-bottom">
+        <div className="sb-rail-section sb-rail-section--bottom">
           <button
             type="button"
             className={`sb-btn ${view === 'screenshots' ? 'active' : ''}`}
@@ -2276,26 +2400,30 @@ export function App() {
             {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
 
             <div className="home-panel">
-              <div className="home-body">
-                <span className="tag-pill">{t('home.tag')}</span>
-                {(() => {
-                  const { first, second } = packTitleLines(modpackName)
-                  return (
-                    <h2 className="home-title-stacked">
-                      <span className="home-title-line">{first}</span>
-                      {second ? <span className="home-title-line">{second}</span> : null}
-                    </h2>
-                  )
-                })()}
-                <p className="lead">{t('home.lead')}</p>
+              <div className="home-panel-inner">
+                <div className="home-body">
+                  <header className="home-hero-head">
+                    <span className="tag-pill">{t('home.tag')}</span>
+                    {(() => {
+                      const { first, second } = packTitleLines(modpackName)
+                      return (
+                        <h2 className="home-title-stacked">
+                          <span className="home-title-line">{first}</span>
+                          {second ? <span className="home-title-line">{second}</span> : null}
+                        </h2>
+                      )
+                    })()}
+                    <p className="lead">{t('home.lead')}</p>
+                  </header>
 
-                {!modpackUi.loading && modpackUi.error ? (
-                  <p className="home-modpack-err" role="alert">
-                    {modpackUi.error}
-                  </p>
-                ) : null}
+                  {!modpackUi.loading && modpackUi.error ? (
+                    <p className="home-modpack-err" role="alert">
+                      {modpackUi.error}
+                    </p>
+                  ) : null}
 
-                <div className="play-row">
+                  <div className="home-action-deck">
+                <div className={`play-row${packNeedsAction ? ' play-row--pack-cta' : ''}`}>
                   {homePackReadyA11y ? (
                     <span id="home-pack-ready-sr" className="sr-only">
                       {t('home.packReady')}
@@ -2313,7 +2441,9 @@ export function App() {
                         aria-describedby={homePackReadyA11y ? 'home-pack-ready-sr' : undefined}
                         onClick={() => void onInstall()}
                       >
-                        {modpackUi.needsInstall ? t('home.ctaInstallAction') : t('home.ctaUpdateAction')}
+                        <span className="btn-play-label btn-play-label--wrap">
+                          {modpackUi.needsInstall ? t('home.ctaInstallAction') : t('home.ctaUpdateAction')}
+                        </span>
                       </button>
                     </div>
                   ) : (
@@ -2329,7 +2459,7 @@ export function App() {
                         (modpackUi.loading || Boolean(modpackUi.error))
                           ? ' btn-play--muted'
                           : ''
-                      }`}
+                      }${launchPhase === 'launching' ? ' btn-play--launching' : ''}`}
                       disabled={
                         launchPhase === 'launching' ||
                         phase === 'installing' ||
@@ -2349,185 +2479,148 @@ export function App() {
                       onClick={() => void onLaunchOrClose()}
                     >
                       {launchPhase === 'running' ? <IconStop /> : <IconPlay />}
-                      {launchPhase === 'launching'
-                        ? `${t('home.playLaunchingBase')}${settings.uiReduceMotion ? '…' : '.'.repeat(launchDots)}`
-                        : launchPhase === 'running'
-                          ? t('home.playClose')
-                          : t('home.play')}
+                      <span
+                        className={`btn-play-label${
+                          launchPhase === 'launching'
+                            ? ' btn-play-label--ellipsis'
+                            : launchPhase === 'running'
+                              ? ' btn-play-label--close'
+                              : ''
+                        }`}
+                      >
+                        {launchPhase === 'launching'
+                          ? `${t('home.playLaunchingBase')}${settings.uiReduceMotion ? '…' : '.'.repeat(launchDots)}`
+                          : launchPhase === 'running'
+                            ? t('home.playClose')
+                            : t('home.play')}
+                      </span>
                     </button>
                   )}
-                  <button
-                    type="button"
-                    className="btn-quiet"
-                    disabled={phase !== 'idle' || launchPhase !== 'idle'}
-                    onClick={() => void onVerify()}
-                    title={t('home.verifyTooltip')}
-                  >
-                    {t('home.verify')}
-                  </button>
-                  <div className="play-row-account">
-                    <div className="profile-bar-wrap">
-                        <button
-                          type="button"
-                          className={`profile-bar${menuOpen ? ' profile-bar--open' : ''}${
-                            accountSessionWarn ? ' profile-bar--session-warn' : ''
-                          }`}
-                          aria-expanded={menuOpen}
-                          aria-haspopup="menu"
-                          aria-controls={menuOpen ? 'home-account-menu' : undefined}
-                          title={accountSessionWarn ? t('home.account.sessionWarn') : undefined}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setMenuOpen((o) => !o)
-                          }}
-                        >
-                          <span className="profile-bar-avatar-ring">
-                            <SkinHead uuid={activeAcc?.uuid} sizePx={64} className="profile-bar-head" />
-                          </span>
-                          <span className="profile-bar-name">
-                            {activeAcc?.name ?? t('home.profileFallback')}
-                          </span>
-                          <span className="profile-bar-chev" aria-hidden>
-                            <IconChevronDown className="profile-bar-chev-svg" />
-                          </span>
-                        </button>
-                        {menuOpen && (
-                          <div
-                            className="profile-menu"
-                            id="home-account-menu"
-                            role="menu"
-                            aria-labelledby="home-account-menu-label"
-                            onClick={(e) => e.stopPropagation()}
+                  {!modpackUi.needsInstall ? (
+                    <>
+                      <button
+                        type="button"
+                        className="btn-check-update"
+                        disabled={
+                          phase !== 'idle' ||
+                          launchPhase !== 'idle' ||
+                          checkUpdateBusy ||
+                          !isModpackId(activeModpackId)
+                        }
+                        title={t('home.checkUpdateTooltip')}
+                        aria-label={t('home.checkUpdateAria')}
+                        onClick={() => void onCheckModrinthUpdate()}
+                      >
+                        <IconCheckUpdates
+                          className={
+                            checkUpdateBusy && !reduceMotionEffective ? 'btn-check-update-icon--spin' : undefined
+                          }
+                        />
+                      </button>
+                      <div className="play-row-account">
+                        <div className="profile-bar-wrap">
+                          <button
+                            type="button"
+                            className={`profile-bar${menuOpen ? ' profile-bar--open' : ''}${
+                              accountSessionWarn ? ' profile-bar--session-warn' : ''
+                            }`}
+                            aria-expanded={menuOpen}
+                            aria-haspopup="menu"
+                            aria-controls={menuOpen ? 'home-account-menu' : undefined}
+                            title={accountSessionWarn ? t('home.account.sessionWarn') : undefined}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setMenuOpen((o) => !o)
+                            }}
                           >
-                            <div className="profile-menu-inner">
-                              <div className="profile-menu-accent" aria-hidden />
-                              <p className="profile-menu-kicker" id="home-account-menu-label">
-                                {t('home.accountMenuHeading')}
-                              </p>
-                              <ul className="profile-menu-accounts" role="none">
-                                {accounts.map((a) => {
-                                  const sel = activeAcc?.uuid === a.uuid
-                                  return (
-                                    <li key={a.uuid} role="none">
-                                      <button
-                                        type="button"
-                                        role="menuitemradio"
-                                        aria-checked={sel}
-                                        className={`profile-menu-account${sel ? ' profile-menu-account--active' : ''}`}
-                                        onClick={() => void onSelectAccount(a.uuid)}
-                                      >
-                                        <span className="profile-menu-account-avatar">
-                                          <SkinHead uuid={a.uuid} sizePx={40} className="profile-menu-head" />
-                                        </span>
-                                        <span className="profile-menu-account-name">{a.name}</span>
-                                        <span
-                                          className={`profile-menu-account-check${sel ? '' : ' profile-menu-account-check--empty'}`}
-                                          aria-hidden
+                            <span className="profile-bar-avatar-ring">
+                              <SkinHead uuid={activeAcc?.uuid} sizePx={64} className="profile-bar-head" />
+                            </span>
+                            <span className="profile-bar-name">
+                              {activeAcc?.name ?? t('home.profileFallback')}
+                            </span>
+                            <span className="profile-bar-chev" aria-hidden>
+                              <IconChevronDown className="profile-bar-chev-svg" />
+                            </span>
+                          </button>
+                          {menuOpen && (
+                            <div
+                              className="profile-menu"
+                              id="home-account-menu"
+                              role="menu"
+                              aria-labelledby="home-account-menu-label"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="profile-menu-inner">
+                                <div className="profile-menu-accent" aria-hidden />
+                                <p className="profile-menu-kicker" id="home-account-menu-label">
+                                  {t('home.accountMenuHeading')}
+                                </p>
+                                <ul className="profile-menu-accounts" role="none">
+                                  {accounts.map((a) => {
+                                    const sel = activeAcc?.uuid === a.uuid
+                                    return (
+                                      <li key={a.uuid} role="none">
+                                        <button
+                                          type="button"
+                                          role="menuitemradio"
+                                          aria-checked={sel}
+                                          className={`profile-menu-account${sel ? ' profile-menu-account--active' : ''}`}
+                                          onClick={() => void onSelectAccount(a.uuid)}
                                         >
-                                          {sel ? <IconCheckMenu /> : null}
-                                        </span>
-                                      </button>
-                                    </li>
-                                  )
-                                })}
-                              </ul>
-                              <div className="profile-menu-actions" role="none">
-                                <button
-                                  type="button"
-                                  role="menuitem"
-                                  className="profile-menu-action"
-                                  onClick={() => void onAddAccount()}
-                                >
-                                  <span
-                                    className="profile-menu-action-icon profile-menu-action-icon--accent"
-                                    aria-hidden
-                                  >
-                                    <IconPlusMenu />
-                                  </span>
-                                  {t('home.addAccount')}
-                                </button>
-                                {activeAcc ? (
+                                          <span className="profile-menu-account-avatar">
+                                            <SkinHead uuid={a.uuid} sizePx={40} className="profile-menu-head" />
+                                          </span>
+                                          <span className="profile-menu-account-name">{a.name}</span>
+                                          <span
+                                            className={`profile-menu-account-check${sel ? '' : ' profile-menu-account-check--empty'}`}
+                                            aria-hidden
+                                          >
+                                            {sel ? <IconCheckMenu /> : null}
+                                          </span>
+                                        </button>
+                                      </li>
+                                    )
+                                  })}
+                                </ul>
+                                <div className="profile-menu-actions" role="none">
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    className="profile-menu-action profile-menu-action--danger"
-                                    onClick={() => void onRemoveAccount(activeAcc.uuid)}
+                                    className="profile-menu-action"
+                                    onClick={() => void onAddAccount()}
                                   >
-                                    <span className="profile-menu-action-icon" aria-hidden>
-                                      <IconTrashMenu />
+                                    <span
+                                      className="profile-menu-action-icon profile-menu-action-icon--accent"
+                                      aria-hidden
+                                    >
+                                      <IconPlusMenu />
                                     </span>
-                                    {t('home.removeAccount')}
+                                    {t('home.addAccount')}
                                   </button>
-                                ) : null}
+                                  {activeAcc ? (
+                                    <button
+                                      type="button"
+                                      role="menuitem"
+                                      className="profile-menu-action profile-menu-action--danger"
+                                      onClick={() => void onRemoveAccount(activeAcc.uuid)}
+                                    >
+                                      <span className="profile-menu-action-icon" aria-hidden>
+                                        <IconTrashMenu />
+                                      </span>
+                                      {t('home.removeAccount')}
+                                    </button>
+                                  ) : null}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    </>
+                  ) : null}
                 </div>
-
-                {verifyResult && (
-                  <div
-                    className={`verify-banner ${verifyResult.ok ? 'ok' : 'fail'} verify-banner--with-actions`}
-                    role="status"
-                    aria-live="polite"
-                  >
-                    <div className="verify-banner-body">
-                      {verifyResult.ok ? (
-                        <>{t('home.verifyOk')}</>
-                      ) : verifyResult.reason === 'extra_mod' ? (
-                        <>
-                          <strong>{t('home.verifyExtraTitle')}</strong> — {t('home.verifyExtraBody')}
-                          <ul>
-                            {(verifyResult.paths ?? []).map((path) => (
-                              <li key={path}>{path}</li>
-                            ))}
-                          </ul>
-                        </>
-                      ) : verifyResult.reason === 'hash_mismatch' ? (
-                        <>{t('home.verifyHash', { detail: verifyResult.detail ?? '—' })}</>
-                      ) : verifyResult.reason === 'missing_file' ? (
-                        <>{t('home.verifyMissing', { detail: verifyResult.detail ?? '' })}</>
-                      ) : verifyResult.reason === 'no_lock' ? (
-                        <>{t('home.verifyNoLock')}</>
-                      ) : verifyResult.reason === 'read_error' ? (
-                        <>{t('home.verifyRead', { detail: verifyResult.detail ?? verifyResult.reason })}</>
-                      ) : (
-                        <>{verifyResult.detail ?? verifyResult.reason}</>
-                      )}
-                    </div>
-                    <div className="verify-banner-actions">
-                      {!verifyResult.ok ? (
-                        <>
-                          <button
-                            type="button"
-                            className="btn-quiet verify-banner-btn"
-                            disabled={phase !== 'idle' || launchPhase !== 'idle'}
-                            onClick={() => void onVerify()}
-                          >
-                            {t('home.verify.retry')}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-quiet verify-banner-btn"
-                            disabled={phase !== 'idle' || launchPhase !== 'idle' || packMaintBusy}
-                            onClick={onVerifyRepair}
-                          >
-                            {t('home.verify.repair')}
-                          </button>
-                        </>
-                      ) : null}
-                      <button
-                        type="button"
-                        className="btn-quiet verify-banner-btn"
-                        onClick={() => setVerifyResult(null)}
-                      >
-                        {t('home.verify.dismiss')}
-                      </button>
-                    </div>
                   </div>
-                )}
 
                 {phase === 'installing' && (
                   <div className="progress-block">
@@ -2557,20 +2650,23 @@ export function App() {
                 )}
 
                 {(homeActivityLabels.lastInstall || homeActivityLabels.lastPlay) && (
-                  <div className="home-last-activity">
-                    <p className="home-last-activity-label">{t('home.lastActivityTitle')}</p>
-                    <ul className="home-last-activity-list">
-                      {homeActivityLabels.lastInstall ? (
-                        <li>
-                          {t('home.lastInstall', { date: homeActivityLabels.lastInstall })}
-                        </li>
-                      ) : null}
-                      {homeActivityLabels.lastPlay ? (
-                        <li>{t('home.lastPlay', { date: homeActivityLabels.lastPlay })}</li>
-                      ) : null}
-                    </ul>
-                  </div>
+                  <footer className="home-panel-foot">
+                    <div className="home-last-activity">
+                      <p className="home-last-activity-label">{t('home.lastActivityTitle')}</p>
+                      <ul className="home-last-activity-list">
+                        {homeActivityLabels.lastInstall ? (
+                          <li>
+                            {t('home.lastInstall', { date: homeActivityLabels.lastInstall })}
+                          </li>
+                        ) : null}
+                        {homeActivityLabels.lastPlay ? (
+                          <li>{t('home.lastPlay', { date: homeActivityLabels.lastPlay })}</li>
+                        ) : null}
+                      </ul>
+                    </div>
+                  </footer>
                 )}
+                </div>
               </div>
             </div>
           </div>
@@ -2582,11 +2678,14 @@ export function App() {
           <>
             <div className="shell-content shell-content-news news-hub-layout">
               {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
-              <header className="news-hub-page-hero">
-                <h2 className="news-hub-page-title">{t('shell.news')}</h2>
-                <p className="news-hub-page-tagline">{t('newsView.heroSubtitle')}</p>
-              </header>
-              <div className="news-hub-grid">
+              <div className="news-hub-body">
+                <header className="news-hub-page-hero">
+                  <p className="news-hub-hero-eyebrow">{t('newsView.heroEyebrow')}</p>
+                  <h2 className="news-hub-page-title">{t('shell.news')}</h2>
+                  <p className="news-hub-page-tagline">{t('newsView.heroSubtitle')}</p>
+                </header>
+
+                <div className="news-hub-grid">
                 <aside className="news-hub-col news-hub-col--profile">
                   <div className="news-hub-card news-hub-profile-card">
                     <header className="news-hub-profile-top">
@@ -2643,11 +2742,16 @@ export function App() {
                     >
                       <div className="news-hub-changelog-toolbar">
                         <h3 className="news-hub-changelog-title">{t('changelog.panelTitle')}</h3>
-                        {launcherVersion.trim() ? (
-                          <span className="news-hub-version-pill" title={launcherVersion.trim()}>
-                            {launcherVersion.trim()}
-                          </span>
-                        ) : null}
+                        <span
+                          className="news-hub-version-pill"
+                          title={
+                            launcherVersion.trim()
+                              ? `${LAUNCHER_VERSION_DISPLAY} · ${launcherVersion.trim()}`
+                              : LAUNCHER_VERSION_DISPLAY
+                          }
+                        >
+                          {LAUNCHER_VERSION_DISPLAY}
+                        </span>
                       </div>
                       <p className="news-hub-changelog-lead">{t('changelog.lead')}</p>
                       {LAUNCHER_CHANGELOG.length === 0 ? (
@@ -2655,43 +2759,69 @@ export function App() {
                       ) : (
                         <div className="news-hub-changelog-scroll">
                           <div className="news-hub-releases">
-                            {LAUNCHER_CHANGELOG.map((entry, releaseIdx) => (
+                            {NEWS_CHANGELOG_LATEST ? (
                               <article
-                                key={entry.version}
-                                className={`news-hub-release${releaseIdx === 0 ? ' news-hub-release--latest' : ''}`}
+                                className="news-hub-spotlight-embed"
+                                aria-labelledby="news-hub-spotlight-heading"
                               >
-                                <div className="news-hub-release-head">
-                                  <span className="news-hub-release-ver">{entry.version}</span>
-                                  {entry.date ? (
-                                    <time className="news-hub-release-date" dateTime={entry.date}>
-                                      {entry.date}
-                                    </time>
-                                  ) : null}
+                                <div className="news-hub-spotlight-embed-head">
+                                  <div className="news-hub-spotlight-embed-head-text">
+                                    <p className="news-hub-spotlight-eyebrow">
+                                      {t('newsView.spotlightEyebrow')}
+                                    </p>
+                                    <h3 id="news-hub-spotlight-heading" className="news-hub-spotlight-title">
+                                      {t('newsView.spotlightTitle', {
+                                        version: NEWS_CHANGELOG_LATEST.version
+                                      })}
+                                    </h3>
+                                  </div>
+                                  <div className="news-hub-spotlight-meta">
+                                    <span className="news-hub-spotlight-ver">
+                                      {NEWS_CHANGELOG_LATEST.version}
+                                    </span>
+                                    {NEWS_CHANGELOG_LATEST.date ? (
+                                      <time
+                                        className="news-hub-spotlight-date"
+                                        dateTime={NEWS_CHANGELOG_LATEST.date}
+                                      >
+                                        {NEWS_CHANGELOG_LATEST.date}
+                                      </time>
+                                    ) : null}
+                                  </div>
                                 </div>
-                                {(['added', 'changed', 'removed', 'fixed'] as const).map((key) => {
-                                  const lines = entry[key]
-                                  if (!lines?.length) return null
-                                  return (
-                                    <div
-                                      key={key}
-                                      className={`news-hub-change news-hub-change--${key}`}
-                                    >
-                                      <div className="news-hub-change-head">
-                                        <span className="news-hub-change-icon" aria-hidden>
-                                          <ChangelogKindIcon kind={key} />
-                                        </span>
-                                        <h4 className="news-hub-change-title">{t(`changelog.${key}`)}</h4>
-                                      </div>
-                                      <ul className="news-hub-change-list">
-                                        {lines.map((line, i) => (
-                                          <li key={i}>{formatChangelogLine(line)}</li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  )
-                                })}
+                                <div className="news-hub-spotlight-body">
+                                  <ChangelogEntrySections entry={NEWS_CHANGELOG_LATEST} t={t} />
+                                </div>
+                                {NEWS_CHANGELOG_OLDER.length > 0 ? (
+                                  <p className="news-hub-spotlight-footer">
+                                    {t('newsView.spotlightFooter')}
+                                  </p>
+                                ) : null}
                               </article>
-                            ))}
+                            ) : null}
+                            {NEWS_CHANGELOG_OLDER.length > 0 ? (
+                              <>
+                                <p
+                                  className="news-hub-history-label news-hub-history-label--in-scroll"
+                                  id="news-hub-history-start"
+                                >
+                                  {t('newsView.historyLabel')}
+                                </p>
+                                {NEWS_CHANGELOG_OLDER.map((entry) => (
+                                  <article key={entry.version} className="news-hub-release">
+                                    <div className="news-hub-release-head">
+                                      <span className="news-hub-release-ver">{entry.version}</span>
+                                      {entry.date ? (
+                                        <time className="news-hub-release-date" dateTime={entry.date}>
+                                          {entry.date}
+                                        </time>
+                                      ) : null}
+                                    </div>
+                                    <ChangelogEntrySections entry={entry} t={t} />
+                                  </article>
+                                ))}
+                              </>
+                            ) : null}
                           </div>
                         </div>
                       )}
@@ -2735,6 +2865,7 @@ export function App() {
                     </div>
                   </div>
                 </aside>
+                </div>
               </div>
             </div>
             <footer className="shell-footer">{t('home.footer', { name: modpackName })}</footer>
@@ -2750,39 +2881,51 @@ export function App() {
 
         {view === 'settings' && (
           <div className="settings-layout" style={{ flex: 1, minHeight: 0 }}>
-            <nav className="settings-nav">
-              <div className="settings-nav-brand">
+            <nav className="settings-nav" aria-label={t('settings.title')}>
+              <div className="settings-nav-top">
+                <div className="settings-nav-brand">
+                  <button
+                    type="button"
+                    className="settings-nav-brand-icon"
+                    aria-label={t('settings.title')}
+                    onClick={() => bumpSettingsDebugTap()}
+                  >
+                    <IconSettingsNav />
+                  </button>
+                  <h3 className="settings-nav-brand-title">{t('settings.title')}</h3>
+                </div>
+                <p className="settings-nav-section-label">{t('settings.navSectionGeneral')}</p>
                 <button
                   type="button"
-                  className="settings-nav-brand-icon"
-                  aria-label={t('settings.title')}
-                  onClick={() => bumpSettingsDebugTap()}
+                  className={`nav-item ${settingsTab === 'launcher' ? 'on' : ''}`}
+                  onClick={() => setSettingsTab('launcher')}
                 >
-                  <IconSettingsNav />
+                  <IconHome className="settings-nav-launcher-icon" /> {t('settings.navLauncher')}
                 </button>
-                <h3 className="settings-nav-brand-title">{t('settings.title')}</h3>
+                {modpacksList.some((m) => isModpackId(m.id)) ? (
+                  <>
+                    <p className="settings-nav-section-label">{t('settings.navSectionPacks')}</p>
+                    {modpacksList.map((m) =>
+                      isModpackId(m.id) ? (
+                        <button
+                          key={m.id}
+                          type="button"
+                          className={`nav-item nav-item-pack ${settingsTab === m.id ? 'on' : ''}`}
+                          onClick={() => setSettingsTab(m.id)}
+                        >
+                          <img src={MODPACK_THEME[m.id].sidebarIcon} alt="" className="nav-pack-thumb" />
+                          <span className="nav-pack-label">{m.displayName}</span>
+                        </button>
+                      ) : null
+                    )}
+                  </>
+                ) : null}
               </div>
-              <button
-                type="button"
-                className={`nav-item ${settingsTab === 'launcher' ? 'on' : ''}`}
-                onClick={() => setSettingsTab('launcher')}
-              >
-                <IconHome className="settings-nav-launcher-icon" /> {t('settings.navLauncher')}
-              </button>
-              {modpacksList.map((m) =>
-                isModpackId(m.id) ? (
-                  <button
-                    key={m.id}
-                    type="button"
-                    className={`nav-item nav-item-pack ${settingsTab === m.id ? 'on' : ''}`}
-                    onClick={() => setSettingsTab(m.id)}
-                  >
-                    <img src={MODPACK_THEME[m.id].sidebarIcon} alt="" className="nav-pack-thumb" />
-                    <span className="nav-pack-label">{m.displayName}</span>
-                  </button>
-                ) : null
-              )}
               <div className="nav-bottom">
+                <p className="settings-nav-section-label">{t('settings.navSectionMore')}</p>
+                <button type="button" className="nav-item" onClick={() => setCreditsModalOpen(true)}>
+                  {t('settings.creditsNav')}
+                </button>
                 <button type="button" className="nav-item" onClick={openReportModal}>
                   {t('home.help.report')}
                 </button>
@@ -2793,26 +2936,34 @@ export function App() {
             </nav>
 
             <div className="settings-body">
-              <header>
-                <img
-                  src={
-                    settingsTab !== 'launcher' && isModpackId(settingsTab)
-                      ? MODPACK_THEME[settingsTab].sidebarIcon
-                      : LOGO
-                  }
-                  alt=""
-                  className="settings-header-ico"
-                />
-                <h2>
-                  {settingsTab === 'launcher'
-                    ? t('settings.headerLauncher')
-                    : isModpackId(settingsTab)
-                      ? t('settings.headerGame', {
-                          name: modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
-                        })
-                      : t('settings.headerLauncher')}
-                </h2>
-              </header>
+              <div className="settings-body-inner">
+                <div className="settings-body-scroll">
+                  <div className="settings-body-scroll-content">
+                  <header className="settings-page-header">
+                    <div className="settings-page-header-icon-wrap">
+                      <img
+                        src={
+                          settingsTab !== 'launcher' && isModpackId(settingsTab)
+                            ? MODPACK_THEME[settingsTab].sidebarIcon
+                            : LOGO
+                        }
+                        alt=""
+                        className="settings-header-ico"
+                      />
+                    </div>
+                    <div className="settings-page-header-text">
+                      <p className="settings-page-eyebrow">{t('settings.pageEyebrow')}</p>
+                      <h2 className="settings-page-title">
+                        {settingsTab === 'launcher'
+                          ? t('settings.headerLauncher')
+                          : isModpackId(settingsTab)
+                            ? t('settings.headerGame', {
+                                name: modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
+                              })
+                            : t('settings.headerLauncher')}
+                      </h2>
+                    </div>
+                  </header>
 
               {phase === 'installing' && (
                 <div className="settings-install-progress">
@@ -2848,7 +2999,6 @@ export function App() {
                           discordUrl={DISCORD_INVITE_URL}
                         />
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner">
                       <LauncherSelect
@@ -2879,104 +3029,55 @@ export function App() {
                           discordUrl={DISCORD_INVITE_URL}
                         />
                       </div>
-                      <span>▾</span>
                     </summary>
-                    <div className="inner field-grid">
-                      <label>
-                        <span className="settings-label-help-row">
-                          {t('settings.downloadThreads')}
-                          <SettingsGlossaryTrigger
-                            gkey="downloadThreads"
-                            openKey={settingsGlossaryKey}
-                            setOpenKey={setSettingsGlossaryKey}
-                            t={t}
-                            discordUrl={DISCORD_INVITE_URL}
+                    <div className="inner settings-network-panel">
+                      <p className="settings-network-intro">{t('settings.networkIntro')}</p>
+                      <p className="settings-network-section-title">{t('settings.networkDownloadsSection')}</p>
+                      <div className="field-grid settings-network-grid">
+                        <label>
+                          <span className="settings-label-help-row">
+                            {t('settings.downloadThreads')}
+                            <SettingsGlossaryTrigger
+                              gkey="downloadThreads"
+                              openKey={settingsGlossaryKey}
+                              setOpenKey={setSettingsGlossaryKey}
+                              t={t}
+                              discordUrl={DISCORD_INVITE_URL}
+                            />
+                          </span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={32}
+                            value={settings.downloadThreads}
+                            onChange={(e) => setNum('downloadThreads', e.target.value)}
                           />
-                        </span>
-                        <input
-                          type="number"
-                          min={1}
-                          max={32}
-                          value={settings.downloadThreads}
-                          onChange={(e) => setNum('downloadThreads', e.target.value)}
-                        />
-                      </label>
-                      <label>
-                        <span className="settings-label-help-row">
-                          {t('settings.timeout')}
-                          <SettingsGlossaryTrigger
-                            gkey="networkTimeout"
-                            openKey={settingsGlossaryKey}
-                            setOpenKey={setSettingsGlossaryKey}
-                            t={t}
-                            discordUrl={DISCORD_INVITE_URL}
+                        </label>
+                        <label>
+                          <span className="settings-label-help-row">
+                            {t('settings.timeout')}
+                            <SettingsGlossaryTrigger
+                              gkey="networkTimeout"
+                              openKey={settingsGlossaryKey}
+                              setOpenKey={setSettingsGlossaryKey}
+                              t={t}
+                              discordUrl={DISCORD_INVITE_URL}
+                            />
+                          </span>
+                          <input
+                            type="number"
+                            min={5000}
+                            max={120000}
+                            step={1000}
+                            value={settings.networkTimeoutMs}
+                            onChange={(e) => setNum('networkTimeoutMs', e.target.value)}
                           />
-                        </span>
-                        <input
-                          type="number"
-                          min={5000}
-                          max={120000}
-                          step={1000}
-                          value={settings.networkTimeoutMs}
-                          onChange={(e) => setNum('networkTimeoutMs', e.target.value)}
-                        />
-                      </label>
-                      <label className="full">
-                        <span className="settings-label-help-row">
-                          {t('settings.javaPath')}
-                          <SettingsGlossaryTrigger
-                            gkey="javaPath"
-                            openKey={settingsGlossaryKey}
-                            setOpenKey={setSettingsGlossaryKey}
-                            t={t}
-                            discordUrl={DISCORD_INVITE_URL}
-                          />
-                        </span>
-                        <input
-                          type="text"
-                          value={settings.javaPath}
-                          onChange={(e) => setSettings((s) => ({ ...s, javaPath: e.target.value }))}
-                          spellCheck={false}
-                        />
-                      </label>
-                      <label>
-                        <span className="settings-label-help-row">
-                          {t('settings.javaVersion')}
-                          <SettingsGlossaryTrigger
-                            gkey="javaVersion"
-                            openKey={settingsGlossaryKey}
-                            setOpenKey={setSettingsGlossaryKey}
-                            t={t}
-                            discordUrl={DISCORD_INVITE_URL}
-                          />
-                        </span>
-                        <input
-                          type="text"
-                          value={settings.javaVersion}
-                          onChange={(e) => setSettings((s) => ({ ...s, javaVersion: e.target.value }))}
-                          spellCheck={false}
-                        />
-                      </label>
-                      <label className="full" title={t('settings.jvmArgsTooltip')}>
-                        <span className="settings-label-help-row">
-                          {t('settings.jvmArgs')}
-                          <SettingsGlossaryTrigger
-                            gkey="jvmArgs"
-                            openKey={settingsGlossaryKey}
-                            setOpenKey={setSettingsGlossaryKey}
-                            t={t}
-                            discordUrl={DISCORD_INVITE_URL}
-                          />
-                        </span>
-                        <textarea
-                          rows={4}
-                          value={settings.jvmArgs}
-                          onChange={(e) => setSettings((s) => ({ ...s, jvmArgs: e.target.value }))}
-                          spellCheck={false}
-                          title={t('settings.jvmArgsTooltip')}
-                        />
-                      </label>
-                      <label className="full">
+                        </label>
+                      </div>
+                      <div className="settings-network-rule" role="presentation" />
+                      <p className="settings-network-section-title">{t('settings.networkMicrosoftSection')}</p>
+                      <p className="settings-network-hint">{t('settings.azureSectionHint')}</p>
+                      <label className="full settings-network-azure-label">
                         <span className="settings-label-help-row">
                           {t('settings.azureId')}
                           <SettingsGlossaryTrigger
@@ -2992,6 +3093,7 @@ export function App() {
                           value={settings.azureClientId}
                           onChange={(e) => setSettings((s) => ({ ...s, azureClientId: e.target.value }))}
                           spellCheck={false}
+                          placeholder={t('settings.azurePlaceholder')}
                         />
                       </label>
                     </div>
@@ -3011,29 +3113,8 @@ export function App() {
                             discordUrl={DISCORD_INVITE_URL}
                           />
                         </div>
-                        <div className="settings-toggle-with-help">
-                          <SettingsToggle
-                            checked={settings.diagnosticLaunch === true}
-                            onChange={(next) => setSettings((s) => ({ ...s, diagnosticLaunch: next }))}
-                            label={t('settings.diagnosticLaunch')}
-                          />
-                          <SettingsGlossaryTrigger
-                            gkey="diagLaunch"
-                            openKey={settingsGlossaryKey}
-                            setOpenKey={setSettingsGlossaryKey}
-                            t={t}
-                            discordUrl={DISCORD_INVITE_URL}
-                          />
-                        </div>
                       </div>
                       <p className="settings-roadmap-hint">{t('settings.networkRoadmapHint')}</p>
-                      <button
-                        type="button"
-                        className="btn-muted settings-java-dl-btn"
-                        onClick={() => void window.solea.openJavaDownloadPage()}
-                      >
-                        {t('settings.javaDownloadTemurin')}
-                      </button>
                     </div>
                   </details>
 
@@ -3043,13 +3124,13 @@ export function App() {
                         {t('settings.cacheMaintenance')}
                         <div className="sub">{t('settings.cacheMaintenanceSub')}</div>
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner cache-maintenance-panel">
                       {cacheStats ? (
                         <>
                           <p className="cache-line">
-                            <strong>{t('settings.cacheGradle')}</strong> {formatBytes(cacheStats.gradleCachesBytes)}
+                            <strong>{t('settings.cacheLauncherDisk')}</strong>{' '}
+                            {formatBytes(cacheStats.launcherCachesBytes)}
                           </p>
                           <p className="cache-line">
                             <strong>{t('settings.cacheLauncherLogs')}</strong>{' '}
@@ -3059,9 +3140,9 @@ export function App() {
                             <button
                               type="button"
                               className="btn-danger-outline"
-                              onClick={() => setCacheClearConfirm('gradle')}
+                              onClick={() => setCacheClearConfirm('launcher')}
                             >
-                              {t('settings.cacheClearGradle')}
+                              {t('settings.cacheClearLauncher')}
                             </button>
                             <button
                               type="button"
@@ -3084,7 +3165,6 @@ export function App() {
                         {t('settings.appearance')}
                         <div className="sub">{t('settings.appearanceSub')}</div>
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner field-grid">
                       <label className="full">
@@ -3199,7 +3279,6 @@ export function App() {
                         {t('settings.audio')}
                         <div className="sub">{t('settings.audioSub')}</div>
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner field-grid">
                       <div className="full settings-toggle-stack">
@@ -3265,7 +3344,6 @@ export function App() {
                         {t('settings.shortcuts')}
                         <div className="sub">{t('settings.shortcutsSub')}</div>
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner settings-shortcuts-panel">
                       {shortcutCapture ? (
@@ -3351,7 +3429,6 @@ export function App() {
                           discordUrl={DISCORD_INVITE_URL}
                         />
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner memory-ram-settings-inner" title={t('settings.ramAllocTooltip')}>
                       <MemoryRamSlider
@@ -3379,7 +3456,6 @@ export function App() {
                           discordUrl={DISCORD_INVITE_URL}
                         />
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner field-grid">
                       <label>
@@ -3422,7 +3498,6 @@ export function App() {
                         {t('settings.gameArgs')}
                         <div className="sub">{t('settings.gameArgsSub')}</div>
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner">
                       <textarea
@@ -3442,7 +3517,6 @@ export function App() {
                         {t('settings.install')}
                         <div className="sub">{t('settings.installSub')}</div>
                       </div>
-                      <span>▾</span>
                     </summary>
                     <div className="inner modpack-maint-panel">
                       <div className="modpack-storage-row">
@@ -3492,6 +3566,97 @@ export function App() {
                           discordUrl={DISCORD_INVITE_URL}
                         />
                       </p>
+                      <div className="settings-verify-files-row">
+                        <button
+                          type="button"
+                          className="btn-muted"
+                          disabled={
+                            !packInstanceDetails?.installed ||
+                            packMaintBusy ||
+                            phase === 'installing' ||
+                            launchPhase !== 'idle'
+                          }
+                          title={
+                            !packInstanceDetails?.installed
+                              ? t('settings.packMaintDisabledHintShort')
+                              : t('settings.verifyFilesTooltip')
+                          }
+                          onClick={() => void onSettingsVerify()}
+                        >
+                          {t('settings.verifyFilesBtn')}
+                        </button>
+                      </div>
+                      {settingsVerifyResult ? (
+                        <div
+                          className={`verify-banner settings-verify-banner ${
+                            settingsVerifyResult.ok ? 'ok' : 'fail'
+                          } verify-banner--with-actions`}
+                          role="status"
+                          aria-live="polite"
+                        >
+                          <div className="verify-banner-body">
+                            {settingsVerifyResult.ok ? (
+                              <>{t('home.verifyOk')}</>
+                            ) : settingsVerifyResult.reason === 'extra_mod' ? (
+                              <>
+                                <strong>{t('home.verifyExtraTitle')}</strong> — {t('home.verifyExtraBody')}
+                                <ul>
+                                  {(settingsVerifyResult.paths ?? []).map((path) => (
+                                    <li key={path}>{path}</li>
+                                  ))}
+                                </ul>
+                              </>
+                            ) : settingsVerifyResult.reason === 'hash_mismatch' ? (
+                              <>
+                                {t('home.verifyHash', { detail: settingsVerifyResult.detail ?? '—' })}
+                              </>
+                            ) : settingsVerifyResult.reason === 'missing_file' ? (
+                              <>
+                                {t('home.verifyMissing', { detail: settingsVerifyResult.detail ?? '' })}
+                              </>
+                            ) : settingsVerifyResult.reason === 'no_lock' ? (
+                              <>{t('home.verifyNoLock')}</>
+                            ) : settingsVerifyResult.reason === 'read_error' ? (
+                              <>
+                                {t('home.verifyRead', {
+                                  detail: settingsVerifyResult.detail ?? settingsVerifyResult.reason
+                                })}
+                              </>
+                            ) : (
+                              <>{settingsVerifyResult.detail ?? settingsVerifyResult.reason}</>
+                            )}
+                          </div>
+                          <div className="verify-banner-actions">
+                            {!settingsVerifyResult.ok ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className="btn-quiet verify-banner-btn"
+                                  disabled={phase !== 'idle' || launchPhase !== 'idle'}
+                                  onClick={() => void onSettingsVerify()}
+                                >
+                                  {t('home.verify.retry')}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-quiet verify-banner-btn"
+                                  disabled={phase !== 'idle' || launchPhase !== 'idle' || packMaintBusy}
+                                  onClick={onSettingsVerifyRepair}
+                                >
+                                  {t('home.verify.repair')}
+                                </button>
+                              </>
+                            ) : null}
+                            <button
+                              type="button"
+                              className="btn-quiet verify-banner-btn"
+                              onClick={() => setSettingsVerifyResult(null)}
+                            >
+                              {t('home.verify.dismiss')}
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
                       <div className="modpack-maint-actions">
                         <button
                           type="button"
@@ -3531,32 +3696,46 @@ export function App() {
                 </>
               ) : null}
 
-              <div className="actions-bar">
-                <button type="button" className="btn-save" onClick={() => void saveAllSettings()}>
-                  {t('settings.save')}
-                </button>
-                <button type="button" className="btn-muted" onClick={() => void resetAllSettings()}>
-                  {t('settings.reset')}
-                </button>
-                <button type="button" className="btn-muted" onClick={() => setView('news')}>
-                  {t('settings.back')}
-                </button>
+                  {settingsFb ? (
+                    <div className={`settings-feedback feedback ${settingsFb.ok ? 'ok' : 'err'}`}>
+                      {settingsFb.text}
+                    </div>
+                  ) : null}
+                  </div>
+                </div>
+                <div className="settings-sticky-footer">
+                  <div className="settings-footer-inner">
+                  <div className="actions-bar settings-footer-actions">
+                    <button type="button" className="btn-save" onClick={() => void saveAllSettings()}>
+                      {t('settings.save')}
+                    </button>
+                    <button type="button" className="btn-muted" onClick={() => void resetAllSettings()}>
+                      {t('settings.reset')}
+                    </button>
+                    <button type="button" className="btn-muted" onClick={() => setView('news')}>
+                      {t('settings.back')}
+                    </button>
+                  </div>
+                  </div>
+                </div>
               </div>
-              {settingsFb && (
-                <div className={`feedback ${settingsFb.ok ? 'ok' : 'err'}`}>{settingsFb.text}</div>
-              )}
             </div>
           </div>
         )}
 
         {view === 'account' && (
           <div className="account-layout">
-            <div className="account-panel">
+            <div className="account-scroll">
+              <div className="account-panel">
               <header className="account-header">
-                <h2 className="account-title">
-                  <IconUser /> {t('account.title')}
-                </h2>
-                <p className="account-lead">{t('account.lead')}</p>
+                <div className="account-header-icon-wrap" aria-hidden>
+                  <IconUser />
+                </div>
+                <div className="account-header-text">
+                  <p className="account-page-eyebrow">{t('account.pageEyebrow')}</p>
+                  <h2 className="account-title">{t('account.title')}</h2>
+                  <p className="account-lead">{t('account.lead')}</p>
+                </div>
               </header>
 
               {activeAcc ? (
@@ -3608,7 +3787,6 @@ export function App() {
                           {t('account.otherAccounts')}
                           <div className="sub">{t('account.otherAccountsSub')}</div>
                         </div>
-                        <span>▾</span>
                       </summary>
                       <div className="inner account-account-list">
                         {accounts.map((a) => (
@@ -3646,6 +3824,7 @@ export function App() {
               ) : (
                 <p className="account-empty">{t('account.empty')}</p>
               )}
+              </div>
             </div>
           </div>
         )}
@@ -3824,17 +4003,34 @@ export function App() {
             </div>
           </div>
         ) : null}
+        <CreditsModal open={creditsModalOpen} onClose={() => setCreditsModalOpen(false)} />
         <ModpackUpdatesModal
           open={showModpackUpdatesModal}
           packs={allModpacksAction ?? []}
           onClose={() => setShowModpackUpdatesModal(false)}
         />
-        {packMaintConfirm ? (
+        {packMaintConfirm?.kind === 'reinstall' ? (
           <PackMaintConfirmModal
             open
-            variant={packMaintConfirm.kind}
-            onConfirm={onPackMaintConfirmResolved}
+            variant="reinstall"
             onCancel={() => setPackMaintConfirm(null)}
+            onConfirm={(preserve) => {
+              const id = packMaintConfirm.packId
+              setPackMaintConfirm(null)
+              void executeReinstallModpack(id, preserve)
+            }}
+          />
+        ) : null}
+        {packMaintConfirm?.kind === 'uninstall' ? (
+          <PackMaintConfirmModal
+            open
+            variant="uninstall"
+            onCancel={() => setPackMaintConfirm(null)}
+            onConfirm={() => {
+              const id = packMaintConfirm.packId
+              setPackMaintConfirm(null)
+              void executeUninstallModpack(id)
+            }}
           />
         ) : null}
         {cacheClearConfirm ? (

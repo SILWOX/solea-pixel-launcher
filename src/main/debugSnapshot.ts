@@ -54,10 +54,10 @@ export type DebugSnapshot = {
   instanceRoot: string
 }
 
-export function getDebugSnapshot(
+export async function getDebugSnapshot(
   getInstanceRoot: () => string,
-  isAnyGameRunning?: () => boolean
-): DebugSnapshot {
+  isAnyGameRunning?: () => Promise<boolean>
+): Promise<DebugSnapshot> {
   const mu = process.memoryUsage()
   const cpu = process.getCPUUsage()
   const metrics = app.getAppMetrics()
@@ -99,7 +99,7 @@ export function getDebugSnapshot(
       }
     })),
     activeModpackId: settings.activeModpackId,
-    gameRunning: isAnyGameRunning ? isAnyGameRunning() : isMinecraftRunning(root),
+    gameRunning: isAnyGameRunning ? await isAnyGameRunning() : await isMinecraftRunning(root),
     userData: app.getPath('userData'),
     instanceRoot: root
   }

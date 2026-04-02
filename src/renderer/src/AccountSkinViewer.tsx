@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import {
   CrouchAnimation,
@@ -42,6 +43,8 @@ export const AccountSkinViewer = forwardRef<AccountSkinViewerHandle, AccountSkin
     useMinecraftFontReady()
     const hostRef = useRef<HTMLDivElement>(null)
     const viewerRef = useRef<SkinViewer | null>(null)
+    const skinLoadGen = useRef(0)
+    const capeLoadGen = useRef(0)
 
     useImperativeHandle(ref, () => ({
       exportPng: () => {
@@ -160,9 +163,18 @@ export const AccountSkinViewer = forwardRef<AccountSkinViewerHandle, AccountSkin
     useEffect(() => {
       const v = viewerRef.current
       if (!v || v.disposed) return
+      const gen = ++skinLoadGen.current
       if (skinDataUrl) {
         const m = model === 'auto-detect' ? 'auto-detect' : model
-        void v.loadSkin(skinDataUrl, { model: m, ears: 'load-only' })
+        const out = v.loadSkin(skinDataUrl, { model: m, ears: 'load-only' })
+        void Promise.resolve(out).then(
+          () => {
+            if (skinLoadGen.current !== gen || v.disposed) return
+          },
+          () => {
+            if (skinLoadGen.current !== gen || v.disposed) return
+          }
+        )
       } else {
         v.resetSkin()
       }
@@ -171,8 +183,17 @@ export const AccountSkinViewer = forwardRef<AccountSkinViewerHandle, AccountSkin
     useEffect(() => {
       const v = viewerRef.current
       if (!v || v.disposed) return
+      const gen = ++capeLoadGen.current
       if (capeDataUrl) {
-        void v.loadCape(capeDataUrl, { backEquipment: 'cape' })
+        const out = v.loadCape(capeDataUrl, { backEquipment: 'cape' })
+        void Promise.resolve(out).then(
+          () => {
+            if (capeLoadGen.current !== gen || v.disposed) return
+          },
+          () => {
+            if (capeLoadGen.current !== gen || v.disposed) return
+          }
+        )
       } else {
         v.resetCape()
       }

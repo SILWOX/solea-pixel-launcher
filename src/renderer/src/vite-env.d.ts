@@ -106,10 +106,17 @@ export type SoleaApi = {
   saveSettings: (partial: Partial<LS>) => Promise<{ ok: true } | { ok: false; error: string }>
   resetSettings: () => Promise<{ ok: true } | { ok: false; error: string }>
   installModpack: () => Promise<{ ok: true } | { ok: false; error: string }>
-  reinstallModpack: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>
+  installModpackPack: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>
+  reinstallModpack: (
+    id: string,
+    preserve?: import('./launcherTypes').ReinstallPreserveOptions
+  ) => Promise<{ ok: true } | { ok: false; error: string }>
   uninstallModpack: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>
   openExternalUrl: (url: string) => Promise<void>
   verifyModpack: () => Promise<
+    { ok: true } | { ok: false; reason: string; detail?: string; paths?: string[] }
+  >
+  verifyModpackFor: (id: string) => Promise<
     { ok: true } | { ok: false; reason: string; detail?: string; paths?: string[] }
   >
   getModpackActionInfo: () => Promise<{
@@ -158,8 +165,8 @@ export type SoleaApi = {
     defaultFileName: string
   ) => Promise<{ ok: true; path: string } | { ok: false; error: string }>
   submitReportDiscordWebhook: (content: string) => Promise<{ ok: true } | { ok: false; error: string }>
-  getCacheStats: () => Promise<{ gradleCachesBytes: number; launcherLogsBytes: number }>
-  clearCache: (target: 'gradleCaches' | 'launcherLogs') => Promise<
+  getCacheStats: () => Promise<{ launcherCachesBytes: number; launcherLogsBytes: number }>
+  clearCache: (target: 'launcherCaches' | 'launcherLogs') => Promise<
     { ok: true; freedBytes: number } | { ok: false; error: string }
   >
   openJavaDownloadPage: () => Promise<{ ok: boolean }>

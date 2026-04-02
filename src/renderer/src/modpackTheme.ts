@@ -1,3 +1,4 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import palWall from './assets/modpacks/palamod/wallpaper.png?url'
 import palIcon from './assets/modpacks/palamod/icon.png?url'
 import wsWall from './assets/modpacks/wither-storm/wallpaper.png?url'

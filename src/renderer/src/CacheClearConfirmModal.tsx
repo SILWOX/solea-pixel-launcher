@@ -1,8 +1,9 @@
+/** AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 import { useRef } from 'react'
 import { useI18n } from './i18n/I18nContext'
 import { useFocusTrap } from './a11y/useFocusTrap'
 
-export type CacheClearKind = 'gradle' | 'logs'
+export type CacheClearKind = 'launcher' | 'logs'
 
 type CacheClearConfirmModalProps = {
   open: boolean
@@ -39,14 +40,14 @@ export function CacheClearConfirmModal({
           {t('confirm.packSureQuestion')}
         </h2>
         <p id="cache-clear-confirm-desc" className="pack-confirm-body">
-          {kind === 'gradle' ? t('settings.cacheClearGradleConfirm') : t('settings.cacheClearLogsConfirm')}
+          {kind === 'launcher' ? t('settings.cacheClearLauncherConfirm') : t('settings.cacheClearLogsConfirm')}
         </p>
         <div className="pack-confirm-actions">
           <button type="button" className="btn-muted pack-confirm-btn-cancel" onClick={onCancel}>
             {t('confirm.packCancel')}
           </button>
           <button type="button" className="btn-save pack-confirm-btn-primary" onClick={onConfirm}>
-            {kind === 'gradle' ? t('settings.cacheClearGradle') : t('settings.cacheClearLogs')}
+            {kind === 'launcher' ? t('settings.cacheClearLauncher') : t('settings.cacheClearLogs')}
           </button>
         </div>
       </div>

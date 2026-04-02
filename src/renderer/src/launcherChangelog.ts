@@ -13,6 +13,19 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.2',
+    date: '2026-03-30',
+    added: [
+      '**Home & news — AETHER UI:** full-page scroll shell with the themed AETHER scrollbar, a centered content rail, hero eyebrow, and a **spotlight** card for the latest release so patch notes read clearly before history.',
+      '**Screenshots — AETHER UI:** page-level scroll (same scrollbar treatment), sharper glass cards with a top accent strip, and spacing/typography aligned with Settings and Account.',
+      '**Release history column** now lists earlier versions only; the newest build is always shown in the spotlight above the three-column hub.'
+    ],
+    changed: [
+      'Tighter visual hierarchy on Home & news: spotlight uses full-width emphasis; profile, follow/report, and history panels stay consistent with the rest of the launcher chrome.',
+      'Changelog panel copy and layout tuned so “Release notes” + semver pill still anchor the middle column while older entries scroll independently.'
+    ]
+  },
+  {
     version: '26.1.4',
     date: '2026-03-30',
     added: [

@@ -1,10 +1,11 @@
-import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, nativeImage, session, shell } from 'electron'
 import { join, dirname, basename, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { Worker } from 'node:worker_threads'
 import os from 'node:os'
 import { Buffer } from 'node:buffer'
 import { existsSync, readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync, statSync } from 'fs'
+import { readFile } from 'node:fs/promises'
 import { createRequire } from 'module'
 import type { MicrosoftAuthResponse } from 'minecraft-java-core'
 
@@ -107,6 +108,7 @@ import {
 } from './microsoftAuthCode.js'
 import { isUrlAllowedForExternalOpen } from './safeOpenExternal.js'
 import { directorySizeAsync, directorySizeSync, rmDirContentsIfExists } from './diskUsage.js'
+import { normalizeReinstallPreserve, reinstallModpackPreserveFlow } from './modpackReinstall.js'
 import { showNativeNotification } from './notifications.js'
 import { logMain } from './logger.js'
 import { errWithCode, SPX } from './supportCodes.js'
@@ -125,18 +127,16 @@ function getInstanceRootForModpack(modpackId: ModpackId): string {
 }
 
 /** True si au moins une instance Solea a un processus Minecraft lié à son dossier. */
-function isAnySoleaMinecraftRunning(): boolean {
-  for (const m of MODPACKS) {
-    if (isMinecraftRunning(getInstanceRootForModpack(m.id))) return true
-  }
-  return false
+async function isAnySoleaMinecraftRunning(): Promise<boolean> {
+  const checks = await Promise.all(
+    MODPACKS.map(async (m) => isMinecraftRunning(getInstanceRootForModpack(m.id)))
+  )
+  return checks.some(Boolean)
 }
 
 /** Arrête tous les Minecraft détectés pour les dossiers d’instances Solea (un seul jeu à la fois). */
-function killAllSoleaMinecraftInstances(): void {
-  for (const m of MODPACKS) {
-    killMinecraftForInstance(getInstanceRootForModpack(m.id))
-  }
+async function killAllSoleaMinecraftInstances(): Promise<void> {
+  await Promise.all(MODPACKS.map((m) => killMinecraftForInstance(getInstanceRootForModpack(m.id))))
 }
 
 function isSoleaInstanceInstalled(instanceRoot: string): boolean {
@@ -179,6 +179,22 @@ async function runModpackInstallForSpec(
     downloadConcurrency,
     onProgress: sendProgress
   })
+}
+
+async function installModpackByResolvedId(
+  resolved: ModpackId
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const spec = getModpackSpec(resolved)
+  const root = getInstanceRootForModpack(resolved)
+  try {
+    await runModpackInstallForSpec(spec, root)
+    recordModpackLastInstall(resolved)
+    pushInstallDoneNotification()
+    return { ok: true as const }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return { ok: false as const, error: msg }
+  }
 }
 
 function normalizeForgeLoaderBuild(
@@ -853,34 +869,31 @@ ipcMain.handle('modpack:set-active', (_e, id: string) => {
 })
 
 ipcMain.handle('modpack:install', async () => {
-  const spec = getActiveModpackSpec()
-  const root = getInstanceRoot()
-  try {
-    await runModpackInstallForSpec(spec, root)
-    recordModpackLastInstall(spec.id)
-    pushInstallDoneNotification()
-    return { ok: true as const }
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
-    return { ok: false as const, error: msg }
-  }
+  const resolved = resolveModpackId(loadSettings().activeModpackId)
+  return installModpackByResolvedId(resolved)
 })
 
-ipcMain.handle('modpack:reinstall', async (_e, id: string) => {
+ipcMain.handle('modpack:install-pack', async (_e, id: string) => {
+  if (typeof id !== 'string') return { ok: false as const, error: 'Modpack invalide.' }
+  return installModpackByResolvedId(resolveModpackId(id))
+})
+
+ipcMain.handle('modpack:reinstall', async (_e, id: string, preserveRaw?: unknown) => {
   if (typeof id !== 'string') return { ok: false as const, error: 'Modpack invalide.' }
   const resolved = resolveModpackId(id)
   const root = getInstanceRootForModpack(resolved)
-  if (isMinecraftRunning(root)) {
+  if (await isMinecraftRunning(root)) {
     return {
       ok: false as const,
       error: 'Fermez Minecraft pour ce modpack avant de réinstaller.'
     }
   }
   const spec = getModpackSpec(resolved)
+  const preserve = normalizeReinstallPreserve(preserveRaw)
   try {
-    if (existsSync(root)) rmSync(root, { recursive: true, force: true })
-    mkdirSync(root, { recursive: true })
-    await runModpackInstallForSpec(spec, root)
+    await reinstallModpackPreserveFlow(root, spec.projectSlug, preserve, () =>
+      runModpackInstallForSpec(spec, root)
+    )
     recordModpackLastInstall(resolved)
     pushInstallDoneNotification()
     return { ok: true as const }
@@ -894,7 +907,7 @@ ipcMain.handle('modpack:uninstall', async (_e, id: string) => {
   if (typeof id !== 'string') return { ok: false as const, error: 'Modpack invalide.' }
   const resolved = resolveModpackId(id)
   const root = getInstanceRootForModpack(resolved)
-  if (isMinecraftRunning(root)) {
+  if (await isMinecraftRunning(root)) {
     return {
       ok: false as const,
       error: 'Fermez Minecraft pour ce modpack avant de désinstaller.'
@@ -912,6 +925,19 @@ ipcMain.handle('modpack:uninstall', async (_e, id: string) => {
 ipcMain.handle('modpack:verify', async () => {
   const r = await verifyInstanceIntegrity(getInstanceRoot())
   return r
+})
+
+ipcMain.handle('modpack:verify-for', async (_e, id: unknown) => {
+  if (typeof id !== 'string') {
+    return {
+      ok: false as const,
+      reason: 'read_error' as const,
+      detail: 'Modpack invalide.'
+    }
+  }
+  const resolved = resolveModpackId(id)
+  const root = getInstanceRootForModpack(resolved)
+  return verifyInstanceIntegrity(root)
 })
 
 ipcMain.handle('modpack:action-info', async () => {
@@ -973,10 +999,10 @@ ipcMain.handle('modpack:all-action-info', async () => {
   return { packs }
 })
 
-ipcMain.handle('game:is-running', () => isAnySoleaMinecraftRunning())
+ipcMain.handle('game:is-running', async () => await isAnySoleaMinecraftRunning())
 
-ipcMain.handle('game:stop', () => {
-  killAllSoleaMinecraftInstances()
+ipcMain.handle('game:stop', async () => {
+  await killAllSoleaMinecraftInstances()
   return { ok: true as const }
 })
 
@@ -1050,7 +1076,7 @@ ipcMain.handle('debug-window:open', () => {
   return { ok: true as const }
 })
 
-ipcMain.handle('debug:get-snapshot', () =>
+ipcMain.handle('debug:get-snapshot', async () =>
   getDebugSnapshot(getInstanceRoot, isAnySoleaMinecraftRunning)
 )
 
@@ -1084,10 +1110,15 @@ ipcMain.handle('game:launch', async () => {
   const spec = getActiveModpackSpec()
   const root = getInstanceRoot()
 
-  for (const m of MODPACKS) {
-    const instRoot = getInstanceRootForModpack(m.id)
-    if (!isMinecraftRunning(instRoot)) continue
-    const fr = settings.uiLanguage === 'fr'
+  const runningRows = await Promise.all(
+    MODPACKS.map(async (m) => {
+      const instRoot = getInstanceRootForModpack(m.id)
+      return { m, instRoot, running: await isMinecraftRunning(instRoot) }
+    })
+  )
+  const fr = settings.uiLanguage === 'fr'
+  for (const { m, instRoot, running } of runningRows) {
+    if (!running) continue
     if (instRoot === root) {
       return {
         ok: false as const,
@@ -1170,7 +1201,7 @@ ipcMain.handle('game:launch', async () => {
     neoForgeVersion?: string
   }
   try {
-    installed = JSON.parse(readFileSync(installedPath, 'utf8'))
+    installed = JSON.parse(await readFile(installedPath, 'utf8'))
   } catch {
     return {
       ok: false as const,
@@ -1250,6 +1281,8 @@ ipcMain.handle('game:launch', async () => {
   }
 
   try {
+    /* Laisse le processus principal traiter des événements (curseur Windows, IPC) avant le worker. */
+    await new Promise<void>((r) => setImmediate(r))
     await runMinecraftLaunchInWorker(launchOpts as unknown as Record<string, unknown>)
     recordModpackLastPlay(spec.id)
 
@@ -1619,18 +1652,44 @@ ipcMain.handle('report:submit-discord-webhook', async (_e, payload: { content: s
   }
 })
 
+/** Sous-dossiers Chromium/Electron sous userData — sûrs à vider (pas comptes, pas instances). */
+const LAUNCHER_CLEARABLE_CACHE_SUBDIRS = [
+  'Cache',
+  'Code Cache',
+  'GPUCache',
+  'DawnGraphiteCache',
+  'DawnWebGPUCache',
+  'ShaderCache',
+  'GrShaderCache'
+] as const
+
 ipcMain.handle('system:cache-stats', async () => {
-  const gradle = join(os.homedir(), '.gradle', 'caches')
-  const logs = join(app.getPath('userData'), 'logs')
-  const gradleCachesBytes = existsSync(gradle) ? await directorySizeAsync(gradle) : 0
+  const ud = app.getPath('userData')
+  const logs = join(ud, 'logs')
+  let launcherCachesBytes = 0
+  for (const name of LAUNCHER_CLEARABLE_CACHE_SUBDIRS) {
+    const p = join(ud, name)
+    if (existsSync(p)) launcherCachesBytes += await directorySizeAsync(p)
+  }
   const launcherLogsBytes = existsSync(logs) ? await directorySizeAsync(logs) : 0
-  return { gradleCachesBytes, launcherLogsBytes }
+  return { launcherCachesBytes, launcherLogsBytes }
 })
 
-ipcMain.handle('system:cache-clear', (_e, target: string) => {
-  if (target === 'gradleCaches') {
-    const gradle = join(os.homedir(), '.gradle', 'caches')
-    return rmDirContentsIfExists(gradle)
+ipcMain.handle('system:cache-clear', async (_e, target: string) => {
+  if (target === 'launcherCaches') {
+    const ud = app.getPath('userData')
+    let freed = 0
+    for (const name of LAUNCHER_CLEARABLE_CACHE_SUBDIRS) {
+      const r = rmDirContentsIfExists(join(ud, name))
+      if (!r.ok) return r
+      freed += r.freedBytes
+    }
+    try {
+      await session.defaultSession.clearCache()
+    } catch {
+      /* best-effort — libère le cache HTTP en mémoire / sur disque géré par Chromium */
+    }
+    return { ok: true as const, freedBytes: freed }
   }
   if (target === 'launcherLogs') {
     const logs = join(app.getPath('userData'), 'logs')

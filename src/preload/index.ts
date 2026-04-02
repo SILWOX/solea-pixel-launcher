@@ -88,12 +88,17 @@ const api = {
   saveSettings: (partial: Record<string, unknown>) => ipcRenderer.invoke('settings:save', partial),
   resetSettings: () => ipcRenderer.invoke('settings:reset'),
   installModpack: () => ipcRenderer.invoke('modpack:install'),
-  reinstallModpack: (id: string) =>
-    ipcRenderer.invoke('modpack:reinstall', id) as Promise<{ ok: true } | { ok: false; error: string }>,
+  installModpackPack: (id: string) =>
+    ipcRenderer.invoke('modpack:install-pack', id) as Promise<{ ok: true } | { ok: false; error: string }>,
+  reinstallModpack: (id: string, preserve?: Record<string, unknown>) =>
+    ipcRenderer.invoke('modpack:reinstall', id, preserve) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
   uninstallModpack: (id: string) =>
     ipcRenderer.invoke('modpack:uninstall', id) as Promise<{ ok: true } | { ok: false; error: string }>,
   openExternalUrl: (url: string) => ipcRenderer.invoke('shell:open-external', url),
   verifyModpack: () => ipcRenderer.invoke('modpack:verify'),
+  verifyModpackFor: (id: string) => ipcRenderer.invoke('modpack:verify-for', id),
   getModpackActionInfo: () => ipcRenderer.invoke('modpack:action-info'),
   getAllModpacksActionInfo: () => ipcRenderer.invoke('modpack:all-action-info'),
   isGameRunning: () => ipcRenderer.invoke('game:is-running') as Promise<boolean>,
@@ -154,10 +159,10 @@ const api = {
     >,
   getCacheStats: () =>
     ipcRenderer.invoke('system:cache-stats') as Promise<{
-      gradleCachesBytes: number
+      launcherCachesBytes: number
       launcherLogsBytes: number
     }>,
-  clearCache: (target: 'gradleCaches' | 'launcherLogs') =>
+  clearCache: (target: 'launcherCaches' | 'launcherLogs') =>
     ipcRenderer.invoke('system:cache-clear', target) as Promise<
       { ok: true; freedBytes: number } | { ok: false; error: string }
     >,
