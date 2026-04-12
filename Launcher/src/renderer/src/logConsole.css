@@ -1,0 +1,322 @@
+/* AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
+
+.log-console-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+  background: var(--bg-void, #07050c);
+  color: var(--text, #e8e6ed);
+  font-family: var(--font-detail, system-ui, sans-serif);
+}
+
+.log-console-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 85% 45% at 50% -8%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 18%, transparent), transparent 55%),
+    linear-gradient(168deg, #100b14 0%, var(--bg-void, #07050c) 52%, #06040a 100%);
+}
+
+.log-console-titlebar {
+  position: relative;
+  z-index: 3;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, rgba(18, 12, 22, 0.98) 0%, rgba(10, 8, 14, 0.97) 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 35%, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.log-console-titlebar-product {
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 45%, rgba(255, 255, 255, 0.82)) !important;
+}
+
+.log-console-titlebar-badge {
+  margin-left: 0.5rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 106, 26, 0.12);
+  border: 1px solid rgba(255, 106, 26, 0.22);
+}
+
+.log-console-toolbar {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.1rem 0.55rem;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.log-console-toolbar-text {
+  min-width: 0;
+}
+
+.log-console-heading {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text, #f4f2f8);
+}
+
+.log-console-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.52));
+  max-width: 42rem;
+  line-height: 1.35;
+}
+
+.log-console-toolbar-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.log-console-meta-pill {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.log-console-meta-pill--warn {
+  color: #fde68a;
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(250, 204, 21, 0.28);
+  max-width: 14rem;
+  line-height: 1.25;
+}
+
+.log-console-controls {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  padding: 0.55rem 1.1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06));
+}
+
+.log-console-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted, rgba(255, 255, 255, 0.65));
+  cursor: pointer;
+  user-select: none;
+}
+
+.log-console-chip input {
+  accent-color: var(--accent, #ff6a1a);
+}
+
+.log-console-seg-label {
+  margin: 0 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted, rgba(255, 255, 255, 0.45));
+}
+
+.log-console-segment {
+  display: inline-flex;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.log-console-seg-btn {
+  margin: 0;
+  padding: 0.28rem 0.55rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.log-console-seg-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.log-console-seg-btn.is-active {
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 28%, rgba(0, 0, 0, 0.2));
+  color: #fff;
+}
+
+.log-console-search {
+  flex: 1 1 160px;
+  min-width: 120px;
+  max-width: 280px;
+  margin-left: auto;
+  padding: 0.38rem 0.65rem;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 106, 26, 0.28);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text, #eee);
+  font-size: 0.8rem;
+  outline: none;
+}
+
+.log-console-search:focus {
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, #fff);
+  box-shadow: 0 0 0 2px rgba(255, 106, 26, 0.15);
+}
+
+.log-console-search::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.log-console-actions-row {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.5rem 1.1rem 0.55rem;
+}
+
+.log-console-action-btn {
+  font-size: 0.78rem !important;
+  padding: 0.4rem 0.75rem !important;
+}
+
+.log-console-truncate-note {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0.35rem 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #fde68a;
+  background: rgba(234, 179, 8, 0.08);
+  border-bottom: 1px solid rgba(250, 204, 21, 0.15);
+}
+
+.log-console-viewport {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.65rem 1rem 1rem;
+  font-family: ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 45%, #666) rgba(0, 0, 0, 0.35);
+  background: rgba(4, 3, 8, 0.55);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.log-console-viewport--wrap .log-console-line {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.log-console-viewport:not(.log-console-viewport--wrap) .log-console-line {
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.log-console-viewport--font-s {
+  font-size: 0.72rem;
+}
+
+.log-console-viewport--font-m {
+  font-size: 0.8rem;
+}
+
+.log-console-viewport--font-l {
+  font-size: 0.92rem;
+}
+
+.log-console-line {
+  padding: 0.04rem 0.35rem;
+  margin: 0 -0.35rem;
+  border-radius: 3px;
+  color: #c4c0d0;
+}
+
+.log-console-line--plain {
+  color: #b8b4c4;
+}
+
+.log-console-line--info {
+  color: #93c5fd;
+}
+
+.log-console-line--warn {
+  color: #fcd34d;
+  background: rgba(234, 179, 8, 0.06);
+}
+
+.log-console-line--err {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+[data-theme='light'] .log-console-root::before {
+  background:
+    radial-gradient(ellipse 85% 45% at 50% -8%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 12%, transparent), transparent 55%),
+    linear-gradient(168deg, #f0eef5 0%, var(--bg-void, #e4e4e8) 100%);
+}
+
+[data-theme='light'] .log-console-line {
+  color: #3a3848;
+}
+
+[data-theme='light'] .log-console-line--plain {
+  color: #45435a;
+}
+
+[data-theme='light'] .log-console-line--info {
+  color: #1d4ed8;
+}
+
+[data-theme='light'] .log-console-line--warn {
+  color: #a16207;
+  background: rgba(234, 179, 8, 0.12);
+}
+
+[data-theme='light'] .log-console-line--err {
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+[data-theme='light'] .log-console-viewport {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme='light'] .log-console-search {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1a1a22;
+}
