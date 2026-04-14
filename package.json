@@ -1,0 +1,19 @@
+{
+  "name": "solea-pixel-workspace",
+  "private": true,
+  "version": "26.2.0",
+  "description": "Racine du dépôt — launcher dans ./Launcher, site vitrine dans ./Website (même repo Git).",
+  "scripts": {
+    "Launch launcher": "npm run dev",
+    "Launch site": "npm --prefix Website run dev",
+    "site:serve": "npm --prefix Website run dev",
+    "dev": "npm --prefix Launcher run dev",
+    "dev:test": "npm --prefix Launcher run dev:test",
+    "build": "npm --prefix Launcher run build",
+    "preview": "npm --prefix Launcher run preview",
+    "dist": "npm --prefix Launcher run dist",
+    "dist:publish": "npm --prefix Launcher run dist:publish",
+    "dist:dir": "npm --prefix Launcher run dist:dir",
+    "test:smoke": "npm --prefix Launcher run test:smoke"
+  }
+}

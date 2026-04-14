@@ -1,0 +1,46 @@
+================================================================================
+SOLEA PIXEL LAUNCHER — BROUILLON RELEASE (temporaire)
+================================================================================
+Objectif : noter au fil de l’eau correctifs / patchs / ajouts pour rédiger la
+release GitHub & le changelog officiel sans rien oublier.
+À supprimer ou archiver après publication d’une version.
+Dernière mise à jour : 2026-04-01
+================================================================================
+
+--- BUGFIXES ---
+[x] Crash au démarrage après mise à jour : ERR_UNKNOWN_BUILTIN_MODULE
+    node:child_process/promises → remplacé par execFile + promisify (gameProcess.ts)
+
+[x] Pastille « Release notes » affichait encore 26.1.4 → alignée sur LAUNCHER_VERSION_DISPLAY (26.2 | Release)
+
+[x] Barre latérale : contour actif sur un modpack alors qu’on est dans Settings
+    → classe active seulement si view === 'home' && pack sélectionné
+
+[x] Accueil modpack non installé : check update + sélecteur compte cachés (needsInstall)
+
+[x] Accueil & actus : scroll toute la page + comptes coupés en bas
+    → scroll uniquement colonne patch notes ; carte compte avec actions fixes
+
+--- AJOUTS / FEATURES ---
+[x] AETHER UI : Home & news (spotlight dans colonne notes, hero eyebrow, etc.)
+[x] AETHER UI : Screenshots (scroll page, cartes accent)
+[x] AETHER UI : barre latérale gauche (sections, états, verre)
+[x] Fichier docs/GITHUB_RELEASE_v26.2.0_EN.md (notes GitHub)
+[x] Son Jouer : déclenché à l’appui sur Play (plus seulement après succès launch)
+[x] Petites animations accueil : badge, halo panneau, titres, deck actions, footer ; clic Play plus « tactile »
+[x] Libellés réglages son (EN/FR) : précisent « à l’appui sur Jouer »
+[x] docs/RELEASE_SCRATCHPAD.txt : brouillon pour ne pas oublier les points de release
+
+--- MODIFICATIONS / REFACTOR ---
+[x] gameProcess.ts : import child_process compatible Electron packagé
+[x] Version package 26.2.0 ; affichage 26.2 | Release
+[x] launcherChangelog.ts : entrée 26.2 (à resynchroniser si l’UI a encore changé depuis)
+
+--- POUR LA PROCHAINE RELEASE OFFICIELLE ---
+- Vérifier ce fichier, cocher / compléter, puis rédiger :
+  - GitHub Release (EN)
+  - Entrée en tête de launcherChangelog.ts + releaseNotes.ts si besoin
+- Incrémenter package.json + LAUNCHER_VERSION_DISPLAY + rebuild dist
+- Joindre : Solea-Pixel-Setup-*.exe, portable, latest.yml, .blockmap
+
+================================================================================

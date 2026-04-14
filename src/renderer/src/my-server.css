@@ -1,0 +1,961 @@
+/** MY SERVER — thème orange Solea (aligné launcher) */
+.my-server-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  color: var(--text, #eaeaea);
+  font-family: var(--font-detail, system-ui, sans-serif);
+}
+
+.my-server-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem 1.65rem 5rem;
+}
+
+/* Vue détail : tout tient dans la zone (console scroll en interne), pas de scroll page. */
+.my-server-scroll--detail {
+  overflow: hidden;
+  padding: 0.85rem 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Accueil — carte intro (orange launcher) */
+.my-server-hero--aether {
+  position: relative;
+  max-width: 46rem;
+  margin: 0 auto 1.5rem;
+  padding: 1.4rem 1.55rem 1.5rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel-elevated, #1a1525) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 26%, transparent);
+  box-shadow:
+    0 10px 36px rgba(0, 0, 0, 0.32),
+    0 0 0 1px rgba(255, 255, 255, 0.035) inset,
+    0 0 32px color-mix(in srgb, var(--accent-orange, #ff6a1a) 10%, transparent);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.my-server-hero-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 25%, transparent),
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 92%, #fff),
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 35%, transparent)
+  );
+  opacity: 0.98;
+}
+
+.my-server-hero-eyebrow {
+  margin: 0 0 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 72%, rgba(255, 255, 255, 0.45));
+}
+
+[data-my-server-chrome='0'] .my-server-hero-eyebrow {
+  font-family: var(--font-detail, system-ui, sans-serif);
+}
+
+.my-server-hero-title {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-size: 1.42rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+[data-my-server-chrome='1'] .my-server-hero-title.font-mc {
+  font-family: var(--font-minecraft, inherit);
+  letter-spacing: 0.02em;
+}
+
+.my-server-hero-lead {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-muted, rgba(255, 255, 255, 0.72));
+  max-width: 42rem;
+}
+
+.my-server-hero-list {
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  font-size: 0.86rem;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--text) 88%, transparent);
+}
+
+.my-server-hero-list li {
+  margin: 0.35rem 0;
+}
+
+.my-server-hero-list li::marker {
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 75%, transparent);
+}
+
+.my-server-grid {
+  max-width: 52rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
+  gap: 0.9rem;
+}
+
+.my-server-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--panel-elevated, #141018) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border, #fff) 10%, transparent);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.my-server-card:hover {
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 42%, transparent);
+  box-shadow:
+    0 8px 26px rgba(0, 0, 0, 0.34),
+    0 0 20px color-mix(in srgb, var(--accent-orange, #ff6a1a) 8%, transparent);
+  transform: translateY(-1px);
+}
+
+.my-server-card-cover {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(155deg, #1c1c24, #101014);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.my-server-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.my-server-card-ph {
+  opacity: 0.28;
+  font-size: 2rem;
+}
+
+.my-server-card-body {
+  padding: 0.75rem 0.9rem 1rem;
+}
+
+.my-server-card-title {
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-weight: 650;
+  font-size: 0.98rem;
+  margin: 0 0 0.2rem;
+}
+
+[data-my-server-chrome='1'] .my-server-card-title.font-mc {
+  font-family: var(--font-minecraft, inherit);
+}
+
+.my-server-card-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.65));
+}
+
+.my-server-card-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-detail, sans-serif);
+}
+
+.my-server-card-badge--err {
+  border-color: rgba(255, 100, 100, 0.45);
+  color: #ffb4b4;
+}
+
+.my-server-add-card {
+  min-height: 128px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-style: dashed;
+  border-width: 1.5px;
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 38%, transparent);
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 6%, rgba(0, 0, 0, 0.2));
+  border-radius: 14px;
+}
+
+.my-server-add-ico {
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 88%, #fff);
+}
+
+.my-server-add-label {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 92%, #fff);
+  font-family: var(--font-detail, sans-serif);
+}
+
+[data-my-server-chrome='1'] .my-server-add-label.font-mc {
+  font-family: var(--font-minecraft, inherit);
+}
+
+/* Modales */
+/* Ne pas baisser le z-index : pack-confirm-backdrop est à 26000 ; sinon la modale passe sous le chrome. */
+.my-server-modal-backdrop {
+  z-index: 27050;
+}
+
+.my-server-modal-aether {
+  max-width: 440px;
+  width: calc(100% - 2rem);
+  padding: 1.25rem 1.35rem 1.2rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 30%, transparent);
+  background: color-mix(in srgb, var(--panel-elevated, #1a1525) 94%, transparent);
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.5),
+    0 0 36px color-mix(in srgb, var(--accent-orange, #ff6a1a) 12%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.my-server-modal-create {
+  max-height: min(90vh, 640px);
+  overflow: auto;
+}
+
+.my-server-modal-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 68%, rgba(255, 255, 255, 0.4));
+}
+
+.my-server-modal-eyebrow:not(.font-mc) {
+  font-family: var(--font-detail, sans-serif);
+}
+
+.my-server-modal-title {
+  margin: 0 0 1rem;
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-size: 1.28rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.my-server-modal-title.font-mc {
+  font-family: var(--font-minecraft, inherit);
+  letter-spacing: 0.02em;
+}
+
+.my-server-modal-heading {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-detail, sans-serif);
+  font-size: 1.1rem;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.my-server-modal-text {
+  margin: 0 0 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-muted, rgba(255, 255, 255, 0.72));
+}
+
+.my-server-modal-actions {
+  margin-top: 0.25rem;
+}
+
+/* Champs formulaire */
+.my-server-field {
+  margin-bottom: 0.95rem;
+}
+
+.my-server-field label,
+.my-server-field-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--text) 78%, transparent);
+  margin-bottom: 0.35rem;
+}
+
+.my-server-field-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--text-muted, rgba(255, 255, 255, 0.55));
+}
+
+/* Champs texte — même langage visuel que LauncherSelect (fond noir, bordure orange légère).
+   Important : utiliser type="text" sur les <input> ; sinon [type='text'] ne matche pas et le style OS (blanc) s'affiche. */
+.my-server-field input[type='text'],
+.my-server-field input[type='number'],
+.my-server-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 30%, transparent);
+  border-style: solid;
+  background-color: rgba(8, 8, 10, 0.96);
+  color: var(--text, #f5f5f5);
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color-scheme: dark;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Une ligne : plus bas que la zone description (textarea). */
+.my-server-field input[type='text'],
+.my-server-field input[type='number'] {
+  min-height: 2.5rem;
+}
+
+.my-server-field input[type='text']::placeholder,
+.my-server-field input[type='number']::placeholder,
+.my-server-field textarea::placeholder {
+  color: color-mix(in srgb, var(--text-muted, #a89888) 88%, transparent);
+  opacity: 1;
+}
+
+.my-server-field input:hover:not(:disabled),
+.my-server-field textarea:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 48%, transparent);
+  background-color: rgba(14, 14, 18, 0.98);
+}
+
+.my-server-field textarea {
+  min-height: 5rem;
+  resize: vertical;
+  line-height: 1.45;
+  max-height: min(40vh, 16rem);
+}
+
+.my-server-field input:focus-visible,
+.my-server-field textarea:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 62%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 2px color-mix(in srgb, var(--accent-orange, #ff6a1a) 22%, transparent);
+}
+
+/* Évite le fond jaune/blanc du remplissage automatique du navigateur */
+.my-server-field input:-webkit-autofill,
+.my-server-field input:-webkit-autofill:hover,
+.my-server-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text, #f5f5f5);
+  caret-color: var(--text, #f5f5f5);
+  box-shadow: inset 0 0 0 100px rgba(8, 8, 10, 0.96), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: background-color 99999s ease-out 0s;
+}
+
+/* Image locale */
+.my-server-cover-field {
+  margin-top: 0.25rem;
+}
+
+.my-server-cover-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 7rem;
+  height: 7rem;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px dashed color-mix(in srgb, var(--accent-orange, #ff6a1a) 38%, transparent);
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 5%, transparent);
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 88%, #fff);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.my-server-cover-placeholder:hover {
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 52%, transparent);
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 10%, transparent);
+}
+
+.my-server-cover-placeholder-icon {
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.my-server-cover-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.my-server-cover-preview img {
+  width: 7rem;
+  height: 7rem;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border, #fff) 12%, transparent);
+}
+
+.my-server-cover-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+/* Détail */
+.my-server-detail {
+  max-width: 56rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Tableau de bord Falix-like : colonne config + console sans scroll page */
+.my-server-detail--dashboard {
+  max-width: none;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  gap: 0.65rem;
+}
+
+.my-server-dash-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel-elevated, #141018) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border, #fff) 8%, transparent);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.22);
+  justify-content: flex-start;
+}
+
+.my-server-toolbar-leading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.my-server-toolbar-process {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+@media (max-width: 720px) {
+  .my-server-toolbar-process {
+    margin-left: 0;
+  }
+}
+
+.my-server-dash-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+  gap: 0.65rem;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .my-server-dash-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(200px, 1fr);
+  }
+}
+
+.my-server-dash-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.my-server-dash-sidebar .my-server-panel {
+  padding: 0.75rem 0.85rem;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+}
+
+.my-server-dash-sidebar .my-server-panel h3 {
+  margin-bottom: 0.5rem;
+  font-size: 0.72rem;
+}
+
+.my-server-field--compact textarea {
+  min-height: 2.75rem;
+  max-height: 5rem;
+}
+
+.my-server-join-copy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.45rem;
+}
+
+.my-server-join-code-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 22%, transparent);
+}
+
+.my-server-join-code {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, 'Cascadia Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text, #eaeaea);
+  word-break: break-all;
+}
+
+.my-server-port-badge {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 75%, var(--text-muted, #a89888));
+  padding: 0.28rem 0.55rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 9%, rgba(0, 0, 0, 0.35));
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 28%, transparent);
+}
+
+.my-server-dash-console-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel-elevated, #141018) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border, #fff) 9%, transparent);
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.2);
+}
+
+.my-server-dash-console-panel h3 {
+  margin: 0 0 0.45rem;
+  flex-shrink: 0;
+}
+
+.my-server-dash-console-panel .my-server-console-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-server-dash-console-panel .my-server-console {
+  flex: 1;
+  min-height: 120px;
+  max-height: none;
+}
+
+.my-server-dash-sidebar .my-server-cover-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+/* En-tête : retour + titre (dossier / supprimer sont dans la toolbar pour éviter les boutons Windows) */
+.my-server-detail-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.65rem 1rem;
+  width: 100%;
+}
+
+.my-server-detail-tagline {
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.my-server-back {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.my-server-detail-title-block {
+  min-width: 0;
+}
+
+.my-server-detail-title-block h2.font-mc {
+  font-family: var(--font-minecraft, inherit);
+}
+
+.my-server-detail-title-block h2:not(.font-mc) {
+  font-family: var(--font-detail, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 650;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .my-server-detail-head {
+    grid-template-columns: 1fr;
+  }
+}
+
+.my-server-panel {
+  padding: 1.05rem 1.15rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel-elevated, #141018) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border, #fff) 9%, transparent);
+}
+
+.my-server-panel h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 62%, rgba(255, 255, 255, 0.55));
+  font-family: var(--font-detail, sans-serif);
+}
+
+.my-server-panel h3.font-mc {
+  font-family: var(--font-minecraft, inherit);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-size: 0.95rem;
+}
+
+.my-server-ram-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.my-server-ram-row input[type='range'] {
+  flex: 1;
+  min-width: 160px;
+  max-width: 100%;
+  height: 1.15rem;
+  border-radius: 999px;
+  accent-color: var(--accent-orange, #ff6a1a);
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.my-server-ram-row input[type='range']::-webkit-slider-runnable-track {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.my-server-ram-row input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: -0.35rem;
+  border-radius: 50%;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-orange, #ff6a1a) 100%, #fff) 0%, var(--accent-orange, #ff6a1a) 100%);
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, #000);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.my-server-ram-row input[type='range']::-moz-range-track {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.my-server-ram-row input[type='range']::-moz-range-thumb {
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  background: var(--accent-orange, #ff6a1a);
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, #000);
+  cursor: pointer;
+}
+
+.my-server-ram-row input[type='range']:focus-visible {
+  outline: none;
+}
+
+.my-server-ram-row input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent-orange, #ff6a1a) 35%, transparent),
+    0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.my-server-ram-value {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--text) 88%, transparent);
+  min-width: 3.25rem;
+  text-align: right;
+}
+
+/* Barre d’actions processus : style proche des segments compte / report */
+.my-server-process-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.15rem;
+}
+
+.my-server-process-status {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.65));
+  font-family: var(--font-detail, sans-serif);
+}
+
+.my-server-segmented--process {
+  display: inline-flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border, #fff) 18%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.my-server-segmented__btn {
+  margin: 0;
+  padding: 0.55rem 1.05rem;
+  border: none;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--panel-elevated, #1a1525) 40%, rgba(0, 0, 0, 0.35));
+  color: var(--text, #eaeaea);
+  font-family: var(--font-detail, sans-serif);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.my-server-segmented__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.my-server-segmented__btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, transparent);
+  outline-offset: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.my-server-segmented__btn + .my-server-segmented__btn {
+  border-left: 1px solid color-mix(in srgb, var(--border, #fff) 14%, transparent);
+}
+
+.my-server-segmented__btn--danger {
+  color: #f87171;
+}
+
+.my-server-segmented__btn--danger:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+}
+
+.my-server-btn-restart {
+  flex-shrink: 0;
+}
+
+.my-server-control-hint {
+  margin-top: 0.65rem;
+}
+
+.my-server-actions-row {
+  margin-top: 0.65rem !important;
+}
+
+.my-server-console-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+}
+
+.my-server-console {
+  flex: 1;
+  font-family: ui-monospace, 'Cascadia Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: #0a0a0c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: auto;
+  max-height: 320px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.my-server-console-input-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.my-server-console-input-row input {
+  flex: 1;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  color: inherit;
+  font: inherit;
+}
+
+.my-server-ip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.my-server-ip-masked {
+  letter-spacing: 0.06em;
+  user-select: none;
+}
+
+.my-server-muted {
+  font-size: 0.82rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.68));
+  margin-top: 0.35rem;
+  line-height: 1.5;
+}
+
+[data-theme='light'] .my-server-hero--aether {
+  background: color-mix(in srgb, #fff 92%, transparent);
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 26%, #ccc);
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.08),
+    0 0 28px color-mix(in srgb, var(--accent-orange, #ff6a1a) 8%, transparent);
+}
+
+[data-theme='light'] .my-server-panel {
+  background: color-mix(in srgb, #fff 94%, transparent);
+}
+
+[data-theme='light'] .my-server-segmented--process {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='light'] .my-server-segmented__btn {
+  background: #f3f3f5;
+  color: var(--text, #1a1a1a);
+}
+
+[data-theme='light'] .my-server-segmented__btn:hover:not(:disabled) {
+  background: #e8e8ec;
+}
+
+[data-theme='light'] .my-server-segmented__btn + .my-server-segmented__btn {
+  border-left-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .my-server-ram-row input[type='range']::-webkit-slider-runnable-track {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='light'] .my-server-field input[type='text'],
+[data-theme='light'] .my-server-field input[type='number'],
+[data-theme='light'] .my-server-field textarea {
+  background-color: #fafafa;
+  color: var(--text, #1a1a1a);
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 35%, #ccc);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.04);
+  color-scheme: light;
+}
+
+[data-theme='light'] .my-server-field input:hover:not(:disabled),
+[data-theme='light'] .my-server-field textarea:hover:not(:disabled) {
+  background-color: #fff;
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 48%, #aaa);
+}
+
+[data-theme='light'] .my-server-field input:focus-visible,
+[data-theme='light'] .my-server-field textarea:focus-visible {
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, #888);
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.05),
+    0 0 0 2px color-mix(in srgb, var(--accent-orange, #ff6a1a) 22%, transparent);
+}
+
+[data-theme='light'] .my-server-field input:-webkit-autofill,
+[data-theme='light'] .my-server-field input:-webkit-autofill:hover,
+[data-theme='light'] .my-server-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text, #1a1a1a);
+  box-shadow: inset 0 0 0 100px #fafafa, inset 0 1px 0 rgba(0, 0, 0, 0.04);
+}

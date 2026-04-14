@@ -250,12 +250,71 @@
     border-color 0.22s ease;
 }
 
-.shell[data-home-card='studio'] .sb-btn-pack:hover {
+.shell[data-home-card='studio'] .sb-btn-pack:hover:not(.active) {
   transform: translateY(-1px);
   border-color: rgba(255, 255, 255, 0.22);
   box-shadow:
     0 8px 22px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px color-mix(in srgb, var(--accent-orange) 12%, transparent),
+    0 0 40px color-mix(in srgb, var(--accent-orange) 14%, transparent);
+}
+
+@media (hover: hover) {
+  .shell[data-home-card='studio'] .sb-btn-pack.active:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent-orange) 34%, transparent),
+      0 0 32px color-mix(in srgb, var(--accent-orange) 24%, transparent),
+      0 0 52px color-mix(in srgb, var(--accent-orange) 12%, transparent),
+      0 10px 26px rgba(0, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .shell[data-home-card='studio'] .sb-btn-pack.theme-palamod.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #ff6a1a 34%, transparent),
+      0 0 34px color-mix(in srgb, #ff6a1a 26%, transparent),
+      0 0 54px color-mix(in srgb, #ff6a1a 13%, transparent),
+      0 10px 26px rgba(0, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .shell[data-home-card='studio'] .sb-btn-pack.theme-wither-storm.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #a855f7 34%, transparent),
+      0 0 34px color-mix(in srgb, #a855f7 28%, transparent),
+      0 0 54px color-mix(in srgb, #a855f7 15%, transparent),
+      0 10px 26px rgba(0, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .shell[data-home-card='studio'] .sb-btn-pack.theme-mythic-trials-1.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #38bdf8 34%, transparent),
+      0 0 34px color-mix(in srgb, #38bdf8 28%, transparent),
+      0 0 54px color-mix(in srgb, #38bdf8 15%, transparent),
+      0 10px 26px rgba(0, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .shell[data-home-card='studio'] .sb-btn-pack.theme-mythic-trials-2.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #7c6cff 34%, transparent),
+      0 0 34px color-mix(in srgb, #7c6cff 28%, transparent),
+      0 0 54px color-mix(in srgb, #7c6cff 15%, transparent),
+      0 10px 26px rgba(0, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .shell[data-home-card='studio'] .sb-btn-pack.theme-aeloria.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #14b8a6 34%, transparent),
+      0 0 34px color-mix(in srgb, #14b8a6 28%, transparent),
+      0 0 54px color-mix(in srgb, #14b8a6 15%, transparent),
+      0 10px 26px rgba(0, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
 }
 
 .shell[data-home-card='studio'] .sb-btn-pack.active {
@@ -408,8 +467,9 @@
 }
 
 html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack,
-html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack:hover,
-html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack.active {
+html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack:hover:not(.active),
+html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack.active,
+html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack.active:hover {
   transform: none;
 }
 

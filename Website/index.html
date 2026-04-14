@@ -1,12 +1,527 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solea Pixel</title>
-</head>
-<body>
-  <h1>Solea Pixel fonctionne ✅</h1>
-  <p>Le site est en cours de création.</p>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Solea Pixel — Minecraft launcher for Solea modpacks, Modrinth, local server. Download for Windows."
+    />
+    <title data-i18n="page.title">Solea Pixel</title>
+    <link rel="icon" type="image/png" href="assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://api.github.com" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu-principal" data-i18n="nav.skip">Skip to content</a>
+    <div class="ambient" aria-hidden="true">
+      <div class="ambient__base"></div>
+      <div class="ambient__blobs">
+        <div class="ambient-blob ambient-blob--orange"></div>
+        <div class="ambient-blob ambient-blob--blue"></div>
+        <div class="ambient-blob ambient-blob--green"></div>
+        <div class="ambient-blob ambient-blob--violet"></div>
+      </div>
+      <div class="ambient__grain"></div>
+    </div>
+
+    <div class="page">
+      <header class="nav" role="banner">
+        <div class="nav__rail" aria-hidden="true"></div>
+        <div class="nav__glow" aria-hidden="true"></div>
+        <a class="nav-brand" href="#hub" data-i18n-aria="nav.home">
+          <span class="nav-brand__mark">
+            <img src="assets/logo.png" width="44" height="44" alt="Solea Pixel" />
+          </span>
+          <span class="nav-brand__type">
+            <span class="nav-brand__solea">SOLEA</span>
+            <span class="nav-brand__pixel">PIXEL</span>
+          </span>
+        </a>
+        <div class="nav__center">
+          <nav class="nav-links nav-dock" aria-label="Navigation">
+            <a href="#hub" class="is-active" data-i18n="nav.home">Home</a>
+            <a href="#features" data-i18n="nav.about">About</a>
+            <a href="#news" data-i18n="nav.news">News</a>
+            <a href="#downloads" data-i18n="nav.downloads">Downloads</a>
+            <a href="#faq" data-i18n="nav.faq">FAQ</a>
+          </nav>
+        </div>
+        <div class="nav-actions">
+          <!-- URLs alignées sur Launcher/src/renderer/src/App.tsx → NEWS_HUB_SOCIAL_DEF -->
+          <nav class="nav-social" data-i18n-aria="nav.socialToolbar">
+            <a
+              class="btn btn-social btn-social--modrinth"
+              href="https://modrinth.com/organization/soleapixel"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="nav.ariaModrinth"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M12 2l8 4.6v10.8L12 22l-8-4.6V6.6L12 2zm0 2.2L6.2 7.35v9.3L12 19.8l5.8-4.15v-9.3L12 4.2zm0 3.1l4.65 2.65v5.1L12 17.7l-4.65-2.65v-5.1L12 7.3z"
+                />
+              </svg>
+            </a>
+            <a
+              class="btn btn-social btn-social--youtube"
+              href="https://www.youtube.com/@SILWOX"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="nav.ariaYoutube"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2 30 30 0 000 12a30 30 0 00.5 5.8 3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1 30 30 0 00.5-5.8 30 30 0 00-.5-5.8zM9.6 15.5V8.5L15.8 12l-6.2 3.5z"
+                />
+              </svg>
+            </a>
+            <a
+              class="btn btn-social btn-social--x"
+              href="https://x.com/Silwox_OFF"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="nav.ariaX"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                />
+              </svg>
+            </a>
+            <a
+              class="btn btn-social btn-social--discord"
+              href="https://discord.gg/jVGq5aZ6Wc"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="nav.ariaDiscord"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"
+                />
+              </svg>
+            </a>
+            <a
+              class="btn btn-social btn-social--bmc"
+              href="https://buymeacoffee.com/silwox"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="nav.ariaBmc"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M6 9h11v1.2c0 2.2-1.5 4-3.4 4.3l-.3 2.5H9.7l-.3-2.5C7.5 14.2 6 12.4 6 10.2V9zm2 .8v.4c0 1.4.9 2.6 2.2 2.9h3.6c1.3-.3 2.2-1.5 2.2-2.9v-.4H8zm12.2-.5h1.1c.6 0 1 .5 1 1.1 0 .6-.4 1.1-1 1.1h-1.1V9.3zM7.5 6h9v1.2h-9V6z"
+                />
+              </svg>
+            </a>
+          </nav>
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button type="button" class="lang-btn" id="lang-en" aria-pressed="true">EN</button>
+            <button type="button" class="lang-btn" id="lang-fr" aria-pressed="false">FR</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="snap-root" id="contenu-principal" role="main" tabindex="-1">
+        <section class="site-section site-section--hub" id="hub">
+          <div class="site-section__inner site-section__inner--hub">
+            <div class="hub-shell">
+              <div class="hub__grid">
+                <div class="hub__copy">
+                  <div class="hub-tags" aria-label="">
+                    <span class="hub-tag hub-tag--green" data-i18n="hub.tag1">100% free</span>
+                    <span class="hub-tag hub-tag--amber" data-i18n="hub.tag2">Premium & cracked</span>
+                    <span class="hub-tag hub-tag--orange" data-i18n="hub.tag3">Solea Pixel modpacks</span>
+                    <span class="hub-tag hub-tag--blue" data-i18n="hub.tag4">Powered by Modrinth</span>
+                    <span class="hub-tag hub-tag--violet" data-i18n="hub.tag5">Community driven</span>
+                  </div>
+                  <h1 class="hub__title">
+                    <span class="hub__title-line" data-i18n="hub.h1a">Everything to play</span>
+                    <span class="hub__title-accent" data-i18n="hub.h1b">SOLEA packs</span>
+                  </h1>
+                  <div class="hub__universe" aria-live="polite">
+                    <span class="hub__universe-prefix" data-i18n="hub.typePrefix">The SOLEA PIXEL universe:</span>
+                    <span class="hub__universe-row">
+                      <span id="typewriter-target" class="hub__universe-target"></span><span class="hub__caret" aria-hidden="true">|</span>
+                    </span>
+                  </div>
+                  <p class="hub__lead" data-i18n="hub.lead"></p>
+                  <div class="hub__cta">
+                    <a href="#downloads" class="btn btn-download btn-lg">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                      </svg>
+                      <span data-i18n="hub.btnDl">Download</span>
+                    </a>
+                    <a class="btn btn-line btn-lg" href="#features"><span data-i18n="hub.btnDiscover">Discover</span></a>
+                  </div>
+                  <p class="hub__version hub__version--pending" id="hub-version" data-i18n="hub.versionLoading">…</p>
+                </div>
+
+                <div class="hub__showcase">
+                  <div class="tilt-wrap" id="tilt-wrap" tabindex="-1">
+                    <div class="tilt-frame" id="tilt-frame">
+                      <div class="tilt-inner" id="tilt-inner">
+                        <img
+                          src="assets/hub-launcher.png"
+                          width="1400"
+                          height="900"
+                          alt="Solea Pixel launcher"
+                          decoding="async"
+                          fetchpriority="high"
+                        />
+                        <div class="tilt-anno tilt-anno--1" aria-hidden="true">
+                          <span class="tilt-anno__stripe" aria-hidden="true"></span>
+                          <span class="tilt-anno__label" data-i18n="tilt.1l">Home</span>
+                          <span class="tilt-anno__text" data-i18n="tilt.1t">News</span>
+                        </div>
+                        <div class="tilt-anno tilt-anno--2" aria-hidden="true">
+                          <span class="tilt-anno__stripe tilt-anno__stripe--alt" aria-hidden="true"></span>
+                          <span class="tilt-anno__label" data-i18n="tilt.2l">Social</span>
+                          <span class="tilt-anno__text" data-i18n="tilt.2t">Modrinth, Discord…</span>
+                        </div>
+                        <div class="tilt-anno tilt-anno--3" aria-hidden="true">
+                          <span class="tilt-anno__stripe" aria-hidden="true"></span>
+                          <span class="tilt-anno__label" data-i18n="tilt.3l">Account</span>
+                          <span class="tilt-anno__text" data-i18n="tilt.3t">Microsoft / skin</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="meta-strip" aria-label="">
+                <span class="meta-strip__item"
+                  ><span class="meta-strip__key" data-i18n="meta.build">Build</span>
+                  <span id="stat-version" class="meta-strip__val">…</span></span
+                >
+                <span class="meta-strip__sep" aria-hidden="true"></span>
+                <span class="meta-strip__item"
+                  ><span class="meta-strip__key" data-i18n="meta.platform">Platform</span>
+                  <span class="meta-strip__val">Windows x64</span></span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="site-section site-section--about" id="features" aria-labelledby="features-heading">
+          <div class="site-section__inner site-section__inner--wide site-section__inner--about">
+            <header class="section-head section-head--about">
+              <span class="section-head__tag" data-i18n="about.tag">About</span>
+              <div class="section-head__line" aria-hidden="true"></div>
+              <h2 class="section-head__title" id="features-heading" data-i18n="about.title">The project</h2>
+              <p class="section-head__lead" data-i18n="about.lead"></p>
+            </header>
+
+            <div class="about-bento">
+              <article class="about-card about-card--1 about-bento__tile">
+                <div class="about-card__icon" aria-hidden="true">◇</div>
+                <h3 class="about-card__title" data-i18n="about.c1t"></h3>
+                <p class="about-card__body" data-i18n="about.c1b"></p>
+              </article>
+              <article class="about-card about-card--2 about-bento__tile">
+                <div class="about-card__icon" aria-hidden="true">◎</div>
+                <h3 class="about-card__title" data-i18n="about.c2t"></h3>
+                <p class="about-card__body" data-i18n="about.c2b"></p>
+              </article>
+              <article class="about-card about-card--3 about-bento__tile">
+                <div class="about-card__icon" aria-hidden="true">✦</div>
+                <h3 class="about-card__title" data-i18n="about.c3t"></h3>
+                <p class="about-card__body" data-i18n="about.c3b"></p>
+              </article>
+              <article class="about-card about-card--4 about-bento__tile">
+                <div class="about-card__icon" aria-hidden="true">↻</div>
+                <h3 class="about-card__title" data-i18n="about.c4t"></h3>
+                <p class="about-card__body" data-i18n="about.c4b"></p>
+              </article>
+              <article class="about-card about-card--6 about-card--wide about-card--compare about-bento__span">
+                <div class="about-card__icon about-card__icon--svg" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                  </svg>
+                </div>
+                <h3 class="about-card__title" data-i18n="about.c6t"></h3>
+                <p class="about-card__body" data-i18n="about.c6b"></p>
+              </article>
+              <article class="about-card about-card--5 about-card--wide about-bento__span">
+                <div class="about-card__icon" aria-hidden="true">✺</div>
+                <h3 class="about-card__title" data-i18n="about.c5t"></h3>
+                <p class="about-card__body" data-i18n="about.c5b"></p>
+              </article>
+
+              <article
+                class="about-card about-card--wide about-card--smartscreen about-bento__smart"
+                aria-labelledby="about-smartscreen-title"
+              >
+                <div class="about-smartscreen__head">
+                  <div class="about-card__icon about-card__icon--tip" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 8v4.5M12 16.2h.01" />
+                    </svg>
+                  </div>
+                  <h3 class="about-card__title" id="about-smartscreen-title" data-i18n="about.smartscreenTitle"></h3>
+                </div>
+                <div class="about-smartscreen__layout">
+                  <div class="about-smartscreen__col about-smartscreen__col--copy">
+                    <p class="about-card__body about-smartscreen__intro" data-i18n="about.smartscreenIntro"></p>
+                    <div class="about-smartscreen__why" data-i18n="about.smartscreenWhy" data-i18n-html></div>
+                  </div>
+                  <div class="about-smartscreen__col about-smartscreen__col--steps">
+                    <p class="about-smartscreen__how" data-i18n="about.smartscreenHow"></p>
+                    <ol class="about-smartscreen__steps">
+                      <li class="about-smartscreen__step about-smartscreen__step--split">
+                        <span data-i18n="about.smartscreenStep1Lead"></span>
+                        <button
+                          type="button"
+                          id="btn-smartscreen-more"
+                          class="smartscreen-glossary-btn"
+                          aria-haspopup="dialog"
+                          aria-controls="smartscreen-help-dialog"
+                          data-i18n="about.smartscreenMoreBtn"
+                        ></button>
+                        <span data-i18n="about.smartscreenStep1Tail"></span>
+                      </li>
+                      <li data-i18n="about.smartscreenStep2" data-i18n-html></li>
+                    </ol>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="site-section site-section--news" id="news" aria-labelledby="news-heading">
+          <div class="site-section__inner site-section__inner--wide">
+            <header class="section-head section-head--news">
+              <span class="section-head__tag" data-i18n="news.tag">News</span>
+              <div class="section-head__line" aria-hidden="true"></div>
+              <h2 class="section-head__title" id="news-heading" data-i18n="news.title">News</h2>
+              <p class="section-head__lead" data-i18n="news.lead"></p>
+            </header>
+            <div class="news-hub">
+              <p class="news-hub__p" data-i18n="news.body1" data-i18n-html></p>
+              <p class="news-hub__p news-hub__p--muted" data-i18n="news.body2"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="site-section site-section--downloads" id="downloads" aria-labelledby="downloads-heading">
+          <div class="site-section__inner site-section__inner--wide downloads-stack">
+            <header class="section-head section-head--downloads">
+              <span class="section-head__tag section-head__tag--dl" data-i18n="downloads.tag">Downloads</span>
+              <div class="section-head__line" aria-hidden="true"></div>
+              <h2 class="section-head__title" id="downloads-heading" data-i18n="downloads.title">Downloads</h2>
+              <p class="section-head__lead" data-i18n="downloads.lead"></p>
+            </header>
+
+            <div class="dl-grid">
+              <div class="dl-card dl-card--beta">
+                <span class="dl-card__badge dl-card__badge--soft" data-i18n="downloads.beta">Beta</span>
+                <p class="dl-card__note" data-i18n="downloads.betaSoon"></p>
+              </div>
+              <div class="dl-card dl-card--stable">
+                <span class="dl-card__badge" data-i18n="downloads.stable">Stable</span>
+                <h3 class="dl-card__os" data-i18n="downloads.win">Windows</h3>
+                <p class="dl-card__hint" data-i18n="downloads.winHint">x64 · NSIS</p>
+                <a
+                  id="btn-download-win"
+                  class="btn btn-download dl-card__btn"
+                  href="https://github.com/SILWOX/solea-pixel-launcher/releases/latest"
+                  rel="noopener noreferrer"
+                  ><span data-i18n="downloads.winBtn">Download</span></a
+                >
+              </div>
+              <div class="dl-card dl-card--soon">
+                <h3 class="dl-card__os" data-i18n="downloads.mac">macOS</h3>
+                <p class="dl-card__na" data-i18n="downloads.na">Not available yet</p>
+              </div>
+              <div class="dl-card dl-card--soon">
+                <h3 class="dl-card__os" data-i18n="downloads.linux">Linux</h3>
+                <p class="dl-card__na" data-i18n="downloads.na">Not available yet</p>
+              </div>
+            </div>
+
+            <div class="dl-below">
+              <div class="dl-panel">
+                <h3 class="dl-panel__title" data-i18n="downloads.reqTitle">Before you install</h3>
+                <ul class="dl-checklist">
+                  <li data-i18n="downloads.req1"></li>
+                  <li data-i18n="downloads.req2"></li>
+                  <li data-i18n="downloads.req3"></li>
+                </ul>
+              </div>
+              <div class="dl-panel dl-panel--accent">
+                <h3 class="dl-panel__title" data-i18n="downloads.afterTitle">Install & updates</h3>
+                <p class="dl-panel__text" data-i18n="downloads.afterBody"></p>
+              </div>
+              <div class="dl-panel dl-panel--wide">
+                <h3 class="dl-panel__title" data-i18n="downloads.helpTitle">Need help?</h3>
+                <p class="dl-panel__text" data-i18n="downloads.helpBody" data-i18n-html></p>
+              </div>
+            </div>
+
+            <div class="engage-strip" aria-label="">
+              <a
+                class="engage-tile"
+                href="https://github.com/SILWOX/solea-pixel-launcher/releases"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="engage-tile__icon engage-tile__icon--git" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </span>
+                <span class="engage-tile__text">
+                  <span class="engage-tile__title" data-i18n="engage.follow">Follow releases</span>
+                  <span class="engage-tile__sub" data-i18n="engage.followSub">GitHub</span>
+                </span>
+              </a>
+              <a class="engage-tile engage-tile--discord" href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">
+                <span class="engage-tile__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                </span>
+                <span class="engage-tile__text">
+                  <span class="engage-tile__title" data-i18n="engage.discord">Discord</span>
+                  <span class="engage-tile__sub" data-i18n="engage.discordSub">Community</span>
+                </span>
+              </a>
+              <a
+                class="engage-tile"
+                href="https://github.com/SILWOX/solea-pixel-launcher/issues/new"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="engage-tile__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </span>
+                <span class="engage-tile__text">
+                  <span class="engage-tile__title" data-i18n="engage.bug">Report a bug</span>
+                  <span class="engage-tile__sub" data-i18n="engage.bugSub">GitHub Issues</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="site-section site-section--faq" id="faq" aria-labelledby="faq-heading">
+          <div class="site-section__inner site-section__inner--narrow">
+            <header class="section-head section-head--faq">
+              <span class="section-head__tag" data-i18n="faq.tag">FAQ</span>
+              <div class="section-head__line" aria-hidden="true"></div>
+              <h2 class="section-head__title" id="faq-heading" data-i18n="faq.title">FAQ</h2>
+              <p class="section-head__lead" data-i18n="faq.lead"></p>
+            </header>
+
+            <div class="faq-shell">
+              <div class="faq-panel" id="faq-panel">
+              <details class="faq__item">
+                <summary data-i18n="faq.q1"></summary>
+                <p data-i18n="faq.a1"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q2"></summary>
+                <p data-i18n="faq.a2"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q3"></summary>
+                <p data-i18n="faq.a3"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q4"></summary>
+                <p data-i18n="faq.a4"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q5"></summary>
+                <p data-i18n="faq.a5"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q6"></summary>
+                <p data-i18n="faq.a6"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q7"></summary>
+                <p data-i18n="faq.a7"></p>
+              </details>
+              </div>
+            </div>
+
+            <footer class="footer footer--in-faq" role="contentinfo" aria-label="">
+              <p data-i18n="footer.legal" data-i18n-html></p>
+            </footer>
+          </div>
+        </section>
+
+        <button type="button" class="fab-top" id="fab-top" hidden data-i18n-aria="nav.top" aria-label="Back to top">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 15l-6-6-6 6" />
+          </svg>
+        </button>
+      </main>
+    </div>
+
+    <dialog id="legal-dialog" class="legal-dialog" aria-labelledby="legal-dialog-title">
+      <div class="legal-dialog__frame">
+        <div class="legal-dialog__panel">
+          <header class="legal-dialog__head">
+            <h2 class="legal-page__title" id="legal-dialog-title" data-i18n="legal.title">Legal & privacy</h2>
+            <button type="button" class="legal-dialog__close" data-legal-dismiss data-i18n-aria="legal.close" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </header>
+          <div class="legal-dialog__surface">
+            <div class="legal-page__grid">
+              <div class="legal-page__block">
+                <h3 class="legal-page__h" data-i18n="legal.mentionsTitle">Publisher</h3>
+                <p class="legal-page__p" data-i18n="legal.mentionsBody"></p>
+              </div>
+              <div class="legal-page__block">
+                <h3 class="legal-page__h" data-i18n="legal.privacyTitle">Privacy</h3>
+                <p class="legal-page__p" data-i18n="legal.privacyBody" data-i18n-html></p>
+              </div>
+            </div>
+            <p class="legal-page__note" data-i18n="legal.cookiesNote"></p>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="smartscreen-help-dialog" class="legal-dialog smartscreen-help-dialog" aria-labelledby="smartscreen-help-title">
+      <div class="legal-dialog__frame">
+        <div class="legal-dialog__panel">
+          <header class="legal-dialog__head">
+            <h2 class="legal-page__title" id="smartscreen-help-title" data-i18n="about.smartscreenHelpTitle"></h2>
+            <button type="button" class="legal-dialog__close" data-smartscreen-dismiss data-i18n-aria="legal.close" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </header>
+          <div class="legal-dialog__surface">
+            <div class="smartscreen-help-prose">
+              <p data-i18n="about.smartscreenHelpP1"></p>
+              <p data-i18n="about.smartscreenHelpP2"></p>
+              <p data-i18n="about.smartscreenHelpP3"></p>
+              <p data-i18n="about.smartscreenHelpP4"></p>
+              <p class="smartscreen-help-prose__trust" data-i18n="about.smartscreenHelpTrust" data-i18n-html></p>
+              <h3 class="smartscreen-help-prose__ms" data-i18n="about.smartscreenHelpMsHeading"></h3>
+              <div class="smartscreen-help-links" data-i18n="about.smartscreenHelpLinks" data-i18n-html></div>
+              <p class="smartscreen-help-prose__closing" data-i18n="about.smartscreenHelpClosing"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="i18n.js"></script>
+    <script src="main.js" defer></script>
+  </body>
 </html>

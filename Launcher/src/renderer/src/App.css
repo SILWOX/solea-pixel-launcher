@@ -2240,14 +2240,21 @@ img.mc-face-img {
 }
 
 .sb-btn-pack {
-  padding: 2px;
-  overflow: hidden;
+  padding: 3px;
+  /* visible : drop-shadow + scale sur l’icône étaient rognés (effet « lumière » cassé) */
+  overflow: visible;
+  isolation: isolate;
   background: rgba(0, 0, 0, 0.38);
   border: 1px solid rgba(255, 255, 255, 0.075);
 }
 
-.sb-btn-pack:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+.sb-btn-pack:hover:not(.active) {
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 4px 16px rgba(0, 0, 0, 0.28),
+    0 0 0 1px color-mix(in srgb, var(--accent-orange) 14%, transparent),
+    0 0 36px color-mix(in srgb, var(--accent-orange) 16%, transparent);
 }
 
 .sb-btn-pack.active {
@@ -2306,17 +2313,92 @@ img.mc-face-img {
 }
 
 .sb-btn-pack img.sb-pack-icon {
+  position: relative;
+  z-index: 1;
   width: 38px;
   height: 38px;
   border-radius: 10px;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
-  transition: transform 0.18s ease;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.26s ease;
 }
 
 .sb-btn-pack:hover img.sb-pack-icon {
-  transform: scale(1.04);
+  transform: scale(1.05);
+  filter:
+    drop-shadow(0 3px 12px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 14px color-mix(in srgb, var(--accent-orange) 28%, transparent))
+    drop-shadow(0 0 28px color-mix(in srgb, var(--accent-orange) 12%, transparent));
+}
+
+/* Pastille déjà « active » : halo neutre pour rester cohérent avec la couleur du thème modpack */
+.sb-btn-pack.active:hover img.sb-pack-icon {
+  filter:
+    drop-shadow(0 3px 12px rgba(0, 0, 0, 0.62))
+    drop-shadow(0 0 16px rgba(255, 255, 255, 0.14))
+    drop-shadow(0 0 32px rgba(255, 255, 255, 0.06));
+}
+
+@media (hover: hover) {
+  .sb-btn-pack.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent-orange) 38%, transparent),
+      0 0 26px color-mix(in srgb, var(--accent-orange) 22%, transparent),
+      0 0 46px color-mix(in srgb, var(--accent-orange) 11%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .sb-btn-pack.theme-palamod.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #ff6a1a 40%, transparent),
+      0 0 28px color-mix(in srgb, #ff6a1a 24%, transparent),
+      0 0 48px color-mix(in srgb, #ff6a1a 12%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .sb-btn-pack.theme-wither-storm.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #a855f7 40%, transparent),
+      0 0 28px color-mix(in srgb, #a855f7 26%, transparent),
+      0 0 48px color-mix(in srgb, #a855f7 14%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .sb-btn-pack.theme-mythic-trials-1.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #38bdf8 40%, transparent),
+      0 0 28px color-mix(in srgb, #38bdf8 26%, transparent),
+      0 0 48px color-mix(in srgb, #38bdf8 14%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .sb-btn-pack.theme-mythic-trials-2.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #7c6cff 40%, transparent),
+      0 0 28px color-mix(in srgb, #7c6cff 26%, transparent),
+      0 0 48px color-mix(in srgb, #7c6cff 14%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .sb-btn-pack.theme-aeloria.active:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #14b8a6 40%, transparent),
+      0 0 28px color-mix(in srgb, #14b8a6 26%, transparent),
+      0 0 48px color-mix(in srgb, #14b8a6 14%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+html[data-reduce-motion='1'] .sb-btn-pack:hover img.sb-pack-icon {
+  transform: none;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
+}
+
+html[data-reduce-motion='1'] .sb-btn-pack.active:hover img.sb-pack-icon {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
 }
 
 [data-theme='light'] .sb-btn-pack {
@@ -2324,7 +2406,7 @@ img.mc-face-img {
   border-color: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme='light'] .sb-btn-pack:hover {
+[data-theme='light'] .sb-btn-pack:hover:not(.active) {
   border-color: rgba(0, 0, 0, 0.12);
 }
 
@@ -4001,6 +4083,24 @@ details.set-card label .settings-label-help-row {
   isolation: isolate;
   transform: translateZ(0);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition:
+    border-color 0.24s ease,
+    box-shadow 0.28s ease;
+}
+
+@media (hover: hover) {
+  .news-hub-skin-wrap:hover {
+    border-color: color-mix(in srgb, var(--accent-orange) 42%, rgba(255, 255, 255, 0.2));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 0 0 1px color-mix(in srgb, var(--accent-orange) 22%, transparent),
+      0 0 32px color-mix(in srgb, var(--accent-orange) 18%, transparent),
+      0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .news-hub-skin-wrap:hover .news-hub-skin {
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent-orange) 25%, transparent));
+  }
 }
 
 .news-hub-skin {
@@ -4012,6 +4112,7 @@ details.set-card label .settings-label-help-row {
   object-position: center;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  transition: filter 0.26s ease;
 }
 
 .news-hub-username-row {
@@ -9818,21 +9919,19 @@ button.account-skin-tile {
 }
 
 /*
- * Mon serveur — même principe que Réglages : data-titlebar-pad='wide' repousse le bord gauche du drag shim ;
- * en plus on réduit la zone drag à une bande près des contrôles fenêtre pour que la toolbar / le haut
- * du shell reçoivent les clics (sans padding-top qui créait un « vide »).
+ * Mon serveur : comme Réglages, le shim de titre (.titlebar-drag-shim) couvre toute la bande entre
+ * --titlebar-safe-left et les contrôles fenêtre — on peut déplacer la fenêtre par cette zone vide.
+ * Le contenu .my-server-layout reste en no-drag pour les boutons / champs.
  */
-.app-chrome[data-app-view='my-server'] .titlebar.titlebar--float .titlebar-drag-shim {
-  left: max(78px, calc(100% - var(--titlebar-controls-width, 152px) - 72px));
-  right: var(--titlebar-controls-width, 152px);
-}
-
 .app-chrome[data-app-view='my-server'] .my-server-layout,
 .app-chrome[data-app-view='my-server'] .my-server-layout button,
 .app-chrome[data-app-view='my-server'] .my-server-layout input,
 .app-chrome[data-app-view='my-server'] .my-server-layout textarea,
 .app-chrome[data-app-view='my-server'] .my-server-layout select,
 .app-chrome[data-app-view='my-server'] .my-server-layout pre,
+.app-chrome[data-app-view='my-server'] .my-server-layout a,
+.app-chrome[data-app-view='my-server'] .my-server-layout h2,
+.app-chrome[data-app-view='my-server'] .my-server-layout .my-server-beta-badge,
 .app-chrome[data-app-view='my-server'] .my-server-layout [role='dialog'] {
   -webkit-app-region: no-drag;
 }

@@ -365,6 +365,31 @@ const api = {
     }>,
   soleaServerOpenFolder: (id: string) =>
     ipcRenderer.invoke('solea-server:open-folder', id) as Promise<{ ok: true } | { ok: false; error: string }>,
+  soleaServerWorldGet: (id: string) =>
+    ipcRenderer.invoke('solea-server:world-get', id) as Promise<
+      | { ok: true; levelName: string; levelSeed: string; levelType: string }
+      | { ok: false; error: string }
+    >,
+  soleaServerWorldSet: (payload: { id: string; levelName?: string; levelSeed?: string; levelType?: string }) =>
+    ipcRenderer.invoke('solea-server:world-set', payload) as Promise<{ ok: true } | { ok: false; error: string }>,
+  soleaServerWorldDelete: (id: string) =>
+    ipcRenderer.invoke('solea-server:world-delete', id) as Promise<{ ok: true } | { ok: false; error: string }>,
+  soleaServerPropertiesRawGet: (id: string) =>
+    ipcRenderer.invoke('solea-server:properties-raw-get', id) as Promise<
+      { ok: true; content: string } | { ok: false; error: string }
+    >,
+  soleaServerPropertiesRawSet: (payload: { id: string; content: string }) =>
+    ipcRenderer.invoke('solea-server:properties-raw-set', payload) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
+  soleaServerJvmExtraGet: (id: string) =>
+    ipcRenderer.invoke('solea-server:jvm-extra-get', id) as Promise<
+      { ok: true; content: string } | { ok: false; error: string }
+    >,
+  soleaServerJvmExtraSet: (payload: { id: string; content: string }) =>
+    ipcRenderer.invoke('solea-server:jvm-extra-set', payload) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
   onSoleaServerEvent: (cb: (ev: Record<string, unknown>) => void) => {
     const listener = (_e: Electron.IpcRendererEvent, ev: Record<string, unknown>) => cb(ev)
     ipcRenderer.on('solea-server:event', listener)
