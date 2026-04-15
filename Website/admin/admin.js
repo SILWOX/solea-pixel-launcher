@@ -54,6 +54,12 @@
 
   function friendlyError(err) {
     const s = err instanceof Error ? err.message : String(err)
+    if (s.includes('unknown_action')) {
+      return (
+        'Le site Netlify n’a pas encore la dernière fonction `news-admin` (action `verify`). ' +
+        'Pousse le dépôt et **redéploie** Production, puis réessaie.'
+      )
+    }
     if (s.startsWith('not_configured')) {
       return s
     }
@@ -106,15 +112,27 @@
   function showLogin() {
     const login = el('screen-login')
     const app = el('screen-app')
-    if (login) login.hidden = false
-    if (app) app.hidden = true
+    if (app) {
+      app.setAttribute('hidden', '')
+      app.setAttribute('aria-hidden', 'true')
+    }
+    if (login) {
+      login.removeAttribute('hidden')
+      login.removeAttribute('aria-hidden')
+    }
   }
 
   function showApp() {
     const login = el('screen-login')
     const app = el('screen-app')
-    if (login) login.hidden = true
-    if (app) app.hidden = false
+    if (login) {
+      login.setAttribute('hidden', '')
+      login.setAttribute('aria-hidden', 'true')
+    }
+    if (app) {
+      app.removeAttribute('hidden')
+      app.removeAttribute('aria-hidden')
+    }
   }
 
   async function connectWithToken(raw) {

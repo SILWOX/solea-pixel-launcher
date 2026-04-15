@@ -307,7 +307,15 @@
         text-align: right;
         margin-top: 0.25rem;
       }
-      .screen-login {
+      /*
+        L’attribut HTML `hidden` seul perd contre `display:flex` en feuille d’auteur :
+        il faut forcer display:none quand [hidden], sinon la connexion « réussit » mais l’écran reste visible.
+      */
+      #screen-login[hidden],
+      #screen-app[hidden] {
+        display: none !important;
+      }
+      #screen-login:not([hidden]) {
         min-height: 100vh;
         display: flex;
         align-items: center;
