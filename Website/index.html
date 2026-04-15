@@ -5,11 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Solea Pixel — Minecraft launcher for Solea modpacks, Modrinth, local server. Download for Windows."
+      content="BIENVENUE : installez ici notre launcher et découvrez les fonctionnalités proposées par le launcher."
     />
-    <title data-i18n="page.title">Solea Pixel</title>
+    <title data-i18n="page.title">SOLEA PIXEL</title>
     <link rel="canonical" href="https://soleapixel.com/" />
-    <link rel="icon" type="image/png" href="assets/logo.png" />
+    <link rel="icon" type="image/png" href="/assets/logo.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/assets/logo.png" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/assets/logo.png" />
+    <meta name="application-name" content="SOLEA PIXEL" />
+    <meta property="og:site_name" content="SOLEA PIXEL" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://soleapixel.com/" />
+    <meta property="og:title" content="SOLEA PIXEL" />
+    <meta
+      property="og:description"
+      content="BIENVENUE : installez ici notre launcher et découvrez les fonctionnalités proposées par le launcher."
+    />
+    <meta property="og:image" content="https://soleapixel.com/assets/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SOLEA PIXEL" />
+    <meta
+      name="twitter:description"
+      content="BIENVENUE : installez ici notre launcher et découvrez les fonctionnalités proposées par le launcher."
+    />
+    <meta name="twitter:image" content="https://soleapixel.com/assets/logo.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "SOLEA PIXEL",
+            "url": "https://soleapixel.com/",
+            "description": "BIENVENUE : installez ici notre launcher et découvrez les fonctionnalités proposées par le launcher.",
+            "inLanguage": ["fr", "en"],
+            "publisher": {
+              "@type": "Organization",
+              "name": "SOLEA PIXEL",
+              "url": "https://soleapixel.com/"
+            }
+          },
+          {
+            "@type": "ItemList",
+            "name": "SOLEA PIXEL — liens principaux",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Accueil",
+                "description": "Présentation du launcher, téléchargement Windows et accès rapide aux sections du site.",
+                "item": "https://soleapixel.com/#hub"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "À propos",
+                "description": "Le projet Solea Pixel, Modrinth, communauté et aide SmartScreen.",
+                "item": "https://soleapixel.com/#features"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "FAQ",
+                "description": "Questions fréquentes sur le launcher, le serveur local et les téléchargements.",
+                "item": "https://soleapixel.com/#faq"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -313,6 +378,11 @@
               <p class="news-hub__p" data-i18n="news.body1" data-i18n-html></p>
               <p class="news-hub__p news-hub__p--muted" data-i18n="news.body2"></p>
             </div>
+            <p class="live-news-feed__intro" data-i18n="news.liveIntro"></p>
+            <div class="live-news-feed" id="site-live-news" aria-label="Live news">
+              <div class="live-news-feed__grid" id="site-live-news-grid"></div>
+              <p class="live-news-feed__status" id="site-live-news-status" hidden></p>
+            </div>
           </div>
         </section>
 
@@ -453,6 +523,42 @@
               <details class="faq__item">
                 <summary data-i18n="faq.q7"></summary>
                 <p data-i18n="faq.a7"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q8"></summary>
+                <p data-i18n="faq.a8" data-i18n-html></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q9"></summary>
+                <p data-i18n="faq.a9"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q10"></summary>
+                <p data-i18n="faq.a10" data-i18n-html></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q11"></summary>
+                <p data-i18n="faq.a11" data-i18n-html></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q12"></summary>
+                <p data-i18n="faq.a12"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q13"></summary>
+                <p data-i18n="faq.a13"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q14"></summary>
+                <p data-i18n="faq.a14"></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q15"></summary>
+                <p data-i18n="faq.a15" data-i18n-html></p>
+              </details>
+              <details class="faq__item">
+                <summary data-i18n="faq.q16"></summary>
+                <p data-i18n="faq.a16" data-i18n-html></p>
               </details>
               </div>
             </div>

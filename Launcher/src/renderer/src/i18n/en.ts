@@ -116,6 +116,13 @@ export const EN: Record<string, string> = {
   'myServer.heroBullet2':
     'Forge / NeoForge for the pack’s Minecraft version is installed automatically so you can press Start when the install finishes.',
   'myServer.heroBullet3': 'The large background wallpaper appears only when “Title bar + glass” is enabled in Launcher settings.',
+  'myServer.pill1': 'Local server',
+  'myServer.pill2': 'Optimized for you',
+  'myServer.pill3': 'Simple configuration',
+  'myServer.asideAria': 'Local server at a glance',
+  'myServer.asideKicker': 'On your machine',
+  'myServer.asideBlurb':
+    'JAR, worlds, and logs stay in your Solea folder. Friends use your public IP and port when the server is running.',
   'myServer.badgeInstalling': 'Installing',
   'myServer.badgeError': 'Error',
   'myServer.addAnother': 'New server',
@@ -124,6 +131,12 @@ export const EN: Record<string, string> = {
   'myServer.betaBadge': 'Beta',
   'myServer.betaBadgeTitle':
     'Solea server hosting is still in beta — features and behavior may change. Edit name, cover and modpack from the list (pencil on the card).',
+  'myServer.betaBannerAria': 'Early access notice for local server hosting',
+  'myServer.betaBannerStamp': 'BETA',
+  'myServer.betaBannerTitle': 'Local server hosting is in early access',
+  'myServer.betaBannerBody':
+    'Expect bugs, unfinished polish, or behavior changes between launcher updates. We are actively improving this area — thank you for testing, and please report issues on Discord or GitHub.',
+  'myServer.stageLabel': 'Your servers',
   'myServer.editProfile': 'Edit profile',
   'myServer.profileModalTitle': 'Server profile',
   'myServer.profileModalHint': 'Changes save automatically shortly after you stop typing.',
@@ -325,6 +338,7 @@ export const EN: Record<string, string> = {
   'newsView.socialDiscord': 'Discord',
   'newsView.socialX': 'X (Twitter)',
   'newsView.socialModrinth': 'Modrinth',
+  'newsView.socialWebsite': 'Official site',
   'newsView.socialBmc': 'Buy Me a Coffee',
   'newsView.accountsNav': 'Stored accounts',
   'newsView.offlineBadge': 'Offline',
@@ -696,7 +710,7 @@ export const EN: Record<string, string> = {
   'actu.fetchError': 'Could not load news: {{detail}}',
   'actu.feedEmpty': 'No news in the feed yet.',
   'actu.feedNoUrl':
-    'Set VITE_ACTU_SOLEA_JSON_URL (e.g. in .env) to the raw URL of actusolea.json on GitHub.',
+    'By default the feed comes from the website (JSON). To override, set VITE_ACTU_SOLEA_JSON_URL in .env.',
   'actu.urlActive': 'Source',
   'actu.openFullChangelog': 'Open full release notes',
   'settings.verifyFilesGlossaryLabel': 'Verify installed files against the official Modrinth pack:',

@@ -35,6 +35,325 @@
   padding: 1.5rem 1.65rem 5rem;
 }
 
+/* ——— Vue liste « hub » : fond, bannière bêta, scène cartes ——— */
+.my-server-layout--hub {
+  position: relative;
+  isolation: isolate;
+}
+
+.my-server-scroll--hub {
+  position: relative;
+  padding: 0 0 3.5rem;
+  scroll-behavior: smooth;
+}
+
+.my-server-hub-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 55% at 50% -8%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 16%, transparent), transparent 52%),
+    radial-gradient(ellipse 70% 40% at 100% 40%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 6%, transparent), transparent 45%),
+    radial-gradient(ellipse 55% 35% at 0% 75%, color-mix(in srgb, #6b5cff 5%, transparent), transparent 42%);
+  opacity: 0.95;
+}
+
+.my-server-beta-banner {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 1.35rem;
+  padding: clamp(1.1rem, 2.2vw, 1.45rem) clamp(1.25rem, 3vw, 2rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 35%, transparent);
+  background:
+    linear-gradient(105deg, rgba(255, 180, 60, 0.14) 0%, transparent 42%),
+    linear-gradient(165deg, color-mix(in srgb, #1a1208 88%, var(--accent-orange)) 0%, #0c0a10 55%, #08060c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 48px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.my-server-beta-banner__stripes {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background: repeating-linear-gradient(
+    -28deg,
+    #fff 0,
+    #fff 1px,
+    transparent 1px,
+    transparent 14px
+  );
+  pointer-events: none;
+}
+
+.my-server-beta-banner__inner {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 1.75rem);
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.my-server-beta-banner__stamp-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.35rem;
+}
+
+.my-server-beta-banner__stamp {
+  display: block;
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-weight: 900;
+  font-size: clamp(2.65rem, 7.5vw, 4.35rem);
+  line-height: 0.92;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: linear-gradient(
+    185deg,
+    #fff4d4 0%,
+    #ffc14a 28%,
+    #ff8c1a 52%,
+    #e85a10 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 14px rgba(255, 140, 40, 0.45));
+  transform: rotate(-2.5deg);
+}
+
+[data-my-server-chrome='1'] .my-server-beta-banner__stamp {
+  font-family: var(--font-minecraft, inherit);
+  letter-spacing: 0.08em;
+}
+
+.my-server-beta-banner__copy {
+  flex: 1;
+  min-width: min(100%, 18rem);
+}
+
+.my-server-beta-banner__title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-detail, system-ui, sans-serif);
+  font-size: clamp(1.02rem, 1.1vw + 0.88rem, 1.28rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #fff;
+}
+
+[data-my-server-chrome='1'] .my-server-beta-banner__title.font-mc {
+  font-family: var(--font-minecraft, inherit);
+  letter-spacing: 0.03em;
+}
+
+.my-server-beta-banner__body {
+  margin: 0;
+  font-size: clamp(0.82rem, 0.35vw + 0.76rem, 0.93rem);
+  line-height: 1.62;
+  color: color-mix(in srgb, #fff 72%, rgba(255, 200, 160, 0.35));
+  max-width: 46rem;
+}
+
+.my-server-hub-inner {
+  position: relative;
+  z-index: 1;
+  padding: 0 clamp(1.1rem, 2.8vw, 1.85rem);
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.my-server-layout--hub .my-server-landing {
+  max-width: none;
+  margin-bottom: 1.15rem;
+}
+
+.my-server-layout--hub .my-server-hero--aether {
+  border-radius: 18px;
+  padding: clamp(1.35rem, 2.8vw, 1.75rem) clamp(1.35rem, 3vw, 1.85rem);
+  box-shadow:
+    0 14px 44px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 0 40px color-mix(in srgb, var(--accent-orange, #ff6a1a) 12%, transparent);
+}
+
+.my-server-layout--hub .my-server-aside {
+  border-radius: 18px;
+}
+
+.my-server-stage {
+  position: relative;
+  padding: clamp(1.1rem, 2vw, 1.35rem) clamp(1rem, 2.2vw, 1.35rem) clamp(1.25rem, 2.5vw, 1.65rem);
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 0%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 10%, transparent), transparent 58%),
+    color-mix(in srgb, var(--panel-elevated, #120e18) 78%, rgba(0, 0, 0, 0.35));
+  border: 1px solid color-mix(in srgb, #fff 0.09, transparent);
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.my-server-stage__head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.my-server-stage__label {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 78%, rgba(255, 255, 255, 0.5));
+}
+
+[data-my-server-chrome='0'] .my-server-stage__label {
+  font-family: var(--font-detail, system-ui, sans-serif);
+}
+
+.my-server-stage__label.font-mc {
+  font-family: var(--font-minecraft, inherit);
+  letter-spacing: 0.1em;
+}
+
+.my-server-stage__rule {
+  flex: 1;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, transparent),
+    color-mix(in srgb, #fff 0.12, transparent) 55%,
+    transparent
+  );
+  opacity: 0.85;
+}
+
+.my-server-layout--hub .my-server-grid {
+  max-width: none;
+  gap: 1rem;
+}
+
+.my-server-layout--hub .my-server-card {
+  border-radius: 16px;
+  transition:
+    border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.my-server-layout--hub .my-server-card:hover {
+  transform: translateY(-3px);
+}
+
+.my-server-add-card--cta {
+  border-style: solid;
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, transparent);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 38%, #3a1808) 0%,
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 12%, #120804) 48%,
+    color-mix(in srgb, #0a080c 92%, transparent) 100%
+  );
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.4),
+    0 0 36px color-mix(in srgb, var(--accent-orange, #ff6a1a) 22%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.my-server-add-card--cta:hover {
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 72%, #fff);
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.48),
+    0 0 48px color-mix(in srgb, var(--accent-orange, #ff6a1a) 32%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  transform: translateY(-3px);
+}
+
+.my-server-add-card--cta .my-server-add-label {
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+}
+
+.my-server-add-card--cta .my-server-add-ico {
+  color: #fff;
+  filter: drop-shadow(0 2px 8px rgba(255, 140, 60, 0.55));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .my-server-beta-banner__stamp {
+    animation: my-server-beta-glow 4.5s ease-in-out infinite alternate;
+  }
+
+  .my-server-add-card--cta .my-server-add-ico {
+    animation: my-server-cta-nudge 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes my-server-beta-glow {
+  from {
+    filter: drop-shadow(0 3px 12px rgba(255, 140, 40, 0.38));
+  }
+  to {
+    filter: drop-shadow(0 4px 22px rgba(255, 170, 80, 0.62));
+  }
+}
+
+@keyframes my-server-cta-nudge {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .my-server-beta-banner__stamp,
+  .my-server-add-card--cta .my-server-add-ico {
+    animation: none;
+  }
+}
+
+[data-theme='light'] .my-server-beta-banner {
+  background:
+    linear-gradient(105deg, rgba(255, 200, 120, 0.35) 0%, transparent 45%),
+    linear-gradient(175deg, #fff8f0 0%, #ffe8d8 40%, #fff 100%);
+  border-bottom-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 28%, #ccc);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .my-server-beta-banner__title {
+  color: #1a120c;
+}
+
+[data-theme='light'] .my-server-beta-banner__body {
+  color: color-mix(in srgb, #1a120c 78%, #6a4a38);
+}
+
+[data-theme='light'] .my-server-stage {
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 0%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 8%, transparent), transparent 55%),
+    #faf8fc;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] .my-server-hub-bg {
+  opacity: 0.55;
+}
+
 /* Vue détail : tout tient dans la zone (console scroll en interne), pas de scroll page. */
 .my-server-scroll--detail {
   overflow: hidden;
@@ -49,11 +368,32 @@
   padding-right: max(1rem, calc(var(--titlebar-controls-width, 152px) + 0.65rem));
 }
 
+/* Accueil — intro + encart latéral */
+.my-server-landing {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 62rem;
+  margin: 0 auto 1.35rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 960px) {
+  .my-server-landing {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 15.5rem);
+    align-items: stretch;
+    gap: 1.15rem 1.1rem;
+  }
+}
+
+.my-server-landing-main {
+  min-width: 0;
+}
+
 /* Accueil — carte intro (orange launcher) */
 .my-server-hero--aether {
   position: relative;
-  max-width: 46rem;
-  margin: 0 auto 1.5rem;
+  max-width: none;
+  margin: 0;
   padding: 1.4rem 1.55rem 1.5rem;
   border-radius: 14px;
   background: color-mix(in srgb, var(--panel-elevated, #1a1525) 90%, transparent);
@@ -117,20 +457,117 @@
   max-width: 42rem;
 }
 
-.my-server-hero-list {
+.my-server-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.5rem;
+  margin: 1rem 0 0;
+}
+
+.my-server-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.4rem 0.72rem 0.42rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--text) 92%, transparent);
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 12%, rgba(0, 0, 0, 0.25));
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 28%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.my-server-pill-check {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 88%, #fff);
+}
+
+.my-server-pill-text {
+  font-family: var(--font-detail, system-ui, sans-serif);
+}
+
+.my-server-aside {
+  position: relative;
+  border-radius: 14px;
+  padding: 1.15rem 1.05rem 1.2rem;
+  overflow: hidden;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 14%, rgba(12, 10, 16, 0.92)) 0%,
+    color-mix(in srgb, var(--panel-elevated, #141018) 94%, transparent) 55%
+  );
+  border: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 32%, transparent);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.35),
+    0 0 28px color-mix(in srgb, var(--accent-orange, #ff6a1a) 10%, transparent);
+}
+
+.my-server-aside-visual {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  height: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.my-server-aside-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 85%, #fff);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, transparent);
+  margin-bottom: 0.15rem;
+}
+
+.my-server-aside-bar {
+  flex: 1;
+  height: 100%;
+  max-height: 2.35rem;
+  border-radius: 6px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #fff 0.12, transparent),
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 22%, rgba(0, 0, 0, 0.35))
+  );
+  border: 1px solid color-mix(in srgb, #fff 0.1, transparent);
+}
+
+.my-server-aside-bar--mid {
+  max-height: 1.65rem;
+}
+
+.my-server-aside-bar--short {
+  max-height: 1.1rem;
+  flex: 0.55;
+}
+
+.my-server-aside-kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 78%, rgba(255, 255, 255, 0.5));
+}
+
+[data-my-server-chrome='0'] .my-server-aside-kicker {
+  font-family: var(--font-detail, system-ui, sans-serif);
+}
+
+.my-server-aside-kicker.font-mc {
+  font-family: var(--font-minecraft, inherit);
+  letter-spacing: 0.08em;
+}
+
+.my-server-aside-text {
   margin: 0;
-  padding: 0 0 0 1.1rem;
-  font-size: 0.86rem;
-  line-height: 1.65;
-  color: color-mix(in srgb, var(--text) 88%, transparent);
-}
-
-.my-server-hero-list li {
-  margin: 0.35rem 0;
-}
-
-.my-server-hero-list li::marker {
-  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 75%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-muted, rgba(255, 255, 255, 0.76));
 }
 
 .my-server-grid {
@@ -139,6 +576,28 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
   gap: 0.9rem;
+}
+
+.my-server-grid--empty {
+  max-width: 24rem;
+  grid-template-columns: 1fr;
+}
+
+.my-server-grid--empty .my-server-add-card {
+  min-height: 176px;
+  border-radius: 18px;
+  padding: 1.25rem 1rem;
+}
+
+.my-server-grid--empty .my-server-add-ico {
+  font-size: 2.1rem;
+}
+
+.my-server-grid--empty .my-server-add-label {
+  font-size: 0.95rem;
+  max-width: 14rem;
+  text-align: center;
+  line-height: 1.35;
 }
 
 /* Avec 0 serveur : une seule carte « créer » — centrée sous le hero. */
@@ -961,6 +1420,33 @@
   box-shadow:
     0 10px 32px rgba(0, 0, 0, 0.08),
     0 0 28px color-mix(in srgb, var(--accent-orange, #ff6a1a) 8%, transparent);
+}
+
+[data-theme='light'] .my-server-pill {
+  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 10%, #f6f6f8);
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 35%, #ccc);
+  color: var(--text, #1a1a1a);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='light'] .my-server-aside {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--accent-orange, #ff6a1a) 12%, #fff) 0%,
+    color-mix(in srgb, #fff 96%, #e8e8ec) 52%
+  );
+  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 28%, #ccc);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.06),
+    0 0 20px color-mix(in srgb, var(--accent-orange, #ff6a1a) 8%, transparent);
+}
+
+[data-theme='light'] .my-server-aside-text {
+  color: var(--text-muted, rgba(26, 26, 26, 0.72));
+}
+
+[data-theme='light'] .my-server-aside-bar {
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 [data-theme='light'] .my-server-panel {

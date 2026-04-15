@@ -1003,11 +1003,12 @@ const REPORT_INSTANCE_CATEGORIES = ['launch', 'install', 'account', 'verify', 'm
 /** Catégories rapport launcher (app). */
 const REPORT_LAUNCHER_CATEGORIES = ['ui', 'login', 'updates', 'downloads', 'performance', 'other'] as const
 
-type NewsHubSocialId = 'modrinth' | 'youtube' | 'x' | 'discord' | 'bmc'
+type NewsHubSocialId = 'modrinth' | 'website' | 'youtube' | 'x' | 'discord' | 'bmc'
 
 /** Liens onglet Accueil (ordre d’affichage). Chaîne vide = bouton masqué. */
 const NEWS_HUB_SOCIAL_DEF: { id: NewsHubSocialId; url: string }[] = [
   { id: 'modrinth', url: 'https://modrinth.com/organization/soleapixel' },
+  { id: 'website', url: 'https://soleapixel.com' },
   { id: 'youtube', url: 'https://www.youtube.com/@SILWOX' },
   { id: 'x', url: 'https://x.com/Silwox_OFF' },
   { id: 'discord', url: DISCORD_INVITE_URL },
@@ -1052,6 +1053,7 @@ function IconBuyMeACoffee({ className }: { className?: string } = {}) {
 
 const NEWS_HUB_LABEL_KEYS: Record<NewsHubSocialId, string> = {
   modrinth: 'newsView.socialModrinth',
+  website: 'newsView.socialWebsite',
   youtube: 'newsView.socialYoutube',
   x: 'newsView.socialX',
   discord: 'newsView.socialDiscord',
@@ -1156,6 +1158,16 @@ function NewsHubSocialIcon({
 }) {
   const icons: Record<NewsHubSocialId, ReactNode> = {
     modrinth: <IconModrinth className={className} />,
+    website: (
+      <img
+        src={logoUrl}
+        alt=""
+        className={className}
+        width={26}
+        height={26}
+        draggable={false}
+      />
+    ),
     youtube: <IconYouTube className={className} />,
     discord: <IconDiscord className={className} />,
     x: <IconXLogo className={className} />,
@@ -3384,7 +3396,10 @@ export function App() {
           <div className="app-fill">
           <div className="boot-screen">
             <div className="boot-screen-inner">
-              <img src={bootLogoUrl} alt="Solea Pixel" className="boot-logo" />
+              <div className="boot-logo-wrap">
+                <img src={bootLogoUrl} alt="Solea Pixel" className="boot-logo" />
+              </div>
+              <div className="boot-progress-wrap">
               <div
                 className="boot-progress-track"
                 role="progressbar"
@@ -3395,6 +3410,7 @@ export function App() {
                 aria-label={t('boot.aria')}
               >
                 <div className="boot-progress-fill" style={{ width: `${bootProgress}%` }} />
+              </div>
               </div>
               <span className="boot-progress-label" aria-live="polite">
                 {t('boot.loadingBase')}

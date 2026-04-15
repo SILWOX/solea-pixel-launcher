@@ -1,6 +1,12 @@
-# Déploiement Netlify : répertoire de publication = site statique.
+# Déploiement Netlify : site statique + fonctions (flux actu / admin).
 [build]
   publish = "Website"
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
 
 # En-têtes utiles pour le cache des assets (le HTML reste court).
 [[headers]]

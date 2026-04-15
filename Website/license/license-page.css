@@ -1,0 +1,609 @@
+/* Page SPL — lecture longue, sommaire, hiérarchie visuelle forte */
+html.license-html {
+  scroll-padding-top: 5.75rem;
+}
+
+body.license-body {
+  overflow: auto;
+  height: auto;
+  min-height: 100%;
+  line-height: 1.6;
+}
+
+.license-layout {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ——— Barre sup ——— */
+.license-top {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem clamp(1rem, 3vw, 1.85rem);
+  background: color-mix(in srgb, #08080d 78%, transparent);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid color-mix(in srgb, #fff 0.1, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--accent) 0.12, transparent),
+    0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.license-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  color: var(--text);
+  padding: 0.2rem 0.35rem 0.2rem 0;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.license-brand:hover {
+  background: color-mix(in srgb, #fff 0.04, transparent);
+}
+
+.license-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #fff 0.12, transparent);
+}
+
+.license-brand__type {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+.license-brand__solea {
+  color: var(--muted);
+}
+
+.license-brand__pixel {
+  color: var(--accent);
+}
+
+.license-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.license-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 999px;
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, #fff 0.12, transparent);
+  color: var(--text);
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.license-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-panel));
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.license-btn:active {
+  transform: scale(0.98);
+}
+
+.license-btn--primary {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: #0a0604;
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--accent) 100%, #fff) 0%,
+    color-mix(in srgb, var(--accent) 88%, #c45a20) 100%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #fff 0.2, transparent) inset,
+    0 8px 28px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.license-btn--primary:hover {
+  filter: brightness(1.06);
+  border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.lang-switch.license-lang {
+  margin: 0;
+}
+
+/* ——— Zone principale ——— */
+.license-main {
+  flex: 1;
+  width: 100%;
+  max-width: min(72rem, 100%);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) clamp(2.5rem, 5vw, 3.5rem);
+}
+
+/* Hero */
+.license-hero {
+  position: relative;
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+  border-radius: 24px;
+  border: 1px solid color-mix(in srgb, #fff 0.1, transparent);
+  background: color-mix(in srgb, var(--bg-panel) 92%, #000);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 0.1, transparent),
+    0 32px 80px rgba(0, 0, 0, 0.42);
+}
+
+.license-hero__glow {
+  position: absolute;
+  inset: -40% -20% auto -20%;
+  height: 85%;
+  background:
+    radial-gradient(ellipse 70% 55% at 18% 35%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
+    radial-gradient(ellipse 50% 45% at 88% 20%, color-mix(in srgb, var(--glow-violet) 14%, transparent), transparent 50%),
+    radial-gradient(ellipse 40% 35% at 70% 80%, color-mix(in srgb, var(--note-blue) 10%, transparent), transparent 45%);
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.license-hero__inner {
+  position: relative;
+  z-index: 1;
+  padding: clamp(1.35rem, 3.5vw, 2.15rem) clamp(1.25rem, 3vw, 2.25rem);
+  max-width: 40rem;
+}
+
+.license-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.65rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 95%, #000);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 999px;
+}
+
+.license-hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.55rem, 4.2vw, 2.15rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.license-hero__version {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.license-hero__lede {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--text) 88%, var(--muted));
+  max-width: 36rem;
+  text-wrap: pretty;
+}
+
+/* Grille sommaire + document */
+.license-content {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .license-content {
+    grid-template-columns: minmax(11.5rem, 14rem) minmax(0, 1fr);
+    gap: clamp(1.75rem, 3vw, 2.75rem);
+  }
+}
+
+/* Sommaire */
+.license-toc {
+  position: relative;
+  padding: 1rem 1rem 1.1rem;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, #fff 0.08, transparent);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--bg-panel) 96%, var(--accent) 2%) 0%,
+    color-mix(in srgb, #06060a 98%, transparent) 100%
+  );
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 900px) {
+  .license-toc {
+    position: sticky;
+    top: 5.75rem;
+    max-height: calc(100vh - 6.5rem);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .license-toc::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .license-toc::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+    border-radius: 99px;
+  }
+}
+
+.license-toc__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--muted) 92%, var(--accent));
+}
+
+.license-toc__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.license-toc__a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.38rem 0.45rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--text) 82%, var(--muted));
+  text-decoration: none;
+  border-radius: 10px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.license-toc__a:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.license-toc__a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 65%, transparent);
+  outline-offset: 2px;
+}
+
+.license-toc__n {
+  flex-shrink: 0;
+  min-width: 1.15rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--accent) 88%, #fff);
+  opacity: 0.9;
+}
+
+/* Document */
+.license-doc {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.35rem);
+  max-width: 48rem;
+  outline: none;
+}
+
+.license-doc:focus-visible {
+  box-shadow: none;
+}
+
+.license-card {
+  position: relative;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, #fff 0.09, transparent);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, #101018 98%, var(--accent) 2%) 0%,
+    color-mix(in srgb, var(--bg-panel) 96%, #000) 100%
+  );
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 color-mix(in srgb, #fff 0.05, transparent);
+  scroll-margin-top: 6rem;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.license-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    0 0 0 1px color-mix(in srgb, var(--accent) 0.08, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 0.06, transparent);
+}
+
+.license-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.85rem;
+  bottom: 0.85rem;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 95%, #fff) 0%,
+    color-mix(in srgb, var(--note-blue) 75%, var(--accent)) 55%,
+    color-mix(in srgb, var(--glow-violet) 70%, var(--accent)) 100%
+  );
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.license-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1.2rem 1.35rem 0.65rem 1.6rem;
+}
+
+.license-card__num {
+  flex-shrink: 0;
+  width: 2.35rem;
+  height: 2.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  border-radius: 12px;
+  color: #0c0604;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--accent) 100%, #fff) 0%,
+    color-mix(in srgb, var(--accent) 75%, #401808) 100%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #fff 0.25, transparent) inset,
+    0 6px 20px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.license-card h2 {
+  margin: 0.15rem 0 0;
+  font-size: clamp(1.02rem, 2.2vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-wrap: balance;
+  color: var(--text);
+}
+
+.license-card__body {
+  padding: 0 1.35rem 1.35rem 1.6rem;
+  font-size: 0.9375rem;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--text) 88%, var(--muted));
+}
+
+.license-card__body > p:first-of-type {
+  margin-top: 0;
+}
+
+.license-card__body p {
+  margin: 0 0 0.85rem;
+}
+
+.license-card__body p:last-child {
+  margin-bottom: 0;
+}
+
+.license-card__body ul {
+  margin: 0.4rem 0 0.9rem;
+  padding-left: 0;
+  list-style: none;
+}
+
+.license-card__body li {
+  position: relative;
+  margin-bottom: 0.55rem;
+  padding-left: 1.2rem;
+}
+
+.license-card__body li:last-child {
+  margin-bottom: 0;
+}
+
+.license-card__body li::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 85%, #fff);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.license-card__body strong {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.license-callouts {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.9rem;
+}
+
+@media (min-width: 640px) {
+  .license-callouts--split {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+.license-callout {
+  border-radius: 14px;
+  padding: 0.9rem 1.05rem;
+  font-size: 0.84rem;
+  line-height: 1.58;
+}
+
+.license-callout--yes {
+  border: 1px solid color-mix(in srgb, var(--note-green) 38%, var(--border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--note-green) 11%, var(--bg-panel)) 0%,
+    color-mix(in srgb, #0a100e 96%, transparent) 100%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--note-green) 0.12, transparent);
+}
+
+.license-callout--yes h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--note-green) 95%, #fff);
+}
+
+.license-callout--no {
+  border: 1px solid color-mix(in srgb, #f87171 40%, var(--border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, #f87171 9%, var(--bg-panel)) 0%,
+    color-mix(in srgb, #100a0c 96%, transparent) 100%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #f87171 0.1, transparent);
+}
+
+.license-callout--no h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #fca5a5 95%, #fff);
+}
+
+.license-callout ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.license-callout li {
+  position: relative;
+  margin-bottom: 0.35rem;
+  padding-left: 1rem;
+}
+
+.license-callout li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.license-callout li:last-child {
+  margin-bottom: 0;
+}
+
+.license-note {
+  margin-top: 0.9rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--note-blue) 28%, var(--border));
+  border-left-width: 4px;
+  border-left-color: color-mix(in srgb, var(--note-blue) 75%, transparent);
+  background: color-mix(in srgb, var(--note-blue) 9%, var(--bg-panel));
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--text) 75%, var(--muted));
+}
+
+/* Pied source */
+.license-foot {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: 0 0.25rem;
+}
+
+.license-foot__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 16px;
+  border: 1px dashed color-mix(in srgb, #fff 0.12, transparent);
+  background: color-mix(in srgb, var(--bg-panel) 94%, transparent);
+}
+
+.license-foot__label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.license-foot__link {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--accent) 82%, #fff);
+  text-decoration: none;
+  word-break: break-all;
+  text-align: center;
+  max-width: 100%;
+}
+
+.license-foot__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .license-btn,
+  .license-brand,
+  .license-card,
+  .license-toc__a {
+    transition: none;
+  }
+}

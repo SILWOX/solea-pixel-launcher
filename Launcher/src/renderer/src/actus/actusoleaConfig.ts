@@ -1,10 +1,10 @@
 /**
- * URL du flux actu (GitHub raw), en pratique `actusolea.md`.
- * Défaut : dépôt public [SILWOX/SOLEA_ACTU](https://github.com/SILWOX/SOLEA_ACTU).
- * Surcharge optionnelle : `VITE_ACTU_SOLEA_JSON_URL` dans `.env`.
+ * URL du flux actu (JSON `ActuSoleaJson` : segments / content, etc.).
+ * Défaut : fonction Netlify sur le site (posts publiés via l’admin + Supabase).
+ * Secours / dev : `VITE_ACTU_SOLEA_JSON_URL` dans `.env` (ex. ancien GitHub raw `actusolea.md`).
  */
 const DEFAULT_ACTU_SOLEA_JSON_URL =
-  'https://raw.githubusercontent.com/SILWOX/SOLEA_ACTU/main/actusolea.md'
+  'https://soleapixel.com/.netlify/functions/news-feed'
 
 export function getActuSoleaJsonUrl(): string {
   const fromEnv = import.meta.env.VITE_ACTU_SOLEA_JSON_URL as string | undefined

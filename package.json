@@ -3,6 +3,9 @@
   "private": true,
   "version": "26.2.0",
   "description": "Racine du dépôt — launcher dans ./Launcher, site vitrine dans ./Website (même repo Git).",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1"
+  },
   "scripts": {
     "Launch launcher": "npm run dev",
     "Launch site": "npm --prefix Website run dev",

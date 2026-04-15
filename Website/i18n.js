@@ -6,9 +6,9 @@
 
   const STR = {
     en: {
-      'page.title': 'Solea Pixel — Launcher',
+      'page.title': 'SOLEA PIXEL',
       'meta.description':
-        'Solea Pixel — Minecraft launcher for Solea modpacks, Modrinth, local server. Download for Windows.',
+        'WELCOME: install our launcher here and discover the features offered by the launcher.',
       'nav.home': 'Home',
       'nav.news': 'News',
       'nav.about': 'About',
@@ -124,7 +124,12 @@
       'news.body1':
         'This hub is where we will post news and announcements. It is <strong>not</strong> the GitHub release changelog: you can share news here without shipping a new launcher build.',
       'news.body2':
-        'Later, the Solea Pixel launcher will read this same feed in Home & news, so players see new posts in the app as soon as they are published here.',
+        'The Solea Pixel launcher reads this same feed in Home & news, so players see new posts in the app as soon as they are published.',
+      'news.liveIntro': 'Latest posts (same JSON feed as the launcher):',
+      'news.liveLoading': 'Loading news…',
+      'news.liveError': 'Could not load news.',
+      'news.liveEmpty': 'No posts to show yet.',
+      'news.liveUpdated': 'Feed last updated: {date}',
       'engage.follow': 'Follow releases',
       'engage.followSub': 'Watch on GitHub',
       'engage.discord': 'Join Discord',
@@ -144,7 +149,8 @@
       'legal.nav': 'Legal & privacy',
       'faq.tag': 'FAQ',
       'faq.title': 'Frequently asked questions',
-      'faq.lead': 'Project, launcher, local server, sign-in — and a few extras.',
+      'faq.lead':
+        'Launcher, server, downloads, licence, SmartScreen, collaborations — quick answers in one place.',
       'faq.q1': 'What is SOLEA PIXEL?',
       'faq.a1':
         'We are a small team of young creators in the Minecraft space. Follow us on social media or hop into Discord to be part of the journey.',
@@ -164,13 +170,81 @@
       'faq.a6': 'Solea Pixel is not affiliated with Mojang AB or Microsoft. Minecraft is a trademark of Mojang AB.',
       'faq.q7': 'Can I stream or make videos?',
       'faq.a7': 'Yes — we love seeing gameplay and tutorials. Credit Solea Pixel and link to the site or Discord so people can find the launcher.',
+      'faq.q8': 'I’d like to collaborate',
+      'faq.a8':
+        'Yes — <strong>SOLEA PIXEL STUDIO</strong> keeps partnerships open: we offer a full programme, with details shared on Discord. <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Join the server here</a>.',
+      'faq.q9': 'Which platforms are supported?',
+      'faq.a9':
+        'Windows is our priority today. macOS and Linux are on the roadmap — follow announcements on Discord and the Downloads block on this site.',
+      'faq.q10': 'Is the launcher free?',
+      'faq.a10':
+        'Yes — access to the launcher and the ecosystem we ship as free stays that way. Modpacks and mods remain governed by their original licences and the <a href="/license/" target="_blank" rel="noopener noreferrer">SPL</a>.',
+      'faq.q11': 'Where do I report a bug or suggest a feature?',
+      'faq.a11':
+        'Use <a href="https://github.com/SILWOX/solea-pixel-launcher/issues/new" target="_blank" rel="noopener noreferrer">GitHub Issues</a> for reproducible bugs and code-related reports (add screenshots and your launcher version). For quick help and ideas, use <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>.',
+      'faq.q12': 'Can I play without a Microsoft account?',
+      'faq.a12':
+        'For a licensed session you sign in with Microsoft. If you do not own the game, you can use offline display-name mode instead — see the launcher sign-in options. You can revoke Microsoft access anytime from your Microsoft account settings.',
+      'faq.q13': 'How do I update the launcher?',
+      'faq.a13':
+        'Updates follow the same Windows release channel as this site. After install, the app can check for updates itself — you can also confirm your version in Settings or from the installer line on the home section.',
+      'faq.q14': 'Do all modpacks come from Modrinth?',
+      'faq.a14':
+        'The launcher is built around Modrinth for our packs. Individual mods and assets keep their original authors’ licences — when in doubt, read each project page on Modrinth.',
+      'faq.q15': 'Can I use Solea Pixel on a paid server?',
+      'faq.a15':
+        'Paid or monetised servers depend on how you use SOLEA PIXEL content. Read the <a href="/license/" target="_blank" rel="noopener noreferrer">SPL licence</a> (commercial use & modpack sections) before charging players or selling access.',
+      'faq.q16': 'What if SmartScreen blocks the installer?',
+      'faq.a16':
+        'That is common for newer Windows installers. Open <a href="#about-smartscreen-title">About this project</a> and follow the SmartScreen steps there, or use the in-page help for the full explanation.',
+      'license.pageTitle': 'SOLEA PIXEL — SPL License',
+      'license.metaDescription':
+        'Solea Pixel License (SPL) v1.0 — permissions, attribution, launcher and modpack rules. Official legal text.',
+      'license.badge': 'Legal',
+      'license.h1': 'Solea Pixel License (SPL)',
+      'license.versionLine': 'Version 1.0 · April 2026',
+      'license.tocTitle': 'On this page',
+      'license.tocNav': 'License sections',
+      'license.heroLede':
+        'Terms for SOLEA PIXEL content, the launcher, modpacks, distribution, and commercial use — organised in clear sections below.',
+      'license.sourceLabel': 'Source file',
+      'license.back': 'Back to site',
+      'license.source': 'View on GitHub',
+      'license.toc1': 'Definitions',
+      'license.toc2': 'Permissions',
+      'license.toc3': 'Attribution',
+      'license.toc4': 'Launcher',
+      'license.toc5': 'Modpacks',
+      'license.toc6': 'Mods & assets',
+      'license.toc7': 'Platforms',
+      'license.toc8': 'Commercial',
+      'license.toc9': 'Warranty',
+      'license.toc10': 'Updates',
+      'license.toc11': 'Enforcement',
+      'license.toc12': 'Jurisdiction',
+      'license.toc13': 'Contact',
+      'license.toc14': 'Final',
+      'license.sec1.title': 'Definitions',
+      'license.sec2.title': 'General permissions',
+      'license.sec3.title': 'Attribution requirement',
+      'license.sec4.title': 'Launcher restrictions',
+      'license.sec5.title': 'Modpack terms',
+      'license.sec6.title': 'Mods, resource packs & other content',
+      'license.sec7.title': 'Authorized distribution platforms',
+      'license.sec8.title': 'Commercial use policy',
+      'license.sec9.title': 'No warranty (disclaimer)',
+      'license.sec10.title': 'License updates',
+      'license.sec11.title': 'Enforcement & violations',
+      'license.sec12.title': 'Legal jurisdiction',
+      'license.sec13.title': 'Contact & permissions',
+      'license.sec14.title': 'Final notes',
       'footer.legal':
-        'Not affiliated with Mojang AB or Microsoft · <a href="#" class="js-legal-modal-open">Legal & privacy</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
+        'Not affiliated with Mojang AB or Microsoft · <a href="#" class="js-legal-modal-open">Legal & privacy</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">SPL license</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
     },
     fr: {
-      'page.title': 'Solea Pixel — Launcher',
+      'page.title': 'SOLEA PIXEL',
       'meta.description':
-        'Solea Pixel — launcher Minecraft pour les modpacks Solea, Modrinth, serveur local. Téléchargement Windows.',
+        'BIENVENUE : installez ici notre launcher et découvrez les fonctionnalités proposées par le launcher.',
       'nav.home': 'Accueil',
       'nav.news': 'Actu',
       'nav.about': 'À propos',
@@ -287,7 +361,12 @@
       'news.body1':
         'Ici on publiera les annonces et actus du projet. Ce n’est <strong>pas</strong> le journal des releases GitHub : tu peux poster une actu sans publier une nouvelle version du launcher.',
       'news.body2':
-        'Plus tard, le launcher Solea Pixel lira le même flux dans Accueil & actus, pour afficher les nouveaux messages dès qu’ils sont en ligne ici.',
+        'Le launcher Solea Pixel lit le même flux dans Accueil & actus : les joueurs voient les nouveaux messages dès leur publication.',
+      'news.liveIntro': 'Dernières actus (même flux JSON que le launcher) :',
+      'news.liveLoading': 'Chargement des actus…',
+      'news.liveError': 'Impossible de charger les actus.',
+      'news.liveEmpty': 'Aucun article pour le moment.',
+      'news.liveUpdated': 'Dernière mise à jour du flux : {date}',
       'engage.follow': 'Suivre les releases',
       'engage.followSub': 'Sur GitHub',
       'engage.discord': 'Rejoindre Discord',
@@ -307,7 +386,8 @@
       'legal.nav': 'Mentions & confidentialité',
       'faq.tag': 'FAQ',
       'faq.title': 'Questions fréquentes',
-      'faq.lead': 'Projet, launcher, serveur local, connexion — et un peu plus.',
+      'faq.lead':
+        'Launcher, serveur, téléchargements, licence, SmartScreen, collaborations — les réponses regroupées ici.',
       'faq.q1': "Qu'est-ce que SOLEA PIXEL ?",
       'faq.a1':
         'Nous sommes une petite organisation de jeunes créateurs autour de Minecraft. Rejoins-nous sur les réseaux ou directement sur Discord.',
@@ -328,9 +408,53 @@
       'faq.q7': 'Je peux streamer ou faire des vidéos ?',
       'faq.a7':
         'Oui — on adore voir du gameplay et des tutos. Cite Solea Pixel et renvoie vers le site ou Discord pour que les gens trouvent le launcher.',
+      'faq.q8': 'Je souhaite collaborer',
+      'faq.a8':
+        'Oui — avec <strong>SOLEA PIXEL STUDIO</strong>, nos partenariats sont très ouverts : nous proposons un programme complet, présenté sur Discord. <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Clique ici pour rejoindre le serveur</a>.',
+      'faq.q9': 'Quels systèmes sont supportés ?',
+      'faq.a9':
+        'Windows est la priorité aujourd’hui. macOS et Linux figurent sur la feuille de route — suis les annonces sur Discord et le bloc Téléchargements de ce site.',
+      'faq.q10': 'Le launcher est-il gratuit ?',
+      'faq.a10':
+        'Oui — l’accès au launcher et à l’écosystème annoncé comme gratuit le reste. Les modpacks et les mods restent soumis aux licences d’origine et à la <a href="/license/" target="_blank" rel="noopener noreferrer">SPL</a>.',
+      'faq.q11': 'Où signaler un bug ou une idée ?',
+      'faq.a11':
+        'Pour le code et les bugs reproductibles, passe par <a href="https://github.com/SILWOX/solea-pixel-launcher/issues/new" target="_blank" rel="noopener noreferrer">GitHub Issues</a> (captures d’écran + version du launcher). Pour l’aide rapide et les retours communautaires, rejoins-nous sur <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>.',
+      'faq.q12': 'Puis-je jouer sans compte Microsoft ?',
+      'faq.a12':
+        'Pour une session avec licence, connecte-toi avec Microsoft. Si tu ne possèdes pas le jeu, tu peux utiliser le mode hors ligne avec un nom d’affichage — voir les options de connexion du launcher. Tu peux révoquer l’accès Microsoft à tout moment depuis ton compte Microsoft.',
+      'faq.q13': 'Comment mettre à jour le launcher ?',
+      'faq.a13':
+        'Les mises à jour suivent le même canal Windows que ce site. Après installation, l’app peut vérifier les mises à jour elle-même — tu peux aussi vérifier ta version dans les réglages ou via la ligne d’installateur sur l’accueil.',
+      'faq.q14': 'Les modpacks viennent-ils tous de Modrinth ?',
+      'faq.a14':
+        'Le launcher s’appuie sur Modrinth pour nos packs. Chaque mod ou asset garde la licence de ses auteurs — en cas de doute, lis la page du projet sur Modrinth.',
+      'faq.q15': 'Puis-je utiliser Solea Pixel sur un serveur payant ?',
+      'faq.a15':
+        'Les serveurs payants ou monétisés dépendent de la façon dont tu utilises le contenu SOLEA PIXEL. Lis la <a href="/license/" target="_blank" rel="noopener noreferrer">licence SPL</a> (usage commercial & modpacks) avant de faire payer des joueurs ou de vendre un accès.',
+      'faq.q16': 'Que faire si SmartScreen bloque l’installateur ?',
+      'faq.a16':
+        'C’est fréquent pour les installateurs récents sur Windows. Ouvre <a href="#about-smartscreen-title">À propos du projet</a> et suis la section SmartScreen, ou utilise l’aide détaillée depuis cette même zone.',
+      'license.pageTitle': 'SOLEA PIXEL — Licence SPL',
+      'license.metaDescription':
+        'Licence Solea Pixel (SPL) v1.0 — autorisations, attribution, règles du launcher et des modpacks. Texte juridique officiel.',
+      'license.badge': 'Juridique',
+      'license.h1': 'Solea Pixel License (SPL)',
+      'license.versionLine': 'Version 1.0 · avril 2026',
+      'license.tocTitle': 'Sommaire',
+      'license.tocNav': 'Sections de la licence',
+      'license.heroLede':
+        'Conditions pour le contenu SOLEA PIXEL, le launcher, les modpacks, la distribution et l’usage commercial — présentées en sections claires ci-dessous.',
+      'license.sourceLabel': 'Fichier source',
+      'license.back': 'Retour au site',
+      'license.source': 'Voir sur GitHub',
       'footer.legal':
-        'Non affilié Mojang AB ni Microsoft · <a href="#" class="js-legal-modal-open">Mentions & confidentialité</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
+        'Non affilié Mojang AB ni Microsoft · <a href="#" class="js-legal-modal-open">Mentions & confidentialité</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">Licence SPL</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
     },
+  }
+
+  if (typeof window !== 'undefined' && window.__SOLEA_LICENSE_FR) {
+    Object.assign(STR.fr, window.__SOLEA_LICENSE_FR)
   }
 
   function detectBrowserLang() {
@@ -385,9 +509,15 @@
 
   function applyI18n() {
     document.documentElement.lang = currentLang === 'fr' ? 'fr' : 'en'
-    const desc = t('meta.description')
+    const profile = document.documentElement.dataset.i18nProfile
+    const desc = t(profile === 'license' ? 'license.metaDescription' : 'meta.description')
+    const shareTitle = profile === 'license' ? t('license.pageTitle') : t('page.title')
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', desc)
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', desc)
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', desc)
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', shareTitle)
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', shareTitle)
 
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.getAttribute('data-i18n')
@@ -404,6 +534,24 @@
       if (/\*\*.+\*\*/.test(val)) applyMarkdownBold(el, val)
       else el.textContent = val
     })
+
+    /* Page licence : corps des sections — EN reste le HTML initial, FR injecté depuis STR.fr */
+    document.querySelectorAll('[data-i18n-license-fr]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-license-fr')
+      if (!key) return
+      if (el.dataset.defaultBody === undefined) el.dataset.defaultBody = el.innerHTML
+      if (currentLang === 'fr') {
+        const html = STR.fr[key]
+        if (html) el.innerHTML = html
+      } else {
+        el.innerHTML = el.dataset.defaultBody
+      }
+    })
+
+    const licenseArticle = document.getElementById('license-doc-start')
+    if (licenseArticle) {
+      licenseArticle.setAttribute('lang', currentLang === 'fr' ? 'fr' : 'en')
+    }
 
     document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
       const key = el.getAttribute('data-i18n-placeholder')

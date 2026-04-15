@@ -119,6 +119,13 @@ export const FR: Record<string, string> = {
   'myServer.heroBullet2':
     'Forge / NeoForge pour la version Minecraft du pack est installé automatiquement : tu peux appuyer sur Démarrer une fois l’installation terminée.',
   'myServer.heroBullet3': 'Le grand fond d’écran n’apparaît que si « Barre titre + chrome » est activé dans les réglages du launcher.',
+  'myServer.pill1': 'Serveur en Local',
+  'myServer.pill2': 'Optimisé pour vous',
+  'myServer.pill3': 'configuration simple',
+  'myServer.asideAria': 'Aperçu serveur local',
+  'myServer.asideKicker': 'Sur ton PC',
+  'myServer.asideBlurb':
+    'JAR, mondes et logs restent dans ton dossier Solea. Tes amis utilisent ton IP publique et le port quand le serveur tourne.',
   'myServer.badgeInstalling': 'Installation',
   'myServer.badgeError': 'Erreur',
   'myServer.addAnother': 'Nouveau serveur',
@@ -127,6 +134,12 @@ export const FR: Record<string, string> = {
   'myServer.betaBadge': 'Bêta',
   'myServer.betaBadgeTitle':
     'L’hébergement serveur Solea est encore en bêta — l’outil peut évoluer. Nom, image et pack se règlent depuis la liste (crayon sur la carte).',
+  'myServer.betaBannerAria': 'Information accès anticipé pour l’hébergement serveur',
+  'myServer.betaBannerStamp': 'BÊTA',
+  'myServer.betaBannerTitle': 'L’hébergement serveur est en accès anticipé',
+  'myServer.betaBannerBody':
+    'Tu peux rencontrer des bugs, une finition encore incomplète ou des changements entre les versions du launcher. On améliore tout ça en continu — merci de tester et de signaler sur Discord ou GitHub.',
+  'myServer.stageLabel': 'Tes serveurs',
   'myServer.editProfile': 'Modifier le profil',
   'myServer.profileModalTitle': 'Profil du serveur',
   'myServer.profileModalHint': 'Les changements s’enregistrent automatiquement peu après la saisie.',
@@ -332,6 +345,7 @@ export const FR: Record<string, string> = {
   'newsView.socialDiscord': 'Discord',
   'newsView.socialX': 'X (Twitter)',
   'newsView.socialModrinth': 'Modrinth',
+  'newsView.socialWebsite': 'Site officiel',
   'newsView.socialBmc': 'Buy Me a Coffee',
   'newsView.accountsNav': 'Comptes enregistrés',
   'newsView.offlineBadge': 'Hors ligne',
@@ -709,7 +723,7 @@ export const FR: Record<string, string> = {
   'actu.fetchError': 'Impossible de charger les actus : {{detail}}',
   'actu.feedEmpty': 'Aucun contenu pour le moment.',
   'actu.feedNoUrl':
-    'Définis VITE_ACTU_SOLEA_JSON_URL (ex. dans .env) vers l’URL brute de actusolea.json sur GitHub.',
+    'Par défaut le flux vient du site (JSON). Pour forcer une autre source, définis VITE_ACTU_SOLEA_JSON_URL dans .env.',
   'actu.urlActive': 'Source',
   'actu.openFullChangelog': 'Ouvrir les notes complètes',
   'settings.verifyFilesGlossaryLabel': 'Vérifier les fichiers installés par rapport au pack Modrinth officiel :',

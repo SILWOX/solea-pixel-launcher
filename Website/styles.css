@@ -589,6 +589,60 @@ body {
   font-size: 0.9rem;
 }
 
+.live-news-feed__intro {
+  margin: 1rem 0 0.5rem;
+  max-width: 44rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--text) 82%, var(--muted));
+}
+
+.live-news-feed {
+  width: 100%;
+  max-width: min(56rem, 100%);
+  margin: 0.25rem 0 0;
+}
+
+.live-news-feed__grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+
+.live-news-feed__loading,
+.live-news-feed__status {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.live-news-feed__status:not([hidden]) {
+  padding-top: 0.35rem;
+}
+
+.live-news-card {
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
+.live-news-card__title {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--accent) 55%, var(--text));
+}
+
+.live-news-card__body {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
 .engage-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -867,10 +921,11 @@ body {
 
 .site-section--faq {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--note-blue) 18%, transparent), transparent 50%),
-    radial-gradient(ellipse 55% 40% at 100% 40%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
-    radial-gradient(ellipse 50% 35% at 0% 60%, color-mix(in srgb, var(--glow-violet) 10%, transparent), transparent 50%),
-    linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.28));
+    radial-gradient(ellipse 90% 55% at 50% -15%, color-mix(in srgb, var(--note-blue) 22%, transparent), transparent 52%),
+    radial-gradient(ellipse 60% 48% at 100% 35%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 58%),
+    radial-gradient(ellipse 55% 42% at 0% 55%, color-mix(in srgb, var(--glow-violet) 14%, transparent), transparent 52%),
+    radial-gradient(ellipse 45% 30% at 50% 100%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%),
+    linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.32));
   padding-bottom: clamp(1.25rem, 3vw, 2rem);
 }
 
@@ -885,6 +940,7 @@ body {
   flex-direction: column;
   flex: 1 1 auto;
   width: 100%;
+  max-width: min(860px, 100%);
   min-height: 0;
   gap: clamp(0.65rem, 2vw, 1.1rem);
 }
@@ -3105,7 +3161,7 @@ body {
   border-left-color: var(--note-blue);
 }
 
-/* FAQ — panneau cartes + entrées animées */
+/* FAQ — panneau premium + accordéon lisible */
 .faq-shell {
   position: relative;
 }
@@ -3113,16 +3169,16 @@ body {
 .faq-shell::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 22px;
+  inset: -3px;
+  border-radius: 26px;
   background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 35%, transparent),
-    color-mix(in srgb, var(--note-blue) 28%, transparent),
-    color-mix(in srgb, var(--glow-violet) 22%, transparent)
+    125deg,
+    color-mix(in srgb, var(--accent) 42%, transparent),
+    color-mix(in srgb, var(--note-blue) 32%, transparent),
+    color-mix(in srgb, var(--glow-violet) 26%, transparent)
   );
-  opacity: 0.35;
-  filter: blur(18px);
+  opacity: 0.42;
+  filter: blur(22px);
   z-index: 0;
   pointer-events: none;
 }
@@ -3132,61 +3188,112 @@ body {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  padding: 1rem 1rem 1.05rem;
-  border-radius: 20px;
-  border: 1px solid color-mix(in srgb, #fff 0.12, transparent);
+  gap: 0.72rem;
+  padding: clamp(1.05rem, 2.2vw, 1.35rem) clamp(0.85rem, 2vw, 1.2rem) clamp(1.1rem, 2.2vw, 1.4rem);
+  border-radius: 22px;
+  border: 1px solid color-mix(in srgb, #fff 0.14, transparent);
   background:
-    linear-gradient(175deg, color-mix(in srgb, var(--note-blue) 0.1, transparent) 0%, transparent 42%),
-    linear-gradient(210deg, color-mix(in srgb, var(--accent) 0.08, transparent) 0%, transparent 38%),
-    linear-gradient(180deg, color-mix(in srgb, #fff 0.03, transparent), transparent 30%),
-    color-mix(in srgb, var(--bg-panel) 96%, #000);
+    linear-gradient(185deg, color-mix(in srgb, var(--note-blue) 0.12, transparent) 0%, transparent 45%),
+    linear-gradient(215deg, color-mix(in srgb, var(--accent) 0.1, transparent) 0%, transparent 40%),
+    linear-gradient(180deg, color-mix(in srgb, #fff 0.04, transparent), transparent 28%),
+    color-mix(in srgb, var(--bg-panel) 97%, #000);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--accent) 0.14, transparent),
-    0 32px 80px rgba(0, 0, 0, 0.48),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    0 0 0 1px color-mix(in srgb, var(--accent) 0.16, transparent),
+    0 36px 96px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   counter-reset: faq-i;
+}
+
+.faq-panel::before {
+  content: '';
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  top: 0.55rem;
+  height: 3px;
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 55%, transparent),
+    color-mix(in srgb, var(--note-blue) 45%, transparent),
+    transparent
+  );
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 .faq__item {
   counter-increment: faq-i;
   margin: 0;
   padding: 0;
-  border: 1px solid color-mix(in srgb, #fff 0.09, transparent);
-  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, #fff 0.1, transparent);
+  border-radius: 18px;
   background:
-    linear-gradient(100deg, color-mix(in srgb, var(--accent) 0.06, transparent) 0%, transparent 28%),
-    color-mix(in srgb, #0a0a12 96%, var(--bg-panel));
+    linear-gradient(110deg, color-mix(in srgb, var(--accent) 0.07, transparent) 0%, transparent 32%),
+    linear-gradient(180deg, color-mix(in srgb, #fff 0.03, transparent), transparent 40%),
+    color-mix(in srgb, #080810 97%, var(--bg-panel));
   overflow: clip;
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 6px 24px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition:
-    border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    border-color 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.faq--inview .faq__item:nth-child(1) {
-  animation: faq-card-enter 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.02s both;
+.faq--inview .faq-panel > .faq__item {
+  animation: faq-card-enter 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.faq--inview .faq__item:nth-child(2) {
-  animation: faq-card-enter 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+
+.faq--inview .faq-panel > .faq__item:nth-child(1) {
+  animation-delay: 0.02s;
 }
-.faq--inview .faq__item:nth-child(3) {
-  animation: faq-card-enter 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+.faq--inview .faq-panel > .faq__item:nth-child(2) {
+  animation-delay: 0.06s;
 }
-.faq--inview .faq__item:nth-child(4) {
-  animation: faq-card-enter 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+.faq--inview .faq-panel > .faq__item:nth-child(3) {
+  animation-delay: 0.1s;
 }
-.faq--inview .faq__item:nth-child(5) {
-  animation: faq-card-enter 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.26s both;
+.faq--inview .faq-panel > .faq__item:nth-child(4) {
+  animation-delay: 0.14s;
 }
-.faq--inview .faq__item:nth-child(6) {
-  animation: faq-card-enter 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
+.faq--inview .faq-panel > .faq__item:nth-child(5) {
+  animation-delay: 0.18s;
 }
-.faq--inview .faq__item:nth-child(7) {
-  animation: faq-card-enter 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.38s both;
+.faq--inview .faq-panel > .faq__item:nth-child(6) {
+  animation-delay: 0.22s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(7) {
+  animation-delay: 0.26s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(8) {
+  animation-delay: 0.3s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(9) {
+  animation-delay: 0.34s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(10) {
+  animation-delay: 0.38s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(11) {
+  animation-delay: 0.42s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(12) {
+  animation-delay: 0.46s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(13) {
+  animation-delay: 0.5s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(14) {
+  animation-delay: 0.54s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(15) {
+  animation-delay: 0.58s;
+}
+.faq--inview .faq-panel > .faq__item:nth-child(16) {
+  animation-delay: 0.62s;
 }
 
 @keyframes faq-card-enter {
@@ -3201,41 +3308,44 @@ body {
 }
 
 .faq__item:hover {
-  border-color: color-mix(in srgb, var(--note-blue) 32%, transparent);
-  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--note-blue) 38%, transparent);
+  transform: translateY(-2px);
   box-shadow:
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    0 0 32px color-mix(in srgb, var(--note-blue) 14%, transparent);
+    0 16px 40px rgba(0, 0, 0, 0.4),
+    0 0 36px color-mix(in srgb, var(--note-blue) 12%, transparent);
 }
 
 .faq__item[open] {
-  border-color: color-mix(in srgb, var(--accent) 48%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 52%, transparent);
   box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.4),
-    0 0 40px color-mix(in srgb, var(--accent) 16%, transparent);
+    0 20px 52px rgba(0, 0, 0, 0.45),
+    0 0 48px color-mix(in srgb, var(--accent) 14%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 0.12, transparent);
 }
 
 .faq__item[open]:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .faq__item summary {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
   cursor: pointer;
   font-weight: 650;
-  font-size: 0.96rem;
-  line-height: 1.38;
+  font-size: clamp(0.92rem, 1.9vw, 1.02rem);
+  line-height: 1.42;
+  letter-spacing: -0.015em;
   list-style: none;
   position: relative;
-  padding: 1.05rem 3.35rem 1.05rem 1.05rem;
+  padding: 1.12rem 3.5rem 1.12rem 1.15rem;
   color: var(--text);
   transition: color 0.25s ease;
+  text-wrap: balance;
 }
 
 .faq__item summary:hover {
-  color: color-mix(in srgb, var(--text) 92%, var(--accent));
+  color: color-mix(in srgb, var(--text) 94%, var(--accent));
 }
 
 .faq__item summary::-webkit-details-marker {
@@ -3245,37 +3355,39 @@ body {
 .faq__item summary::before {
   content: counter(faq-i, decimal-leading-zero);
   flex: 0 0 auto;
-  min-width: 2.35rem;
-  padding: 0.32rem 0.4rem;
-  font-size: 0.64rem;
+  min-width: 2.5rem;
+  padding: 0.38rem 0.42rem;
+  font-size: 0.66rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
   color: #fff;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 12px;
   background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--accent) 72%, #301008),
-    color-mix(in srgb, var(--accent) 38%, #120604)
+    155deg,
+    color-mix(in srgb, var(--accent) 88%, #fff) 0%,
+    color-mix(in srgb, var(--accent) 42%, #1a0804) 100%
   );
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #fff 0.2, transparent) inset,
+    0 6px 18px color-mix(in srgb, var(--accent) 38%, transparent);
 }
 
 .faq__item summary::after {
   content: '';
   position: absolute;
-  right: 0.75rem;
+  right: 0.8rem;
   top: 50%;
-  width: 2.2rem;
-  height: 2.2rem;
-  margin-top: -1.1rem;
-  border-radius: 11px;
-  border: 1px solid color-mix(in srgb, #fff 0.12, transparent);
-  background-color: color-mix(in srgb, #fff 0.05, transparent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23b4b4c0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  width: 2.35rem;
+  height: 2.35rem;
+  margin-top: -1.175rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #fff 0.14, transparent);
+  background-color: color-mix(in srgb, #fff 0.06, transparent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23c8c8d4' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: center 52%;
+  background-position: center 54%;
   transition:
     transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.25s ease,
@@ -3284,28 +3396,41 @@ body {
 }
 
 .faq__item summary:hover::after {
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
-  box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 
 .faq__item[open] summary::after {
   transform: rotate(180deg);
-  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-  background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .faq__item p {
   margin: 0;
-  padding: 0 1.2rem 1.2rem 3.35rem;
-  color: var(--muted);
-  font-size: 0.91rem;
-  line-height: 1.65;
-  border-left: 3px solid color-mix(in srgb, var(--accent) 55%, var(--note-blue));
-  margin-left: 1.1rem;
-  margin-right: 0.7rem;
-  border-radius: 0 0 0 6px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 0.07, transparent), transparent 55%);
+  padding: 0 1.25rem 1.25rem 3.55rem;
+  color: color-mix(in srgb, var(--muted) 92%, var(--text));
+  font-size: 0.94rem;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  border-left: 4px solid color-mix(in srgb, var(--accent) 55%, var(--note-blue));
+  margin-left: 1.05rem;
+  margin-right: 0.75rem;
+  border-radius: 0 0 0 10px;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--accent) 0.09, transparent), transparent 60%);
+  text-wrap: pretty;
+}
+
+.faq__item p a {
+  color: color-mix(in srgb, var(--accent) 88%, #fff);
+  font-weight: 600;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.faq__item p a:hover {
+  color: color-mix(in srgb, var(--accent) 98%, #fff);
 }
 
 .faq__item[open] p {
@@ -3351,7 +3476,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .faq--inview .faq__item:nth-child(n) {
+  .faq--inview .faq-panel > .faq__item {
     animation: none;
   }
 
@@ -3410,6 +3535,31 @@ body {
 
 .footer.footer--in-faq a:hover {
   text-decoration: underline;
+}
+
+/* Lien licence SPL (nouvel onglet) — pastille discrète dans le pied de page */
+.footer-license-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.6rem;
+  margin: 0 0.12rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bg) !important;
+  background: color-mix(in srgb, var(--accent) 88%, #fff);
+  border-radius: 999px;
+  text-decoration: none !important;
+  vertical-align: middle;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.footer-license-pill:hover {
+  filter: brightness(1.07);
+  text-decoration: none !important;
+  transform: translateY(-1px);
 }
 
 .sr-only {

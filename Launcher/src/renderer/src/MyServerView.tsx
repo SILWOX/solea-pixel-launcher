@@ -206,24 +206,73 @@ export function MyServerView({ modpacksList, chromeGlass }: MyServerViewProps) {
           t={t}
         />
       ) : (
-      <div className="my-server-layout" data-my-server-chrome={chromeGlass ? '1' : '0'}>
-        <div className="my-server-scroll">
-          <section className="my-server-hero my-server-hero--aether" aria-labelledby="my-server-hero-title">
-            <div className="my-server-hero-accent" aria-hidden />
-            <p className={`my-server-hero-eyebrow${mc}`}>{t('myServer.createEyebrow')}</p>
-            <h2 id="my-server-hero-title" className={`my-server-hero-title${mc}`}>
-              {t('myServer.heroTitle')}
-            </h2>
-            <p className="my-server-hero-lead">{t('myServer.heroLead')}</p>
-            <ul className="my-server-hero-list">
-              <li>{t('myServer.heroBullet1')}</li>
-              <li>{t('myServer.heroBullet2')}</li>
-              <li>{t('myServer.heroBullet3')}</li>
-            </ul>
-          </section>
-          <div
-            className={`my-server-grid${servers.length === 0 ? ' my-server-grid--empty' : ''}`}
+      <div
+        className="my-server-layout my-server-layout--hub"
+        data-my-server-chrome={chromeGlass ? '1' : '0'}
+      >
+        <div className="my-server-scroll my-server-scroll--hub">
+          <div className="my-server-hub-bg" aria-hidden />
+          <section
+            className="my-server-beta-banner"
+            role="region"
+            aria-label={t('myServer.betaBannerAria')}
           >
+            <div className="my-server-beta-banner__stripes" aria-hidden />
+            <div className="my-server-beta-banner__inner">
+              <div className="my-server-beta-banner__stamp-wrap" aria-hidden>
+                <span className="my-server-beta-banner__stamp">{t('myServer.betaBannerStamp')}</span>
+              </div>
+              <div className="my-server-beta-banner__copy">
+                <h3 id="my-server-beta-heading" className={`my-server-beta-banner__title${mc}`}>
+                  {t('myServer.betaBannerTitle')}
+                </h3>
+                <p className="my-server-beta-banner__body">{t('myServer.betaBannerBody')}</p>
+              </div>
+            </div>
+          </section>
+
+          <div className="my-server-hub-inner">
+            <div className="my-server-landing">
+              <div className="my-server-landing-main">
+                <section className="my-server-hero my-server-hero--aether" aria-labelledby="my-server-hero-title">
+                  <div className="my-server-hero-accent" aria-hidden />
+                  <p className={`my-server-hero-eyebrow${mc}`}>{t('myServer.createEyebrow')}</p>
+                  <h2 id="my-server-hero-title" className={`my-server-hero-title${mc}`}>
+                    {t('myServer.heroTitle')}
+                  </h2>
+                  <p className="my-server-hero-lead">{t('myServer.heroLead')}</p>
+                  <div className="my-server-pill-row" role="list">
+                    {(['pill1', 'pill2', 'pill3'] as const).map((k) => (
+                      <div key={k} className="my-server-pill" role="listitem">
+                        <span className="my-server-pill-check" aria-hidden>
+                          ✓
+                        </span>
+                        <span className="my-server-pill-text">{t(`myServer.${k}`)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+              <aside className="my-server-aside" aria-label={t('myServer.asideAria')}>
+                <div className="my-server-aside-visual" aria-hidden>
+                  <span className="my-server-aside-dot" />
+                  <span className="my-server-aside-bar" />
+                  <span className="my-server-aside-bar my-server-aside-bar--mid" />
+                  <span className="my-server-aside-bar my-server-aside-bar--short" />
+                </div>
+                <p className={`my-server-aside-kicker${mc}`}>{t('myServer.asideKicker')}</p>
+                <p className="my-server-aside-text">{t('myServer.asideBlurb')}</p>
+              </aside>
+            </div>
+
+            <div className="my-server-stage">
+              <div className="my-server-stage__head">
+                <span className={`my-server-stage__label${mc}`}>{t('myServer.stageLabel')}</span>
+                <span className="my-server-stage__rule" aria-hidden />
+              </div>
+              <div
+                className={`my-server-grid${servers.length === 0 ? ' my-server-grid--empty' : ''}`}
+              >
             {servers.map((s) => (
               <div key={s.id} className="my-server-card-wrap">
                 <button type="button" className="my-server-card" onClick={() => setSelectedId(s.id)}>
@@ -275,7 +324,7 @@ export function MyServerView({ modpacksList, chromeGlass }: MyServerViewProps) {
             ))}
             <button
               type="button"
-              className="my-server-card my-server-add-card"
+              className={`my-server-card my-server-add-card${servers.length === 0 ? ' my-server-add-card--cta' : ''}`}
               onClick={() => setCreateOpen(true)}
             >
               <span className="my-server-add-ico" aria-hidden>
@@ -285,6 +334,8 @@ export function MyServerView({ modpacksList, chromeGlass }: MyServerViewProps) {
                 {servers.length ? t('myServer.addAnother') : t('myServer.addFirst')}
               </span>
             </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

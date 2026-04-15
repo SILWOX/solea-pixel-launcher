@@ -52,6 +52,125 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;')
 }
 
+const LIVE_NEWS_URL = '/.netlify/functions/news-feed'
+
+let siteLiveNewsPayload = null
+
+function tNews(key, vars) {
+  return window.SoleaI18n ? window.SoleaI18n.t(key, vars) : key
+}
+
+function segmentsFromNewsPayload(data) {
+  if (!data || typeof data !== 'object') return []
+  if (Array.isArray(data.segments)) {
+    return data.segments.map((x) => String(x)).filter((s) => s.trim().length > 0)
+  }
+  if (typeof data.content === 'string' && data.content.trim()) {
+    return data.content
+      .split(/\n___\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+  }
+  return []
+}
+
+function segmentToCardEl(segment) {
+  const raw = String(segment).trim()
+  const lines = raw.split('\n')
+  let title = ''
+  let bodyLines = lines
+  if (lines[0] && /^##\s+/.test(lines[0])) {
+    title = lines[0].replace(/^##\s+/, '').trim()
+    bodyLines = lines.slice(1)
+  }
+  const body = bodyLines.join('\n').trim()
+  const art = document.createElement('article')
+  art.className = 'live-news-card'
+  if (title) {
+    const h = document.createElement('h3')
+    h.className = 'live-news-card__title'
+    h.textContent = title
+    art.appendChild(h)
+  }
+  const div = document.createElement('div')
+  div.className = 'live-news-card__body'
+  div.innerHTML = escapeHtml(body).replace(/\n/g, '<br />')
+  art.appendChild(div)
+  return art
+}
+
+function renderSiteLiveNews() {
+  const grid = document.getElementById('site-live-news-grid')
+  const status = document.getElementById('site-live-news-status')
+  if (!grid || !status) return
+
+  grid.innerHTML = ''
+  status.hidden = true
+  status.textContent = ''
+
+  if (!siteLiveNewsPayload) {
+    status.hidden = false
+    status.textContent = tNews('news.liveError')
+    return
+  }
+
+  if (siteLiveNewsPayload._error) {
+    status.hidden = false
+    status.textContent = tNews('news.liveError')
+    return
+  }
+
+  const segs = segmentsFromNewsPayload(siteLiveNewsPayload)
+  if (segs.length === 0) {
+    status.hidden = false
+    status.textContent = tNews('news.liveEmpty')
+    return
+  }
+
+  const frag = document.createDocumentFragment()
+  for (const s of segs) frag.appendChild(segmentToCardEl(s))
+  grid.appendChild(frag)
+
+  const when = siteLiveNewsPayload.updatedAt
+  if (when) {
+    const d = new Date(when)
+    const locale = document.documentElement.lang === 'fr' ? 'fr-FR' : 'en-GB'
+    const dateStr = Number.isNaN(d.getTime()) ? String(when) : d.toLocaleString(locale)
+    status.hidden = false
+    status.textContent = tNews('news.liveUpdated', { date: dateStr })
+  }
+}
+
+async function fetchSiteLiveNews() {
+  const grid = document.getElementById('site-live-news-grid')
+  const status = document.getElementById('site-live-news-status')
+  if (!grid) return
+
+  grid.innerHTML = `<p class="live-news-feed__loading">${escapeHtml(tNews('news.liveLoading'))}</p>`
+  if (status) {
+    status.hidden = true
+    status.textContent = ''
+  }
+
+  const url = `${LIVE_NEWS_URL}?_=${Date.now()}`
+  try {
+    const res = await fetch(url, { cache: 'no-store' })
+    if (!res.ok) throw new Error(String(res.status))
+    const data = await res.json()
+    siteLiveNewsPayload = data
+    renderSiteLiveNews()
+  } catch {
+    siteLiveNewsPayload = { _error: true }
+    renderSiteLiveNews()
+  }
+}
+
+function initSiteLiveNews() {
+  if (!document.getElementById('site-live-news-grid')) return
+  void fetchSiteLiveNews()
+  window.addEventListener('solea-lang-change', () => renderSiteLiveNews())
+}
+
 function applyHubVersionLine() {
   const versionEl = document.getElementById('hub-version')
   if (!versionEl || !window.SoleaI18n) return
@@ -308,11 +427,13 @@ function initSnapPage() {
   const scrollToId = (id, behavior = 'smooth') => {
     const el = document.getElementById(id)
     if (!el || !root.contains(el)) return
+    const section = el.closest('.site-section[id]')
+    const navSectionId = section?.id || id
     const duration = behavior === 'smooth' ? 820 : 140
     lockNavSyncUntil = performance.now() + duration
-    setActiveNav(id)
+    setActiveNav(navSectionId)
     scrollSectionToTop(el, root, behavior)
-    replaceLocationHash(id)
+    replaceLocationHash(navSectionId)
     updateFabVisibility()
   }
 
@@ -534,6 +655,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSectionInview('news', 'news--inview')
   initSectionInview('downloads', 'downloads--inview')
   initSectionInview('faq', 'faq--inview')
+  initSiteLiveNews()
   initTypewriter()
 
   window.addEventListener('solea-lang-change', () => {
