@@ -13,6 +13,21 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.3',
+    date: '2026-03-30',
+    added: [
+      '**My Server — local hosting:** create dedicated servers from your **Solea Pixel modpacks** (Modrinth `.mrpack`), stored under `userData/solea-server` with one folder per server.',
+      '**Install pipeline:** download the pack, run the **NeoForge / Forge** server installer when needed, accept **EULA**, and surface install progress and errors in the UI.',
+      '**Server console:** start / stop, live log buffer, commands sent to the running JVM; respects the Java path from launcher settings (uses `java.exe` when `javaw.exe` is configured).',
+      '**World & `server.properties`:** edit key fields with validation, optional world folder reset, and extra JVM lines via `solea-jvm-extra.txt` merged at launch.',
+      '**Profiles:** per-server RAM, port, name, description, optional **cover image** (with size guard), and **modpack change** guarded by a confirmation modal.',
+      '**IPC & preload:** list/create/delete servers, cover data URLs, and host actions exposed to the renderer in a typed way.'
+    ],
+    changed: [
+      '**Release branding:** footer and Home & news badge now show **26.3 | Release** (package **26.3.0**); “What’s new” text updated for this build.'
+    ]
+  },
+  {
     version: '26.2',
     date: '2026-03-30',
     added: [

@@ -1,5 +1,11 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.3.0': {
+    en:
+      'My Server: host local dedicated servers from Solea Pixel modpacks (Modrinth mrpack) under userData/solea-server. Install with NeoForge/Forge server loader, EULA, console start/stop and commands, server.properties editor, world reset, JVM extras file, RAM/port, cover image, modpack change confirmation. Version 26.3 | Release (package 26.3.0).',
+    fr:
+      'Mon serveur : héberger des serveurs dédiés locaux à partir des modpacks Solea Pixel (mrpack Modrinth) dans userData/solea-server. Installation avec chargeur serveur NeoForge/Forge, EULA, console démarrage/arrêt et commandes, édition server.properties, réinitialisation monde, fichier JVM supplémentaire, RAM/port, image de couverture, confirmation de changement de modpack. Version 26.3 | Release (paquet 26.3.0).'
+  },
   '26.2.0': {
     en:
       'AETHER UI on Home & news: full-page scroll, themed scrollbar, hero eyebrow, spotlight card for the latest release, release history column for older versions only. Screenshots library: matching AETHER cards, top accent, page scroll. Launcher version 26.2 | Release (package 26.2.0).',

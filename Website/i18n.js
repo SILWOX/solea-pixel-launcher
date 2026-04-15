@@ -22,8 +22,6 @@
       'nav.ariaX': 'SILWOX on X',
       'nav.ariaDiscord': 'Solea Pixel on Discord',
       'nav.ariaBmc': 'Support on Buy Me a Coffee',
-      'nav.socialShort': 'Social',
-      'nav.langShort': 'Lang',
       'page404.docTitle': 'SOLEA PIXEL — Page not found',
       'page404.metaDescription':
         'The page you requested was not found on Solea Pixel. Return to the home page or open the SPL license.',
@@ -271,8 +269,6 @@
       'nav.ariaX': 'SILWOX sur X',
       'nav.ariaDiscord': 'Solea Pixel sur Discord',
       'nav.ariaBmc': 'Soutien sur Buy Me a Coffee',
-      'nav.socialShort': 'Réseaux',
-      'nav.langShort': 'Langue',
       'page404.docTitle': 'SOLEA PIXEL — Page introuvable',
       'page404.metaDescription':
         'La page demandée n’existe pas sur Solea Pixel. Retour à l’accueil ou ouverture de la licence SPL.',
