@@ -8,14 +8,16 @@
     <link rel="icon" type="image/png" href="../assets/logo.png" sizes="32x32" />
     <style>
       :root {
-        --bg: #0f1218;
-        --panel: #171b24;
-        --text: #e8eaef;
-        --muted: #8b93a7;
+        --bg: #1e1f22;
+        --panel: #2b2d31;
+        --panel2: #313338;
+        --text: #f2f3f5;
+        --muted: #b5bac1;
         --accent: #ff7d33;
-        --border: #2a3140;
-        --err: #f87171;
-        --ok: #4ade80;
+        --border: #3f4147;
+        --err: #f23f42;
+        --ok: #23a559;
+        --discord-input: #383a40;
       }
       * {
         box-sizing: border-box;
@@ -23,55 +25,60 @@
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: system-ui, sans-serif;
+        font-family: 'Segoe UI', system-ui, sans-serif;
         background: var(--bg);
         color: var(--text);
         line-height: 1.45;
+        font-size: 15px;
       }
       .wrap {
-        max-width: 52rem;
+        max-width: 72rem;
         margin: 0 auto;
-        padding: 1.25rem 1rem 2rem;
+        padding: 1rem 1rem 2rem;
       }
       h1 {
-        font-size: 1.15rem;
+        font-size: 1.25rem;
         font-weight: 700;
         margin: 0 0 0.35rem;
       }
       .sub {
         color: var(--muted);
         font-size: 0.88rem;
-        margin: 0 0 1.25rem;
+        margin: 0 0 1rem;
+        max-width: 48rem;
       }
       .panel {
         background: var(--panel);
         border: 1px solid var(--border);
-        border-radius: 12px;
+        border-radius: 8px;
         padding: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.85rem;
       }
       label {
         display: block;
-        font-size: 0.78rem;
-        font-weight: 600;
+        font-size: 0.72rem;
+        font-weight: 700;
         color: var(--muted);
-        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.35rem;
       }
       input[type='text'],
       input[type='password'],
       input[type='number'],
       textarea {
         width: 100%;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 0.5rem 0.65rem;
-        background: #0c0f14;
+        border: none;
+        border-radius: 4px;
+        padding: 0.55rem 0.65rem;
+        background: var(--discord-input);
         color: var(--text);
         font: inherit;
       }
       textarea {
-        min-height: 8rem;
+        min-height: 14rem;
         resize: vertical;
+        line-height: 1.5;
       }
       .row {
         display: flex;
@@ -84,19 +91,32 @@
         font: inherit;
         font-weight: 600;
         cursor: pointer;
-        border-radius: 8px;
+        border-radius: 4px;
         border: none;
-        padding: 0.45rem 0.85rem;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.88rem;
         background: var(--accent);
         color: #111;
       }
       button.secondary {
-        background: #2a3140;
+        background: var(--panel2);
         color: var(--text);
+        border: 1px solid var(--border);
       }
       button.danger {
-        background: #7f1d1d;
-        color: #fecaca;
+        background: #a12d31;
+        color: #fff;
+      }
+      button.tool {
+        background: var(--panel2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        font-weight: 600;
+        font-size: 0.8rem;
+        padding: 0.28rem 0.5rem;
+      }
+      button.tool:hover {
+        background: #3c3f44;
       }
       .msg {
         font-size: 0.85rem;
@@ -107,6 +127,10 @@
       }
       .msg.ok {
         color: var(--ok);
+      }
+      .msg.hint {
+        color: var(--muted);
+        font-size: 0.82rem;
       }
       ul.posts {
         list-style: none;
@@ -134,7 +158,154 @@
       }
       a.home {
         color: var(--accent);
+        font-size: 0.88rem;
+        text-decoration: none;
+      }
+      a.home:hover {
+        text-decoration: underline;
+      }
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.85rem;
+      }
+      @media (max-width: 960px) {
+        .editor-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .toolbar__label {
+        width: 100%;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.15rem;
+      }
+      .preview-wrap {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .preview-head {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.35rem;
+      }
+      .preview-surface {
+        flex: 1;
+        min-height: 14rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: #313338;
+        padding: 0.75rem 0.85rem;
+        overflow: auto;
+      }
+      .preview-surface .discord-msg {
+        border-radius: 6px;
+        padding: 0.5rem 0.65rem;
+        background: #2b2d31;
+        border-left: 3px solid var(--accent);
+      }
+      .preview-surface .discord-msg__meta {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-bottom: 0.35rem;
+      }
+      .preview-surface .live-news-card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        background: transparent;
+      }
+      .preview-surface .live-news-card__body .actu-body {
+        margin: 0;
+      }
+      .preview-surface .live-news-card__title {
+        margin: 0 0 0.4rem;
+        font-size: 1rem;
+      }
+      .preview-surface .live-news-card__body .actu-p {
+        margin: 0 0 0.45rem;
+        font-size: 0.88rem;
+        line-height: 1.5;
+      }
+      .preview-surface .live-news-card__body .actu-ul {
+        margin: 0.35rem 0 0.5rem;
+        padding-left: 1.1rem;
+        font-size: 0.88rem;
+      }
+      .preview-surface .live-news-card__body .actu-blockquote {
+        margin: 0.4rem 0;
+        padding: 0.4rem 0.55rem;
+        border-left: 3px solid var(--accent);
+        border-radius: 0 6px 6px 0;
+        background: #2b2d31;
+        font-size: 0.86rem;
+      }
+      .preview-surface .live-news-card__body .actu-pre {
+        background: #1e1f22;
+        margin: 0.4rem 0;
+        padding: 0.55rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        overflow-x: auto;
+      }
+      .preview-surface .live-news-card__body .actu-inline-code {
+        background: #2b2d31;
+        padding: 0.08em 0.3em;
+        border-radius: 3px;
+        font-size: 0.85em;
+      }
+      .preview-surface .live-news-card__body .actu-spoiler {
+        background: #2b2d31;
+        border-radius: 3px;
+      }
+      details.syntax {
+        margin-top: 0.5rem;
+      }
+      details.syntax summary {
+        cursor: pointer;
+        color: var(--accent);
         font-size: 0.85rem;
+        font-weight: 600;
+      }
+      details.syntax table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+      }
+      details.syntax th,
+      details.syntax td {
+        border: 1px solid var(--border);
+        padding: 0.35rem 0.45rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      details.syntax code {
+        font-size: 0.78rem;
+        background: var(--discord-input);
+        padding: 0.1em 0.3em;
+        border-radius: 3px;
+      }
+      .char-count {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-align: right;
+        margin-top: 0.25rem;
       }
     </style>
   </head>
@@ -143,12 +314,15 @@
       <a class="home" href="/">← Site</a>
       <h1>Admin — actus Solea Pixel</h1>
       <p class="sub">
-        Token défini dans Netlify (<code>NEWS_ADMIN_TOKEN</code>), jamais commité. Connexion HTTPS uniquement.
+        Même format que le launcher (style proche Discord) : gras, italique, barré, code, spoiler, listes,
+        citations, blocs <code>```</code>, titres <code>#</code> / <code>##</code> / <code>###</code>, surligné
+        <code>++</code>, couleurs Minecraft <code>§a</code>…<code>§r</code>. Token Netlify :
+        <code>NEWS_ADMIN_TOKEN</code>.
       </p>
 
       <div class="panel" id="auth-panel">
-        <label for="token">Token admin (Bearer)</label>
-        <input type="password" id="token" autocomplete="off" placeholder="Colle le token" />
+        <label for="token">Token admin</label>
+        <input type="password" id="token" autocomplete="off" placeholder="Colle le token (NEWS_ADMIN_TOKEN)" />
         <div class="row">
           <button type="button" id="btn-save-token">Enregistrer dans cette session</button>
           <button type="button" class="secondary" id="btn-clear-token">Oublier le token</button>
@@ -159,10 +333,82 @@
       <div class="panel" id="editor-panel" hidden>
         <h2 style="font-size: 1rem; margin: 0 0 0.75rem">Édition</h2>
         <input type="hidden" id="edit-id" value="" />
-        <label for="edit-title">Titre (ligne ## dans le launcher)</label>
-        <input type="text" id="edit-title" maxlength="500" />
-        <label for="edit-body" style="margin-top: 0.65rem">Corps (Markdown)</label>
-        <textarea id="edit-body"></textarea>
+        <label for="edit-title">Titre carte (affiché en grand — pas besoin de ## ici)</label>
+        <input type="text" id="edit-title" maxlength="500" placeholder="Ex. Mise à jour du launcher" />
+        <label for="edit-body" style="margin-top: 0.65rem">Corps du message</label>
+        <div class="editor-grid">
+          <div>
+            <div class="toolbar" aria-label="Insertion format">
+              <span class="toolbar__label">Format (comme Discord / launcher)</span>
+              <button type="button" class="tool" data-wrap="**::**" title="Gras">B</button>
+              <button type="button" class="tool" data-wrap="*::*" title="Italique">I</button>
+              <button type="button" class="tool" data-wrap="~~::~~" title="Barré">S</button>
+              <button type="button" class="tool" data-wrap="`::`" title="Code">&lt;/&gt;</button>
+              <button type="button" class="tool" data-wrap="||::||" title="Spoiler">||</button>
+              <button type="button" class="tool" data-wrap="++::++" title="Surligné">++</button>
+              <button type="button" class="tool" data-line="- " title="Liste">• Liste</button>
+              <button type="button" class="tool" data-line="> " title="Citation">Citation</button>
+              <button type="button" class="tool" data-block="```&#10;|&#10;```" title="Bloc code">Bloc code</button>
+              <button type="button" class="tool" data-line="___\n" title="Séparateur">___</button>
+            </div>
+            <textarea id="edit-body" maxlength="12000" placeholder="Écris ici…"></textarea>
+            <div class="char-count" id="edit-body-count"></div>
+            <details class="syntax">
+              <summary>Raccourcis & syntaxe</summary>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Effet</th>
+                    <th>Syntaxe</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Gras / italique / barré / code</td>
+                    <td><code>**gras**</code> <code>*ital*</code> <code>~~bar~~</code> <code>`code`</code></td>
+                  </tr>
+                  <tr>
+                    <td>Spoiler</td>
+                    <td><code>||texte caché||</code> (survol pour révéler)</td>
+                  </tr>
+                  <tr>
+                    <td>Surligné</td>
+                    <td><code>++important++</code></td>
+                  </tr>
+                  <tr>
+                    <td>Couleurs MC</td>
+                    <td><code>§cRouge §aVert §rReset</code></td>
+                  </tr>
+                  <tr>
+                    <td>Titres dans le corps</td>
+                    <td><code>#</code> <code>##</code> <code>###</code> en début de ligne</td>
+                  </tr>
+                  <tr>
+                    <td>Liste / citation</td>
+                    <td><code>- élément</code> / ligne commençant par <code>&gt;</code></td>
+                  </tr>
+                  <tr>
+                    <td>Bloc code</td>
+                    <td>Ligne <code>```</code>, puis le code, puis <code>```</code></td>
+                  </tr>
+                  <tr>
+                    <td>Séparateur</td>
+                    <td>Ligne seule : <code>___</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </details>
+          </div>
+          <div class="preview-wrap">
+            <div class="preview-head">Aperçu (comme dans le launcher)</div>
+            <div class="preview-surface" id="preview-surface">
+              <div class="discord-msg">
+                <div class="discord-msg__meta">Solea Pixel · aperçu</div>
+                <div id="preview-root"></div>
+              </div>
+            </div>
+          </div>
+        </div>
         <label for="edit-sort" style="margin-top: 0.65rem">Ordre (plus grand = plus haut)</label>
         <input type="number" id="edit-sort" value="0" step="1" />
         <label style="margin-top: 0.65rem; display: flex; gap: 0.5rem; align-items: center; color: var(--text)">
@@ -183,8 +429,10 @@
         </div>
         <ul class="posts" id="post-list"></ul>
         <p class="msg err" id="list-msg" hidden></p>
+        <p class="msg hint" id="list-hint" hidden></p>
       </div>
     </div>
+    <script src="../actu-markup.js"></script>
     <script src="admin.js" defer></script>
   </body>
 </html>

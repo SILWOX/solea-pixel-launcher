@@ -256,6 +256,23 @@
   margin-bottom: 0;
 }
 
+.actu-pre {
+  margin: 0.5rem 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.actu-pre code {
+  font: inherit;
+  white-space: pre;
+}
+
 .actu-hr {
   border: none;
   height: 1px;
@@ -285,6 +302,23 @@
 .actu-inline-strike {
   text-decoration: line-through;
   opacity: 0.88;
+}
+
+.actu-spoiler {
+  cursor: help;
+  border-radius: 4px;
+  padding: 0 0.12em;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.actu-spoiler__inner {
+  filter: blur(5px);
+  transition: filter 0.18s ease;
+}
+
+.actu-spoiler:hover .actu-spoiler__inner,
+.actu-spoiler:focus-within .actu-spoiler__inner {
+  filter: none;
 }
 
 .actu-mc-obfuscated {

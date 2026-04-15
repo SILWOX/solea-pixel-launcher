@@ -53,7 +53,7 @@ export function renderInlineActu(text: string, keyPrefix: string): ReactNode {
   )
 }
 
-type MdKind = 'text' | 'bold' | 'italic' | 'code' | 'strike' | 'highlight'
+type MdKind = 'text' | 'bold' | 'italic' | 'code' | 'strike' | 'highlight' | 'spoiler'
 
 function parseMarkdownChunks(text: string): Array<{ kind: MdKind; text: string }> {
   const out: Array<{ kind: MdKind; text: string }> = []
@@ -71,6 +71,14 @@ function parseMarkdownChunks(text: string): Array<{ kind: MdKind; text: string }
       const end = text.indexOf('++', i + 2)
       if (end !== -1) {
         out.push({ kind: 'highlight', text: text.slice(i + 2, end) })
+        i = end + 2
+        continue
+      }
+    }
+    if (text.startsWith('||', i)) {
+      const end = text.indexOf('||', i + 2)
+      if (end !== -1) {
+        out.push({ kind: 'spoiler', text: text.slice(i + 2, end) })
         i = end + 2
         continue
       }
@@ -105,6 +113,7 @@ function parseMarkdownChunks(text: string): Array<{ kind: MdKind; text: string }
     }
     tryIdx(text.indexOf('**', i))
     tryIdx(text.indexOf('++', i))
+    tryIdx(text.indexOf('||', i))
     tryIdx(text.indexOf('~~', i))
     if (text[i] === '`') tryIdx(text.indexOf('`', i + 1))
     const star = text.indexOf('*', i)
@@ -182,6 +191,12 @@ function wrapMdChunk(kind: MdKind, text: string, key: string, mcKey: string): Re
         {inner}
       </mark>
     )
+  if (kind === 'spoiler')
+    return (
+      <span key={key} className="actu-spoiler" title="Hover / survol pour afficher">
+        <span className="actu-spoiler__inner">{inner}</span>
+      </span>
+    )
   return <Fragment key={key}>{inner}</Fragment>
 }
 
@@ -206,6 +221,25 @@ export function renderActuSegmentBody(raw: string, segmentKey: string): ReactNod
         <hr key={`${segmentKey}-hr-${bi++}`} className="actu-hr" />
       )
       i++
+      continue
+    }
+
+    if (trimmed.startsWith('```')) {
+      i++
+      const codeLines: string[] = []
+      while (i < lines.length) {
+        if (lines[i]!.trim() === '```') {
+          i++
+          break
+        }
+        codeLines.push(lines[i]!)
+        i++
+      }
+      blocks.push(
+        <pre key={`${segmentKey}-pre-${bi++}`} className="actu-pre">
+          <code>{codeLines.join('\n')}</code>
+        </pre>
+      )
       continue
     }
 
@@ -290,6 +324,7 @@ export function renderActuSegmentBody(raw: string, segmentKey: string): ReactNod
       const tr = L.trim()
       if (tr === '') break
       if (tr === '___') break
+      if (tr.startsWith('```')) break
       if (tr.startsWith('#')) break
       if (tr.startsWith('- ')) break
       if (tr.startsWith('>')) break

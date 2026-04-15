@@ -75,6 +75,12 @@ function segmentsFromNewsPayload(data) {
 }
 
 function segmentToCardEl(segment) {
+  const art = document.createElement('article')
+  art.className = 'live-news-card'
+  if (window.SoleaActuMarkup && typeof window.SoleaActuMarkup.renderSegmentCardHtml === 'function') {
+    art.innerHTML = window.SoleaActuMarkup.renderSegmentCardHtml(segment)
+    return art
+  }
   const raw = String(segment).trim()
   const lines = raw.split('\n')
   let title = ''
@@ -84,8 +90,6 @@ function segmentToCardEl(segment) {
     bodyLines = lines.slice(1)
   }
   const body = bodyLines.join('\n').trim()
-  const art = document.createElement('article')
-  art.className = 'live-news-card'
   if (title) {
     const h = document.createElement('h3')
     h.className = 'live-news-card__title'

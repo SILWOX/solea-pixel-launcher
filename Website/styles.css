@@ -643,6 +643,125 @@ body {
   color: var(--text);
 }
 
+/* Rendu actu (même mini-langage que le launcher — style proche Discord) */
+.live-news-card__body .actu-body {
+  margin: 0;
+}
+
+.live-news-card__body .actu-h {
+  margin: 0.35rem 0 0.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.live-news-card__body .actu-h--1 {
+  font-size: 1.05rem;
+}
+
+.live-news-card__body .actu-h--2 {
+  font-size: 0.98rem;
+  color: color-mix(in srgb, var(--accent) 55%, var(--text));
+}
+
+.live-news-card__body .actu-h--3 {
+  font-size: 0.92rem;
+  color: color-mix(in srgb, var(--text) 90%, var(--muted));
+}
+
+.live-news-card__body .actu-p {
+  margin: 0 0 0.5rem;
+}
+
+.live-news-card__body .actu-p:last-child {
+  margin-bottom: 0;
+}
+
+.live-news-card__body .actu-ul {
+  margin: 0.35rem 0 0.55rem;
+  padding-left: 1.15rem;
+}
+
+.live-news-card__body .actu-li {
+  margin: 0.15rem 0;
+}
+
+.live-news-card__body .actu-blockquote {
+  margin: 0.45rem 0;
+  padding: 0.45rem 0.65rem;
+  border-left: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--surface) 75%, #1e2127);
+}
+
+.live-news-card__body .actu-bq-line {
+  margin: 0.2rem 0;
+  color: color-mix(in srgb, var(--text) 88%, var(--muted));
+}
+
+.live-news-card__body .actu-hr {
+  border: none;
+  height: 1px;
+  margin: 0.55rem 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}
+
+.live-news-card__body .actu-pre {
+  margin: 0.45rem 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  overflow-x: auto;
+  background: #1e1f22;
+  color: #dbdee1;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.live-news-card__body .actu-pre code {
+  font: inherit;
+  white-space: pre;
+}
+
+.live-news-card__body .actu-inline-code {
+  padding: 0.08em 0.32em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  background: #2b2d31;
+  color: #eceff4;
+}
+
+.live-news-card__body .actu-inline-mark {
+  padding: 0.06em 0.22em;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 32%, transparent);
+}
+
+.live-news-card__body .actu-inline-strike {
+  opacity: 0.85;
+}
+
+.live-news-card__body .actu-spoiler {
+  cursor: help;
+  border-radius: 4px;
+  padding: 0 0.1em;
+  background: #2b2d31;
+}
+
+.live-news-card__body .actu-spoiler__inner {
+  filter: blur(5px);
+  transition: filter 0.18s ease;
+}
+
+.live-news-card__body .actu-spoiler:hover .actu-spoiler__inner,
+.live-news-card__body .actu-spoiler:focus-within .actu-spoiler__inner {
+  filter: none;
+}
+
+.live-news-card .live-news-card__title.actu-h {
+  margin-bottom: 0.4rem;
+}
+
 .engage-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
