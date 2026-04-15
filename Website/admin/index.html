@@ -307,33 +307,95 @@
         text-align: right;
         margin-top: 0.25rem;
       }
+      .screen-login {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .wrap--narrow {
+        width: 100%;
+        max-width: 26rem;
+        margin: 0 auto;
+      }
+      .login-card {
+        margin-top: 0.65rem;
+      }
+      .sub--tight {
+        max-width: none;
+        margin-bottom: 0.85rem;
+      }
+      .admin-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.85rem;
+      }
+      .admin-bar__left {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.65rem 1rem;
+      }
+      .admin-bar__title {
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .admin-bar__right {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .admin-bar__pill {
+        font-size: 0.78rem;
+        font-weight: 650;
+        color: var(--ok);
+      }
+      .kbd-hint {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <a class="home" href="/">← Site</a>
-      <h1>Admin — actus Solea Pixel</h1>
-      <p class="sub">
-        Même format que le launcher (style proche Discord) : gras, italique, barré, code, spoiler, listes,
-        citations, blocs <code>```</code>, titres <code>#</code> / <code>##</code> / <code>###</code>, surligné
-        <code>++</code>, couleurs Minecraft <code>§a</code>…<code>§r</code>. Token Netlify :
-        <code>NEWS_ADMIN_TOKEN</code>.
-      </p>
-
-      <div class="panel" id="auth-panel">
-        <label for="token">Token admin</label>
-        <input type="password" id="token" autocomplete="off" placeholder="Colle le token (NEWS_ADMIN_TOKEN)" />
-        <div class="row">
-          <button type="button" id="btn-save-token">Enregistrer dans cette session</button>
-          <button type="button" class="secondary" id="btn-clear-token">Oublier le token</button>
+    <div id="screen-login" class="screen-login">
+      <div class="wrap--narrow">
+        <a class="home" href="/">← Site</a>
+        <div class="panel login-card">
+          <h1 style="margin-top: 0">Connexion admin</h1>
+          <p class="sub sub--tight">
+            Utilise le même secret que la variable Netlify <code>NEWS_ADMIN_TOKEN</code> (contexte Production), sans espace ni retour à la ligne en trop.
+          </p>
+          <label for="login-token">Mot de passe administrateur</label>
+          <input type="password" id="login-token" autocomplete="current-password" placeholder="Coller le token" />
+          <div class="row" style="margin-top: 0.75rem">
+            <button type="button" id="btn-login">Se connecter</button>
+          </div>
+          <p class="msg" id="login-msg" hidden></p>
         </div>
-        <p class="msg" id="auth-msg" hidden></p>
+      </div>
+    </div>
+
+    <div class="wrap" id="screen-app" hidden>
+      <div class="admin-bar panel">
+        <div class="admin-bar__left">
+          <a class="home" href="/">← Site</a>
+          <span class="admin-bar__title">Admin — actus Solea Pixel</span>
+        </div>
+        <div class="admin-bar__right">
+          <span class="admin-bar__pill" id="session-pill">Session active</span>
+          <button type="button" class="secondary" id="btn-logout">Déconnexion</button>
+        </div>
       </div>
 
-      <div class="panel" id="editor-panel" hidden>
+      <div class="panel" id="editor-panel">
         <h2 style="font-size: 1rem; margin: 0 0 0.35rem">Créer ou modifier un article</h2>
         <p class="sub" style="margin-bottom: 0.75rem">
-          Le titre s’affiche en carte ; le corps accepte la même syntaxe que le launcher (voir aperçu à droite).
+          Titre = carte · corps = même syntaxe que le launcher (aperçu à droite). <strong>Ctrl+S</strong> enregistre.
         </p>
         <input type="hidden" id="edit-id" value="" />
         <label for="edit-title">Titre carte (affiché en grand — pas besoin de ## ici)</label>
@@ -424,7 +486,11 @@
         <div class="row">
           <button type="button" id="btn-save">Enregistrer</button>
           <button type="button" class="secondary" id="btn-new">Nouveau brouillon</button>
+          <button type="button" class="secondary" id="btn-duplicate" title="Copier titre + corps vers un nouveau brouillon">
+            Dupliquer vers brouillon
+          </button>
         </div>
+        <p class="kbd-hint" aria-hidden="true">Raccourci : Ctrl+S ou ⌘S = Enregistrer</p>
         <p class="msg" id="editor-msg" hidden></p>
       </div>
 
@@ -436,6 +502,8 @@
             <button type="button" class="secondary" id="btn-refresh">Actualiser</button>
           </div>
         </div>
+        <label for="post-filter">Filtrer par titre</label>
+        <input type="search" id="post-filter" placeholder="Tape pour filtrer…" style="max-width: 22rem; margin-bottom: 0.65rem" />
         <ul class="posts" id="post-list"></ul>
         <p class="msg err" id="list-msg" hidden></p>
         <p class="msg hint" id="list-hint" hidden></p>

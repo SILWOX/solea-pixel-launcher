@@ -54,6 +54,11 @@ exports.handler = async (event) => {
     return json(400, { error: 'missing_action' }, CORS_POST)
   }
 
+  /** Auth check only — used by the admin login screen (no DB round-trip). */
+  if (action === 'verify') {
+    return json(200, { ok: true }, CORS_POST)
+  }
+
   const supabase = createClient(url, serviceKey)
 
   try {

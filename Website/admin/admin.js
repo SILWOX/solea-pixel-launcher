@@ -1,6 +1,6 @@
 /**
- * Admin actus — appelle `/.netlify/functions/news-admin` avec Bearer NEWS_ADMIN_TOKEN.
- * Aperçu : même rendu que le site / launcher (SoleaActuMarkup).
+ * Admin actus — connexion par token (NEWS_ADMIN_TOKEN), puis `/.netlify/functions/news-admin`.
+ * La connexion appelle `action: verify` pour valider le secret avant d’afficher l’éditeur.
  */
 ;(function () {
   const STORAGE_KEY = 'solea_news_admin_token'
@@ -8,13 +8,16 @@
 
   const el = (id) => document.getElementById(id)
 
-  /** Même secret que côté Netlify après trim ; enlève BOM / espaces insécables souvent collés au collage. */
   function normalizeToken(raw) {
     if (raw == null) return ''
     return String(raw)
       .replace(/^\uFEFF/, '')
       .replace(/\u00A0/g, ' ')
       .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .replace(/\r\n/g, '\n')
+      .split('\n')
+      .map((l) => l.trimEnd())
+      .join('\n')
       .trim()
   }
 
@@ -39,6 +42,9 @@
     }
   }
 
+  /** @type {Array<Record<string, unknown>>} */
+  let postsCache = []
+
   function showMsg(node, text, kind) {
     if (!node) return
     node.hidden = !text
@@ -53,16 +59,14 @@
     }
     if (s === 'unauthorized' || s.startsWith('unauthorized')) {
       return (
-        'unauthorized — Le token ne correspond pas à NEWS_ADMIN_TOKEN sur Netlify (contexte Production). ' +
-        'Vérifie qu’il n’y a pas d’espace ou de retour à la ligne en trop dans la variable Netlify, ' +
-        'redéploie après modification, puis colle à nouveau le token et clique « Enregistrer dans cette session ».'
+        'Accès refusé — le mot de passe ne correspond pas à NEWS_ADMIN_TOKEN sur Netlify (Production). ' +
+        'Vérifie la variable (pas d’espace en trop, pas de guillemets), redéploie si tu l’as modifiée, puis reconnecte-toi.'
       )
     }
     return s
   }
 
-  async function api(action, extra) {
-    const token = getToken()
+  async function apiRequest(token, action, extra) {
     if (!token) throw new Error('Token manquant')
     const res = await fetch(API, {
       method: 'POST',
@@ -77,14 +81,18 @@
       const d = data && data.detail ? ` — ${data.detail}` : ''
       let err = (data.error || res.statusText || 'Erreur') + d
       if (data.error === 'not_configured' && Array.isArray(data.missing) && data.missing.length) {
-        err = `not_configured — Manquantes côté Netlify (Functions / Production) : ${data.missing.join(', ')}. Ouvre Site configuration → Environment variables, complète ces noms exactement, puis Deploys → Trigger deploy.`
+        err = `not_configured — Manquantes côté Netlify : ${data.missing.join(', ')}. Environment variables → Production → redeploy.`
       } else if (data.error === 'not_configured') {
         err =
-          'not_configured — Variables serveur incomplètes. Vérifie SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, NEWS_ADMIN_TOKEN (même orthographe, avec valeurs sur le contexte Production).'
+          'not_configured — Vérifie SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, NEWS_ADMIN_TOKEN sur Netlify (Production).'
       }
       throw new Error(err)
     }
     return data
+  }
+
+  async function api(action, extra) {
+    return apiRequest(getToken(), action, extra)
   }
 
   function escapeHtml(s) {
@@ -93,6 +101,50 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
+  }
+
+  function showLogin() {
+    const login = el('screen-login')
+    const app = el('screen-app')
+    if (login) login.hidden = false
+    if (app) app.hidden = true
+  }
+
+  function showApp() {
+    const login = el('screen-login')
+    const app = el('screen-app')
+    if (login) login.hidden = true
+    if (app) app.hidden = false
+  }
+
+  async function connectWithToken(raw) {
+    const token = normalizeToken(raw)
+    if (!token) {
+      showMsg(el('login-msg'), 'Mot de passe vide.', 'err')
+      return false
+    }
+    try {
+      await apiRequest(token, 'verify', {})
+      setToken(token)
+      showMsg(el('login-msg'), '', '')
+      showApp()
+      return true
+    } catch (e) {
+      setToken('')
+      showMsg(el('login-msg'), friendlyError(e), 'err')
+      return false
+    }
+  }
+
+  function logout() {
+    setToken('')
+    const lt = el('login-token')
+    if (lt) lt.value = ''
+    postsCache = []
+    el('post-list').innerHTML = ''
+    showMsg(el('list-msg'), '', '')
+    resetForm()
+    showLogin()
   }
 
   function buildPreviewSegment() {
@@ -172,11 +224,16 @@
     el('edit-body').value = p.body || ''
     el('edit-sort').value = String(p.sort_order ?? 0)
     el('edit-published').checked = Boolean(p.is_published)
-    el('editor-panel').hidden = false
     schedulePreview()
+    el('editor-panel').scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  async function refreshList() {
+  function getFilterQuery() {
+    const f = el('post-filter')
+    return f ? normalizeToken(f.value).toLowerCase() : ''
+  }
+
+  function renderPostList(posts) {
     const list = el('post-list')
     const msg = el('list-msg')
     const hint = el('list-hint')
@@ -184,70 +241,83 @@
       hint.hidden = true
       hint.textContent = ''
     }
-    if (!getToken()) {
-      list.innerHTML = ''
-      showMsg(msg, 'Enregistre un token pour lister les articles.', 'err')
-      el('editor-panel').hidden = true
+    showMsg(msg, '', '')
+    list.innerHTML = ''
+    const q = getFilterQuery()
+    const filtered = q
+      ? posts.filter((p) => String(p.title || '').toLowerCase().includes(q) || String(p.id || '').toLowerCase().includes(q))
+      : posts
+
+    if (filtered.length === 0) {
+      list.innerHTML =
+        '<li class="post-meta">' +
+        (posts.length === 0
+          ? 'Aucun article — crée-en un avec le formulaire ci-dessus puis <strong>Enregistrer</strong>.'
+          : 'Aucun article ne correspond au filtre.') +
+        '</li>'
+      if (posts.length === 0 && hint) {
+        hint.hidden = false
+        hint.textContent = 'Coche « Publié » pour afficher l’article sur le site et dans le launcher.'
+      }
       return
     }
-    showMsg(msg, '', '')
-    list.innerHTML = '<li>Chargement…</li>'
+
+    for (const p of filtered) {
+      const li = document.createElement('li')
+      const left = document.createElement('div')
+      left.innerHTML = `<div class="post-title">${escapeHtml(p.title || '(sans titre)')}</div>
+        <div class="post-meta">${p.is_published ? 'Publié' : 'Brouillon'} · tri ${p.sort_order ?? 0} · <code>${escapeHtml(p.id)}</code></div>`
+      const actions = document.createElement('div')
+      actions.className = 'row'
+      actions.style.margin = '0'
+      const bEdit = document.createElement('button')
+      bEdit.type = 'button'
+      bEdit.className = 'secondary'
+      bEdit.textContent = 'Modifier'
+      bEdit.addEventListener('click', () => fillForm(p))
+      const bDel = document.createElement('button')
+      bDel.type = 'button'
+      bDel.className = 'danger'
+      bDel.textContent = 'Supprimer'
+      bDel.addEventListener('click', async () => {
+        if (!confirm('Supprimer cet article ?')) return
+        try {
+          await api('delete', { id: p.id })
+          await refreshList()
+          resetForm()
+        } catch (e) {
+          showMsg(msg, friendlyError(e), 'err')
+        }
+      })
+      actions.appendChild(bEdit)
+      actions.appendChild(bDel)
+      li.appendChild(left)
+      li.appendChild(actions)
+      list.appendChild(li)
+    }
+  }
+
+  async function refreshList() {
+    const msg = el('list-msg')
+    const hint = el('list-hint')
+    if (!getToken()) {
+      postsCache = []
+      el('post-list').innerHTML = ''
+      return
+    }
+    el('post-list').innerHTML = '<li>Chargement…</li>'
     try {
       const data = await api('list')
-      const posts = data.posts || []
-      list.innerHTML = ''
-      if (posts.length === 0) {
-        list.innerHTML = '<li class="post-meta">Aucun article pour l’instant — utilise le formulaire ci-dessus puis <strong>Enregistrer</strong> pour créer le premier.</li>'
-        el('editor-panel').hidden = false
-        if (hint) {
-          hint.hidden = false
-          hint.textContent =
-            'Astuce : coche « Publié » quand le brouillon est prêt ; seuls les articles publiés apparaissent sur le site et dans le launcher.'
-        }
-        return
-      }
-      for (const p of posts) {
-        const li = document.createElement('li')
-        const left = document.createElement('div')
-        left.innerHTML = `<div class="post-title">${escapeHtml(p.title || '(sans titre)')}</div>
-          <div class="post-meta">${p.is_published ? 'Publié' : 'Brouillon'} · tri ${p.sort_order ?? 0} · <code>${escapeHtml(p.id)}</code></div>`
-        const actions = document.createElement('div')
-        actions.className = 'row'
-        actions.style.margin = '0'
-        const bEdit = document.createElement('button')
-        bEdit.type = 'button'
-        bEdit.className = 'secondary'
-        bEdit.textContent = 'Modifier'
-        bEdit.addEventListener('click', () => fillForm(p))
-        const bDel = document.createElement('button')
-        bDel.type = 'button'
-        bDel.className = 'danger'
-        bDel.textContent = 'Supprimer'
-        bDel.addEventListener('click', async () => {
-          if (!confirm('Supprimer cet article ?')) return
-          try {
-            await api('delete', { id: p.id })
-            await refreshList()
-            resetForm()
-          } catch (e) {
-            showMsg(msg, friendlyError(e), 'err')
-          }
-        })
-        actions.appendChild(bEdit)
-        actions.appendChild(bDel)
-        li.appendChild(left)
-        li.appendChild(actions)
-        list.appendChild(li)
-      }
-      el('editor-panel').hidden = false
+      postsCache = data.posts || []
+      renderPostList(postsCache)
     } catch (e) {
-      list.innerHTML = ''
+      postsCache = []
+      el('post-list').innerHTML = ''
       const fe = friendlyError(e)
       showMsg(msg, fe, 'err')
-      if (hint && String(fe).includes('SUPABASE')) {
-        hint.hidden = false
-        hint.textContent =
-          'Astuce : dans Netlify → Environment variables, les noms doivent être exactement SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, NEWS_ADMIN_TOKEN.'
+      if (String(fe).includes('unauthorized') || String(fe).includes('Accès refusé')) {
+        logout()
+        showMsg(el('login-msg'), fe, 'err')
       }
     }
   }
@@ -277,33 +347,32 @@
     })
   })
 
-  el('btn-save-token').addEventListener('click', () => {
-    const v = normalizeToken(el('token').value)
-    if (!v) {
-      showMsg(el('auth-msg'), 'Token vide.', 'err')
-      return
+  el('btn-login').addEventListener('click', async () => {
+    const raw = el('login-token').value
+    showMsg(el('login-msg'), 'Vérification…', 'hint')
+    const ok = await connectWithToken(raw)
+    if (ok) {
+      el('login-token').value = ''
+      await refreshList()
+      schedulePreview()
     }
-    setToken(v)
-    el('token').value = v
-    showMsg(el('auth-msg'), 'Token enregistré pour cette session.', 'ok')
-    el('editor-panel').hidden = false
-    void refreshList()
   })
 
-  el('btn-clear-token').addEventListener('click', () => {
-    setToken('')
-    el('token').value = ''
-    showMsg(el('auth-msg'), 'Token effacé.', 'ok')
-    void refreshList()
+  el('login-token').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      el('btn-login').click()
+    }
   })
+
+  el('btn-logout').addEventListener('click', () => logout())
 
   el('btn-refresh').addEventListener('click', () => void refreshList())
 
-  const editorPanel = el('editor-panel')
+  el('post-filter')?.addEventListener('input', () => renderPostList(postsCache))
+
   function focusEditor() {
-    if (!editorPanel) return
-    editorPanel.hidden = false
-    editorPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    el('editor-panel').scrollIntoView({ behavior: 'smooth', block: 'start' })
     const titleInput = el('edit-title')
     if (titleInput) window.setTimeout(() => titleInput.focus(), 320)
   }
@@ -315,13 +384,24 @@
 
   el('btn-new').addEventListener('click', () => {
     resetForm()
-    el('editor-panel').hidden = false
+  })
+
+  el('btn-duplicate').addEventListener('click', () => {
+    const title = el('edit-title').value.trim()
+    const body = el('edit-body').value
+    el('edit-id').value = ''
+    el('edit-title').value = title ? `${title} (copie)` : ''
+    el('edit-body').value = body
+    el('edit-published').checked = false
+    showMsg(el('editor-msg'), 'Brouillon dupliqué — enregistre pour créer un nouvel article.', 'ok')
+    schedulePreview()
+    focusEditor()
   })
 
   el('edit-body').addEventListener('input', schedulePreview)
   el('edit-title').addEventListener('input', schedulePreview)
 
-  el('btn-save').addEventListener('click', async () => {
+  async function saveArticle() {
     const msg = el('editor-msg')
     showMsg(msg, '', '')
     const id = el('edit-id').value.trim()
@@ -354,10 +434,31 @@
     } catch (e) {
       showMsg(msg, friendlyError(e), 'err')
     }
+  }
+
+  el('btn-save').addEventListener('click', () => void saveArticle())
+
+  document.addEventListener('keydown', (e) => {
+    if (!el('screen-app') || el('screen-app').hidden) return
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault()
+      void saveArticle()
+    }
   })
 
-  const existing = getToken()
-  if (existing) el('token').value = existing
-  void refreshList()
-  schedulePreview()
+  async function boot() {
+    const existing = getToken()
+    if (existing) {
+      const ok = await connectWithToken(existing)
+      if (ok) {
+        await refreshList()
+        schedulePreview()
+        return
+      }
+    }
+    showLogin()
+    schedulePreview()
+  }
+
+  void boot()
 })()

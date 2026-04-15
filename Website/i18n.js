@@ -131,12 +131,10 @@
         'If you downloaded Solea Pixel from an official channel, SmartScreen is usually a temporary hurdle while Windows learns the file — not a judgement that the app is unsafe.',
       'news.tag': 'News',
       'news.title': 'News',
-      'news.lead': 'Updates for players — published on this site, separate from GitHub installer releases.',
-      'news.body1':
-        'This hub is where we will post news and announcements. It is <strong>not</strong> the GitHub release changelog: you can share news here without shipping a new launcher build.',
-      'news.body2':
-        'The Solea Pixel launcher reads this same feed in Home & news, so players see new posts in the app as soon as they are published.',
-      'news.liveIntro': 'Latest posts (same JSON feed as the launcher):',
+      'news.lead': '',
+      'news.body1': '',
+      'news.body2': '',
+      'news.liveIntro': '',
       'news.liveLoading': 'Loading news…',
       'news.liveError': 'Could not load news.',
       'news.liveEmpty': 'No posts to show yet.',
@@ -379,12 +377,10 @@
         'Si tu as téléchargé Solea Pixel depuis une source officielle, SmartScreen est le plus souvent un passage temporaire pendant que Windows « apprend » le fichier — ce n’est pas un verdict que l’appli est dangereuse.',
       'news.tag': 'Actu',
       'news.title': 'Actu',
-      'news.lead': 'Infos joueurs — publiées sur ce site, à part des releases GitHub de l’installateur.',
-      'news.body1':
-        'Ici on publiera les annonces et actus du projet. Ce n’est <strong>pas</strong> le journal des releases GitHub : tu peux poster une actu sans publier une nouvelle version du launcher.',
-      'news.body2':
-        'Le launcher Solea Pixel lit le même flux dans Accueil & actus : les joueurs voient les nouveaux messages dès leur publication.',
-      'news.liveIntro': 'Dernières actus (même flux JSON que le launcher) :',
+      'news.lead': '',
+      'news.body1': '',
+      'news.body2': '',
+      'news.liveIntro': '',
       'news.liveLoading': 'Chargement des actus…',
       'news.liveError': 'Impossible de charger les actus.',
       'news.liveEmpty': 'Aucun article pour le moment.',
