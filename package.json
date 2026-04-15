@@ -1,7 +1,7 @@
 {
   "name": "solea-pixel-workspace",
   "private": true,
-  "version": "26.3.0",
+  "version": "26.3.1",
   "description": "Racine du dépôt — launcher dans ./Launcher, site vitrine dans ./Website (même repo Git).",
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1"

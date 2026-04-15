@@ -3911,9 +3911,14 @@ export function App() {
 
         {view === 'news' && (
           <>
-            <div className="shell-content shell-content-news news-hub-layout">
+            <div
+              className={`shell-content shell-content-news news-hub-layout news-hub-layout--${
+                settings.uiHomeCardVariant === 'studio' ? 'v2' : 'v1'
+              }`}
+            >
               {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
               <div className="news-hub-body">
+                <div className="news-hub-canvas">
                 <header className="news-hub-page-hero">
                   <h2 className="news-hub-page-title">{t('shell.news')}</h2>
                   <p className="news-hub-page-tagline">{t('newsView.heroSubtitle')}</p>
@@ -4209,6 +4214,7 @@ export function App() {
                   </div>
                 </aside>
                 </div>
+                </div>
               </div>
             </div>
             <footer className="shell-footer">{t('home.footer', { name: shellFooterLegalName })}</footer>
@@ -4281,6 +4287,13 @@ export function App() {
                 <p className="settings-nav-section-label">{t('settings.navSectionMore')}</p>
                 <button type="button" className="nav-item" onClick={() => setCreditsModalOpen(true)}>
                   {t('settings.creditsNav')}
+                </button>
+                <button
+                  type="button"
+                  className="nav-item"
+                  onClick={() => void window.solea.openExternalUrl('https://soleapixel.com/license')}
+                >
+                  {t('settings.licenseNav')}
                 </button>
                 <button type="button" className="nav-item" onClick={openReportModal}>
                   {t('home.help.report')}

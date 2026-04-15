@@ -197,7 +197,13 @@
       const posts = data.posts || []
       list.innerHTML = ''
       if (posts.length === 0) {
-        list.innerHTML = '<li class="post-meta">Aucun article.</li>'
+        list.innerHTML = '<li class="post-meta">Aucun article pour l’instant — utilise le formulaire ci-dessus puis <strong>Enregistrer</strong> pour créer le premier.</li>'
+        el('editor-panel').hidden = false
+        if (hint) {
+          hint.hidden = false
+          hint.textContent =
+            'Astuce : coche « Publié » quand le brouillon est prêt ; seuls les articles publiés apparaissent sur le site et dans le launcher.'
+        }
         return
       }
       for (const p of posts) {
@@ -280,6 +286,7 @@
     setToken(v)
     el('token').value = v
     showMsg(el('auth-msg'), 'Token enregistré pour cette session.', 'ok')
+    el('editor-panel').hidden = false
     void refreshList()
   })
 
@@ -291,6 +298,20 @@
   })
 
   el('btn-refresh').addEventListener('click', () => void refreshList())
+
+  const editorPanel = el('editor-panel')
+  function focusEditor() {
+    if (!editorPanel) return
+    editorPanel.hidden = false
+    editorPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const titleInput = el('edit-title')
+    if (titleInput) window.setTimeout(() => titleInput.focus(), 320)
+  }
+
+  el('btn-create-post')?.addEventListener('click', () => {
+    resetForm()
+    focusEditor()
+  })
 
   el('btn-new').addEventListener('click', () => {
     resetForm()

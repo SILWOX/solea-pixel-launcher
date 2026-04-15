@@ -13,6 +13,18 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.3.1',
+    date: '2026-03-30',
+    added: [
+      '**Settings → More:** **License** opens **https://soleapixel.com/license** in the default browser (below Credits).'
+    ],
+    changed: [
+      '**Home & news (v2):** removed leftover bright rim effects (stacked inset shadows / borders) and reset the changelog panel shadow so the center column no longer picks up a harsh top highlight.',
+      '**Home & news layout:** wider hub rail on large displays; side columns are width-capped so **Release notes** absorbs extra horizontal space instead of leaving a tiny island of UI on ultra-wide windows.',
+      '**Public site:** hero screenshot (`hub-launcher.png`) updated to match the current **Home & news** screen.'
+    ]
+  },
+  {
     version: '26.3',
     date: '2026-03-30',
     added: [

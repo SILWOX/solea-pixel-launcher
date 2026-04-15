@@ -770,6 +770,7 @@ export const FR: Record<string, string> = {
   'settings.navSectionMore': 'Plus',
   'settings.navLauncher': 'Launcher',
   'settings.creditsNav': 'Crédits',
+  'settings.licenseNav': 'Licence',
   'settings.creditsEyebrow': 'Crédits',
   'settings.creditsStudio': 'SOLEA PIXEL STUDIO',
   'settings.creditsTagline': 'Launcher Minecraft — modpacks',
@@ -907,7 +908,7 @@ export const FR: Record<string, string> = {
     'Le défaut (AETHER v2.0) modernise la carte d’accueil, la barre latérale gauche et l’écran Paramètres (mise en page et animations). Legacy (v1.0) restaure l’ancienne présentation de l’accueil, de la barre latérale et des Paramètres.',
   'settings.uiHomeCardVariant': 'Interface d’accueil du launcher',
   'settings.uiHomeCardVariantSub':
-    'Le défaut (v2.0) modernise la barre latérale gauche et la carte d’accueil. L’héritage (v1.0) restaure l’ancienne barre latérale et la présentation classique de l’accueil.',
+    'Le défaut (AETHER v2) modernise la barre latérale, la carte du modpack et l’écran Accueil & actus (trois colonnes lisibles, panneau liens regroupé, héros plus sobre). L’héritage (v1) conserve le hub classique, la barre latérale et la carte pack.',
   'settings.uiHomeCardStudio': 'Launcher UI Default (AETHER v2.0)',
   'settings.uiHomeCardClassic': 'Launcher UI Legacy (AETHER v1.0)',
   'home.studioEyebrow': 'Pack actuel',

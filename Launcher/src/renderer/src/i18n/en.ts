@@ -757,6 +757,7 @@ export const EN: Record<string, string> = {
   'settings.navSectionMore': 'More',
   'settings.navLauncher': 'Launcher',
   'settings.creditsNav': 'Credits',
+  'settings.licenseNav': 'License',
   'settings.creditsEyebrow': 'Credits',
   'settings.creditsStudio': 'SOLEA PIXEL STUDIO',
   'settings.creditsTagline': 'Minecraft modpack launcher',
@@ -890,7 +891,7 @@ export const EN: Record<string, string> = {
     'Default (AETHER v2.0) updates the home card, left sidebar, and Settings screen (layout and motion). Legacy (v1.0) restores the previous home, sidebar, and classic Settings appearance.',
   'settings.uiHomeCardVariant': 'Launcher home UI',
   'settings.uiHomeCardVariantSub':
-    'Default (v2.0) updates the left sidebar and home card. Legacy (v1.0) restores the previous sidebar and classic home layout.',
+    'Default (AETHER v2) updates the left sidebar, the modpack home card, and the Home & news hub (clear three-column layout, grouped links panel, calmer hero). Legacy (v1) keeps the classic hub, sidebar, and home card.',
   'settings.uiHomeCardStudio': 'Launcher UI Default (AETHER v2.0)',
   'settings.uiHomeCardClassic': 'Launcher UI Legacy (AETHER v1.0)',
   'home.studioEyebrow': 'Current pack',

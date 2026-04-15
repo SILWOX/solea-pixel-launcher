@@ -331,7 +331,10 @@
       </div>
 
       <div class="panel" id="editor-panel" hidden>
-        <h2 style="font-size: 1rem; margin: 0 0 0.75rem">Édition</h2>
+        <h2 style="font-size: 1rem; margin: 0 0 0.35rem">Créer ou modifier un article</h2>
+        <p class="sub" style="margin-bottom: 0.75rem">
+          Le titre s’affiche en carte ; le corps accepte la même syntaxe que le launcher (voir aperçu à droite).
+        </p>
         <input type="hidden" id="edit-id" value="" />
         <label for="edit-title">Titre carte (affiché en grand — pas besoin de ## ici)</label>
         <input type="text" id="edit-title" maxlength="500" placeholder="Ex. Mise à jour du launcher" />
@@ -340,6 +343,9 @@
           <div>
             <div class="toolbar" aria-label="Insertion format">
               <span class="toolbar__label">Format (comme Discord / launcher)</span>
+              <button type="button" class="tool" data-line="# " title="Titre 1 (#)">H1</button>
+              <button type="button" class="tool" data-line="## " title="Titre 2 (##)">H2</button>
+              <button type="button" class="tool" data-line="### " title="Titre 3 (###)">H3</button>
               <button type="button" class="tool" data-wrap="**::**" title="Gras">B</button>
               <button type="button" class="tool" data-wrap="*::*" title="Italique">I</button>
               <button type="button" class="tool" data-wrap="~~::~~" title="Barré">S</button>
@@ -423,9 +429,12 @@
       </div>
 
       <div class="panel">
-        <div class="row" style="margin: 0 0 0.5rem">
-          <h2 style="font-size: 1rem; margin: 0">Articles</h2>
-          <button type="button" class="secondary" id="btn-refresh">Actualiser</button>
+        <div class="row" style="margin: 0 0 0.5rem; justify-content: space-between; width: 100%">
+          <h2 style="font-size: 1rem; margin: 0">Articles en base</h2>
+          <div class="row" style="margin: 0">
+            <button type="button" id="btn-create-post">+ Nouvel article</button>
+            <button type="button" class="secondary" id="btn-refresh">Actualiser</button>
+          </div>
         </div>
         <ul class="posts" id="post-list"></ul>
         <p class="msg err" id="list-msg" hidden></p>

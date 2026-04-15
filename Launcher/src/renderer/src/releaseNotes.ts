@@ -1,5 +1,11 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.3.1': {
+    en:
+      'Patch 26.3.1: Home & news UI polish (cleaner glass edges, better use of space on wide windows), Settings → More adds a License link to soleapixel.com/license, storefront hero image refreshed. Display **26.3.1 | Release** (package **26.3.1**).',
+    fr:
+      'Correctif 26.3.1 : finitions Accueil & actus (bords verre, mise en page ultra-large), Paramètres → Plus : lien **Licence** vers soleapixel.com/license, capture du site vitrine mise à jour. Affichage **26.3.1 | Release** (paquet **26.3.1**).'
+  },
   '26.3.0': {
     en:
       'My Server: host local dedicated servers from Solea Pixel modpacks (Modrinth mrpack) under userData/solea-server. Install with NeoForge/Forge server loader, EULA, console start/stop and commands, server.properties editor, world reset, JVM extras file, RAM/port, cover image, modpack change confirmation. Version 26.3 | Release (package 26.3.0).',

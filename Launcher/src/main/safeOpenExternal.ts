@@ -3,12 +3,22 @@
  * Toute URL doit être https://. Ajouter ici les domaines nécessaires à l’auth ou aux ressources officielles.
  */
 const ALLOWED_HOSTS = new Set<string>([
+  'soleapixel.com',
+  'www.soleapixel.com',
   'github.com',
   'www.github.com',
   'discord.gg',
   'modrinth.com',
   'www.modrinth.com',
   'api.modrinth.com',
+  'www.youtube.com',
+  'youtube.com',
+  'youtu.be',
+  'x.com',
+  'twitter.com',
+  'www.twitter.com',
+  'buymeacoffee.com',
+  'www.buymeacoffee.com',
   'login.live.com',
   'login.microsoftonline.com',
   'account.microsoft.com',
