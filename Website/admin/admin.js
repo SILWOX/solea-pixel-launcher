@@ -8,10 +8,21 @@
 
   const el = (id) => document.getElementById(id)
 
+  /** Même secret que côté Netlify après trim ; enlève BOM / espaces insécables souvent collés au collage. */
+  function normalizeToken(raw) {
+    if (raw == null) return ''
+    return String(raw)
+      .replace(/^\uFEFF/, '')
+      .replace(/\u00A0/g, ' ')
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .trim()
+  }
+
   function getToken() {
     try {
       const s = sessionStorage.getItem(STORAGE_KEY)
-      if (s && s.trim()) return s.trim()
+      const n = normalizeToken(s)
+      if (n) return n
     } catch {
       /* ignore */
     }
@@ -20,7 +31,8 @@
 
   function setToken(v) {
     try {
-      if (v && v.trim()) sessionStorage.setItem(STORAGE_KEY, v.trim())
+      const n = normalizeToken(v)
+      if (n) sessionStorage.setItem(STORAGE_KEY, n)
       else sessionStorage.removeItem(STORAGE_KEY)
     } catch {
       /* ignore */
@@ -38,6 +50,13 @@
     const s = err instanceof Error ? err.message : String(err)
     if (s.startsWith('not_configured')) {
       return s
+    }
+    if (s === 'unauthorized' || s.startsWith('unauthorized')) {
+      return (
+        'unauthorized — Le token ne correspond pas à NEWS_ADMIN_TOKEN sur Netlify (contexte Production). ' +
+        'Vérifie qu’il n’y a pas d’espace ou de retour à la ligne en trop dans la variable Netlify, ' +
+        'redéploie après modification, puis colle à nouveau le token et clique « Enregistrer dans cette session ».'
+      )
     }
     return s
   }
@@ -253,12 +272,13 @@
   })
 
   el('btn-save-token').addEventListener('click', () => {
-    const v = el('token').value
-    if (!v.trim()) {
+    const v = normalizeToken(el('token').value)
+    if (!v) {
       showMsg(el('auth-msg'), 'Token vide.', 'err')
       return
     }
     setToken(v)
+    el('token').value = v
     showMsg(el('auth-msg'), 'Token enregistré pour cette session.', 'ok')
     void refreshList()
   })

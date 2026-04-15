@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-i18n-profile="error404">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, follow" />
+    <meta
+      name="description"
+      content="The page you requested was not found on Solea Pixel. Return to the home page or open the SPL license."
+    />
+    <title data-i18n="page404.docTitle">SOLEA PIXEL — Page not found</title>
+    <link rel="icon" type="image/png" href="/assets/logo.png" sizes="32x32" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-error">
+    <a class="skip-link" href="#page-error-main" data-i18n="page404.skip">Skip to content</a>
+    <div class="ambient" aria-hidden="true">
+      <div class="ambient__base"></div>
+      <div class="ambient__blobs">
+        <div class="ambient-blob ambient-blob--orange"></div>
+        <div class="ambient-blob ambient-blob--blue"></div>
+        <div class="ambient-blob ambient-blob--violet"></div>
+      </div>
+      <div class="ambient__grain"></div>
+    </div>
+
+    <div class="page-error__shell">
+      <header class="page-error__top">
+        <a class="nav-brand page-error__brand" href="/">
+          <span class="nav-brand__mark">
+            <img src="/assets/logo.png" width="44" height="44" alt="" />
+          </span>
+          <span class="nav-brand__type">
+            <span class="nav-brand__solea">SOLEA</span>
+            <span class="nav-brand__pixel">PIXEL</span>
+          </span>
+        </a>
+        <div class="page-error__lang-wrap">
+          <span class="nav-social-label" data-i18n="nav.langShort">Lang</span>
+          <div class="lang-switch" role="group" aria-label="Language">
+            <span class="lang-switch__globe" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20M12 2a14 14 0 010 20M12 2a14 14 0 000 20" />
+              </svg>
+            </span>
+            <div class="lang-switch__pair">
+              <button type="button" class="lang-btn" id="lang-en" aria-pressed="true">EN</button>
+              <button type="button" class="lang-btn" id="lang-fr" aria-pressed="false">FR</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main id="page-error-main" class="page-error__main">
+        <div class="page-error__card">
+          <p class="page-error__code" aria-hidden="true" data-i18n="page404.code">404</p>
+          <h1 class="page-error__title" data-i18n="page404.title">Page not found</h1>
+          <p class="page-error__lead" data-i18n="page404.lead">
+            This address does not exist on this site. Check the URL or return to the home page.
+          </p>
+          <p class="page-error__path-wrap">
+            <span class="page-error__path-label" data-i18n="page404.pathLabel">Requested path</span>
+            <code class="page-error__path" id="page-error-path"></code>
+          </p>
+          <div class="page-error__actions">
+            <a class="btn btn-download btn-lg" href="/" data-i18n="page404.homeBtn">Back to home</a>
+            <a class="btn btn-line btn-lg" href="/license/" data-i18n="page404.licenseBtn">SPL license</a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/i18n.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.SoleaI18n) window.SoleaI18n.init()
+        const p = document.getElementById('page-error-path')
+        if (p) {
+          try {
+            p.textContent = (location.pathname || '/') + (location.search || '')
+          } catch {
+            p.textContent = '—'
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

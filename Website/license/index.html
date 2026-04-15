@@ -84,8 +84,16 @@
           >
           <a class="license-btn" href="/" data-i18n="license.back">Back to site</a>
           <div class="lang-switch license-lang" role="group" aria-label="Language">
-            <button type="button" class="lang-btn" id="lang-en" aria-pressed="true">EN</button>
-            <button type="button" class="lang-btn" id="lang-fr" aria-pressed="false">FR</button>
+            <span class="lang-switch__globe" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20M12 2a14 14 0 010 20M12 2a14 14 0 000 20" />
+              </svg>
+            </span>
+            <div class="lang-switch__pair">
+              <button type="button" class="lang-btn" id="lang-en" aria-pressed="true">EN</button>
+              <button type="button" class="lang-btn" id="lang-fr" aria-pressed="false">FR</button>
+            </div>
           </div>
         </div>
       </header>

@@ -22,6 +22,19 @@
       'nav.ariaX': 'SILWOX on X',
       'nav.ariaDiscord': 'Solea Pixel on Discord',
       'nav.ariaBmc': 'Support on Buy Me a Coffee',
+      'nav.socialShort': 'Social',
+      'nav.langShort': 'Lang',
+      'page404.docTitle': 'SOLEA PIXEL — Page not found',
+      'page404.metaDescription':
+        'The page you requested was not found on Solea Pixel. Return to the home page or open the SPL license.',
+      'page404.skip': 'Skip to content',
+      'page404.code': '404',
+      'page404.title': 'Page not found',
+      'page404.lead':
+        'This address does not exist on this site. Check the spelling of the URL or use the links below.',
+      'page404.pathLabel': 'Requested path',
+      'page404.homeBtn': 'Back to home',
+      'page404.licenseBtn': 'SPL license',
       'lang.fr': 'FR',
       'lang.en': 'EN',
       'hub.tag1': '100% free',
@@ -258,6 +271,19 @@
       'nav.ariaX': 'SILWOX sur X',
       'nav.ariaDiscord': 'Solea Pixel sur Discord',
       'nav.ariaBmc': 'Soutien sur Buy Me a Coffee',
+      'nav.socialShort': 'Réseaux',
+      'nav.langShort': 'Langue',
+      'page404.docTitle': 'SOLEA PIXEL — Page introuvable',
+      'page404.metaDescription':
+        'La page demandée n’existe pas sur Solea Pixel. Retour à l’accueil ou ouverture de la licence SPL.',
+      'page404.skip': 'Aller au contenu',
+      'page404.code': '404',
+      'page404.title': 'Page introuvable',
+      'page404.lead':
+        'Cette adresse n’existe pas sur ce site. Vérifie l’URL ou utilise les liens ci-dessous.',
+      'page404.pathLabel': 'Chemin demandé',
+      'page404.homeBtn': "Retour à l'accueil",
+      'page404.licenseBtn': 'Licence SPL',
       'lang.fr': 'FR',
       'lang.en': 'EN',
       'hub.tag1': '100 % gratuit',
@@ -510,8 +536,18 @@
   function applyI18n() {
     document.documentElement.lang = currentLang === 'fr' ? 'fr' : 'en'
     const profile = document.documentElement.dataset.i18nProfile
-    const desc = t(profile === 'license' ? 'license.metaDescription' : 'meta.description')
-    const shareTitle = profile === 'license' ? t('license.pageTitle') : t('page.title')
+    const desc =
+      profile === 'license'
+        ? t('license.metaDescription')
+        : profile === 'error404'
+          ? t('page404.metaDescription')
+          : t('meta.description')
+    const shareTitle =
+      profile === 'license'
+        ? t('license.pageTitle')
+        : profile === 'error404'
+          ? t('page404.docTitle')
+          : t('page.title')
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', desc)
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', desc)

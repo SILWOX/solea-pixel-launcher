@@ -15,9 +15,12 @@ exports.handler = async (event) => {
     return json(405, { error: 'method_not_allowed' }, CORS_POST)
   }
 
-  const url = process.env.SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const adminToken = process.env.NEWS_ADMIN_TOKEN
+  const url = (process.env.SUPABASE_URL && String(process.env.SUPABASE_URL).trim()) || ''
+  const serviceKey =
+    (process.env.SUPABASE_SERVICE_ROLE_KEY && String(process.env.SUPABASE_SERVICE_ROLE_KEY).trim()) || ''
+  /* Trim : une fin de ligne collée dans Netlify → UI « token enregistré » mais comparaison échouait */
+  const adminToken =
+    (process.env.NEWS_ADMIN_TOKEN && String(process.env.NEWS_ADMIN_TOKEN).trim()) || ''
 
   if (!url || !serviceKey || !adminToken) {
     const missing = []
@@ -27,8 +30,12 @@ exports.handler = async (event) => {
     return json(503, { error: 'not_configured', missing }, CORS_POST)
   }
 
-  const auth =
+  let auth =
     (event.headers && (event.headers.authorization || event.headers.Authorization)) || ''
+  if (!auth && event.multiValueHeaders) {
+    const mv = event.multiValueHeaders.authorization || event.multiValueHeaders.Authorization
+    if (Array.isArray(mv) && mv[0]) auth = mv[0]
+  }
   const m = /^Bearer\s+(.+)$/i.exec(String(auth))
   const token = m ? m[1].trim() : ''
   if (!timingSafeTokenEqual(adminToken, token)) {

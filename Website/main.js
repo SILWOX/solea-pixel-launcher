@@ -486,6 +486,20 @@ function initSnapPage() {
     { passive: true },
   )
 
+  /**
+   * La nav est `position: fixed` : la molette au-dessus ne scrollait pas `.snap-root`.
+   * On applique le delta sur le conteneur principal (sans passive pour pouvoir preventDefault).
+   */
+  const navEl = document.querySelector('.nav')
+  const forwardWheelToRoot = (e) => {
+    if (e.ctrlKey || e.metaKey) return
+    if ([...document.querySelectorAll('dialog')].some((d) => d.open)) return
+    e.preventDefault()
+    root.scrollTop += e.deltaY
+  }
+  navEl?.addEventListener('wheel', forwardWheelToRoot, { passive: false })
+  fabTop?.addEventListener('wheel', forwardWheelToRoot, { passive: false })
+
   fabTop?.addEventListener('click', () => {
     const first = sections[0]
     if (first) scrollToId(first.id, 'smooth')
