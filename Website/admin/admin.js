@@ -36,8 +36,8 @@
 
   function friendlyError(err) {
     const s = err instanceof Error ? err.message : String(err)
-    if (s === 'not_configured') {
-      return 'Serveur mal configuré : vérifie sur Netlify les variables SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY et NEWS_ADMIN_TOKEN (contexte Production), puis redéploie.'
+    if (s.startsWith('not_configured')) {
+      return s
     }
     return s
   }
@@ -56,7 +56,14 @@
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {
       const d = data && data.detail ? ` — ${data.detail}` : ''
-      throw new Error((data.error || res.statusText || 'Erreur') + d)
+      let err = (data.error || res.statusText || 'Erreur') + d
+      if (data.error === 'not_configured' && Array.isArray(data.missing) && data.missing.length) {
+        err = `not_configured — Manquantes côté Netlify (Functions / Production) : ${data.missing.join(', ')}. Ouvre Site configuration → Environment variables, complète ces noms exactement, puis Deploys → Trigger deploy.`
+      } else if (data.error === 'not_configured') {
+        err =
+          'not_configured — Variables serveur incomplètes. Vérifie SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, NEWS_ADMIN_TOKEN (même orthographe, avec valeurs sur le contexte Production).'
+      }
+      throw new Error(err)
     }
     return data
   }

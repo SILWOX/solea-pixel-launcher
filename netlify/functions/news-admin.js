@@ -20,7 +20,11 @@ exports.handler = async (event) => {
   const adminToken = process.env.NEWS_ADMIN_TOKEN
 
   if (!url || !serviceKey || !adminToken) {
-    return json(503, { error: 'not_configured' }, CORS_POST)
+    const missing = []
+    if (!url || !String(url).trim()) missing.push('SUPABASE_URL')
+    if (!serviceKey || !String(serviceKey).trim()) missing.push('SUPABASE_SERVICE_ROLE_KEY')
+    if (!adminToken || !String(adminToken).trim()) missing.push('NEWS_ADMIN_TOKEN')
+    return json(503, { error: 'not_configured', missing }, CORS_POST)
   }
 
   const auth =
