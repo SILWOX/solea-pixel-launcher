@@ -3,7 +3,8 @@
  */
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { randomUUID } from 'crypto'
-import { spawn, type ChildProcess } from 'child_process'
+import { execFile, spawn, type ChildProcess } from 'child_process'
+import { promisify } from 'util'
 import { createServer } from 'net'
 import { join, dirname } from 'path'
 import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs'
@@ -17,6 +18,12 @@ import {
 import { getModpackSpec, resolveModpackId, type ModpackId } from './modpacks.js'
 import { installForgeNeoForgeServerLoader } from './forgeServerInstaller.js'
 import {
+  fetchVanillaVersionJavaMajor,
+  installVanillaDedicatedServerFiles,
+  isVanillaServerVersionAtLeast18,
+  listMojangVanillaReleaseIdsFrom18
+} from './soleaVanillaDedicatedServer.js'
+import {
   deleteWorldFolderForServer,
   mergeServerPortAndDefaults,
   readServerPropertiesMap,
@@ -24,6 +31,8 @@ import {
   writeServerPropertiesMap
 } from './serverPropertiesIO.js'
 import { loadSettings } from './settings.js'
+
+const execFileAsync = promisify(execFile)
 
 const MAX_CONSOLE_LINES = 500
 const DEFAULT_RAM_MIB = 4096
@@ -38,6 +47,68 @@ function resolveJavaExecutableForServer(): string {
     return `${s.slice(0, -9)}java.exe`
   }
   return s
+}
+
+/** Ex. sortie `java -version` → major 21 ou 8 (legacy 1.8.x). */
+function parseJavaVersionOutput(combined: string): number | null {
+  const m = /version "?(\d+)(?:\.(\d+))?/i.exec(combined)
+  if (!m) return null
+  const major = parseInt(m[1]!, 10)
+  if (major === 1) {
+    const minor = m[2] != null ? parseInt(m[2]!, 10) : NaN
+    return Number.isFinite(minor) ? minor : null
+  }
+  return Number.isFinite(major) ? major : null
+}
+
+async function getJavaRuntimeMajor(javaBin: string): Promise<number | null> {
+  try {
+    const { stdout, stderr } = await execFileAsync(javaBin, ['-version'], {
+      encoding: 'utf8',
+      maxBuffer: 256 * 1024,
+      timeout: 20000,
+      windowsHide: true
+    })
+    return parseJavaVersionOutput(`${stdout}\n${stderr}`)
+  } catch (e: unknown) {
+    const err = e as { stdout?: string; stderr?: string }
+    const t = `${err.stdout ?? ''}\n${err.stderr ?? ''}`
+    if (t.trim()) return parseJavaVersionOutput(t)
+    return null
+  }
+}
+
+async function getRequiredJavaMajorForVanillaServer(rec: SoleServerRecord): Promise<number | null> {
+  if (typeof rec.vanillaJavaMajor === 'number' && rec.vanillaJavaMajor > 0) return rec.vanillaJavaMajor
+  const meta = readInstalledMeta(serverDir(rec.id))
+  if (typeof meta?.javaMajor === 'number' && meta.javaMajor > 0) return meta.javaMajor
+  const vid = rec.vanillaGameVersion?.trim()
+  if (!vid) return null
+  return fetchVanillaVersionJavaMajor(vid)
+}
+
+async function assertVanillaJavaForStart(
+  rec: SoleServerRecord
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (rec.modpackId !== SOLEA_SERVER_VANILLA_PACK_ID) return { ok: true }
+  const required = await getRequiredJavaMajorForVanillaServer(rec)
+  if (required == null || required <= 0) return { ok: true }
+  const javaBin = resolveJavaExecutableForServer()
+  const have = await getJavaRuntimeMajor(javaBin)
+  if (have == null) {
+    return {
+      ok: false,
+      error: `Impossible de lire la version de Java pour « ${javaBin} ». Vérifie le chemin dans les réglages du launcher.`
+    }
+  }
+  if (have < required) {
+    const mv = rec.vanillaGameVersion?.trim() ?? '?'
+    return {
+      ok: false,
+      error: `Serveur vanilla Minecraft ${mv} : Mojang exige au moins Java ${String(required)}. Ta JVM actuelle est Java ${String(have)}. Installe une JDK ${String(required)} ou plus récente et renseigne son java.exe dans les réglages du launcher.`
+    }
+  }
+  return { ok: true }
 }
 
 /** Découpe une ligne de commande (espaces + guillemets simples/doubles). */
@@ -98,11 +169,20 @@ function extractJavaArgvFromRunScript(root: string, scriptName: 'run.bat' | 'run
 
 type RuntimeState = 'stopped' | 'starting' | 'running' | 'stopping'
 
+/** Identifiant spécial côté registre / UI (pas un ModpackId Modrinth). */
+export const SOLEA_SERVER_VANILLA_PACK_ID = 'vanilla' as const
+
+export type SoleServerModpackRef = ModpackId | typeof SOLEA_SERVER_VANILLA_PACK_ID
+
 export type SoleServerRecord = {
   id: string
   name: string
   description: string
-  modpackId: ModpackId
+  modpackId: SoleServerModpackRef
+  /** Requis si modpackId === vanilla — id Mojang (ex. 1.21.4). */
+  vanillaGameVersion?: string
+  /** Major Java requise (ex. 21, 25), lue depuis le JSON Mojang — pour serveur vanilla uniquement. */
+  vanillaJavaMajor?: number
   ramMiB: number
   port: number
   coverFile?: string
@@ -170,13 +250,18 @@ function setRuntime(serverId: string, state: RuntimeState) {
   sendEvent({ kind: 'runtime', serverId, serverState: state })
 }
 
-function readInstalledMeta(instanceRoot: string): { versionId?: string; versionNumber?: string } | null {
+function readInstalledMeta(instanceRoot: string): {
+  versionId?: string
+  versionNumber?: string
+  javaMajor?: number
+} | null {
   const p = join(instanceRoot, '.solea-installed.json')
   if (!existsSync(p)) return null
   try {
     return JSON.parse(readFileSync(p, 'utf8')) as {
       versionId?: string
       versionNumber?: string
+      javaMajor?: number
     }
   } catch {
     return null
@@ -224,6 +309,46 @@ function saveCoverFromDataUrl(dataUrl: string, destDir: string): string | undefi
 
 async function runInstallJob(rec: SoleServerRecord) {
   const root = serverDir(rec.id)
+  if (rec.modpackId === SOLEA_SERVER_VANILLA_PACK_ID) {
+    const vid = (rec.vanillaGameVersion ?? '').trim()
+    if (!vid) throw new Error('Version Minecraft requise pour un serveur vanilla.')
+    if (!isVanillaServerVersionAtLeast18(vid)) {
+      throw new Error('Version minimale : Minecraft 1.8.')
+    }
+    sendEvent({
+      kind: 'progress',
+      serverId: rec.id,
+      phase: 'prepare',
+      current: 0,
+      total: 1,
+      detail: `Vanilla ${vid}`
+    })
+    const { mcVersionId, javaMajor } = await installVanillaDedicatedServerFiles({
+      instanceRoot: root,
+      versionId: vid,
+      onLog: (line) => pushLine(rec.id, line)
+    })
+    mergeServerPortAndDefaults(root, rec.port)
+    const meta = readInstalledMeta(root)
+    rec.installState = 'ready'
+    rec.installError = undefined
+    rec.modrinthVersionId = meta?.versionId ?? mcVersionId
+    rec.modrinthVersionNumber = meta?.versionNumber ?? vid
+    rec.vanillaJavaMajor = javaMajor ?? meta?.javaMajor
+    const servers = loadRegistry().map((s) => (s.id === rec.id ? rec : s))
+    saveRegistry(servers)
+    pushLine(rec.id, `[Solea] Serveur vanilla ${vid} prêt (server.jar officiel).`)
+    sendEvent({
+      kind: 'progress',
+      serverId: rec.id,
+      phase: 'done',
+      current: 1,
+      total: 1,
+      detail: 'ok'
+    })
+    return
+  }
+
   const spec = getModpackSpec(rec.modpackId)
   sendEvent({
     kind: 'progress',
@@ -441,6 +566,15 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
     }))
   )
 
+  ipcMain.handle('solea-server:list-vanilla-releases', async () => {
+    try {
+      const ids = await listMojangVanillaReleaseIdsFrom18()
+      return { ok: true as const, ids }
+    } catch (e) {
+      return { ok: false as const, error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
   ipcMain.handle(
     'solea-server:create',
     async (
@@ -452,14 +586,26 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
         imageUrl?: string
         coverImageDataUrl?: string
         modpackId: string
+        vanillaGameVersion?: string
       }
     ): Promise<{ ok: true; id: string } | { ok: false; error: string }> => {
       if (installBusy) return { ok: false, error: 'Une installation est déjà en cours.' }
-      let modpackId: ModpackId
-      try {
-        modpackId = resolveModpackId(payload.modpackId)
-      } catch {
-        return { ok: false, error: 'Modpack inconnu.' }
+      let modpackId: SoleServerModpackRef
+      let vanillaGameVersion: string | undefined
+      if (payload.modpackId === SOLEA_SERVER_VANILLA_PACK_ID) {
+        const v = payload.vanillaGameVersion?.trim()
+        if (!v) return { ok: false, error: 'Indiquez la version Minecraft (vanilla).' }
+        if (!isVanillaServerVersionAtLeast18(v)) {
+          return { ok: false, error: 'Version minimale : Minecraft 1.8.' }
+        }
+        modpackId = SOLEA_SERVER_VANILLA_PACK_ID
+        vanillaGameVersion = v
+      } else {
+        try {
+          modpackId = resolveModpackId(payload.modpackId)
+        } catch {
+          return { ok: false, error: 'Modpack inconnu.' }
+        }
       }
       const name = payload.name.trim()
       if (!name) return { ok: false, error: 'Nom requis.' }
@@ -478,6 +624,7 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
         name,
         description: (payload.description ?? '').trim(),
         modpackId,
+        ...(vanillaGameVersion ? { vanillaGameVersion } : {}),
         ramMiB: DEFAULT_RAM_MIB,
         port: DEFAULT_PORT,
         coverFile: finalCover,
@@ -504,6 +651,7 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
         coverImageDataUrl?: string | null
         ramMiB?: number
         modpackId?: string
+        vanillaGameVersion?: string
         port?: number
       }
     ): Promise<{ ok: true } | { ok: false; error: string }> => {
@@ -538,14 +686,28 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
       }
       let reinstall = false
       if (payload.modpackId !== undefined) {
-        try {
-          const mid = resolveModpackId(payload.modpackId)
-          if (mid !== cur.modpackId) {
-            next.modpackId = mid
+        if (payload.modpackId === SOLEA_SERVER_VANILLA_PACK_ID) {
+          const v = (payload.vanillaGameVersion ?? '').trim()
+          if (!v) return { ok: false, error: 'Version Minecraft requise pour un serveur vanilla.' }
+          if (!isVanillaServerVersionAtLeast18(v)) {
+            return { ok: false, error: 'Version minimale : Minecraft 1.8.' }
+          }
+          next.modpackId = SOLEA_SERVER_VANILLA_PACK_ID
+          next.vanillaGameVersion = v
+          if (cur.modpackId !== SOLEA_SERVER_VANILLA_PACK_ID || (cur.vanillaGameVersion ?? '').trim() !== v) {
             reinstall = true
           }
-        } catch {
-          return { ok: false, error: 'Modpack inconnu.' }
+        } else {
+          try {
+            const mid = resolveModpackId(payload.modpackId)
+            if (mid !== cur.modpackId) {
+              next.modpackId = mid
+              next.vanillaGameVersion = undefined
+              reinstall = true
+            }
+          } catch {
+            return { ok: false, error: 'Modpack inconnu.' }
+          }
         }
       }
       servers[idx] = next
@@ -599,7 +761,7 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
 
   ipcMain.handle(
     'solea-server:start',
-    (_e, id: string): { ok: true } | { ok: false; error: string } => {
+    async (_e, id: string): Promise<{ ok: true } | { ok: false; error: string }> => {
       const rec = loadRegistry().find((s) => s.id === id)
       if (!rec) return { ok: false, error: 'Introuvable.' }
       if (rec.installState !== 'ready') return { ok: false, error: "Le pack n'est pas prêt." }
@@ -607,6 +769,8 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
         return { ok: false, error: 'Un autre serveur tourne déjà sur cette machine.' }
       }
       if (processes.has(id)) return { ok: false, error: 'Déjà démarré.' }
+      const jv = await assertVanillaJavaForStart(rec)
+      if (!jv.ok) return jv
       if (!trySpawnServerProcess(rec)) {
         return { ok: false, error: 'Script serveur introuvable (run.bat / run.sh).' }
       }
@@ -651,6 +815,8 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
     if (runningServerId && runningServerId !== id) {
       return { ok: false as const, error: 'Un autre serveur tourne déjà.' }
     }
+    const jv = await assertVanillaJavaForStart(rec)
+    if (!jv.ok) return jv
     if (!trySpawnServerProcess(rec)) {
       return { ok: false as const, error: 'Script serveur introuvable (run.bat / run.sh).' }
     }
@@ -671,9 +837,24 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
   ipcMain.handle('solea-server:check-modpack-update', async (_e, id: string) => {
     const rec = loadRegistry().find((s) => s.id === id)
     if (!rec) return { ok: false as const, error: 'Introuvable.' }
+    if (rec.modpackId === SOLEA_SERVER_VANILLA_PACK_ID) {
+      return {
+        ok: true as const,
+        hasUpdate: false,
+        latestVersion: undefined,
+        currentVersion: rec.vanillaGameVersion ?? rec.modrinthVersionNumber
+      }
+    }
     const spec = getModpackSpec(rec.modpackId)
-    const versions = await fetchProjectVersions(spec.projectSlug)
-    const latest = pickLatestVersion(versions, spec.gameVersion, spec.loader)
+    let versions = await fetchProjectVersions(spec.projectSlug, {
+      gameVersion: spec.gameVersion,
+      loaders: [spec.loader.toLowerCase()]
+    })
+    let latest = pickLatestVersion(versions, spec.gameVersion, spec.loader)
+    if (!latest && versions.length === 0) {
+      versions = await fetchProjectVersions(spec.projectSlug)
+      latest = pickLatestVersion(versions, spec.gameVersion, spec.loader)
+    }
     const installed = readInstalledMeta(serverDir(id))
     const currentId = installed?.versionId ?? rec.modrinthVersionId
     const hasUpdate = Boolean(latest && currentId && latest.id !== currentId)

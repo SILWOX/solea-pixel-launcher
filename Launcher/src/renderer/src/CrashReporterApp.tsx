@@ -17,7 +17,7 @@ const FAKE_DEMO_PAYLOAD: CrashPayloadUi = {
     '    at Object.invoke (electron-ipc.ts:18:9)',
   reason: 'crashed',
   exitCode: -1,
-  appVersion: '26.3.1',
+  appVersion: '26.3.2',
   platform: 'win32',
   arch: 'x64',
   electronVersion: '33.x',

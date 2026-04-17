@@ -28,6 +28,13 @@ export interface ModrinthVersionFile {
   primary?: boolean
 }
 
+export interface ModrinthVersionDependency {
+  version_id: string | null
+  project_id: string
+  file_name: string | null
+  dependency_type: string
+}
+
 export interface ModrinthVersion {
   id: string
   version_number: string
@@ -35,6 +42,7 @@ export interface ModrinthVersion {
   game_versions: string[]
   loaders: string[]
   files: ModrinthVersionFile[]
+  dependencies?: ModrinthVersionDependency[]
 }
 
 export interface MrpackIndexFile {
@@ -147,16 +155,51 @@ async function verifySha512(filePath: string, expected: string): Promise<boolean
   return digest.toLowerCase() === expected.toLowerCase()
 }
 
-export async function fetchProjectVersions(projectSlug: string): Promise<ModrinthVersion[]> {
+/** Filtres optionnels : l’API renvoie alors les versions compatibles (évite la pagination tronquée sans filtre). */
+export type FetchProjectVersionsFilters = {
+  gameVersion?: string
+  loaders?: string[]
+}
+
+function fetchProjectVersionsCacheKey(projectSlug: string, filters?: FetchProjectVersionsFilters): string {
+  const gv = filters?.gameVersion?.trim()
+  const ld = filters?.loaders?.length
+    ? [...new Set(filters.loaders.map((x) => String(x).toLowerCase()))].sort().join(',')
+    : ''
+  if (!gv && !ld) return projectSlug
+  return `${projectSlug}::gv:${gv ?? ''}::ld:${ld}`
+}
+
+export async function fetchProjectVersions(
+  projectSlug: string,
+  filters?: FetchProjectVersionsFilters
+): Promise<ModrinthVersion[]> {
   const now = Date.now()
-  const hit = versionListCache.get(projectSlug)
+  const cacheKey = fetchProjectVersionsCacheKey(projectSlug, filters)
+  const hit = versionListCache.get(cacheKey)
   if (hit && now - hit.at < VERSION_LIST_TTL_MS) return hit.data
 
-  const res = await fetch(`${API}/project/${projectSlug}/version`)
+  const url = new URL(`${API}/project/${encodeURIComponent(projectSlug)}/version`)
+  url.searchParams.set('limit', '100')
+  const gv = filters?.gameVersion?.trim()
+  if (gv) url.searchParams.set('game_versions', JSON.stringify([gv]))
+  if (filters?.loaders?.length) {
+    url.searchParams.set('loaders', JSON.stringify(filters.loaders.map((x) => String(x).toLowerCase())))
+  }
+
+  const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`Modrinth API: ${res.status} pour le projet « ${projectSlug} »`)
   const data = (await res.json()) as ModrinthVersion[]
-  versionListCache.set(projectSlug, { at: now, data })
+  versionListCache.set(cacheKey, { at: now, data })
   return data
+}
+
+/** Détail d’une version (ex. Sodium requis par Iris via `version_id`). */
+export async function fetchModrinthVersionById(versionId: string): Promise<ModrinthVersion | null> {
+  const res = await fetch(`${API}/version/${encodeURIComponent(versionId)}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error(`Modrinth API version: ${res.status}`)
+  return (await res.json()) as ModrinthVersion
 }
 
 export function pickLatestVersion(
@@ -181,7 +224,11 @@ export type InstallProgress = {
   current: number
   total: number
   detail?: string
-  task?: 'install' | 'uninstall'
+  task?: 'install' | 'uninstall' | 'launch'
+  /** Progression téléchargement client vanilla (barre globale). */
+  source?: 'vanilla'
+  /** Fin du flux vanilla : libère la barre globale. */
+  vanillaDone?: boolean
 }
 
 export async function installMrpackFromModrinth(options: {
@@ -412,8 +459,15 @@ export async function getModpackActionInfo(options: {
 
   const readLatestNumber = async (): Promise<string | undefined> => {
     try {
-      const versions = await fetchProjectVersions(projectSlug)
-      const latest = pickLatestVersion(versions, gameVersion, loader)
+      const versions = await fetchProjectVersions(projectSlug, {
+        gameVersion,
+        loaders: [loader.toLowerCase()]
+      })
+      let latest = pickLatestVersion(versions, gameVersion, loader)
+      if (!latest && versions.length === 0) {
+        const wide = await fetchProjectVersions(projectSlug)
+        latest = pickLatestVersion(wide, gameVersion, loader)
+      }
       return latest?.version_number
     } catch {
       return undefined
@@ -433,8 +487,15 @@ export async function getModpackActionInfo(options: {
       return { needsInstall: true, needsUpdate: false, latestVersionNumber: await readLatestNumber() }
     }
 
-    const versions = await fetchProjectVersions(projectSlug)
-    const latest = pickLatestVersion(versions, gameVersion, loader)
+    let versions = await fetchProjectVersions(projectSlug, {
+      gameVersion,
+      loaders: [loader.toLowerCase()]
+    })
+    let latest = pickLatestVersion(versions, gameVersion, loader)
+    if (!latest && versions.length === 0) {
+      versions = await fetchProjectVersions(projectSlug)
+      latest = pickLatestVersion(versions, gameVersion, loader)
+    }
     if (!latest) {
       return {
         needsInstall: false,

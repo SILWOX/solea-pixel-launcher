@@ -1,11 +1,16 @@
 /** AETHER UI — v2 | Captures d’écran — Solea Pixel Launcher (proprietary interface layer). */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { isModpackId } from './modpackTheme'
+import { SOLEA_VANILLA_SCREENSHOTS_PACK_ID } from '../../soleaVanillaScreenshotsId'
 import { useI18n } from './i18n/I18nContext'
-import { LauncherSelect } from './ui/LauncherSelect'
+import { LauncherSelect, type LauncherSelectEntry } from './ui/LauncherSelect'
 import { useToast } from './ui/ToastContext'
 
 type ShotItem = { fileName: string; thumbDataUrl: string }
+
+function isScreenshotsPackId(id: string): boolean {
+  return id === SOLEA_VANILLA_SCREENSHOTS_PACK_ID || isModpackId(id)
+}
 
 export function ScreenshotsView({
   modpacksList,
@@ -16,9 +21,9 @@ export function ScreenshotsView({
 }) {
   const { t } = useI18n()
   const { pushToast } = useToast()
-  const packOptions = modpacksList.filter((m) => isModpackId(m.id))
+  const modpackOptions = modpacksList.filter((m) => isModpackId(m.id))
   const [packId, setPackId] = useState<string>(() =>
-    isModpackId(initialModpackId) ? initialModpackId : packOptions[0]?.id ?? ''
+    isModpackId(initialModpackId) ? initialModpackId : SOLEA_VANILLA_SCREENSHOTS_PACK_ID
   )
   const [items, setItems] = useState<ShotItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -31,18 +36,28 @@ export function ScreenshotsView({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const loadedImgRef = useRef<HTMLImageElement | null>(null)
 
-  const currentPackLabel = useMemo(
-    () => packOptions.find((p) => p.id === packId)?.displayName ?? packId,
-    [packOptions, packId]
-  )
+  const packSelectEntries = useMemo((): LauncherSelectEntry[] => {
+    const vanilla: LauncherSelectEntry = {
+      value: SOLEA_VANILLA_SCREENSHOTS_PACK_ID,
+      label: t('screenshots.vanillaInstanceName')
+    }
+    if (modpackOptions.length === 0) return [vanilla]
+    return [
+      vanilla,
+      { type: 'group', label: t('screenshots.instanceGroupModpacks') },
+      ...modpackOptions.map((m) => ({ value: m.id, label: m.displayName }))
+    ]
+  }, [t, modpackOptions])
 
-  const packSelectOptions = useMemo(
-    () => packOptions.map((m) => ({ value: m.id, label: m.displayName })),
-    [packOptions]
-  )
+  const currentPackLabel = useMemo(() => {
+    for (const e of packSelectEntries) {
+      if ('value' in e && e.value === packId) return e.label
+    }
+    return packId
+  }, [packSelectEntries, packId])
 
   const refreshList = useCallback(async () => {
-    if (!isModpackId(packId)) {
+    if (!isScreenshotsPackId(packId)) {
       setItems([])
       return
     }
@@ -65,7 +80,7 @@ export function ScreenshotsView({
   }, [initialModpackId])
 
   const loadFull = async (fileName: string) => {
-    if (!isModpackId(packId)) return
+    if (!isScreenshotsPackId(packId)) return
     setFullLoading(true)
     setFullUrl(null)
     const r = await window.solea.getModpackScreenshotFull(packId, fileName)
@@ -148,26 +163,10 @@ export function ScreenshotsView({
   }
 
   const openShotsFolder = () => {
-    if (!isModpackId(packId)) return
+    if (!isScreenshotsPackId(packId)) return
     void window.solea.openScreenshotsFolder(packId).then((r) => {
       if (!r.ok) pushToast(r.error, 'error')
     })
-  }
-
-  if (!packOptions.length) {
-    return (
-      <div className="shell-content shell-content-news screenshots-view">
-        <div className="screenshots-scroll">
-          <div className="screenshots-page-inner">
-          <section className="screenshots-card screenshots-card--solo">
-            <p className="screenshots-eyebrow">{t('screenshots.eyebrow')}</p>
-            <h2 className="screenshots-h2">{t('screenshots.title')}</h2>
-            <p className="screenshots-muted-block">{t('screenshots.noPacks')}</p>
-          </section>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -199,9 +198,11 @@ export function ScreenshotsView({
                   aria-label={t('screenshots.instanceSection')}
                   value={packId}
                   onChange={setPackId}
-                  options={packSelectOptions}
-                  disabled={packSelectOptions.length === 0}
+                  options={packSelectEntries}
                 />
+                {modpackOptions.length > 0 ? (
+                  <p className="screenshots-field-hint">{t('screenshots.instancePickerHint')}</p>
+                ) : null}
               </div>
               <div className="screenshots-toolbar-actions">
                 <button
@@ -215,7 +216,7 @@ export function ScreenshotsView({
                 <button
                   type="button"
                   className="btn-save screenshots-toolbar-btn screenshots-toolbar-btn--primary"
-                  disabled={!isModpackId(packId)}
+                  disabled={!isScreenshotsPackId(packId)}
                   onClick={openShotsFolder}
                 >
                   {t('screenshots.openFolder')}

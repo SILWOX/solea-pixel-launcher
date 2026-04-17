@@ -1,5 +1,11 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.3.2': {
+    en:
+      '**26.3.2 | Release** (package **26.3.2**): Vanilla hub — correct JVM major for **Minecraft 26.x / calendar-era** ids (reads Mojang version JSON on disk, then manifest, then heuristic) so installs/launches no longer default to Java 21 only. **Legacy (AETHER v1)** — main left shell sidebar always visible on **Settings**; dedicated **sidebarClassicV1.css** rail (flat background, thin section dividers, squircle tiles, stronger active border) closer to the pre–v2.0 look.',
+    fr:
+      '**26.3.2 | Release** (paquet **26.3.2**) : hub **Vanilla** — JVM correcte pour les versions **Minecraft 26.x / calendrier** (JSON Mojang sur disque, puis manifeste, puis heuristique), au lieu de rester bloqué sur Java 21. **Legacy (AETHER v1)** — barre latérale principale toujours visible dans **Paramètres** ; rail dédié **sidebarClassicV1.css** (fond plat, séparateurs fins, pastilles carrées, actif plus lisible), proche du rendu d’avant la v2.'
+  },
   '26.3.1': {
     en:
       'Patch 26.3.1: Home & news UI polish (cleaner glass edges, better use of space on wide windows), Settings → More adds a License link to soleapixel.com/license, storefront hero image refreshed. Display **26.3.1 | Release** (package **26.3.1**).',

@@ -321,6 +321,62 @@
   filter: none;
 }
 
+.actu-link {
+  color: color-mix(in srgb, var(--accent-orange, #ff7d33) 70%, #7ab8ff);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.actu-link:hover {
+  color: var(--accent-orange, #ff7d33);
+}
+
+.actu-figure {
+  margin: 0.65rem 0;
+  max-width: 100%;
+}
+
+.actu-figure--center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.actu-figure--left {
+  margin-right: auto;
+  text-align: left;
+}
+
+.actu-figure--right {
+  margin-left: auto;
+  text-align: right;
+}
+
+.actu-img__link {
+  display: inline-block;
+  line-height: 0;
+  border-radius: inherit;
+}
+
+.actu-img__el {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.actu-figure__caption {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  opacity: 0.88;
+  line-height: 1.4;
+}
+
+.actu-img-err {
+  color: #f23f42;
+  font-size: 0.86rem;
+}
+
 .actu-mc-obfuscated {
   font-family: ui-monospace, monospace;
   letter-spacing: 0.04em;

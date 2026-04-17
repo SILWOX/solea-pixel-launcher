@@ -70,6 +70,7 @@ import {
   parseArgsBlock,
   getEffectiveMicrosoftClientId,
   getGameSettingsForModpack,
+  getGameSettingsForVanilla,
   DEFAULT_SETTINGS,
   type LauncherSettings
 } from './settings.js'
@@ -130,6 +131,31 @@ import {
   getLauncherMeta,
   clearLauncherUpdatedMemory
 } from './launcherMeta.js'
+import {
+  backupVanillaSaves,
+  defaultShaderStackForReleaseId,
+  ensureVanillaSoleaVersionMarker,
+  vanillaJavaMajorHint,
+  ensureVanillaProfileLayout,
+  getDefaultDotMinecraftPath,
+  getVanillaClientVersionsDir,
+  getVanillaProfileGameDir,
+  listAllVanillaInstallFolders,
+  listVanillaClientVersionIds,
+  readInstalledClientVersionJavaMajor,
+  readVanillaMeta,
+  sanitizeVanillaFolderSegment,
+  uninstallVanillaClientVersion,
+  vanillaInstallFolderName,
+  writeVanillaMeta,
+  type VanillaMeta
+} from './vanillaPaths.js'
+import { fetchVanillaVersionJavaMajor } from './soleaVanillaDedicatedServer.js'
+import { ensureVanillaIrisSodiumMods } from './vanillaShaderMods.js'
+import {
+  SOLEA_VANILLA_SCREENSHOTS_PACK_ID,
+  SOLEA_VANILLA_SCREENSHOTS_STUB_DIR
+} from '../soleaVanillaScreenshotsId.js'
 
 type ModpackAllActionRow = {
   id: ModpackId
@@ -205,21 +231,55 @@ function buildSettingsWithParentForModpack(
   return mergeLauncherSettingsPatch(cur, { modpackInstanceParentPath: merged } as Record<string, unknown>)
 }
 
+/** True si un processus Java Minecraft semble utiliser le `.minecraft` officiel (cwd / ligne de commande). */
+async function isAnyVanillaMinecraftRunning(): Promise<boolean> {
+  const g = getDefaultDotMinecraftPath()
+  if (existsSync(g) && (await isMinecraftRunning(g))) return true
+  return false
+}
+
 /** True si au moins une instance Solea a un processus Minecraft lié à son dossier. */
 async function isAnySoleaMinecraftRunning(): Promise<boolean> {
   const checks = await Promise.all(
     MODPACKS.map(async (m) => isMinecraftRunning(getInstanceRootForModpack(m.id)))
   )
-  return checks.some(Boolean)
+  if (checks.some(Boolean)) return true
+  return await isAnyVanillaMinecraftRunning()
 }
 
 /** Arrête tous les Minecraft détectés pour les dossiers d’instances Solea (un seul jeu à la fois). */
 async function killAllSoleaMinecraftInstances(): Promise<void> {
   await Promise.all(MODPACKS.map((m) => killMinecraftForInstance(getInstanceRootForModpack(m.id))))
+  const g = getDefaultDotMinecraftPath()
+  if (existsSync(g)) await killMinecraftForInstance(g)
 }
 
 function isSoleaInstanceInstalled(instanceRoot: string): boolean {
   return existsSync(join(instanceRoot, '.solea-installed.json'))
+}
+
+/** Dossier parent de `screenshots/` : instance modpack, ou `.minecraft` si client vanilla installé ; sinon stub. */
+function getScreenshotsParentDir(rawId: string): string {
+  if (rawId === SOLEA_VANILLA_SCREENSHOTS_PACK_ID) {
+    const ud = app.getPath('userData')
+    const st = loadSettings()
+    const hubV = st.vanillaHubLastSelectedVersion?.trim()
+    if (hubV) {
+      const folder = vanillaInstallFolderName(hubV, defaultShaderStackForReleaseId(hubV))
+      if (listVanillaClientVersionIds(ud, folder).length > 0) {
+        ensureVanillaProfileLayout(ud, folder)
+        return getVanillaProfileGameDir(ud, folder)
+      }
+    }
+    const entries = listAllVanillaInstallFolders(ud)
+    if (entries[0]) {
+      ensureVanillaProfileLayout(ud, entries[0].folder)
+      return getVanillaProfileGameDir(ud, entries[0].folder)
+    }
+    return join(ud, SOLEA_VANILLA_SCREENSHOTS_STUB_DIR)
+  }
+  const resolved = resolveModpackId(rawId)
+  return getInstanceRootForModpack(resolved)
 }
 
 function pushInstallDoneNotification(): void {
@@ -344,14 +404,21 @@ function isAuthError(x: unknown): x is { error: string } {
   return typeof x === 'object' && x !== null && 'error' in x
 }
 
-const LAUNCH_LOG_SENTINEL = 'Launching with arguments'
-
 function getGameLaunchWorkerPath(): string {
   return join(dirname(fileURLToPath(import.meta.url)), 'gameLaunchWorker.js')
 }
 
-/** Lance Minecraft dans un worker pour garder le processus principal réactif (Windows « Ne répond pas »). */
-function runMinecraftLaunchInWorker(launchOpts: Record<string, unknown>): Promise<void> {
+type MinecraftGameWorkerMode = 'launch' | 'download'
+
+/**
+ * Lance Minecraft ou ne télécharge que le client (assets + libs) dans un worker
+ * pour garder le processus principal réactif.
+ */
+function runMinecraftGameWorker(
+  launchOpts: Record<string, unknown>,
+  mode: MinecraftGameWorkerMode,
+  onVanillaDownloadProgress?: (p: { current: number; total: number; detail?: string }) => void
+): Promise<void> {
   let clone: Record<string, unknown>
   try {
     clone = structuredClone(launchOpts)
@@ -362,11 +429,16 @@ function runMinecraftLaunchInWorker(launchOpts: Record<string, unknown>): Promis
   return new Promise<void>((resolve, reject) => {
     const workerPath = getGameLaunchWorkerPath()
     let settled = false
-    const w = new Worker(workerPath, { workerData: { launchOpts: clone } })
+    let exitOrphanTimer: ReturnType<typeof setTimeout> | null = null
+    const w = new Worker(workerPath, { workerData: { launchOpts: clone, mode } })
 
     const timer = setTimeout(() => {
       if (settled) return
       settled = true
+      if (exitOrphanTimer) {
+        clearTimeout(exitOrphanTimer)
+        exitOrphanTimer = null
+      }
       void w.terminate().catch(() => {})
       reject(new Error('Délai de lancement dépassé (téléchargements trop longs ou blocage).'))
     }, 45 * 60 * 1000)
@@ -375,12 +447,20 @@ function runMinecraftLaunchInWorker(launchOpts: Record<string, unknown>): Promis
       if (settled) return
       settled = true
       clearTimeout(timer)
+      if (exitOrphanTimer) {
+        clearTimeout(exitOrphanTimer)
+        exitOrphanTimer = null
+      }
       resolve()
     }
     const finishErr = (e: Error) => {
       if (settled) return
       settled = true
       clearTimeout(timer)
+      if (exitOrphanTimer) {
+        clearTimeout(exitOrphanTimer)
+        exitOrphanTimer = null
+      }
       void w.terminate().catch(() => {})
       reject(e)
     }
@@ -395,25 +475,59 @@ function runMinecraftLaunchInWorker(launchOpts: Record<string, unknown>): Promis
       }
     }
 
-    w.on('message', (msg: { type: string; line?: string; message?: string }) => {
-      if (msg.type === 'data' && typeof msg.line === 'string') {
-        appendGameLogLine(msg.line)
-        if (msg.line.includes(LAUNCH_LOG_SENTINEL)) finishOk()
+    w.on(
+      'message',
+      (msg: {
+        type: string
+        line?: string
+        message?: string
+        current?: number
+        total?: number
+        detail?: string
+      }) => {
+        if (msg.type === 'data' && typeof msg.line === 'string') {
+          appendGameLogLine(msg.line)
+        }
+        if (msg.type === 'launch-complete') finishOk()
+        if (msg.type === 'progress' && mode === 'download') {
+          const cur = typeof msg.current === 'number' && Number.isFinite(msg.current) ? msg.current : 0
+          const tot = typeof msg.total === 'number' && Number.isFinite(msg.total) ? msg.total : 0
+          onVanillaDownloadProgress?.({
+            current: cur,
+            total: tot,
+            detail: typeof msg.detail === 'string' ? msg.detail : undefined
+          })
+        }
+        if (msg.type === 'download-done') finishOk()
+        if (msg.type === 'error' && typeof msg.message === 'string') {
+          appendGameLogLine(`[erreur] ${msg.message}`)
+          finishErr(normalizeLaunchError(new Error(msg.message)))
+        }
+        if (msg.type === 'close') {
+          onGameExitedUi()
+        }
       }
-      if (msg.type === 'error' && typeof msg.message === 'string') {
-        appendGameLogLine(`[erreur] ${msg.message}`)
-        finishErr(normalizeLaunchError(new Error(msg.message)))
-      }
-      if (msg.type === 'close') {
-        onGameExitedUi()
-      }
-    })
+    )
     w.on('error', (err) => finishErr(normalizeLaunchError(err)))
     w.on('exit', (code) => {
       if (settled) return
-      if (code !== 0) {
+      /* `exit` peut arriver avant le message `launch-complete` (file Node) : attendre un peu avant d’échouer. */
+      if (exitOrphanTimer) clearTimeout(exitOrphanTimer)
+      exitOrphanTimer = setTimeout(() => {
+        exitOrphanTimer = null
+        if (settled) return
+        if (code === 0) {
+          finishErr(
+            new Error(
+              mode === 'launch'
+                ? 'Le worker de lancement s’est terminé sans confirmation (jeu non démarré). Réessaie ou consulte le journal de jeu.'
+                : 'Le worker de téléchargement s’est terminé sans confirmation.'
+            )
+          )
+          return
+        }
         finishErr(new Error(`Processus de lancement arrêté (code ${code}).`))
-      }
+      }, 400)
     })
   })
 }
@@ -1756,6 +1870,18 @@ ipcMain.handle('game:launch', async () => {
     })
   )
   const fr = settings.uiLanguage === 'fr'
+  const gVanilla = getDefaultDotMinecraftPath()
+  if (existsSync(gVanilla) && (await isMinecraftRunning(gVanilla))) {
+    return {
+      ok: false as const,
+      error: errWithCode(
+        SPX.LAUNCH_BUSY_OTHER,
+        fr
+          ? 'Minecraft vanilla est déjà en cours. Ferme le jeu avant de lancer un modpack.'
+          : 'Vanilla Minecraft is already running. Close the game before launching a modpack.'
+      )
+    }
+  }
   for (const { m, instRoot, running } of runningRows) {
     if (!running) continue
     if (instRoot === root) {
@@ -1943,7 +2069,7 @@ ipcMain.handle('game:launch', async () => {
   try {
     /* Laisse le processus principal traiter des événements (curseur Windows, IPC) avant le worker. */
     await new Promise<void>((r) => setImmediate(r))
-    await runMinecraftLaunchInWorker(launchOpts as unknown as Record<string, unknown>)
+    await runMinecraftGameWorker(launchOpts as unknown as Record<string, unknown>, 'launch')
     recordModpackLastPlay(spec.id)
 
     if (settings.discordRichPresence) {
@@ -1962,6 +2088,507 @@ ipcMain.handle('game:launch', async () => {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     return { ok: false as const, error: errWithCode(SPX.LAUNCH_GENERIC, msg) }
+  }
+})
+
+ipcMain.handle('vanilla:ensure-profile', async (_e, profileId: unknown) => {
+  const ud = app.getPath('userData')
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  const { gameDir } = ensureVanillaProfileLayout(ud, id)
+  return { ok: true as const, profileId: id, gameDir }
+})
+
+/** Ouvre toujours le vrai `.minecraft` (chemin absolu résolu), sans ambiguïté avec l’ancien `minecraft-version/…/game`. */
+ipcMain.handle('vanilla:open-dot-minecraft', async () => {
+  const ud = app.getPath('userData')
+  ensureVanillaProfileLayout(ud, 'soleapixel')
+  const dot = resolve(getDefaultDotMinecraftPath())
+  const err = await shell.openPath(dot)
+  if (err) return { ok: false as const, error: err }
+  return { ok: true as const }
+})
+
+ipcMain.handle('vanilla:open-folder', async (_e, profileId: unknown, kind: unknown) => {
+  const ud = app.getPath('userData')
+  const fr = loadSettings().uiLanguage === 'fr'
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  const dot = getDefaultDotMinecraftPath()
+  /** Dossier de jeu = racine `.minecraft` (partagé), toujours ouvrable même avant install du client. */
+  if (kind !== 'profile') {
+    ensureVanillaProfileLayout(ud, id)
+    const err = await shell.openPath(dot)
+    if (err) return { ok: false as const, error: err }
+    return { ok: true as const }
+  }
+  if (listVanillaClientVersionIds(ud, id).length === 0) {
+    return {
+      ok: false as const,
+      error: fr
+        ? 'Client non installé pour cette version — installe-la depuis le hub Vanilla.'
+        : 'This version is not installed yet — install it from the Vanilla hub.'
+    }
+  }
+  ensureVanillaProfileLayout(ud, id)
+  const err = await shell.openPath(getVanillaClientVersionsDir(ud))
+  if (err) return { ok: false as const, error: err }
+  return { ok: true as const }
+})
+
+ipcMain.handle('vanilla:backup-saves', async (_e, profileId: unknown) => {
+  const ud = app.getPath('userData')
+  const fr = loadSettings().uiLanguage === 'fr'
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  if (listVanillaClientVersionIds(ud, id).length === 0) {
+    return {
+      ok: false as const,
+      error: fr
+        ? 'Aucune installation à cet emplacement — installe la version depuis le hub Vanilla.'
+        : 'Nothing installed here yet — install the version from the Vanilla hub.'
+    }
+  }
+  ensureVanillaProfileLayout(ud, id)
+  const r = backupVanillaSaves(ud, id)
+  if (!r.ok) return { ok: false as const, error: r.error }
+  return { ok: true as const, zipPath: r.zipPath }
+})
+
+ipcMain.handle('vanilla:meta-get', async (_e, profileId: unknown) => {
+  const ud = app.getPath('userData')
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  return { ok: true as const, meta: readVanillaMeta(ud, id) }
+})
+
+ipcMain.handle('vanilla:meta-set', async (_e, profileId: unknown, patch: unknown) => {
+  const ud = app.getPath('userData')
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  if (!patch || typeof patch !== 'object') {
+    return { ok: false as const, error: 'Invalid payload' }
+  }
+  const p = patch as Record<string, unknown>
+  const cur = readVanillaMeta(ud, id)
+  const next: VanillaMeta = { ...cur }
+  if (p.shaderStack === 'optifine' || p.shaderStack === 'iris') next.shaderStack = p.shaderStack
+  if ('javaPath' in p && (p.javaPath === null || typeof p.javaPath === 'string')) {
+    next.javaPath = p.javaPath === null ? null : p.javaPath
+  }
+  if ('javaVersion' in p && (p.javaVersion === null || typeof p.javaVersion === 'string')) {
+    next.javaVersion = p.javaVersion === null ? null : p.javaVersion
+  }
+  if (
+    'lastSelectedVersion' in p &&
+    (typeof p.lastSelectedVersion === 'string' || p.lastSelectedVersion === null)
+  ) {
+    next.lastSelectedVersion =
+      p.lastSelectedVersion === null || p.lastSelectedVersion === ''
+        ? null
+        : String(p.lastSelectedVersion)
+  }
+  writeVanillaMeta(ud, id, next)
+  return { ok: true as const, meta: next }
+})
+
+ipcMain.handle('vanilla:sync-java-from-settings', async (_e, profileId: unknown) => {
+  const ud = app.getPath('userData')
+  const settings = loadSettings()
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  const spec = getModpackSpec(resolveModpackId(settings.activeModpackId))
+  const cur = readVanillaMeta(ud, id)
+  const vid = typeof cur.lastSelectedVersion === 'string' ? cur.lastSelectedVersion.trim() : ''
+  const javaVersionHint = vid
+    ? await resolveVanillaLaunchJavaMajorString(vid, cur.javaVersion)
+    : resolveLaunchJavaVersion(settings, spec)
+  writeVanillaMeta(ud, id, {
+    ...cur,
+    javaPath: settings.javaPath?.trim() || null,
+    javaVersion: javaVersionHint
+  })
+  return { ok: true as const, meta: readVanillaMeta(ud, id) }
+})
+
+ipcMain.handle('vanilla:list-client-versions', async (_e, profileId: unknown) => {
+  const ud = app.getPath('userData')
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  return { ok: true as const, versions: listVanillaClientVersionIds(ud, id) }
+})
+
+ipcMain.handle('vanilla:list-all-install-folders', async () => {
+  const ud = app.getPath('userData')
+  return { ok: true as const, entries: listAllVanillaInstallFolders(ud) }
+})
+
+ipcMain.handle('vanilla:uninstall-client-version', async (_e, profileId: unknown, versionId: unknown) => {
+  const settings = loadSettings()
+  const fr = settings.uiLanguage === 'fr'
+  const ud = app.getPath('userData')
+  const g = getVanillaProfileGameDir(ud)
+  if (await isMinecraftRunning(g)) {
+    return {
+      ok: false as const,
+      error: errWithCode(
+        SPX.LAUNCH_ALREADY,
+        fr
+          ? 'Ferme Minecraft avant de retirer une version vanilla (le jeu utilise ton dossier .minecraft).'
+          : 'Close Minecraft before removing a vanilla install (the game uses your .minecraft folder).'
+      )
+    }
+  }
+  const id = sanitizeVanillaFolderSegment(String(profileId ?? ''))
+  const r = uninstallVanillaClientVersion(ud, id, String(versionId ?? ''))
+  if (!r.ok) return { ok: false as const, error: r.error }
+  return { ok: true as const }
+})
+
+type VanillaLaunchWorkerContext =
+  | { ok: false; error: string }
+  | {
+      ok: true
+      ud: string
+      profileId: string
+      version: string
+      gameDir: string
+      launchOpts: Record<string, unknown>
+      settings: LauncherSettings
+      fr: boolean
+    }
+
+type BuildVanillaLaunchContextOpts = {
+  /** Si false, autorise téléchargement client alors qu’un Java utilise déjà `.minecraft` (ex. jeu déjà ouvert). */
+  forbidIfDotMinecraftRunning?: boolean
+}
+
+/** JVM pour minecraft-java-core : meta profil, JSON client local, manifeste Mojang, puis heuristique (26.x → 25, …). */
+async function resolveVanillaLaunchJavaMajorString(
+  versionId: string,
+  metaJava: string | null | undefined
+): Promise<string> {
+  const trimmed = typeof metaJava === 'string' ? metaJava.trim() : ''
+  if (trimmed && /^\d+$/.test(trimmed)) return trimmed
+  const fromDisk = readInstalledClientVersionJavaMajor(versionId)
+  if (fromDisk != null) return String(fromDisk)
+  const fromRemote = await fetchVanillaVersionJavaMajor(versionId)
+  if (fromRemote != null) return String(fromRemote)
+  const fb = vanillaJavaMajorHint(versionId).trim()
+  return fb || '21'
+}
+
+async function buildVanillaLaunchWorkerContext(
+  payload: unknown,
+  opts: BuildVanillaLaunchContextOpts = {}
+): Promise<VanillaLaunchWorkerContext> {
+  const forbidRunning = opts.forbidIfDotMinecraftRunning !== false
+  const settings = loadSettings()
+  const fr = settings.uiLanguage === 'fr'
+  const o = payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {}
+  const version = String(o.version ?? '').trim()
+  if (!version) {
+    return {
+      ok: false,
+      error: errWithCode(
+        SPX.LAUNCH_GENERIC,
+        fr ? 'Version Minecraft manquante.' : 'Missing Minecraft version.'
+      )
+    }
+  }
+  const stackFromPayload =
+    o.shaderStack === 'optifine' || o.shaderStack === 'iris' ? o.shaderStack : null
+  const stack = stackFromPayload ?? defaultShaderStackForReleaseId(version)
+  const rawPid = String(o.profileId ?? '').trim()
+  const profileId = rawPid
+    ? sanitizeVanillaFolderSegment(rawPid)
+    : vanillaInstallFolderName(version, stack)
+
+  const ud = app.getPath('userData')
+  ensureVanillaProfileLayout(ud, profileId)
+
+  const modpackRunning = await Promise.all(
+    MODPACKS.map(async (m) => ({
+      m,
+      running: await isMinecraftRunning(getInstanceRootForModpack(m.id))
+    }))
+  )
+  for (const row of modpackRunning) {
+    if (!row.running) continue
+    return {
+      ok: false,
+      error: errWithCode(
+        SPX.LAUNCH_BUSY_OTHER,
+        fr
+          ? `Un modpack est déjà en cours (« ${row.m.displayName} »). Ferme Minecraft avant de lancer le vanilla.`
+          : `A modpack is already running ("${row.m.displayName}"). Close Minecraft before launching vanilla.`
+      )
+    }
+  }
+
+  const gameDir = getVanillaProfileGameDir(ud, profileId)
+  if (forbidRunning && (await isMinecraftRunning(gameDir))) {
+    return {
+      ok: false,
+      error: errWithCode(
+        SPX.LAUNCH_ALREADY,
+        fr
+          ? 'Minecraft vanilla est déjà lancé pour ce profil.'
+          : 'Vanilla Minecraft is already running for this profile.'
+      )
+    }
+  }
+
+  const accRaw = getActiveAccount()
+  if (!accRaw) {
+    return {
+      ok: false,
+      error: errWithCode(SPX.LAUNCH_AUTH, fr ? 'Aucun compte sélectionné.' : 'No account selected.')
+    }
+  }
+
+  let authenticator: Record<string, unknown>
+  if (isOfflineAccount(accRaw)) {
+    authenticator = buildOfflineAuthenticator(accRaw)
+  } else {
+    let acc = accRaw as MicrosoftAuthResponse
+    const ms = makeMicrosoft()
+    const refreshed = await ms.refresh(acc)
+    if (!isAuthError(refreshed)) {
+      acc = refreshed as MicrosoftAuthResponse
+      updateAccountTokens(acc)
+    }
+    if (isAuthError(refreshed)) {
+      return {
+        ok: false,
+        error: errWithCode(
+          SPX.LAUNCH_AUTH,
+          fr
+            ? `Session expirée : ${refreshed.error}. Reconnectez-vous.`
+            : `Session expired: ${refreshed.error}. Sign in again.`
+        )
+      }
+    }
+    authenticator = acc as unknown as Record<string, unknown>
+  }
+
+  const vMeta = readVanillaMeta(ud, profileId)
+  const javaPath = (vMeta.javaPath ?? settings.javaPath)?.trim() || null
+  const javaVer = await resolveVanillaLaunchJavaMajorString(version, vMeta.javaVersion)
+
+  const game = getGameSettingsForVanilla(settings)
+  const jvmExtra = parseArgsBlock(settings.jvmArgs)
+  if (settings.diagnosticLaunch) {
+    jvmExtra.push('-XX:+UnlockDiagnosticVMOptions')
+  }
+  const gameExtra = parseArgsBlock(game.gameArgs)
+
+  const memMin = settings.diagnosticLaunch ? '512M' : game.memoryMin
+  const memMax = settings.diagnosticLaunch ? '1G' : game.memoryMax
+  const downloadMult = settings.diagnosticLaunch
+    ? Math.min(2, Math.max(1, settings.downloadThreads))
+    : settings.downloadThreads
+
+  const useFabricLoader = stack === 'iris'
+  /** 1.8–1.15 (profil OptiFine) : Forge installé par minecraft-java-core ; le jar OptiFine se place ensuite dans mods/. */
+  const useForgeLoader = stack === 'optifine'
+
+  const ignoredBase = [
+    'logs',
+    'crash-reports',
+    'screenshots',
+    'texturepacks',
+    'resourcepacks',
+    'shaderpacks'
+  ]
+  const ignored =
+    useForgeLoader ? [...ignoredBase, 'optionsof.txt'] : ignoredBase
+
+  const launchOpts = {
+    path: gameDir,
+    authenticator,
+    version,
+    /** Ne pas utiliser `instances/<id>` : le jeu doit tourner dans la racine `.minecraft` (saves / options partagés). */
+    instance: null,
+    detached: true,
+    timeout: settings.networkTimeoutMs,
+    downloadFileMultiple: downloadMult,
+    loader: useFabricLoader
+      ? {
+          type: 'fabric' as const,
+          enable: true,
+          build: 'latest'
+        }
+      : useForgeLoader
+        ? {
+            type: 'forge' as const,
+            enable: true,
+            build: 'latest'
+          }
+        : {
+            type: null,
+            enable: false,
+            build: 'latest'
+          },
+    mcp: null,
+    verify: false,
+    ignored,
+    JVM_ARGS: jvmExtra,
+    GAME_ARGS: gameExtra,
+    java: {
+      path: javaPath,
+      version: javaVer,
+      type: 'jre'
+    },
+    screen: {
+      width: game.screenWidth ?? 800,
+      height: game.screenHeight ?? 600,
+      fullscreen: game.fullscreen
+    },
+    memory: {
+      min: memMin,
+      max: memMax
+    }
+  }
+
+  return { ok: true, ud, profileId, version, gameDir, launchOpts, settings, fr }
+}
+
+async function ensureVanillaIrisSodiumAfterClient(ud: string, version: string, stack: 'iris' | 'optifine'): Promise<void> {
+  if (stack !== 'iris') return
+  const dotMc = getVanillaProfileGameDir(ud)
+  const r = await ensureVanillaIrisSodiumMods({ gameVersion: version, dotMinecraft: dotMc })
+  if (!r.ok) logMain('warn', 'vanilla iris/sodium mods', r.error)
+}
+
+ipcMain.handle('vanilla:download-client', async (_e, payload: unknown) => {
+  const settings = loadSettings()
+  const fr = settings.uiLanguage === 'fr'
+  const phaseInstall = fr ? 'Téléchargement Minecraft' : 'Downloading Minecraft'
+  const ctx = await buildVanillaLaunchWorkerContext(payload, { forbidIfDotMinecraftRunning: false })
+  if (!ctx.ok) return { ok: false as const, error: ctx.error }
+  /* Comme installModpackForId côté renderer : afficher tout de suite la barre globale (avant le 1er event worker). */
+  sendProgress({
+    phase: phaseInstall,
+    current: 0,
+    total: 0,
+    detail: '__scan__',
+    source: 'vanilla',
+    task: 'install'
+  })
+  try {
+    await new Promise<void>((r) => setImmediate(r))
+    await runMinecraftGameWorker(ctx.launchOpts as unknown as Record<string, unknown>, 'download', (p) => {
+      sendProgress({
+        phase: phaseInstall,
+        current: p.current,
+        total: p.total,
+        detail: p.detail,
+        source: 'vanilla',
+        task: 'install'
+      })
+    })
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    sendProgress({
+      phase: '',
+      current: 0,
+      total: 0,
+      source: 'vanilla',
+      vanillaDone: true
+    })
+    return { ok: false as const, error: errWithCode(SPX.LAUNCH_GENERIC, msg) }
+  }
+  sendProgress({
+    phase: '',
+    current: 0,
+    total: 0,
+    source: 'vanilla',
+    vanillaDone: true
+  })
+  const po = payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {}
+  const stDl =
+    po.shaderStack === 'optifine' || po.shaderStack === 'iris' ? po.shaderStack : null
+  const stackDl = stDl ?? defaultShaderStackForReleaseId(ctx.version)
+  const metaDl = readVanillaMeta(ctx.ud, ctx.profileId)
+  const javaAfterDl = await resolveVanillaLaunchJavaMajorString(ctx.version, metaDl.javaVersion)
+  writeVanillaMeta(ctx.ud, ctx.profileId, {
+    ...metaDl,
+    lastSelectedVersion: ctx.version,
+    shaderStack: stackDl,
+    javaVersion: javaAfterDl
+  })
+  const soleaMk = ensureVanillaSoleaVersionMarker(ctx.profileId, ctx.version)
+  if (!soleaMk.ok) logMain('warn', 'vanilla solea version marker after download', soleaMk.error)
+  /* Attendre Modrinth : sinon le lancement immédiat après ce IPC peut démarrer le jeu sans les jars. */
+  await ensureVanillaIrisSodiumAfterClient(ctx.ud, ctx.version, stackDl)
+  return { ok: true as const }
+})
+
+ipcMain.handle('vanilla:launch', async (_e, payload: unknown) => {
+  clearGameLogBuffer()
+  const o = payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {}
+  const backupSaves = Boolean(o.backupSaves)
+  const ctx = await buildVanillaLaunchWorkerContext(payload)
+  if (!ctx.ok) return { ok: false as const, error: ctx.error }
+
+  const { ud, profileId, version, launchOpts, settings, fr } = ctx
+  const phaseLaunch = fr ? 'Lancement Minecraft' : 'Launching Minecraft'
+  const stL =
+    o.shaderStack === 'optifine' || o.shaderStack === 'iris' ? o.shaderStack : null
+  const stackL = stL ?? defaultShaderStackForReleaseId(version)
+
+  if (backupSaves) {
+    const b = backupVanillaSaves(ud, profileId)
+    if (!b.ok) {
+      return { ok: false as const, error: errWithCode(SPX.LAUNCH_GENERIC, b.error) }
+    }
+  }
+
+  /* Barre globale + libellé « Lancement » (le téléchargement vanilla utilise task install). */
+  sendProgress({
+    phase: phaseLaunch,
+    current: 0,
+    total: 0,
+    detail: '__scan__',
+    source: 'vanilla',
+    task: 'launch'
+  })
+  try {
+    await new Promise<void>((r) => setImmediate(r))
+    await ensureVanillaIrisSodiumAfterClient(ud, version, stackL)
+    await runMinecraftGameWorker(launchOpts as unknown as Record<string, unknown>, 'launch')
+    const metaAfter = readVanillaMeta(ud, profileId)
+    const javaUsed =
+      launchOpts && typeof launchOpts === 'object' && launchOpts.java && typeof launchOpts.java === 'object'
+        ? String((launchOpts.java as { version?: unknown }).version ?? '').trim()
+        : ''
+    writeVanillaMeta(ud, profileId, {
+      ...metaAfter,
+      lastSelectedVersion: version,
+      javaVersion: javaUsed || (await resolveVanillaLaunchJavaMajorString(version, metaAfter.javaVersion)),
+      shaderStack: stackL
+    })
+    const soleaMk = ensureVanillaSoleaVersionMarker(profileId, version)
+    if (!soleaMk.ok) logMain('warn', 'vanilla solea version marker after launch', soleaMk.error)
+
+    if (settings.discordRichPresence) {
+      void initDiscordRpcIfNeeded().then(() =>
+        void setInGamePresence({
+          modpackName: fr ? 'Minecraft vanilla' : 'Vanilla Minecraft',
+          largeImageKey: 'logo',
+          locale: settings.uiLanguage
+        })
+      )
+    }
+
+    if (settings.afterLaunch === 'minimize') mainWindow?.minimize()
+    if (settings.openGameLogOnInstanceLaunch) openOrFocusLogConsoleWindow()
+    return { ok: true as const }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return { ok: false as const, error: errWithCode(SPX.LAUNCH_GENERIC, msg) }
+  } finally {
+    sendProgress({
+      phase: '',
+      current: 0,
+      total: 0,
+      source: 'vanilla',
+      vanillaDone: true
+    })
   }
 })
 
@@ -2081,8 +2708,7 @@ ipcMain.handle('diagnostic:get-latest-crash-text', async () => {
 
 ipcMain.handle('modpack:get-latest-screenshot', async (_e, id: string) => {
   if (typeof id !== 'string') return { ok: false as const, error: 'invalid_id' }
-  const resolved = resolveModpackId(id)
-  const root = getInstanceRootForModpack(resolved)
+  const root = getScreenshotsParentDir(id)
   const shots = join(root, 'screenshots')
   if (!existsSync(shots)) {
     return { ok: false as const, reason: 'no_folder' as const }
@@ -2128,12 +2754,13 @@ ipcMain.handle('modpack:get-latest-screenshot', async (_e, id: string) => {
 
 ipcMain.handle('shell:open-screenshots-folder', async (_e, id: string) => {
   if (typeof id !== 'string') return { ok: false as const, error: 'invalid_id' }
-  const resolved = resolveModpackId(id)
-  const root = getInstanceRootForModpack(resolved)
-  if (!existsSync(root) || !isSoleaInstanceInstalled(root)) {
-    return {
-      ok: false as const,
-      error: 'Instance non installée — installe le modpack depuis l’accueil.'
+  const root = getScreenshotsParentDir(id)
+  if (id !== SOLEA_VANILLA_SCREENSHOTS_PACK_ID) {
+    if (!existsSync(root) || !isSoleaInstanceInstalled(root)) {
+      return {
+        ok: false as const,
+        error: 'Instance non installée — installe le modpack depuis l’accueil.'
+      }
     }
   }
   const shots = join(root, 'screenshots')
@@ -2154,8 +2781,7 @@ function safeScreenshotFileName(name: string): boolean {
 
 ipcMain.handle('modpack:list-screenshots', async (_e, id: string) => {
   if (typeof id !== 'string') return { ok: false as const, error: 'invalid_id' }
-  const resolved = resolveModpackId(id)
-  const root = getInstanceRootForModpack(resolved)
+  const root = getScreenshotsParentDir(id)
   const shots = join(root, 'screenshots')
   if (!existsSync(shots)) {
     return { ok: true as const, items: [] as { fileName: string; thumbDataUrl: string }[] }
@@ -2199,8 +2825,7 @@ ipcMain.handle('modpack:get-screenshot-full', async (_e, id: string, fileName: s
   if (typeof id !== 'string' || !safeScreenshotFileName(String(fileName))) {
     return { ok: false as const, error: 'invalid' }
   }
-  const resolved = resolveModpackId(id)
-  const root = getInstanceRootForModpack(resolved)
+  const root = getScreenshotsParentDir(id)
   const shots = join(root, 'screenshots')
   const p = join(shots, basename(fileName))
   const shotsAbs = resolve(shots)

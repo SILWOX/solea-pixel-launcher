@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" class="mr-hub-page" data-i18n-profile="contentHub">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Every Modrinth project from SOLEA PIXEL in one place: team members, modpacks, mods, resource packs, and quick links to each project page."
+    />
+    <title data-i18n="content.pageTitle">SOLEA PIXEL — Content hub</title>
+    <link rel="canonical" href="https://soleapixel.com/content/" />
+    <link rel="icon" type="image/png" href="/assets/logo.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/assets/logo.png" />
+    <meta property="og:site_name" content="SOLEA PIXEL" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://soleapixel.com/content/" />
+    <meta property="og:title" content="SOLEA PIXEL — Content hub" />
+    <meta
+      property="og:description"
+      content="Every Modrinth project from SOLEA PIXEL in one place: team members, modpacks, mods, resource packs, and quick links to each project page."
+    />
+    <meta property="og:image" content="https://soleapixel.com/assets/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SOLEA PIXEL — Content hub" />
+    <meta
+      name="twitter:description"
+      content="Every Modrinth project from SOLEA PIXEL in one place: team members, modpacks, mods, resource packs, and quick links to each project page."
+    />
+    <meta name="twitter:image" content="https://soleapixel.com/assets/logo.png" />
+    <link rel="preconnect" href="https://api.modrinth.com" />
+    <link rel="preconnect" href="https://cdn.modrinth.com" crossorigin />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "SOLEA PIXEL — Content hub",
+        "url": "https://soleapixel.com/content/",
+        "description": "Modrinth organisation catalogue for SOLEA PIXEL.",
+        "isPartOf": {
+          "@type": "WebSite",
+          "name": "SOLEA PIXEL",
+          "url": "https://soleapixel.com/"
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/content/content-hub.css" />
+  </head>
+  <body class="content-hub-body">
+    <a class="skip-link" href="#contenu-principal" data-i18n="nav.skip">Skip to content</a>
+    <div class="ambient" aria-hidden="true">
+      <div class="ambient__base"></div>
+      <div class="ambient__blobs">
+        <div class="ambient-blob ambient-blob--orange"></div>
+        <div class="ambient-blob ambient-blob--blue"></div>
+        <div class="ambient-blob ambient-blob--violet"></div>
+      </div>
+      <div class="ambient__grain"></div>
+    </div>
+
+    <div class="mr-fx" aria-hidden="true">
+      <canvas id="mr-particles" class="mr-particles" width="400" height="300"></canvas>
+      <div class="mr-fx__orb mr-fx__orb--1"></div>
+      <div class="mr-fx__orb mr-fx__orb--2"></div>
+      <div class="mr-fx__orb mr-fx__orb--3"></div>
+      <div class="mr-fx__gold mr-fx__gold--a"></div>
+      <div class="mr-fx__gold mr-fx__gold--b"></div>
+      <div class="mr-fx__gold mr-fx__gold--c"></div>
+      <div class="mr-fx__vignette"></div>
+    </div>
+
+    <header class="mr-topbar">
+      <a class="mr-topbar__brand" href="/">
+        <img src="/assets/logo.png" width="40" height="40" alt="" />
+        <span class="mr-topbar__type">
+          <span class="mr-topbar__solea">SOLEA</span>
+          <span class="mr-topbar__pixel">PIXEL</span>
+        </span>
+      </a>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <span class="lang-switch__globe" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20M12 2a14 14 0 010 20M12 2a14 14 0 000 20" />
+          </svg>
+        </span>
+        <div class="lang-switch__pair">
+          <button type="button" class="lang-btn" id="lang-en" aria-pressed="true">EN</button>
+          <button type="button" class="lang-btn" id="lang-fr" aria-pressed="false">FR</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="mr-page">
+      <div class="mr-layout" id="mr-layout">
+        <aside class="mr-rail" data-mr-rail hidden data-i18n-aria="content.tocNav"></aside>
+        <div class="mr-main">
+          <div class="mr-wrap" id="mr-hub-root">
+        <article class="mr-hero" id="contenu-principal">
+          <div class="mr-hero__glow" aria-hidden="true"></div>
+          <div class="mr-hero__grid">
+            <div class="mr-hero__copy">
+              <p class="mr-hero__eyebrow" data-i18n="content.eyebrow">Modrinth · catalogue</p>
+              <h1 class="visually-hidden" data-i18n="content.h1">Content hub</h1>
+              <div class="mr-hero__titleimg-wrap">
+                <img
+                  class="mr-hero__titleimg"
+                  src="/assets/content-hub-title.png"
+                  width="720"
+                  decoding="async"
+                  alt=""
+                />
+              </div>
+              <p class="mr-hero__lead" data-i18n="content.lead" data-i18n-html></p>
+              <div class="mr-hero__actions">
+                <a class="mr-pill mr-pill--primary" href="https://modrinth.com/organization/soleapixel" data-i18n="content.orgCta"
+                  >Open organisation on Modrinth</a
+                >
+                <a class="mr-pill mr-pill--ghost" href="/" data-i18n="content.backHome">← Home</a>
+              </div>
+            </div>
+            <div class="mr-hero__panel">
+              <img class="mr-hero__icon" data-mr-org-icon hidden width="120" height="120" alt="" />
+              <h2 class="mr-hero__org" data-mr-org-name>SOLEA PIXEL</h2>
+              <p class="mr-hero__desc" data-mr-org-desc></p>
+            </div>
+          </div>
+        </article>
+
+        <p class="mr-status" data-mr-status role="status"></p>
+
+        <section class="mr-block mr-block--projects" id="catalogue" aria-labelledby="mr-projects-h">
+          <div class="mr-block__head">
+            <div class="mr-block__headtext">
+              <h2 id="mr-projects-h" class="mr-block__title" data-i18n="content.projects">Projects</h2>
+              <p class="mr-block__sub" data-i18n="content.projectsSub"></p>
+            </div>
+          </div>
+          <div data-mr-projects></div>
+        </section>
+
+        <footer class="mr-footer">
+          <div class="mr-footer__inner">
+            <p class="mr-footer__label" data-i18n="content.sitemap">Site map & links</p>
+            <nav class="mr-footer__nav" aria-label="Footer">
+              <ul class="mr-footer__links">
+                <li><a class="mr-footer__a" href="/" data-i18n="nav.home">Home</a></li>
+                <li><a class="mr-footer__a" href="/license/" data-i18n="content.footerLicense">SPL license</a></li>
+                <li>
+                  <a class="mr-footer__a" href="https://modrinth.com/organization/soleapixel" rel="noopener noreferrer"
+                    >Modrinth</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </footer>
+          </div>
+        </div>
+
+        <section class="mr-team-rail mr-block" id="equipe" aria-labelledby="mr-members-h">
+          <div class="mr-block__head">
+            <div class="mr-block__headtext">
+              <h2 id="mr-members-h" class="mr-block__title" data-i18n="content.members">Team</h2>
+              <p class="mr-block__sub" data-i18n="content.membersSub"></p>
+            </div>
+          </div>
+          <div class="mr-members" data-mr-members></div>
+        </section>
+      </div>
+    </div>
+
+    <script src="/i18n.js"></script>
+    <script src="/content/content-particles.js"></script>
+    <script src="/content/modrinth-hub.js"></script>
+    <script>
+      window.SoleaI18n && window.SoleaI18n.init()
+      window.SoleaModrinthHub && window.SoleaModrinthHub.init()
+    </script>
+  </body>
+</html>

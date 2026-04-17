@@ -269,6 +269,28 @@
         border-radius: 3px;
         font-size: 0.85em;
       }
+      .preview-surface .live-news-card__body .actu-link {
+        color: #6ea8ff;
+        text-decoration: underline;
+      }
+      .preview-surface .live-news-card__body .actu-figure {
+        margin: 0.5rem 0;
+        max-width: 100%;
+      }
+      .preview-surface .live-news-card__body .actu-figure--center {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .preview-surface .live-news-card__body .actu-img__el {
+        max-width: 100%;
+        height: auto;
+      }
+      .preview-surface .live-news-card__body .actu-figure__caption {
+        font-size: 0.78rem;
+        color: #b5bac1;
+        margin-top: 0.35rem;
+      }
       .preview-surface .live-news-card__body .actu-spoiler {
         background: #2b2d31;
         border-radius: 3px;
@@ -426,6 +448,11 @@
               <button type="button" class="tool" data-line="> " title="Citation">Citation</button>
               <button type="button" class="tool" data-block="```&#10;|&#10;```" title="Bloc code">Bloc code</button>
               <button type="button" class="tool" data-line="___\n" title="Séparateur">___</button>
+              <span class="toolbar__label" style="margin-top: 0.35rem">Liens &amp; images</span>
+              <button type="button" class="tool" id="btn-insert-link" title="Lien markdown [texte](url)">Lien</button>
+              <button type="button" class="tool" id="btn-insert-img-block" title="Bloc image configurable (:::img … :::)">
+                Image (bloc)
+              </button>
             </div>
             <textarea id="edit-body" maxlength="12000" placeholder="Écris ici…"></textarea>
             <div class="char-count" id="edit-body-count"></div>
@@ -470,6 +497,22 @@
                   <tr>
                     <td>Séparateur</td>
                     <td>Ligne seule : <code>___</code></td>
+                  </tr>
+                  <tr>
+                    <td>Lien</td>
+                    <td><code>[texte visible](https://…)</code> — s’ouvre dans un nouvel onglet</td>
+                  </tr>
+                  <tr>
+                    <td>Image (bloc)</td>
+                    <td>
+                      Ligne <code>:::img</code>, puis une propriété par ligne <code>clé: valeur</code>, puis ligne
+                      <code>:::</code>. Obligatoire : <code>src:</code> (https ou chemin <code>/…</code>). Optionnel :
+                      <code>alt</code>, <code>width</code>, <code>maxwidth</code>, <code>height</code>,
+                      <code>align</code> (left / center / right), <code>rounded</code> (px ou ex. <code>12</code>),
+                      <code>objectfit</code> (contain / cover / …), <code>shadow</code> (sm / md), <code>link</code>
+                      (URL si l’image doit être cliquable), <code>newtab</code> (true / false), <code>caption</code>
+                      (légende avec la même syntaxe inline que le corps).
+                    </td>
                   </tr>
                 </tbody>
               </table>

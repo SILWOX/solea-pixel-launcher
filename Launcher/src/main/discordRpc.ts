@@ -104,9 +104,8 @@ export async function reconnectDiscordRpcIfNeeded(): Promise<void> {
   await initDiscordRpcIfNeeded()
 }
 
-/** Releases du launcher (binaires) — lien public GitHub. */
-export const SOLEA_LAUNCHER_RELEASES_URL =
-  'https://github.com/SILWOX/solea-pixel-launcher/releases'
+/** Site officiel — bouton « Installer le launcher » dans la Rich Presence Discord. */
+export const SOLEA_LAUNCHER_RELEASES_URL = 'https://soleapixel.com'
 
 /** Invitation Discord Solea Pixel (même URL que dans l’UI du launcher). */
 export const SOLEA_DISCORD_INVITE_URL = 'https://discord.gg/jVGq5aZ6Wc'

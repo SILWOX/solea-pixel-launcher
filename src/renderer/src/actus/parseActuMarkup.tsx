@@ -42,9 +42,51 @@ function spanStyle(s: McStyle): CSSProperties {
   return st
 }
 
-/** Découpe `**`, `*`, `` ` ``, `~~`, `++`, puis applique § sur chaque morceau. */
-export function renderInlineActu(text: string, keyPrefix: string): ReactNode {
-  if (!text) return null
+function sanitizeHref(href: string): string {
+  const t = href.trim()
+  if (!t) return ''
+  const lower = t.toLowerCase()
+  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return ''
+  if (/^https?:\/\//i.test(t)) return t
+  if (t.startsWith('/') && !t.startsWith('//')) return t
+  if (lower.startsWith('mailto:')) return t
+  return ''
+}
+
+function sanitizeImgSrc(src: string): string {
+  const t = src.trim()
+  if (!t) return ''
+  const lower = t.toLowerCase()
+  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return ''
+  if (/^https?:\/\//i.test(t)) return t
+  if (t.startsWith('/') && !t.startsWith('//')) return t
+  return ''
+}
+
+function escapeCssDim(v: string): string {
+  const s = v.trim().slice(0, 96)
+  if (!s || /[<>"';\\]/.test(s)) return ''
+  return s
+}
+
+type LinkSplitPart = { kind: 'text'; text: string } | { kind: 'link'; label: string; href: string }
+
+function splitMarkdownLinks(text: string): LinkSplitPart[] {
+  const out: LinkSplitPart[] = []
+  const re = /\[([^\]]*)\]\(([^)]+)\)/g
+  let last = 0
+  let m: RegExpExecArray | null
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) out.push({ kind: 'text', text: text.slice(last, m.index) })
+    out.push({ kind: 'link', label: m[1]!, href: m[2]! })
+    last = re.lastIndex
+  }
+  if (last < text.length) out.push({ kind: 'text', text: text.slice(last) })
+  if (out.length === 0) out.push({ kind: 'text', text })
+  return out
+}
+
+function renderMdChunksAsNodes(text: string, keyPrefix: string): ReactNode {
   const parts = parseMarkdownChunks(text)
   return (
     <>
@@ -53,7 +95,35 @@ export function renderInlineActu(text: string, keyPrefix: string): ReactNode {
   )
 }
 
-type MdKind = 'text' | 'bold' | 'italic' | 'code' | 'strike' | 'highlight'
+/** Découpe liens `[lib](url)`, puis `**`, `*`, `` ` ``, `~~`, `++`, puis § sur chaque morceau. */
+export function renderInlineActu(text: string, keyPrefix: string): ReactNode {
+  if (!text) return null
+  const linkParts = splitMarkdownLinks(text)
+  return (
+    <>
+      {linkParts.map((part, pi) =>
+        part.kind === 'link' ? (
+          <Fragment key={`${keyPrefix}-lnk${pi}`}>
+            {(() => {
+              const href = sanitizeHref(part.href)
+              const inner = renderMdChunksAsNodes(part.label, `${keyPrefix}-lnk${pi}-lab`)
+              if (!href) return inner
+              return (
+                <a className="actu-link" href={href} target="_blank" rel="noopener noreferrer">
+                  {inner}
+                </a>
+              )
+            })()}
+          </Fragment>
+        ) : (
+          <Fragment key={`${keyPrefix}-tx${pi}`}>{renderMdChunksAsNodes(part.text, `${keyPrefix}-tx${pi}`)}</Fragment>
+        )
+      )}
+    </>
+  )
+}
+
+type MdKind = 'text' | 'bold' | 'italic' | 'code' | 'strike' | 'highlight' | 'spoiler'
 
 function parseMarkdownChunks(text: string): Array<{ kind: MdKind; text: string }> {
   const out: Array<{ kind: MdKind; text: string }> = []
@@ -71,6 +141,14 @@ function parseMarkdownChunks(text: string): Array<{ kind: MdKind; text: string }
       const end = text.indexOf('++', i + 2)
       if (end !== -1) {
         out.push({ kind: 'highlight', text: text.slice(i + 2, end) })
+        i = end + 2
+        continue
+      }
+    }
+    if (text.startsWith('||', i)) {
+      const end = text.indexOf('||', i + 2)
+      if (end !== -1) {
+        out.push({ kind: 'spoiler', text: text.slice(i + 2, end) })
         i = end + 2
         continue
       }
@@ -105,6 +183,7 @@ function parseMarkdownChunks(text: string): Array<{ kind: MdKind; text: string }
     }
     tryIdx(text.indexOf('**', i))
     tryIdx(text.indexOf('++', i))
+    tryIdx(text.indexOf('||', i))
     tryIdx(text.indexOf('~~', i))
     if (text[i] === '`') tryIdx(text.indexOf('`', i + 1))
     const star = text.indexOf('*', i)
@@ -182,7 +261,80 @@ function wrapMdChunk(kind: MdKind, text: string, key: string, mcKey: string): Re
         {inner}
       </mark>
     )
+  if (kind === 'spoiler')
+    return (
+      <span key={key} className="actu-spoiler" title="Hover / survol pour afficher">
+        <span className="actu-spoiler__inner">{inner}</span>
+      </span>
+    )
   return <Fragment key={key}>{inner}</Fragment>
+}
+
+function parseImgDirectiveBlock(
+  lines: string[],
+  startIdx: number
+): { props: Record<string, string>; nextIndex: number } | null {
+  if (lines[startIdx]!.trim() !== ':::img') return null
+  const props: Record<string, string> = {}
+  let j = startIdx + 1
+  while (j < lines.length) {
+    const tr = lines[j]!.trim()
+    if (tr === ':::') return { props, nextIndex: j + 1 }
+    const m = /^([a-zA-Z][\w-]*)\s*:\s*(.*)$/.exec(tr)
+    if (m) props[m[1]!.toLowerCase()] = m[2]!.trim()
+    j++
+  }
+  return null
+}
+
+function renderActuImgFigure(props: Record<string, string>, segmentKey: string, bi: number): ReactNode {
+  const src = sanitizeImgSrc(props.src || '')
+  if (!src) {
+    return (
+      <p key={`${segmentKey}-imgerr-${bi}`} className="actu-p actu-img-err">
+        Image : <code>src:</code> manquant ou URL non autorisée (https ou chemin /…).
+      </p>
+    )
+  }
+  const alignRaw = String(props.align || 'center').toLowerCase()
+  const alignClass =
+    alignRaw === 'left' ? 'actu-figure--left' : alignRaw === 'right' ? 'actu-figure--right' : 'actu-figure--center'
+  const imgStyle: CSSProperties = {}
+  const w = escapeCssDim(props.width || '')
+  const mw = escapeCssDim(props.maxwidth || props['max-width'] || '')
+  const h = escapeCssDim(props.height || '')
+  if (w) imgStyle.width = w
+  if (mw) imgStyle.maxWidth = mw
+  if (h) imgStyle.height = h
+  const rounded = props.rounded || props.radius || ''
+  if (rounded) {
+    imgStyle.borderRadius = /^\d+$/.test(String(rounded)) ? `${rounded}px` : escapeCssDim(String(rounded)) || undefined
+  }
+  const fit = String(props.objectfit || props['object-fit'] || '').toLowerCase()
+  if (/^(contain|cover|fill|none|scale-down)$/.test(fit)) imgStyle.objectFit = fit as CSSProperties['objectFit']
+  const shadow = String(props.shadow || '').toLowerCase()
+  if (shadow === 'sm') imgStyle.boxShadow = '0 2px 10px rgba(0,0,0,.22)'
+  else if (shadow === 'md') imgStyle.boxShadow = '0 6px 20px rgba(0,0,0,.35)'
+  const linkHref = sanitizeHref(props.link || props.href || '')
+  const newTab = /^(1|true|yes|oui)$/i.test(String(props.newtab || props['new-tab'] || ''))
+  const imgEl = <img className="actu-img__el" src={src} alt={props.alt || ''} loading="lazy" style={imgStyle} />
+  const wrapped =
+    linkHref ? (
+      <a className="actu-img__link" href={linkHref} target={newTab ? '_blank' : undefined} rel="noopener noreferrer">
+        {imgEl}
+      </a>
+    ) : (
+      imgEl
+    )
+  const capRaw = props.caption?.trim()
+  return (
+    <figure key={`${segmentKey}-fig-${bi}`} className={`actu-figure ${alignClass}`}>
+      {wrapped}
+      {capRaw ? (
+        <figcaption className="actu-figure__caption">{renderInlineActu(capRaw, `${segmentKey}-cap-${bi}`)}</figcaption>
+      ) : null}
+    </figure>
+  )
 }
 
 /** Parse un bloc de texte multi-lignes (un segment / une bulle). */
@@ -206,6 +358,41 @@ export function renderActuSegmentBody(raw: string, segmentKey: string): ReactNod
         <hr key={`${segmentKey}-hr-${bi++}`} className="actu-hr" />
       )
       i++
+      continue
+    }
+
+    if (trimmed === ':::img') {
+      const imgBlock = parseImgDirectiveBlock(lines, i)
+      if (imgBlock) {
+        blocks.push(renderActuImgFigure(imgBlock.props, segmentKey, bi++))
+        i = imgBlock.nextIndex
+        continue
+      }
+      blocks.push(
+        <p key={`${segmentKey}-imgbad-${bi++}`} className="actu-p actu-img-err">
+          Bloc <code>:::img</code> incomplet : termine avec une ligne <code>:::</code> seule.
+        </p>
+      )
+      i++
+      continue
+    }
+
+    if (trimmed.startsWith('```')) {
+      i++
+      const codeLines: string[] = []
+      while (i < lines.length) {
+        if (lines[i]!.trim() === '```') {
+          i++
+          break
+        }
+        codeLines.push(lines[i]!)
+        i++
+      }
+      blocks.push(
+        <pre key={`${segmentKey}-pre-${bi++}`} className="actu-pre">
+          <code>{codeLines.join('\n')}</code>
+        </pre>
+      )
       continue
     }
 
@@ -290,6 +477,8 @@ export function renderActuSegmentBody(raw: string, segmentKey: string): ReactNod
       const tr = L.trim()
       if (tr === '') break
       if (tr === '___') break
+      if (tr === ':::img') break
+      if (tr.startsWith('```')) break
       if (tr.startsWith('#')) break
       if (tr.startsWith('- ')) break
       if (tr.startsWith('>')) break

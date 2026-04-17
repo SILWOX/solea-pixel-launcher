@@ -92,6 +92,13 @@
   padding-top: 0.32rem;
 }
 
+/* Séparation visuelle : entrée « pleine largeur » puis section (ex. Minecraft vanilla vs modpacks). */
+.launcher-select-menu > .launcher-select-option + .launcher-select-optgroup {
+  margin-top: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--accent-orange) 32%, transparent);
+}
+
 .launcher-select-menu {
   margin: 0;
   padding: 0.45rem;

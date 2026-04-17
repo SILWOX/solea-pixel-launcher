@@ -14,7 +14,9 @@ export type InstallProgressPayload = {
   current: number
   total: number
   detail?: string
-  task?: 'install' | 'uninstall'
+  task?: 'install' | 'uninstall' | 'launch'
+  source?: 'vanilla'
+  vanillaDone?: boolean
 }
 
 type LS = import('./launcherTypes').LauncherSettingsUI
@@ -241,7 +243,79 @@ export type SoleaApi = {
   /** Fenêtre launcher uniquement : reçoit l’ordre de lancer la simulation (voir debugRequestFakeInstall). */
   onDebugFakeInstall: (cb: (kind: 'install' | 'update') => void) => () => void
 
+  vanillaEnsureProfile: (profileId: string) => Promise<{ ok: true; profileId: string; gameDir: string }>
+  vanillaOpenFolder: (
+    profileId: string,
+    kind: 'game' | 'profile'
+  ) => Promise<{ ok: true } | { ok: false; error: string }>
+  /** Ouvre le dossier `.minecraft` officiel (AppData…\.minecraft), pas l’ancien arbre `minecraft-version`. */
+  vanillaOpenDotMinecraftFolder: () => Promise<{ ok: true } | { ok: false; error: string }>
+  vanillaBackupSaves: (
+    profileId: string
+  ) => Promise<{ ok: true; zipPath: string } | { ok: false; error: string }>
+  vanillaMetaGet: (profileId: string) => Promise<{
+    ok: true
+    meta: {
+      javaPath?: string | null
+      javaVersion?: string | null
+      shaderStack?: 'optifine' | 'iris'
+      lastSelectedVersion?: string | null
+    }
+  }>
+  vanillaMetaSet: (
+    profileId: string,
+    patch: Partial<{
+      javaPath: string | null
+      javaVersion: string | null
+      shaderStack: 'optifine' | 'iris'
+      lastSelectedVersion: string | null
+    }>
+  ) => Promise<
+    | {
+        ok: true
+        meta: {
+          javaPath?: string | null
+          javaVersion?: string | null
+          shaderStack?: 'optifine' | 'iris'
+          lastSelectedVersion?: string | null
+        }
+      }
+    | { ok: false; error: string }
+  >
+  vanillaSyncJavaFromSettings: (profileId: string) => Promise<{
+    ok: true
+    meta: {
+      javaPath?: string | null
+      javaVersion?: string | null
+      shaderStack?: 'optifine' | 'iris'
+      lastSelectedVersion?: string | null
+    }
+  }>
+  vanillaListClientVersions: (profileId: string) => Promise<{ ok: true; versions: string[] }>
+  vanillaListAllInstallFolders: () => Promise<{
+    ok: true
+    entries: { folder: string; versions: string[] }[]
+  }>
+  vanillaUninstallClientVersion: (
+    profileId: string,
+    versionId: string
+  ) => Promise<{ ok: true } | { ok: false; error: string }>
+  vanillaLaunch: (payload: {
+    profileId: string
+    version: string
+    shaderStack?: 'optifine' | 'iris'
+    backupSaves?: boolean
+  }) => Promise<{ ok: true } | { ok: false; error: string }>
+  vanillaDownloadClient: (payload: {
+    profileId: string
+    version: string
+    shaderStack?: 'optifine' | 'iris'
+  }) => Promise<{ ok: true } | { ok: false; error: string }>
+
   soleaServerList: () => Promise<SoleServerListRowUi[]>
+  soleaServerListVanillaReleases: () => Promise<
+    { ok: true; ids: string[] } | { ok: false; error: string }
+  >
   soleaServerGetCoverDataUrl: (id: string) => Promise<string | null>
   soleaServerCreate: (payload: {
     name: string
@@ -250,6 +324,7 @@ export type SoleaApi = {
     imageUrl?: string
     coverImageDataUrl?: string
     modpackId: string
+    vanillaGameVersion?: string
   }) => Promise<{ ok: true; id: string } | { ok: false; error: string }>
   soleaServerUpdate: (payload: {
     id: string
@@ -259,6 +334,7 @@ export type SoleaApi = {
     coverImageDataUrl?: string | null
     ramMiB?: number
     modpackId?: string
+    vanillaGameVersion?: string
     port?: number
   }) => Promise<{ ok: true } | { ok: false; error: string }>
   soleaServerDelete: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>
@@ -306,6 +382,7 @@ export type SoleServerListRowUi = {
   name: string
   description: string
   modpackId: string
+  vanillaGameVersion?: string
   ramMiB: number
   port: number
   coverFile?: string

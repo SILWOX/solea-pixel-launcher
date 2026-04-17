@@ -869,6 +869,62 @@ body {
   filter: none;
 }
 
+.live-news-card__body .actu-link {
+  color: color-mix(in srgb, var(--accent) 78%, #7ab8ff);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.live-news-card__body .actu-link:hover {
+  color: var(--accent);
+}
+
+.live-news-card__body .actu-figure {
+  margin: 0.65rem 0;
+  max-width: 100%;
+}
+
+.live-news-card__body .actu-figure--center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.live-news-card__body .actu-figure--left {
+  margin-right: auto;
+  text-align: left;
+}
+
+.live-news-card__body .actu-figure--right {
+  margin-left: auto;
+  text-align: right;
+}
+
+.live-news-card__body .actu-img__link {
+  display: inline-block;
+  line-height: 0;
+  border-radius: inherit;
+}
+
+.live-news-card__body .actu-img__el {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.live-news-card__body .actu-figure__caption {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  color: #b5bac1;
+  line-height: 1.4;
+}
+
+.live-news-card__body .actu-img-err {
+  color: #f23f42;
+  font-size: 0.86rem;
+}
+
 .live-news-card .live-news-card__title.actu-h {
   margin-bottom: 0.4rem;
 }
@@ -1640,6 +1696,36 @@ body {
   );
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
   box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+/* Hub Content — lien distinct, aura dorée légère (pas le pill orange « section active ») */
+.nav-links a.nav-link--content {
+  color: color-mix(in srgb, #fff4dc 92%, var(--muted));
+  font-weight: 600;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, #d4a012 22%, rgba(24, 22, 18, 0.65)),
+    color-mix(in srgb, #8b6914 14%, rgba(12, 11, 9, 0.5))
+  );
+  border-color: color-mix(in srgb, #f0d78c 35%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff8e8 14%, transparent),
+    0 0 0 1px color-mix(in srgb, #ffd666 12%, transparent),
+    0 5px 22px color-mix(in srgb, #e8b84a 26%, transparent);
+}
+
+.nav-links a.nav-link--content:hover {
+  color: #fffdf6;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, #e8bc2e 28%, rgba(28, 24, 18, 0.72)),
+    color-mix(in srgb, #a67c0a 18%, rgba(14, 12, 9, 0.55))
+  );
+  border-color: color-mix(in srgb, #ffe08a 42%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 18%, transparent),
+    0 0 0 1px color-mix(in srgb, #ffd666 20%, transparent),
+    0 8px 28px color-mix(in srgb, #f5cc5c 32%, transparent);
 }
 
 .nav-links a:focus-visible {

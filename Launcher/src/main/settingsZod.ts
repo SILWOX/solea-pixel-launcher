@@ -72,8 +72,20 @@ export const launcherSettingsStoredSchema = z
     diagnosticLaunch: z.boolean().optional(),
     networkSlowDownloads: z.boolean().optional(),
     uiChromeGlass: z.boolean().optional(),
+    uiLiquidGlass: z.boolean().optional(),
     /** Dossiers parents par modpack pour instances hors userData. */
-    modpackInstanceParentPath: z.record(z.string()).optional()
+    modpackInstanceParentPath: z.record(z.string()).optional(),
+    vanillaGameProfile: z
+      .object({
+        memoryMin: z.string().optional(),
+        memoryMax: z.string().optional(),
+        gameArgs: z.string().optional(),
+        screenWidth: z.number().nullable().optional(),
+        screenHeight: z.number().nullable().optional(),
+        fullscreen: z.boolean().optional()
+      })
+      .optional(),
+    vanillaHubLastSelectedVersion: z.string().nullable().optional()
   })
   .strip()
 

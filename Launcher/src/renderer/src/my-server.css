@@ -1043,6 +1043,10 @@
   max-height: 5rem;
 }
 
+.my-server-field--tight-top {
+  margin-top: 0.65rem;
+}
+
 .my-server-join-copy-row {
   display: flex;
   flex-wrap: wrap;

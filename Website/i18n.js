@@ -14,6 +14,7 @@
       'nav.about': 'About',
       'nav.downloads': 'Downloads',
       'nav.faq': 'FAQ',
+      'nav.content': 'Content',
       'nav.skip': 'Skip to content',
       'nav.top': 'Back to top',
       'nav.socialToolbar': 'Social links',
@@ -247,8 +248,53 @@
       'license.sec12.title': 'Legal jurisdiction',
       'license.sec13.title': 'Contact & permissions',
       'license.sec14.title': 'Final notes',
+      'content.pageTitle': 'SOLEA PIXEL — Content hub',
+      'content.metaDescription':
+        'Every Modrinth project from SOLEA PIXEL in one place: team members, modpacks, mods, resource packs, and quick links to each project page.',
+      'content.h1': 'Content hub',
+      'content.eyebrow': 'Modrinth · catalogue',
+      'content.membersSub': 'People behind the organisation — profiles open on Modrinth.',
+      'content.projectsSub':
+        'Browse by category — modpacks, mods, resource packs, then shaders & plugins. Each card links to the official Modrinth project page.',
+      'content.tocNav': 'Browse project categories',
+      'content.tocLabel': 'Jump to',
+      'content.railTitle': 'On this page',
+      'content.railHero': 'Top',
+      'content.railTeam': 'Team',
+      'content.railCatalog': 'Catalogue',
+      'content.mainMore': 'Shaders, plugins & more',
+      'content.catDescModpack':
+        'Installable packs (.mrpack) — ideal with the Solea Pixel launcher or any Modrinth-compatible client.',
+      'content.catDescMod':
+        'Gameplay, content, and utility mods: new mechanics, mobs, gear, and quality-of-life.',
+      'content.catDescResourcepack':
+        'Textures, models, and ambience — change how the game looks without new code on the server.',
+      'content.catDescMore':
+        'Shaders, plugins, data packs, and other formats grouped here so the three main lanes stay easy to scan.',
+      'content.lead':
+        'Live catalogue of the <a href="https://modrinth.com/organization/soleapixel">SOLEA PIXEL</a> organisation on Modrinth — members and every public project, grouped by type.',
+      'content.orgCta': 'Open organisation on Modrinth',
+      'content.members': 'Team',
+      'content.projects': 'Projects',
+      'content.loading': 'Loading Modrinth data…',
+      'content.error': 'Could not load organisation data. Try again in a moment.',
+      'content.empty': 'No projects in this view.',
+      'content.statsDl': '{n} downloads',
+      'content.statsFollow': '{n} followers',
+      'content.view': 'View',
+      'content.download': 'Download',
+      'content.type.modpack': 'Modpacks',
+      'content.type.mod': 'Mods',
+      'content.type.resourcepack': 'Resource packs',
+      'content.type.shader': 'Shaders',
+      'content.type.plugin': 'Plugins',
+      'content.type.datapack': 'Data packs',
+      'content.type.other': 'Other',
+      'content.backHome': '← Home',
+      'content.sitemap': 'Site map & links',
+      'content.footerLicense': 'SPL license',
       'footer.legal':
-        'Not affiliated with Mojang AB or Microsoft · <a href="#" class="js-legal-modal-open">Legal & privacy</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">SPL license</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
+        'Not affiliated with Mojang AB or Microsoft · <a href="#" class="js-legal-modal-open">Legal & privacy</a> · <a href="/content/">Site map</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">SPL license</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
     },
     fr: {
       'page.title': 'SOLEA PIXEL',
@@ -259,6 +305,7 @@
       'nav.about': 'À propos',
       'nav.downloads': 'Téléchargements',
       'nav.faq': 'FAQ',
+      'nav.content': 'Contenu',
       'nav.skip': 'Aller au contenu',
       'nav.top': 'Haut de page',
       'nav.socialToolbar': 'Réseaux sociaux',
@@ -466,8 +513,53 @@
       'license.sourceLabel': 'Fichier source',
       'license.back': 'Retour au site',
       'license.source': 'Voir sur GitHub',
+      'content.pageTitle': 'SOLEA PIXEL — Hub contenu',
+      'content.metaDescription':
+        'Tous les projets Modrinth de SOLEA PIXEL au même endroit : membres, modpacks, mods, resource packs et liens vers chaque page projet.',
+      'content.h1': 'Hub contenu',
+      'content.eyebrow': 'Modrinth · catalogue',
+      'content.membersSub': 'Membres de l’organisation — les profils s’ouvrent sur Modrinth.',
+      'content.projectsSub':
+        'Parcours par catégorie — modpacks, mods, resource packs, puis shaders & plugins. Chaque carte renvoie vers la page Modrinth officielle du projet.',
+      'content.tocNav': 'Parcourir les catégories de projets',
+      'content.tocLabel': 'Aller à',
+      'content.railTitle': 'Sur cette page',
+      'content.railHero': 'Haut de page',
+      'content.railTeam': 'Équipe',
+      'content.railCatalog': 'Catalogue',
+      'content.mainMore': 'Shaders, plugins et autres',
+      'content.catDescModpack':
+        'Packs installables (.mrpack) — idéal avec le launcher Solea Pixel ou tout client compatible Modrinth.',
+      'content.catDescMod':
+        'Mods de gameplay, contenu ou confort : nouvelles mécaniques, créatures, équipements, qualité de vie.',
+      'content.catDescResourcepack':
+        'Textures, modèles et ambiance — change le rendu visuel sans ajouter de code côté serveur.',
+      'content.catDescMore':
+        'Shaders, plugins, data packs et autres formats regroupés ici pour garder les trois grands blocs lisibles.',
+      'content.lead':
+        'Catalogue en direct de l’organisation <a href="https://modrinth.com/organization/soleapixel">SOLEA PIXEL</a> sur Modrinth — membres et chaque projet public, triés par type.',
+      'content.orgCta': 'Ouvrir l’organisation sur Modrinth',
+      'content.members': 'Équipe',
+      'content.projects': 'Projets',
+      'content.loading': 'Chargement des données Modrinth…',
+      'content.error': 'Impossible de charger l’organisation. Réessaie dans un instant.',
+      'content.empty': 'Aucun projet dans cette section.',
+      'content.statsDl': '{n} téléchargements',
+      'content.statsFollow': '{n} abonnés',
+      'content.view': 'Voir',
+      'content.download': 'Télécharger',
+      'content.type.modpack': 'Modpacks',
+      'content.type.mod': 'Mods',
+      'content.type.resourcepack': 'Resource packs',
+      'content.type.shader': 'Shaders',
+      'content.type.plugin': 'Plugins',
+      'content.type.datapack': 'Data packs',
+      'content.type.other': 'Autre',
+      'content.backHome': '← Accueil',
+      'content.sitemap': 'Plan du site & liens',
+      'content.footerLicense': 'Licence SPL',
       'footer.legal':
-        'Non affilié Mojang AB ni Microsoft · <a href="#" class="js-legal-modal-open">Mentions & confidentialité</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">Licence SPL</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
+        'Non affilié Mojang AB ni Microsoft · <a href="#" class="js-legal-modal-open">Mentions & confidentialité</a> · <a href="/content/">Plan du site</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">Licence SPL</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
     },
   }
 
@@ -533,13 +625,17 @@
         ? t('license.metaDescription')
         : profile === 'error404'
           ? t('page404.metaDescription')
-          : t('meta.description')
+          : profile === 'contentHub'
+            ? t('content.metaDescription')
+            : t('meta.description')
     const shareTitle =
       profile === 'license'
         ? t('license.pageTitle')
         : profile === 'error404'
           ? t('page404.docTitle')
-          : t('page.title')
+          : profile === 'contentHub'
+            ? t('content.pageTitle')
+            : t('page.title')
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', desc)
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', desc)

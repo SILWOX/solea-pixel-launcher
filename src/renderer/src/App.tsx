@@ -21,10 +21,9 @@ import type {
   UiTheme
 } from './launcherTypes'
 import logoUrl from './assets/branding/logo.png?url'
-import loginWallpaperUrl from './assets/branding/login-wallpaper.png?url'
+import homeMinecraftWallpaperUrl from './assets/branding/home-minecraft-wallpaper.png?url'
 import soleaLoginLogoUrl from './assets/branding/solea-pixel-login-logo.png?url'
 import bootLogoUrl from './assets/branding/boot-logo.png?url'
-import newsWallpaperUrl from './assets/branding/news-wallpaper.png?url'
 import './App.css'
 import './settingsAether2.css'
 import './homeCardStudio.css'
@@ -148,11 +147,10 @@ function coerceUiThemeForIpc(v: unknown): UiTheme {
 }
 
 const LOGO = logoUrl
-/** Fond dédié à l’écran Microsoft (distinct du fond Palamod sur l’accueil). */
-const LOGIN_WALLPAPER = loginWallpaperUrl
+/** Fond écran Microsoft + hub Accueil & actus (même artwork, centré / cover). */
+const LOGIN_WALLPAPER = homeMinecraftWallpaperUrl
 const SOLEA_LOGIN_LOGO = soleaLoginLogoUrl
-/** Fond de l’onglet Accueil & actus. */
-const NEWS_WALLPAPER = newsWallpaperUrl
+const NEWS_WALLPAPER = homeMinecraftWallpaperUrl
 
 /** 5 clics rapides sur l’icône Paramètres ouvrent la fenêtre debug (développeur). */
 const SETTINGS_DEBUG_TAPS = 5
@@ -1484,7 +1482,14 @@ function LoginGate({
   }
 
   return (
-    <div className="login-root" style={{ backgroundImage: `url(${LOGIN_WALLPAPER})` }}>
+    <div
+      className="login-root"
+      style={{
+        backgroundImage: `url(${LOGIN_WALLPAPER})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center'
+      }}
+    >
       {testMode && (
         <div className="test-strip login-test-strip">
           {t('login.testMode')} <code style={{ color: '#ffcc66' }}>test/electron-user-data</code>
@@ -3445,12 +3450,7 @@ export function App() {
   }
 
   return (
-    <div
-      className="app-chrome"
-      data-app-view={view}
-      data-titlebar-pad={view === 'settings' || view === 'my-server' ? 'wide' : 'narrow'}
-      data-home-card={settings.uiHomeCardVariant}
-    >
+    <div className="app-chrome" data-app-view={view} data-home-card={settings.uiHomeCardVariant}>
       {settings.uiChromeGlass ? (
         <div
           key={view === 'home' && isModpackId(activeModpackId) ? activeModpackId : view}

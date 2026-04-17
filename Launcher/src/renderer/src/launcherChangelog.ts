@@ -13,6 +13,20 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.3.2',
+    date: '2026-03-30',
+    fixed: [
+      '**Vanilla Minecraft — Java for calendar-era releases (e.g. 26.1.x):** the JVM passed to `minecraft-java-core` now follows Mojang’s **`javaVersion.majorVersion`** (reads the installed client JSON under `.minecraft/versions/…`, following **`inheritsFrom`** when needed), then the online manifest, then a small heuristic — instead of always defaulting to Java **21** whenever the version id does not start with `1.`.',
+      '**Legacy launcher UI (AETHER v1.0):** the main **left shell sidebar** (Home, modpacks, etc.) is no longer hidden on the **Settings** tab; titlebar safe-area alignment restored.'
+    ],
+    added: [
+      '**Legacy v1 sidebar skin (`sidebarClassicV1.css`):** flatter rail, thin horizontal section dividers, **46×46** squircle tiles with a clearer orange active border — closer to the **26.1** look.'
+    ],
+    changed: [
+      '**Release branding:** footer and Home & news badge show **26.3.2 | Release** (package **26.3.2**).'
+    ]
+  },
+  {
     version: '26.3.1',
     date: '2026-03-30',
     added: [

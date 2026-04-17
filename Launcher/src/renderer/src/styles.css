@@ -43,10 +43,53 @@
 }
 
 html,
-body,
-#root {
+body {
   height: 100%;
   margin: 0;
+}
+
+/* Fenêtre frameless : le no-drag sur body bloque souvent le drag des enfants (shim titre). */
+html {
+  -webkit-app-region: no-drag;
+}
+
+#root {
+  height: 100%;
+  min-height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+/*
+ * Sur une zone parente en -webkit-app-region: drag, les descendants listés ici restent cliquables
+ * (boutons, champs, liens, pastilles focusables, etc.) — y compris sous le bandeau titre flottant.
+ */
+button,
+input,
+select,
+textarea,
+a,
+summary,
+option,
+label,
+[role='button'],
+[role='tab'],
+[role='menuitem'],
+[role='menuitemradio'],
+[role='menuitemcheckbox'],
+[role='switch'],
+[role='checkbox'],
+[role='radio'],
+[role='combobox'],
+[role='listbox'],
+[role='slider'],
+[role='spinbutton'],
+[role='searchbox'],
+[tabindex]:not([tabindex='-1']),
+video,
+audio,
+iframe,
+canvas {
+  -webkit-app-region: no-drag;
 }
 
 body {

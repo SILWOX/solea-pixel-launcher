@@ -90,7 +90,9 @@ export function applyAppearanceSettings(s: LauncherSettingsUI): void {
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   root.dataset.reduceMotion = s.uiReduceMotion || prefersReduced ? '1' : '0'
   root.dataset.density = s.uiCompact ? 'compact' : 'comfortable'
-  root.dataset.chromeGlass = s.uiChromeGlass ? '1' : '0'
+  const anyGlass = Boolean(s.uiChromeGlass || s.uiLiquidGlass)
+  root.dataset.chromeGlass = anyGlass ? '1' : '0'
+  root.dataset.liquidGlass = s.uiLiquidGlass ? '1' : '0'
   root.dataset.settingsShell = s.uiSettingsShell === 'legacy' ? 'legacy' : 'aether2'
   const userAccent = resolveAccentHex(s)
   root.style.setProperty('--accent', userAccent)

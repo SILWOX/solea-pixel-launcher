@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { isModpackId } from './modpackTheme'
 import { useI18n } from './i18n/I18nContext'
 import { useToast } from './ui/ToastContext'
-import { LauncherSelect } from './ui/LauncherSelect'
+import { LauncherSelect, type LauncherSelectEntry } from './ui/LauncherSelect'
 import { useFocusTrap } from './a11y/useFocusTrap'
 import {
   defaultFormFromMap,
@@ -25,6 +25,54 @@ const PROPS_ERR_I18N: Record<NonNullable<ReturnType<typeof validatePropsForm>>, 
 
 const AUTOSAVE_MS = 850
 const MAX_COVER_BYTES = 12 * 1024 * 1024
+const MY_SERVER_VANILLA_PACK_ID = 'vanilla'
+
+const VANILLA_RELEASE_FALLBACK_IDS = ['1.21.4', '1.20.6', '1.16.5', '1.12.2', '1.8.9'] as const
+
+type VanillaReleasesFetch =
+  | { kind: 'loading' }
+  | { kind: 'ok'; ids: string[] }
+  | { kind: 'err'; message: string }
+
+function isSelectOptionEntry(e: LauncherSelectEntry): e is { value: string; label: string } {
+  return 'value' in e
+}
+
+function flatSelectOptions(entries: LauncherSelectEntry[]): { value: string; label: string }[] {
+  return entries.filter(isSelectOptionEntry)
+}
+
+function vanillaIdsForSelect(v: VanillaReleasesFetch): string[] {
+  if (v.kind === 'ok' && v.ids.length > 0) return v.ids
+  return [...VANILLA_RELEASE_FALLBACK_IDS]
+}
+
+function buildVanillaVersionSelectOptions(
+  v: VanillaReleasesFetch,
+  /** Version actuelle du serveur si elle n’apparaît pas encore dans la liste Mojang. */
+  pin?: string | undefined
+): { value: string; label: string }[] {
+  const ids = vanillaIdsForSelect(v)
+  const opts = ids.map((id) => ({ value: id, label: id }))
+  const p = pin?.trim()
+  if (p && vanillaReleaseMeetsMin18(p) && !opts.some((o) => o.value === p)) {
+    return [{ value: p, label: p }, ...opts]
+  }
+  return opts
+}
+
+/** Aligné sur `isVanillaServerVersionAtLeast18` (main) : releases 1.7.x refusées, minimum 1.8. */
+function vanillaReleaseMeetsMin18(versionId: string): boolean {
+  const v = versionId.trim()
+  const m = /^(\d+)\.(\d+)(?:\.(\d+))?$/.exec(v)
+  if (!m) return true
+  const major = parseInt(m[1], 10)
+  const minor = parseInt(m[2], 10)
+  if (Number.isNaN(major) || Number.isNaN(minor)) return true
+  if (major > 1) return true
+  if (major < 1) return false
+  return minor >= 8
+}
 
 const WORLD_LEVEL_TYPES = [
   { value: 'minecraft:normal', labelKey: 'myServer.worldTypeNormal' as const },
@@ -38,6 +86,7 @@ type SoleServerListRowUi = {
   name: string
   description: string
   modpackId: string
+  vanillaGameVersion?: string
   ramMiB: number
   port: number
   coverFile?: string
@@ -134,10 +183,41 @@ export function MyServerView({ modpacksList, chromeGlass }: MyServerViewProps) {
   const { t } = useI18n()
   const { pushToast } = useToast()
   const mc = chromeGlass ? ' font-mc' : ''
-  const packOptions = useMemo(
-    () => modpacksList.filter((m) => isModpackId(m.id)).map((m) => ({ value: m.id, label: m.displayName })),
-    [modpacksList]
+  const packOptions = useMemo((): LauncherSelectEntry[] => {
+    const instanceOpts = modpacksList
+      .filter((m) => isModpackId(m.id))
+      .map((m) => ({ value: m.id, label: m.displayName }))
+    return [
+      { type: 'group', label: t('myServer.packGroupVanilla') },
+      { value: MY_SERVER_VANILLA_PACK_ID, label: t('myServer.packOptionVanilla') },
+      { type: 'group', label: t('myServer.packGroupInstances') },
+      ...instanceOpts
+    ]
+  }, [modpacksList, t])
+
+  const serverPackLabel = useCallback(
+    (s: SoleServerListRowUi) => {
+      if (s.modpackId === MY_SERVER_VANILLA_PACK_ID) {
+        const v = s.vanillaGameVersion?.trim()
+        return v ? `${t('myServer.packOptionVanilla')} · ${v}` : t('myServer.packOptionVanilla')
+      }
+      return flatSelectOptions(packOptions).find((p) => p.value === s.modpackId)?.label ?? s.modpackId
+    },
+    [packOptions, t]
   )
+
+  const [vanillaReleases, setVanillaReleases] = useState<VanillaReleasesFetch>({ kind: 'loading' })
+  useEffect(() => {
+    let cancelled = false
+    void window.solea.soleaServerListVanillaReleases().then((r) => {
+      if (cancelled) return
+      if (r.ok) setVanillaReleases({ kind: 'ok', ids: r.ids })
+      else setVanillaReleases({ kind: 'err', message: r.error })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const [servers, setServers] = useState<SoleServerListRowUi[]>([])
   const [covers, setCovers] = useState<Record<string, string | null>>({})
@@ -293,9 +373,7 @@ export function MyServerView({ modpacksList, chromeGlass }: MyServerViewProps) {
                   </div>
                   <div className="my-server-card-body">
                     <div className={`my-server-card-title${mc}`}>{s.name}</div>
-                    <div className="my-server-card-meta">
-                      {packOptions.find((p) => p.value === s.modpackId)?.label ?? s.modpackId}
-                    </div>
+                    <div className="my-server-card-meta">{serverPackLabel(s)}</div>
                   </div>
                 </button>
                 <button
@@ -343,6 +421,7 @@ export function MyServerView({ modpacksList, chromeGlass }: MyServerViewProps) {
       {createOpen ? (
         <MyServerCreateModal
           packOptions={packOptions}
+          vanillaReleases={vanillaReleases}
           chromeGlass={chromeGlass}
           onClose={() => setCreateOpen(false)}
           onCreated={(id) => {
@@ -373,6 +452,7 @@ export function MyServerView({ modpacksList, chromeGlass }: MyServerViewProps) {
           server={servers.find((s) => s.id === profileEditId)!}
           coverUrl={covers[profileEditId] ?? null}
           packOptions={packOptions}
+          vanillaReleases={vanillaReleases}
           chromeGlass={chromeGlass}
           onClose={() => setProfileEditId(null)}
           onRefresh={refreshList}
@@ -468,13 +548,15 @@ function PackChangeConfirmModal({
 
 function MyServerCreateModal({
   packOptions,
+  vanillaReleases,
   chromeGlass,
   onClose,
   onCreated,
   pushToast,
   t
 }: {
-  packOptions: { value: string; label: string }[]
+  packOptions: LauncherSelectEntry[]
+  vanillaReleases: VanillaReleasesFetch
   chromeGlass: boolean
   onClose: () => void
   onCreated: (id: string) => void
@@ -486,9 +568,24 @@ function MyServerCreateModal({
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [coverDataUrl, setCoverDataUrl] = useState<string | null>(null)
-  const [packId, setPackId] = useState(packOptions[0]?.value ?? '')
+  const [packId, setPackId] = useState(MY_SERVER_VANILLA_PACK_ID)
+  const vanillaVersionOpts = useMemo(
+    () => buildVanillaVersionSelectOptions(vanillaReleases),
+    [vanillaReleases]
+  )
+  const [vanillaGameVersion, setVanillaGameVersion] = useState(
+    () => buildVanillaVersionSelectOptions({ kind: 'loading' })[0]?.value ?? ''
+  )
   const [busy, setBusy] = useState(false)
   const mc = chromeGlass ? ' font-mc' : ''
+
+  useEffect(() => {
+    const first = vanillaVersionOpts[0]?.value ?? ''
+    setVanillaGameVersion((prev) => {
+      if (prev && vanillaVersionOpts.some((o) => o.value === prev)) return prev
+      return first
+    })
+  }, [vanillaVersionOpts])
 
   const submit = async () => {
     if (!name.trim()) {
@@ -499,12 +596,24 @@ function MyServerCreateModal({
       pushToast(t('myServer.errPack'), 'error')
       return
     }
+    if (packId === MY_SERVER_VANILLA_PACK_ID) {
+      const v = vanillaGameVersion.trim()
+      if (!v) {
+        pushToast(t('myServer.errVanillaVersion'), 'error')
+        return
+      }
+      if (!vanillaReleaseMeetsMin18(v)) {
+        pushToast(t('myServer.errVanillaMin18'), 'error')
+        return
+      }
+    }
     setBusy(true)
     const r = await window.solea.soleaServerCreate({
       name: name.trim(),
       description: description.trim() || undefined,
       modpackId: packId,
-      coverImageDataUrl: coverDataUrl ?? undefined
+      coverImageDataUrl: coverDataUrl ?? undefined,
+      ...(packId === MY_SERVER_VANILLA_PACK_ID ? { vanillaGameVersion: vanillaGameVersion.trim() } : {})
     })
     setBusy(false)
     if (r.ok) {
@@ -566,6 +675,24 @@ function MyServerCreateModal({
             onChange={setPackId}
             options={packOptions}
           />
+          {packId === MY_SERVER_VANILLA_PACK_ID ? (
+            <div className="my-server-field my-server-field--tight-top">
+              <span id="ms-vanilla-ver-lbl" className="my-server-field-label">
+                {t('myServer.fieldVanillaVersion')}
+              </span>
+              <LauncherSelect
+                aria-labelledby="ms-vanilla-ver-lbl"
+                value={vanillaGameVersion}
+                onChange={setVanillaGameVersion}
+                options={vanillaVersionOpts}
+                disabled={vanillaVersionOpts.length === 0}
+              />
+              <p className="my-server-field-hint">{t('myServer.fieldVanillaVersionHint')}</p>
+              {vanillaReleases.kind === 'err' ? (
+                <p className="my-server-field-hint my-server-muted">{t('myServer.vanillaVersionListFallbackHint')}</p>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <div className="pack-confirm-actions my-server-modal-actions">
           <button type="button" className="btn-muted" onClick={onClose} disabled={busy}>
@@ -584,6 +711,7 @@ function MyServerProfileModal({
   server,
   coverUrl,
   packOptions,
+  vanillaReleases,
   chromeGlass,
   onClose,
   onRefresh,
@@ -592,7 +720,8 @@ function MyServerProfileModal({
 }: {
   server: SoleServerListRowUi
   coverUrl: string | null
-  packOptions: { value: string; label: string }[]
+  packOptions: LauncherSelectEntry[]
+  vanillaReleases: VanillaReleasesFetch
   chromeGlass: boolean
   onClose: () => void
   onRefresh: () => Promise<void>
@@ -606,8 +735,26 @@ function MyServerProfileModal({
   const [description, setDescription] = useState(server.description)
   const [coverOverride, setCoverOverride] = useState<string | 'remove' | undefined>(undefined)
   const [packId, setPackId] = useState(server.modpackId)
+  const [vanillaGameVersion, setVanillaGameVersion] = useState(() => {
+    const opts = buildVanillaVersionSelectOptions(
+      { kind: 'loading' },
+      server.modpackId === MY_SERVER_VANILLA_PACK_ID ? server.vanillaGameVersion : undefined
+    )
+    const want = (server.vanillaGameVersion ?? '').trim()
+    if (server.modpackId === MY_SERVER_VANILLA_PACK_ID && want && opts.some((o) => o.value === want)) return want
+    return opts[0]?.value ?? ''
+  })
   const [packChangePending, setPackChangePending] = useState<string | null>(null)
   const persistMetaRef = useRef<(opts?: { silent?: boolean }) => Promise<void>>(async () => {})
+
+  const vanillaVersionOpts = useMemo(
+    () =>
+      buildVanillaVersionSelectOptions(
+        vanillaReleases,
+        packId === MY_SERVER_VANILLA_PACK_ID ? server.vanillaGameVersion : undefined
+      ),
+    [vanillaReleases, packId, server.vanillaGameVersion]
+  )
 
   const displayCoverPreview =
     coverOverride === 'remove' ? null : coverOverride ?? coverUrl
@@ -616,7 +763,18 @@ function MyServerProfileModal({
     setName(server.name)
     setDescription(server.description)
     setPackId(server.modpackId)
-  }, [server.name, server.description, server.modpackId])
+  }, [server.id, server.name, server.description, server.modpackId])
+
+  useEffect(() => {
+    if (server.modpackId !== MY_SERVER_VANILLA_PACK_ID) return
+    const opts = buildVanillaVersionSelectOptions(vanillaReleases, server.vanillaGameVersion)
+    const want = (server.vanillaGameVersion ?? '').trim()
+    if (want && opts.some((o) => o.value === want)) {
+      setVanillaGameVersion(want)
+    } else {
+      setVanillaGameVersion(opts[0]?.value ?? '')
+    }
+  }, [server.id, server.modpackId, server.vanillaGameVersion])
 
   useEffect(() => {
     setCoverOverride(undefined)
@@ -629,11 +787,16 @@ function MyServerProfileModal({
   const persistMeta = useCallback(
     async (opts?: { silent?: boolean }) => {
       if (server.installState === 'installing') return
+      if (packId === MY_SERVER_VANILLA_PACK_ID) {
+        const v = vanillaGameVersion.trim()
+        if (!v || !vanillaReleaseMeetsMin18(v)) return
+      }
       const payload: Parameters<typeof window.solea.soleaServerUpdate>[0] = {
         id: server.id,
         name,
         description,
-        modpackId: packId
+        modpackId: packId,
+        ...(packId === MY_SERVER_VANILLA_PACK_ID ? { vanillaGameVersion: vanillaGameVersion.trim() } : {})
       }
       if (coverOverride === 'remove') payload.coverImageDataUrl = null
       else if (coverOverride !== undefined && coverOverride !== 'remove') payload.coverImageDataUrl = coverOverride
@@ -647,7 +810,18 @@ function MyServerProfileModal({
       await onRefresh()
       if (!opts?.silent) pushToast(t('myServer.saved'), 'success')
     },
-    [server.id, server.installState, name, description, packId, coverOverride, onRefresh, pushToast, t]
+    [
+      server.id,
+      server.installState,
+      name,
+      description,
+      packId,
+      vanillaGameVersion,
+      coverOverride,
+      onRefresh,
+      pushToast,
+      t
+    ]
   )
   persistMetaRef.current = persistMeta
 
@@ -655,13 +829,25 @@ function MyServerProfileModal({
     const dirty =
       name !== server.name ||
       description !== server.description ||
-      packId !== server.modpackId
+      packId !== server.modpackId ||
+      (packId === MY_SERVER_VANILLA_PACK_ID &&
+        vanillaGameVersion.trim() !== (server.vanillaGameVersion ?? '').trim())
     if (!dirty) return
     const id = window.setTimeout(() => {
       void persistMeta({ silent: true })
     }, AUTOSAVE_MS)
     return () => clearTimeout(id)
-  }, [name, description, packId, server.name, server.description, server.modpackId, persistMeta])
+  }, [
+    name,
+    description,
+    packId,
+    vanillaGameVersion,
+    server.name,
+    server.description,
+    server.modpackId,
+    server.vanillaGameVersion,
+    persistMeta
+  ])
 
   useEffect(() => {
     if (coverOverride === undefined) return
@@ -756,6 +942,24 @@ function MyServerProfileModal({
               disabled={server.installState === 'installing'}
             />
             <p className="my-server-muted">{t('myServer.changePackHint')}</p>
+            {packId === MY_SERVER_VANILLA_PACK_ID ? (
+              <div className="my-server-field my-server-field--tight-top">
+                <span id="msp-vanilla-ver-lbl" className="my-server-field-label">
+                  {t('myServer.fieldVanillaVersion')}
+                </span>
+                <LauncherSelect
+                  aria-labelledby="msp-vanilla-ver-lbl"
+                  value={vanillaGameVersion}
+                  onChange={setVanillaGameVersion}
+                  options={vanillaVersionOpts}
+                  disabled={server.installState === 'installing' || vanillaVersionOpts.length === 0}
+                />
+                <p className="my-server-field-hint">{t('myServer.fieldVanillaVersionHint')}</p>
+                {vanillaReleases.kind === 'err' ? (
+                  <p className="my-server-field-hint my-server-muted">{t('myServer.vanillaVersionListFallbackHint')}</p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="pack-confirm-actions my-server-modal-actions">
@@ -767,11 +971,19 @@ function MyServerProfileModal({
       {packChangePending ? (
         <PackChangeConfirmModal
           stacked
-          packLabel={packOptions.find((p) => p.value === packChangePending)?.label ?? packChangePending}
+          packLabel={
+            flatSelectOptions(packOptions).find((p) => p.value === packChangePending)?.label ??
+            packChangePending
+          }
           onCancel={() => setPackChangePending(null)}
           onConfirm={() => {
-            setPackId(packChangePending)
+            const next = packChangePending
+            if (!next) return
+            setPackId(next)
             setPackChangePending(null)
+            if (next === MY_SERVER_VANILLA_PACK_ID) {
+              setVanillaGameVersion(vanillaIdsForSelect(vanillaReleases)[0] ?? '')
+            }
           }}
           t={t}
           chromeGlass={chromeGlass}
@@ -1719,12 +1931,17 @@ function MyServerDetail({
                           </h3>
                         </div>
                         <div className="my-server-detail-section-body">
+                          {server.modpackId === MY_SERVER_VANILLA_PACK_ID ? (
+                            <p className="my-server-muted">{t('myServer.vanillaPackToolsHint')}</p>
+                          ) : null}
                           <div className="actions-bar my-server-actions-row">
                             <button
                               type="button"
                               className="btn-muted"
                               onClick={() => void checkUpdate()}
-                              disabled={server.installState !== 'ready'}
+                              disabled={
+                                server.installState !== 'ready' || server.modpackId === MY_SERVER_VANILLA_PACK_ID
+                              }
                             >
                               {t('myServer.checkUpdate')}
                             </button>

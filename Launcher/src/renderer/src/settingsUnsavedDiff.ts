@@ -52,6 +52,7 @@ const LAUNCHER_KEYS: (keyof LauncherSettingsUI)[] = [
   'uiCompact',
   'uiHomeCardVariant',
   'uiChromeGlass',
+  'uiLiquidGlass',
   'uiSettingsShell',
   'uiSounds',
   'uiSoundVolume',
@@ -92,6 +93,7 @@ const LAUNCHER_FIELD_LABEL_KEY: Partial<Record<keyof LauncherSettingsUI, string>
   uiCompact: 'settings.uiCompact',
   uiHomeCardVariant: 'settings.uiLauncherExperience',
   uiChromeGlass: 'settings.chromeGlass',
+  uiLiquidGlass: 'settings.liquidGlass',
   uiSettingsShell: 'settings.uiLauncherExperience',
   uiSounds: 'settings.uiSounds',
   uiSoundVolume: 'settings.uiSoundVolume',
@@ -135,6 +137,28 @@ export function buildUnsavedSettingsSections(
       title: t('settings.unsaved.sectionLauncher'),
       items: launcherItems.sort((a, b) => a.localeCompare(b))
     })
+  }
+
+  const vb = baseline.vanillaGameProfile
+  const vc = current.vanillaGameProfile
+  if (vb && vc) {
+    const vItems: string[] = []
+    if (vb.memoryMin !== vc.memoryMin || vb.memoryMax !== vc.memoryMax) vItems.push(t('settings.ram'))
+    if (
+      vb.screenWidth !== vc.screenWidth ||
+      vb.screenHeight !== vc.screenHeight ||
+      vb.fullscreen !== vc.fullscreen
+    ) {
+      vItems.push(t('settings.resolution'))
+    }
+    if (vb.gameArgs !== vc.gameArgs) vItems.push(t('settings.gameArgs'))
+    if (vItems.length) {
+      sections.push({
+        id: 'vanilla',
+        title: t('settings.unsaved.sectionVanilla'),
+        items: vItems.sort((a, b) => a.localeCompare(b))
+      })
+    }
   }
 
   const packIds = new Set([

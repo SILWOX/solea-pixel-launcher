@@ -226,6 +226,40 @@
     schedulePreview()
   }
 
+  /** Insère un bloc multi-lignes (ex. :::img) à la position du curseur. */
+  function insertRawBlock(blockText) {
+    const ta = el('edit-body')
+    if (!ta) return
+    const s = ta.selectionStart
+    const v = ta.value
+    const needNlBefore = s > 0 && v[s - 1] !== '\n'
+    const prefix = needNlBefore ? '\n\n' : '\n'
+    const ins = prefix + blockText + '\n'
+    ta.value = v.slice(0, s) + ins + v.slice(s)
+    const n = s + ins.length
+    ta.selectionStart = n
+    ta.selectionEnd = n
+    ta.focus()
+    schedulePreview()
+  }
+
+  const IMG_BLOCK_TEMPLATE = [
+    ':::img',
+    'src: https://',
+    'alt: Description',
+    'width: 100%',
+    'maxwidth: 520px',
+    'height:',
+    'align: center',
+    'rounded: 12',
+    'objectfit: contain',
+    'shadow: sm',
+    'link:',
+    'newtab: true',
+    'caption:',
+    ':::',
+  ].join('\n')
+
   function resetForm() {
     el('edit-id').value = ''
     el('edit-title').value = ''
@@ -364,6 +398,9 @@
       }
     })
   })
+
+  el('btn-insert-img-block')?.addEventListener('click', () => insertRawBlock(IMG_BLOCK_TEMPLATE))
+  el('btn-insert-link')?.addEventListener('click', () => insertAround('[', '](https://)'))
 
   el('btn-login').addEventListener('click', async () => {
     const raw = el('login-token').value

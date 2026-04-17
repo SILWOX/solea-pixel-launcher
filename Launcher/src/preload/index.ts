@@ -7,6 +7,8 @@ export type InstallProgressPayload = {
   total: number
   detail?: string
   task?: 'install' | 'uninstall'
+  source?: 'vanilla'
+  vanillaDone?: boolean
 }
 
 const api = {
@@ -301,7 +303,97 @@ const api = {
     ipcRenderer.on('debug-fake-install', listener)
     return () => ipcRenderer.removeListener('debug-fake-install', listener)
   },
+  vanillaEnsureProfile: (profileId: string) =>
+    ipcRenderer.invoke('vanilla:ensure-profile', profileId) as Promise<{
+      ok: true
+      profileId: string
+      gameDir: string
+    }>,
+  vanillaOpenFolder: (profileId: string, kind: 'game' | 'profile') =>
+    ipcRenderer.invoke('vanilla:open-folder', profileId, kind) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
+  vanillaOpenDotMinecraftFolder: () =>
+    ipcRenderer.invoke('vanilla:open-dot-minecraft') as Promise<{ ok: true } | { ok: false; error: string }>,
+  vanillaBackupSaves: (profileId: string) =>
+    ipcRenderer.invoke('vanilla:backup-saves', profileId) as Promise<
+      { ok: true; zipPath: string } | { ok: false; error: string }
+    >,
+  vanillaMetaGet: (profileId: string) =>
+    ipcRenderer.invoke('vanilla:meta-get', profileId) as Promise<{
+      ok: true
+      meta: {
+        javaPath?: string | null
+        javaVersion?: string | null
+        shaderStack?: 'optifine' | 'iris'
+        lastSelectedVersion?: string | null
+      }
+    }>,
+  vanillaMetaSet: (
+    profileId: string,
+    patch: Partial<{
+      javaPath: string | null
+      javaVersion: string | null
+      shaderStack: 'optifine' | 'iris'
+      lastSelectedVersion: string | null
+    }>
+  ) =>
+    ipcRenderer.invoke('vanilla:meta-set', profileId, patch) as Promise<
+      | {
+          ok: true
+          meta: {
+            javaPath?: string | null
+            javaVersion?: string | null
+            shaderStack?: 'optifine' | 'iris'
+            lastSelectedVersion?: string | null
+          }
+        }
+      | { ok: false; error: string }
+    >,
+  vanillaSyncJavaFromSettings: (profileId: string) =>
+    ipcRenderer.invoke('vanilla:sync-java-from-settings', profileId) as Promise<{
+      ok: true
+      meta: {
+        javaPath?: string | null
+        javaVersion?: string | null
+        shaderStack?: 'optifine' | 'iris'
+        lastSelectedVersion?: string | null
+      }
+    }>,
+  vanillaListClientVersions: (profileId: string) =>
+    ipcRenderer.invoke('vanilla:list-client-versions', profileId) as Promise<{
+      ok: true
+      versions: string[]
+    }>,
+  vanillaListAllInstallFolders: () =>
+    ipcRenderer.invoke('vanilla:list-all-install-folders') as Promise<{
+      ok: true
+      entries: { folder: string; versions: string[] }[]
+    }>,
+  vanillaUninstallClientVersion: (profileId: string, versionId: string) =>
+    ipcRenderer.invoke('vanilla:uninstall-client-version', profileId, versionId) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
+  vanillaLaunch: (payload: {
+    profileId: string
+    version: string
+    shaderStack?: 'optifine' | 'iris'
+    backupSaves?: boolean
+  }) =>
+    ipcRenderer.invoke('vanilla:launch', payload) as Promise<{ ok: true } | { ok: false; error: string }>,
+  vanillaDownloadClient: (payload: {
+    profileId: string
+    version: string
+    shaderStack?: 'optifine' | 'iris'
+  }) =>
+    ipcRenderer.invoke('vanilla:download-client', payload) as Promise<
+      { ok: true } | { ok: false; error: string }
+    >,
   soleaServerList: () => ipcRenderer.invoke('solea-server:list'),
+  soleaServerListVanillaReleases: () =>
+    ipcRenderer.invoke('solea-server:list-vanilla-releases') as Promise<
+      { ok: true; ids: string[] } | { ok: false; error: string }
+    >,
   soleaServerGetCoverDataUrl: (id: string) =>
     ipcRenderer.invoke('solea-server:get-cover-data-url', id) as Promise<string | null>,
   soleaServerCreate: (payload: {
@@ -310,6 +402,7 @@ const api = {
     imageUrl?: string
     coverImageDataUrl?: string
     modpackId: string
+    vanillaGameVersion?: string
   }) =>
     ipcRenderer.invoke('solea-server:create', payload) as Promise<
       { ok: true; id: string } | { ok: false; error: string }
@@ -322,6 +415,7 @@ const api = {
     coverImageDataUrl?: string | null
     ramMiB?: number
     modpackId?: string
+    vanillaGameVersion?: string
     port?: number
   }) => ipcRenderer.invoke('solea-server:update', payload) as Promise<{ ok: true } | { ok: false; error: string }>,
   soleaServerDelete: (id: string) =>

@@ -9,20 +9,12 @@
   overflow: hidden;
   /* Aligné sur .titlebar.titlebar--float — marge droite utile pour le contenu (ex. Mon serveur). */
   --titlebar-controls-width: 152px;
-  /* Zone non « drag » sous la barre flottante : rail gauche ; +colonne Réglages en vue paramètres */
+  /* Zone drag du shim titre : à droite du rail seulement (même bande sur tous les écrans). */
   --titlebar-safe-left: 78px;
 }
 
 .app-chrome[data-home-card='studio'] {
   --titlebar-safe-left: 82px;
-}
-
-.app-chrome[data-titlebar-pad='wide'] {
-  --titlebar-safe-left: 330px;
-}
-
-.app-chrome[data-titlebar-pad='wide'][data-home-card='studio'] {
-  --titlebar-safe-left: 334px;
 }
 
 .app-chrome-wallpaper {
@@ -828,10 +820,11 @@ img.mc-face-img {
   content: '';
   position: absolute;
   inset: 0;
+  /* Voile plus léger : fond Minecraft (prairie / soleil) reste visible derrière la carte. */
   background:
     radial-gradient(ellipse 95% 70% at 50% 108%, color-mix(in srgb, var(--accent-orange) 14%, transparent) 0%, transparent 52%),
     radial-gradient(ellipse 80% 55% at 12% 18%, rgba(255, 120, 40, 0.06) 0%, transparent 42%),
-    linear-gradient(155deg, rgba(4, 3, 8, 0.91) 0%, rgba(8, 6, 14, 0.72) 42%, rgba(3, 2, 6, 0.88) 100%);
+    linear-gradient(155deg, rgba(4, 3, 8, 0.58) 0%, rgba(8, 6, 14, 0.42) 42%, rgba(3, 2, 6, 0.62) 100%);
   pointer-events: none;
 }
 

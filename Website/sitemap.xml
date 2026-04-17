@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Accueil : launcher Minecraft modpacks, actus et téléchargements officiels. -->
   <url>
     <loc>https://soleapixel.com/</loc>
     <lastmod>2026-03-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://soleapixel.com/assets/logo.png</image:loc>
+      <image:title>SOLEA PIXEL — identité visuelle</image:title>
+      <image:caption>Logo officiel du launcher Solea Pixel et de la communauté associée.</image:caption>
+    </image:image>
   </url>
+  <!-- Licence SPL v1.0 : cadre légal contenus, launcher et modpacks. -->
   <url>
     <loc>https://soleapixel.com/license/</loc>
     <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.55</priority>
+  </url>
+  <!-- Hub plan du site & contenu : navigation structurée et futures pages éditoriales. -->
+  <url>
+    <loc>https://soleapixel.com/content/</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
   </url>
 </urlset>

@@ -112,6 +112,176 @@ export const FR: Record<string, string> = {
   'shell.screenshots': 'Captures (toutes les instances)',
   'shell.navPacks': 'Modpacks',
   'shell.sidebarAria': 'Navigation principale',
+  'shell.vanillaMinecraft': 'Minecraft vanilla',
+  'shell.vanillaMinecraftTitle':
+    'Dossier .minecraft officiel — profils Solea soleapixel-version-IrisLoader ou OptiFine',
+  'shell.vanillaMinecraftAria': 'Accès Minecraft vanilla',
+  'shell.blockSelectPackDuringVanilla':
+    'Attends la fin de l’installation ou du lancement vanilla avant de changer d’instance modpack.',
+  'vanillaMc.lazyLoading': 'Chargement…',
+  'vanillaMc.title': 'Minecraft vanilla',
+  'vanillaMc.subtitle':
+    'Mondes, captures et options sont dans ton vrai dossier .minecraft (comme le launcher Mojang). Les clients vont sous .minecraft/versions/. Les instances modpack restent à part.',
+  'vanillaMc.linkChangelog': 'Minecraft.net — notes et mises à jour',
+  'vanillaMc.sectionVersions': 'Version',
+  'vanillaMc.quickLatestRelease': 'Dernière release {{v}}',
+  'vanillaMc.quickLatestSnapshot': 'Dernier snapshot {{v}}',
+  'vanillaMc.versionsHint':
+    'Choisis une version ci-dessous ou les raccourcis. Au premier lancement, les bibliothèques se téléchargent dans ce profil.',
+  'vanillaMc.sectionProfile': 'Dossier du profil',
+  'vanillaMc.profileHint':
+    'Lettres, chiffres et tiret uniquement. Chaque profil a ses saves/ et screenshots/ comme un .minecraft.',
+  'vanillaMc.sectionShader': 'Shaders (prévu)',
+  'vanillaMc.shaderIris': 'Fabric + Iris / Sodium (recommandé pour les shaders)',
+  'vanillaMc.shaderOptiFine': 'Forge + OptiFine',
+  'vanillaMc.shaderHint':
+    'Le choix est enregistré pour ce profil. 1.16+ : Fabric et jars Iris/Sodium à l’installation. 1.8–1.15 : Forge est installé automatiquement ; ajoute le jar OptiFine dans mods/ depuis optifine.net si tu veux les shaders.',
+  'vanillaMc.sectionBackup': 'Sauvegardes',
+  'vanillaMc.backupBeforeLaunch': 'Zipper saves/ avant le lancement',
+  'vanillaMc.sectionFolders': 'Dossiers & Java',
+  'vanillaMc.openGameFolder': 'Ouvrir le dossier de jeu (saves, captures…)',
+  'vanillaMc.openProfileFolder': 'Ouvrir le dossier versions (.minecraft/versions)',
+  'vanillaMc.backupNow': 'Sauvegarder saves maintenant',
+  'vanillaMc.syncJava': 'Reprendre le Java des paramètres du launcher',
+  'vanillaMc.foldersHint':
+    'La RAM et la fenêtre du vanilla se règlent dans Paramètres → Minecraft vanilla. Le Java peut encore être surchargé par profil dans le meta.',
+  'vanillaMc.launch': 'Lancer',
+  'vanillaMc.launching': 'Lancement…',
+  'vanillaMc.launchingBase': 'Lancement',
+  'vanillaMc.launchingAria': 'Lancement de Minecraft en cours, merci de patienter',
+  'vanillaMc.installing': 'Installation…',
+  'vanillaMc.installingBase': 'Installation',
+  'vanillaMc.toastClientInstalled': 'Fichiers client Minecraft prêts — tu peux lancer.',
+  'vanillaMc.toastApiMissing':
+    'Cette version du launcher n’expose pas l’API d’installation — ferme complètement Solea Pixel puis mets à jour / recompile.',
+  'vanillaMc.toastManifestRequired':
+    'La liste des versions Mojang n’est pas chargée (ou le téléchargement a échoué). Vérifie la connexion, attends quelques secondes ou redémarre le launcher.',
+  'vanillaMc.toastVersionNotInManifest':
+    'La version {{v}} n’apparaît pas dans le manifeste des versions Mojang. Choisis un autre patch dans la liste ou rafraîchis.',
+  'vanillaMc.toastLaunched': 'Lancement démarré — ouvre la console log du jeu si activée.',
+  'vanillaMc.toastBackupOk': 'Sauvegarde créée : {{path}}',
+  'vanillaMc.toastJavaSynced': 'Indice de version Java : {{v}} (chemin repris des réglages).',
+  'vanillaMc.toastPickVersion': 'Choisis une version Minecraft avant de lancer ou d’installer.',
+  'vanillaMc.toastCtaBusy': 'Une installation ou un lancement est déjà en cours — patiente un instant.',
+  'vanillaMc.closeGameCta': 'Fermer',
+  'vanillaMc.closeGameAria': 'Fermer Minecraft lancé depuis le launcher',
+  'vanillaMc.toastGameStopped': 'Minecraft a été fermé.',
+  'vanillaMc.toastGameStopFailed':
+    'La fermeture a été demandée, mais le jeu semble encore actif — vérifie le Gestionnaire des tâches si besoin.',
+  'vanillaMc.toastRunningUseClose': 'Minecraft est déjà lancé — utilise d’abord le bouton rouge Fermer.',
+  'vanillaMc.btnVersionsDisabledRunning': 'Ferme Minecraft avant de changer de version.',
+  'vanillaMc.toastClientRepair':
+    'Fichiers client absents sur le disque — nouveau téléchargement, puis le lancement reprend.',
+  'vanillaMc.majorTitle.fallback': 'Minecraft {{maj}}',
+  'vanillaMc.majorTitle.1_21': 'Épreuves éprouvantes',
+  'vanillaMc.majorTitle.1_20': 'Sentiers et contes',
+  'vanillaMc.majorTitle.1_19': 'La mise à jour sauvage',
+  'vanillaMc.majorTitle.1_18': 'Cavernes et falaises II',
+  'vanillaMc.majorBlurb.default':
+    'Java Edition officielle sans loader de modpack. Les bibliothèques se téléchargent dans le dossier du profil vanilla au premier lancement.',
+  'vanillaMc.majorBlurb.1_21':
+    'Salles des épreuves, coffres-forts, brise, masse d’armes, cuivre et assembleur — une mise à jour tournée combat.',
+  'vanillaMc.majorBlurb.1_20':
+    'Archéologie, cerisiers, renifleur, ornements d’armure et capteurs sculk calibrés.',
+  'vanillaMc.majorBlurb.1_19':
+    'Profondeurs, cité antique, warden, palétuviers, boue et grenouilles.',
+  'vanillaMc.majorBlurb.1_18':
+    'Relief de l’Overworld revisité, spéléothèmes, sculk et monde sous Y=0.',
+  'vanillaHub.brandKicker': 'Solea Pixel',
+  'vanillaHub.brandTitle': 'MINECRAFT VANILLA',
+  'vanillaHub.brandHeadline': 'Minecraft Vanilla',
+  'vanillaHub.tabsAria': 'Mode vanilla',
+  'vanillaHub.tabHub': 'Accueil',
+  'vanillaHub.tabVersions': 'Versions',
+  'vanillaHub.accountHint': 'Compte actif du launcher',
+  'vanillaHub.accountGuest': 'Joueur',
+  'vanillaHub.pillStackAria': 'Résumé des versions',
+  'vanillaHub.chipMc': 'MC {{v}}',
+  'vanillaHub.chipMcHint': 'Version Minecraft sélectionnée pour le lancement',
+  'vanillaHub.chipLauncher': 'Launcher {{v}}',
+  'vanillaHub.chipLauncherHint': 'Build du launcher Solea Pixel',
+  'vanillaHub.playTag': 'Profil vanilla',
+  'vanillaHub.playSub':
+    'Chaque ligne utilise un id de profil Solea (soleapixel-release-IrisLoader ou OptiFine) pour les réglages ; le jeu partage ton .minecraft habituel (saves, captures, mods).',
+  'vanillaHub.versionPitch.fallback': 'Minecraft {{maj}} — version Java officielle.',
+  'vanillaHub.versionPitch.1_8':
+    'Mise à jour des biens de l’ère — granite, andésite, diorite, lapins, blocs de slime et tas de petits plus.',
+  'vanillaHub.versionPitch.1_9':
+    'Mise à jour du combat — double tenue, boucliers, cités de l’End, igloos et nouveau rythme de combat.',
+  'vanillaHub.versionPitch.1_10':
+    'Mise à jour gel & flammes — ours polaires, magma, fossiles souterrains et saut automatique.',
+  'vanillaHub.versionPitch.1_11':
+    'Mise à jour de l’exploration — manoirs, lamas, cartographes et boîtes de stockage shulker.',
+  'vanillaHub.versionPitch.1_12':
+    'Monde en couleur — béton, perroquets, livre de recettes et blocs colorés pour construire.',
+  'vanillaHub.versionPitch.1_13':
+    'Mise à jour aquatique — océans refaits, dauphins, tortues, tridents et nage modernisée.',
+  'vanillaHub.versionPitch.1_14':
+    'Village & pillage — villages refaits, raids, pillards, bambous et renards.',
+  'vanillaHub.versionPitch.1_15':
+    'La mise à jour abeille — abeilles, ruches, miel en bloc et grosse passe de perf & polish.',
+  'vanillaHub.versionPitch.1_16':
+    'Mise à jour du Nether — biomes inédits, piglins, hoglins, débris antiques et ancres de réapparition.',
+  'vanillaHub.versionPitch.1_17':
+    'Cavernes & falaises I — cuivre, améthyste, axolotls, chèvres et ardoise des profondeurs.',
+  'vanillaHub.versionPitch.1_18':
+    'Cavernes & falaises II — immenses cavernes, sculk, hauteur du monde revue et eau locale.',
+  'vanillaHub.versionPitch.1_19':
+    'La mise à jour sauvage — Deep Dark, warden, palétuviers, boue et grenouilles.',
+  'vanillaHub.versionPitch.1_20':
+    'Sentiers & contes — archéologie, cerisiers, ornements d’armure, renifleur et chameaux.',
+  'vanillaHub.versionPitch.1_21':
+    'Épreuves éprouvantes — salles des épreuves, coffres-forts, brise, masse d’armes et assembleur.',
+  'vanillaHub.statRam': 'Mémoire',
+  'vanillaHub.statWindow': 'Fenêtre',
+  'vanillaHub.statFs': 'Plein écran',
+  'vanillaHub.playStoryTitle': 'Le vanilla Solea Pixel',
+  'vanillaHub.playStoryBody':
+    'Les lancements utilisent ton dossier .minecraft officiel (Windows : %AppData%\\.minecraft, macOS : Application Support/minecraft). Java est choisi selon la release. À partir de la 1.16, Fabric s’installe à l’installation / au lancement et Iris + Sodium (Fabric) sont téléchargés depuis Modrinth dans mods/ quand c’est possible.',
+  'vanillaHub.gameFolderBtn': 'Dossier du jeu',
+  'vanillaHub.gameFolderHint':
+    'Ouvre le dossier Minecraft Java (.minecraft) : saves, mods, options, captures — le même que le launcher officiel si tu utilises le chemin par défaut.',
+  'vanillaHub.launchCta': 'Lancer — {{v}}',
+  'vanillaHub.installCta': 'Installer — {{v}}',
+  'vanillaHub.btnVersions': 'Versions',
+  'vanillaHub.btnVersionsShort': 'Ver.',
+  'vanillaHub.btnVersionsDisabledHint': 'Patiente jusqu’à la fin de l’installation ou du lancement.',
+  'vanillaHub.versionsOnly18': 'Seules les releases Java à partir de la 1.8 sont proposées.',
+  'vanillaHub.toolsTitle': 'Outils',
+  'vanillaHub.toolsLead':
+    'La RAM et la fenêtre pour le vanilla se règlent dans Paramètres → Minecraft vanilla. L’identifiant de profil et les dossiers ci-dessous restent liés à ce hub.',
+  'vanillaHub.sectionProfile': 'Profil',
+  'vanillaHub.sectionFolders': 'Dossiers & sauvegarde',
+  'vanillaHub.toolGame': 'Dossier de jeu',
+  'vanillaHub.toolProfile': 'Dossier du profil',
+  'vanillaHub.versionsTitle': 'Sélectionner la version',
+  'vanillaHub.versionsHeadHint': 'Choisis une ligne, un patch exact, puis lance — tu restes sur cet écran.',
+  'vanillaHub.backCta': 'Accueil',
+  'vanillaHub.backHub': 'Retour à l’accueil',
+  'vanillaHub.launchHintVersions': 'Lance Minecraft avec le patch choisi (téléchargement si nécessaire).',
+  'vanillaHub.confirmVersionCta': 'Valider — {{v}}',
+  'vanillaHub.confirmVersionHint': 'Enregistre ce patch et revient à l’accueil. Démarre le jeu avec le gros bouton Lecture orange.',
+  'vanillaHub.sidePick': 'Choisis une famille de versions',
+  'vanillaHub.sideBlurbIdle': 'Choisis une ligne et un patch, puis Valider pour revenir à l’accueil — lance le jeu depuis la carte principale.',
+  'vanillaHub.patchLine': 'Patches',
+  'vanillaHub.newsTitle': 'Actus Minecraft',
+  'vanillaHub.newsSubtitle':
+    'Flux public du launcher Mojang — Java, Bedrock, etc. — des plus récentes aux plus anciennes.',
+  'vanillaHub.newsRefresh': 'Actualiser les actus',
+  'vanillaHub.newsLoading': 'Chargement des actus…',
+  'vanillaHub.newsEmpty': 'Aucune entrée pour l’instant. Réessaie dans un instant.',
+  'vanillaHub.newsReadMore': 'Lire la suite',
+  'vanillaHub.newsFooter':
+    'Contenu © Mojang AB. « Lire la suite » ouvre le navigateur. Les dates ne bougent que quand Mojang met à jour ce fichier — ce n’est pas un blog en direct.',
+  'vanillaHub.footerStackOptifine':
+    'Lignes classiques (1.8–1.15) : Forge est installé avec le client (minecraft-java-core). Place le jar OptiFine correspondant à ton build MC dans mods/ (téléchargement sur optifine.net — licence : pas d’embarqué ici).',
+  'vanillaHub.footerStackIris':
+    'Lignes modernes (1.16+) : Fabric avec le jeu, plus les jars Iris et Sodium récupérés dans mods/ pour les shaders (réseau requis).',
+  'vanillaHub.shaderStackIris': 'Iris + Sodium',
+  'vanillaHub.shaderStackOptifine': 'Forge + OptiFine',
+  'vanillaHub.toolGameShort': 'Jeu',
+  'vanillaHub.toolProfileShort': 'Profil',
+  'vanillaHub.backupShort': 'Sauvegarde',
   'myServer.heroTitle': 'Héberge un serveur modpack sur ton PC',
   'myServer.heroLead':
     'Lance un petit serveur Minecraft sur ta machine — tout reste dans ton dossier Solea, les packs viennent de Modrinth.',
@@ -208,6 +378,18 @@ export const FR: Record<string, string> = {
   'myServer.coverClear': 'Retirer l’image',
   'myServer.coverTooLarge': 'Image trop lourde (max 12 Mo).',
   'myServer.fieldPack': 'Modpack',
+  'myServer.packGroupVanilla': 'Vanilla',
+  'myServer.packGroupInstances': 'Modpacks (instances)',
+  'myServer.packOptionVanilla': 'Serveur vanilla officiel',
+  'myServer.fieldVanillaVersion': 'Version Minecraft (vanilla)',
+  'myServer.fieldVanillaVersionHint':
+    'Choisis une release dans la liste (server.jar officiel Mojang). Pas de saisie manuelle.',
+  'myServer.vanillaVersionListFallbackHint':
+    'Impossible de charger la liste complète depuis Mojang — liste courte de secours. Vérifie la connexion et rouvre cet écran.',
+  'myServer.errVanillaVersion': 'Indique la version Minecraft pour le serveur vanilla.',
+  'myServer.errVanillaMin18': 'La version minimale est Minecraft 1.8.',
+  'myServer.vanillaPackToolsHint':
+    'Serveur vanilla officiel (sans modpack Modrinth). « Réinstaller » retélécharge la même version depuis Mojang.',
   'myServer.fieldPort': 'Port',
   'myServer.fieldRam': 'RAM pour le processus Java (max ~{{max}} Go sur ce PC)',
   'myServer.createSubmit': 'Créer',
@@ -298,9 +480,13 @@ export const FR: Record<string, string> = {
   'screenshots.subtitle':
     'Toutes les captures de tes instances au même endroit — panneaux lisibles sur le fond du launcher.',
   'screenshots.howTitle': 'Comment utiliser cet écran',
-  'screenshots.howStep1': 'Choisis l’instance (modpack) dans la barre ci-dessous.',
+  'screenshots.howStep1': 'Choisis l’instance — Minecraft (vanilla) ou modpack — dans la barre ci-dessous.',
   'screenshots.howStep2': 'En jeu, F2 prend une capture ; elle est enregistrée dans le dossier screenshots de cette instance.',
   'screenshots.howStep3': 'Clique une miniature pour l’ouvrir : exporte une copie où tu veux, ou passe par Retouche (lumière / contraste) avant de partager.',
+  'screenshots.vanillaInstanceName': 'Minecraft',
+  'screenshots.instanceGroupModpacks': 'Instances modpack',
+  'screenshots.instancePickerHint':
+    '« Minecraft » (en haut) = jeu vanilla via le hub Minecraft du launcher. Sous la ligne : tes instances modpack.',
   'screenshots.instanceSection': 'Instance à afficher',
   'screenshots.toolbarAria': 'Instance et actions dossier',
   'screenshots.galleryTitle': 'Galerie',
@@ -769,6 +955,28 @@ export const FR: Record<string, string> = {
   'settings.navSectionPacks': 'Modpacks',
   'settings.navSectionMore': 'Plus',
   'settings.navLauncher': 'Launcher',
+  'settings.navVanilla': 'Minecraft vanilla',
+  'settings.headerVanilla': 'Minecraft vanilla',
+  'settings.vanillaLead':
+    'Ces options s’appliquent uniquement quand tu lances Minecraft depuis le hub Vanilla. Elles sont séparées du profil de chaque modpack.',
+  'settings.vanillaRamSub': 'Mémoire pour les lancements vanilla (pas l’onglet du modpack actif).',
+  'settings.vanillaResolutionSub': 'Taille de fenêtre et plein écran pour le vanilla.',
+  'settings.vanillaGameArgsSub': 'Arguments supplémentaires passés au jeu vanilla uniquement.',
+  'settings.vanillaInstalledTitle': 'Versions client téléchargées',
+  'settings.vanillaInstalledSub':
+    'Par ligne : supprime seulement le dossier marqueur Solea sous .minecraft/versions/soleapixel-… (pas le cache Mojang du type 1.12.2). Les mondes, options et mods dans le reste du .minecraft sont conservés.',
+  'settings.vanillaInstalledProfileHint':
+    'Seules les installs Solea sont listées : un dossier soleapixel-<release>-IrisLoader ou OptiFine avec un petit JSON marqueur, plus le dossier client Mojang de cette release. Un simple dossier 1.12.2 du launcher officiel seul est ignoré.',
+  'settings.vanillaVersionsLoading': 'Chargement des versions installées…',
+  'settings.vanillaVersionsEmpty':
+    'Aucune install vanilla Solea détectée — utilise Installer / Lancer depuis le hub Vanilla (cela crée soleapixel-… sous .minecraft/versions).',
+  'settings.vanillaUninstall': 'Supprimer les fichiers client',
+  'settings.vanillaUninstalling': 'Suppression…',
+  'settings.vanillaUninstallModalEyebrow': 'Minecraft vanilla',
+  'settings.vanillaUninstallModalTitle': 'Supprimer uniquement le cache client {{v}} (dossier « {{folder}} ») ?',
+  'settings.vanillaUninstallConfirm':
+    'Cela supprime seulement le dossier Solea .minecraft/versions/{{folder}}/ (marqueur pour la release {{v}}). Le cache client Mojang .minecraft/versions/{{v}}/ n’est pas supprimé. Les mondes, options, mods et captures ailleurs dans .minecraft sont conservés.',
+  'settings.vanillaUninstallOk': 'Cache client supprimé pour {{v}}.',
   'settings.creditsNav': 'Crédits',
   'settings.licenseNav': 'Licence',
   'settings.creditsEyebrow': 'Crédits',
@@ -856,7 +1064,17 @@ export const FR: Record<string, string> = {
     'De 2G jusqu’à la RAM totale de ton PC (à droite). Clic sur 6G / 8G / 12G pour des repères. La mémoire appliquée au jeu est définie au lancement.',
   'settings.azureId': 'Azure Client ID (optionnel)',
   'settings.appearance': 'Apparence & langue',
-  'settings.appearanceSub': 'Thème, chrome givré, taille du texte, animations, notifications, mises à jour, Discord',
+  'settings.appearanceSub':
+    'Langue en premier, puis des blocs : thème & verre, texte et animations, notifications, mises à jour.',
+  'settings.appearanceBlockTheme': 'Thème & verre',
+  'settings.appearanceBlockThemeDesc':
+    'Palette de couleurs, disposition accueil / paramètres, chrome givré ou Liquid Glass en arrière-plan.',
+  'settings.appearanceBlockComfort': 'Texte & animations',
+  'settings.appearanceBlockComfortDesc': 'Taille de police, interface plus compacte, réduction des mouvements.',
+  'settings.appearanceBlockNotify': 'Notifications & Discord',
+  'settings.appearanceBlockNotifyDesc': 'Toasts Windows (install / maj) et Rich Presence Discord.',
+  'settings.appearanceBlockUpdates': 'Mises à jour',
+  'settings.appearanceBlockUpdatesDesc': 'Canal stable ou bêta, et vérification manuelle des builds du launcher.',
   'settings.audio': 'Audio',
   'settings.audioSub': 'Sons d’interface, volume, signaux fin d’install et lancement',
   'settings.lang': 'Langue du launcher',
@@ -914,6 +1132,11 @@ export const FR: Record<string, string> = {
   'home.studioEyebrow': 'Pack actuel',
   'settings.chromeGlass': 'Chrome givré (fond derrière l’interface)',
   'settings.chromeGlassSub': 'Fond givré.',
+  'settings.chromeGlassDisabledByLiquid':
+    'Désactive « Liquid Glass » ci-dessous pour pouvoir activer le chrome givré.',
+  'settings.liquidGlass': 'Liquid Glass (style Apple)',
+  'settings.liquidGlassSub':
+    'Flou plus marqué et reflets plus doux sur le fond. Incompatible avec le chrome givré : en l’activant, le chrome est désactivé automatiquement.',
   'settings.uiSettingsShell': 'Mise en page de l’onglet Paramètres',
   'settings.uiSettingsShellSub':
     'AETHER UI 2.0 affine la colonne de navigation, les cartes et le pied de page avec des transitions plus fluides. Legacy restaure l’apparence précédente des Paramètres.',
@@ -1016,6 +1239,8 @@ export const FR: Record<string, string> = {
   'settings.resetConfirmEyebrow': 'Paramètres',
   'settings.resetTabBodyLauncher':
     'Cela ne restaure que l’onglet Launcher (apparence, sons, raccourcis, réseau, après lancement, etc.). Les profils des modpacks ne changent pas. Clique sur Enregistrer pour écrire sur le disque.',
+  'settings.resetTabBodyVanilla':
+    'Cela remet la RAM, la résolution et les arguments du jeu Minecraft vanilla uniquement. Les modpacks ne sont pas modifiés. Clique sur Enregistrer pour écrire sur le disque.',
   'settings.resetTabBodyModpack':
     'Cela remet les valeurs par défaut (RAM, résolution, arguments, dossier d’instance) pour « {{name}} » uniquement. Les autres modpacks ne sont pas modifiés. Clique sur Enregistrer pour écrire sur le disque.',
   'settings.resetAllBody':
@@ -1038,6 +1263,7 @@ export const FR: Record<string, string> = {
   'settings.unsaved.save': 'Enregistrer les modifications',
   'settings.unsaved.saving': 'Enregistrement…',
   'settings.unsaved.sectionLauncher': 'Launcher',
+  'settings.unsaved.sectionVanilla': 'Minecraft vanilla',
   'settings.unsaved.sectionModpack': '{{name}}',
   'settings.unsaved.sectionOther': 'Autres changements',
   'settings.unsaved.genericChanges': 'Les réglages diffèrent de la dernière sauvegarde.',
@@ -1163,6 +1389,7 @@ export const FR: Record<string, string> = {
   'install.progressAria': 'Progression du téléchargement et de l’installation',
   'globalProgress.installing': 'Installation',
   'globalProgress.uninstalling': 'Désinstallation',
+  'globalProgress.vanillaLaunching': 'Lancement de Minecraft',
   'uninstall.scanning': 'Analyse des fichiers…',
   'modpack.errorLoad': 'Impossible de charger les infos du pack',
   'sidebar.packSwitching': 'Changement de pack…',

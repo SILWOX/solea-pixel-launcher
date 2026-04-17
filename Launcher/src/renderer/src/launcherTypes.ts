@@ -64,6 +64,10 @@ export type LauncherSettingsUI = {
   modpackProfiles: Record<string, ModpackGameProfileUI>
   /** Parent absolu pour `{parent}/.soleapixel/instances/…` ; vide = défaut sous le dossier du launcher. */
   modpackInstanceParentPath: Partial<Record<string, string>>
+  /** RAM, résolution et args dédiés au hub Minecraft vanilla. */
+  vanillaGameProfile: ModpackGameProfileUI
+  /** Dernière version Minecraft choisie dans le hub (id manifest). */
+  vanillaHubLastSelectedVersion: string | null
   uiLanguage: UiLanguage
   uiTheme: UiTheme
   uiAccentHex: string
@@ -75,6 +79,8 @@ export type LauncherSettingsUI = {
   uiHomeCardVariant: UiHomeCardVariant
   /** Barre titre + sidebar semi-transparentes avec flou ; le fond s’étend derrière. */
   uiChromeGlass: boolean
+  /** Style Liquid Glass (type Apple) ; exclusif avec le chrome givré. */
+  uiLiquidGlass: boolean
   /** Écran Paramètres : AETHER UI 2.0 (défaut) ou Legacy (style avant refonte). */
   uiSettingsShell: UiSettingsShellVariant
   uiSounds: boolean

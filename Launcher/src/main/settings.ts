@@ -68,6 +68,10 @@ export interface LauncherSettings {
   activeModpackId: string
   /** Réglages de jeu par id modpack (clés = ids internes). */
   modpackProfiles: Partial<Record<string, ModpackGameProfile>>
+  /** RAM, fenêtre et args pour le lancement Minecraft vanilla (hub dédié). */
+  vanillaGameProfile: ModpackGameProfile
+  /** Dernière version Minecraft (id manifest) sélectionnée dans le hub vanilla (captures, reprise). */
+  vanillaHubLastSelectedVersion: string | null
   /**
    * Dossier parent choisi pour une instance hors AppData : l’instance sera dans
    * `{parent}/.soleapixel/instances/{slug}`. Absent = défaut sous userData (`instances/{slug}`).
@@ -103,6 +107,11 @@ export interface LauncherSettings {
   networkSlowDownloads: boolean
   /** Barre titre + sidebar vitrées (flou + transparence). */
   uiChromeGlass: boolean
+  /**
+   * Style « Liquid Glass » (inspiré Apple) : fond derrière l’UI, exclusif avec `uiChromeGlass`.
+   * Si les deux sont true après fusion, seul Liquid est conservé (chrome forcé à false).
+   */
+  uiLiquidGlass: boolean
   /** Barre latérale + carte accueil : v2.0 (studio) ou v1.0 legacy (classic). */
   uiHomeCardVariant: UiHomeCardVariant
   /** Onglet Paramètres : AETHER 2.0 ou Legacy. */
@@ -147,8 +156,18 @@ export const DEFAULT_SETTINGS: LauncherSettings = {
   diagnosticLaunch: false,
   networkSlowDownloads: false,
   uiChromeGlass: false,
+  uiLiquidGlass: false,
   uiSettingsShell: 'aether2',
-  openGameLogOnInstanceLaunch: false
+  openGameLogOnInstanceLaunch: false,
+  vanillaGameProfile: {
+    memoryMin: '2G',
+    memoryMax: '6G',
+    gameArgs: '',
+    screenWidth: 800,
+    screenHeight: 600,
+    fullscreen: false
+  },
+  vanillaHubLastSelectedVersion: null
 }
 
 /** Thèmes persistés ; alias éventuels → clé canonique. */
@@ -226,7 +245,16 @@ export function mergeLauncherSettingsPatch(
     if (v === null && PATCH_NULL_OMIT_KEYS.has(key)) continue
     clean[key] = v
   }
-  return { ...base, ...clean } as LauncherSettings
+  return applyExclusiveGlassModes({ ...base, ...clean } as LauncherSettings)
+}
+
+/** Chrome givré et Liquid Glass ne peuvent pas être actifs en même temps. */
+export function applyExclusiveGlassModes(s: LauncherSettings): LauncherSettings {
+  let uiChromeGlass = Boolean(s.uiChromeGlass)
+  let uiLiquidGlass = typeof s.uiLiquidGlass === 'boolean' ? s.uiLiquidGlass : false
+  if (uiLiquidGlass) uiChromeGlass = false
+  else if (uiChromeGlass) uiLiquidGlass = false
+  return { ...s, uiChromeGlass, uiLiquidGlass }
 }
 
 const RAM_RE = /^[0-9]+[mMgG]$/
@@ -288,6 +316,23 @@ export function getGameSettingsForModpack(s: LauncherSettings, modpackId: string
   return normalized.modpackProfiles[id] ?? legacyGameSlice(s)
 }
 
+/** Réglages affichés / utilisés pour le hub Minecraft vanilla (indépendant du modpack actif). */
+export function normalizeVanillaGameProfile(s: LauncherSettings): LauncherSettings {
+  const base = legacyGameSlice(s)
+  const existing = s.vanillaGameProfile
+  const merged: ModpackGameProfile = {
+    ...base,
+    ...(existing ?? {}),
+    screenWidth: (existing?.screenWidth ?? base.screenWidth) ?? 800,
+    screenHeight: (existing?.screenHeight ?? base.screenHeight) ?? 600
+  }
+  return { ...s, vanillaGameProfile: merged }
+}
+
+export function getGameSettingsForVanilla(s: LauncherSettings): ModpackGameProfile {
+  return normalizeVanillaGameProfile(s).vanillaGameProfile
+}
+
 /** Anciens fichiers : uiAppearancePreset séparé → un seul uiTheme. */
 function migrateLegacyUiTheme(raw: unknown, merged: LauncherSettings): LauncherSettings {
   if (typeof raw !== 'object' || raw === null) return merged
@@ -312,22 +357,36 @@ function normalizeShortcutFields(s: LauncherSettings): LauncherSettings {
 
 export function loadSettings(): LauncherSettings {
   const p = settingsPath()
-  if (!existsSync(p)) return normalizeShortcutFields(normalizeModpackProfiles({ ...DEFAULT_SETTINGS }))
+  if (!existsSync(p)) {
+    return normalizeShortcutFields(
+      applyExclusiveGlassModes(normalizeVanillaGameProfile(normalizeModpackProfiles({ ...DEFAULT_SETTINGS })))
+    )
+  }
   try {
     const raw = JSON.parse(readFileSync(p, 'utf8')) as unknown
     const parsed = parseLauncherSettingsFromDisk(raw)
     let merged = normalizeModpackProfiles({ ...DEFAULT_SETTINGS, ...parsed } as LauncherSettings)
     merged = migrateLegacyUiTheme(raw, merged)
     merged = { ...merged, uiTheme: normalizeUiThemeValue(merged.uiTheme) }
-    return normalizeShortcutFields(merged)
+    merged = normalizeVanillaGameProfile(merged)
+    const hubV = merged.vanillaHubLastSelectedVersion
+    merged = {
+      ...merged,
+      vanillaHubLastSelectedVersion:
+        typeof hubV === 'string' ? (hubV.trim() || null) : hubV === null || hubV === undefined ? null : null
+    }
+    return normalizeShortcutFields(applyExclusiveGlassModes(merged))
   } catch {
-    return normalizeShortcutFields(normalizeModpackProfiles({ ...DEFAULT_SETTINGS }))
+    return normalizeShortcutFields(
+      applyExclusiveGlassModes(normalizeVanillaGameProfile(normalizeModpackProfiles({ ...DEFAULT_SETTINGS })))
+    )
   }
 }
 
 export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; error: string } {
   const merged = mergeLauncherSettingsPatch(DEFAULT_SETTINGS, s as Record<string, unknown>)
-  const next = normalizeModpackProfiles(merged)
+  let next = normalizeModpackProfiles(merged)
+  next = normalizeVanillaGameProfile(next)
 
   for (const m of MODPACKS) {
     const prof = next.modpackProfiles[m.id]
@@ -343,6 +402,24 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
     if (prof.screenHeight !== null && (prof.screenHeight < 480 || prof.screenHeight > 4320)) {
       return { ok: false, error: `Hauteur fenêtre invalide (${m.displayName}).` }
     }
+  }
+
+  const vg = next.vanillaGameProfile
+  if (!vg) {
+    return { ok: false, error: 'Profil jeu vanilla manquant.' }
+  }
+  if (!isValidRam(vg.memoryMin)) return { ok: false, error: 'RAM min vanilla invalide.' }
+  if (!isValidRam(vg.memoryMax)) return { ok: false, error: 'RAM max vanilla invalide.' }
+  {
+    const minN = parseRamToMb(vg.memoryMin)
+    const maxN = parseRamToMb(vg.memoryMax)
+    if (minN > maxN) return { ok: false, error: 'RAM min > max (vanilla).' }
+  }
+  if (vg.screenWidth !== null && (vg.screenWidth < 640 || vg.screenWidth > 7680)) {
+    return { ok: false, error: 'Largeur fenêtre vanilla invalide.' }
+  }
+  if (vg.screenHeight !== null && (vg.screenHeight < 480 || vg.screenHeight > 4320)) {
+    return { ok: false, error: 'Hauteur fenêtre vanilla invalide.' }
   }
 
   if (next.downloadThreads < 1 || next.downloadThreads > 48) {
@@ -368,6 +445,8 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
   if (typeof next.uiReduceMotion !== 'boolean') next.uiReduceMotion = DEFAULT_SETTINGS.uiReduceMotion
   if (typeof next.uiCompact !== 'boolean') next.uiCompact = DEFAULT_SETTINGS.uiCompact
   if (typeof next.uiChromeGlass !== 'boolean') next.uiChromeGlass = DEFAULT_SETTINGS.uiChromeGlass
+  if (typeof next.uiLiquidGlass !== 'boolean') next.uiLiquidGlass = DEFAULT_SETTINGS.uiLiquidGlass
+  next = applyExclusiveGlassModes(next)
   if (next.uiHomeCardVariant !== 'studio' && next.uiHomeCardVariant !== 'classic') {
     next.uiHomeCardVariant = DEFAULT_SETTINGS.uiHomeCardVariant
   }
