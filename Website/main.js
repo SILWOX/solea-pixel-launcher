@@ -103,31 +103,47 @@ function segmentToCardEl(segment) {
   return art
 }
 
+function liveNewsSkeletonHtml() {
+  const card = `<div class="live-news-skel" aria-hidden="true">
+    <div class="live-news-skel__bar live-news-skel__bar--title"></div>
+    <div class="live-news-skel__bar"></div>
+    <div class="live-news-skel__bar"></div>
+    <div class="live-news-skel__bar live-news-skel__bar--short"></div>
+  </div>`
+  return Array.from({ length: 6 }, () => card).join('')
+}
+
 function renderSiteLiveNews() {
   const grid = document.getElementById('site-live-news-grid')
   const status = document.getElementById('site-live-news-status')
-  if (!grid || !status) return
+  if (!grid) return
 
+  grid.removeAttribute('aria-busy')
   grid.innerHTML = ''
-  status.hidden = true
-  status.textContent = ''
+  if (status) {
+    status.hidden = true
+    status.textContent = ''
+  }
+
+  const setStatus = (msg) => {
+    if (!status) return
+    status.hidden = false
+    status.textContent = msg
+  }
 
   if (!siteLiveNewsPayload) {
-    status.hidden = false
-    status.textContent = tNews('news.liveError')
+    setStatus(tNews('news.liveError'))
     return
   }
 
   if (siteLiveNewsPayload._error) {
-    status.hidden = false
-    status.textContent = tNews('news.liveError')
+    setStatus(tNews('news.liveError'))
     return
   }
 
   const segs = segmentsFromNewsPayload(siteLiveNewsPayload)
   if (segs.length === 0) {
-    status.hidden = false
-    status.textContent = tNews('news.liveEmpty')
+    setStatus(tNews('news.liveEmpty'))
     return
   }
 
@@ -136,7 +152,7 @@ function renderSiteLiveNews() {
   grid.appendChild(frag)
 
   const when = siteLiveNewsPayload.updatedAt
-  if (when) {
+  if (when && status) {
     const d = new Date(when)
     const locale = document.documentElement.lang === 'fr' ? 'fr-FR' : 'en-GB'
     const dateStr = Number.isNaN(d.getTime()) ? String(when) : d.toLocaleString(locale)
@@ -150,7 +166,8 @@ async function fetchSiteLiveNews() {
   const status = document.getElementById('site-live-news-status')
   if (!grid) return
 
-  grid.innerHTML = `<p class="live-news-feed__loading">${escapeHtml(tNews('news.liveLoading'))}</p>`
+  grid.setAttribute('aria-busy', 'true')
+  grid.innerHTML = liveNewsSkeletonHtml()
   if (status) {
     status.hidden = true
     status.textContent = ''
@@ -273,21 +290,20 @@ function initTilt() {
   let raf = 0
 
   const tick = () => {
-    const toward = pointerInside ? 0.16 : 0.09
+    const toward = pointerInside ? 0.18 : 0.1
     px += (ax - px) * toward
     py += (ay - py) * toward
 
     const hover = wrap.matches(':hover')
-    const maxDeg = hover ? 9 : 6.5
-    const rotX = -py * 2 * maxDeg
-    const rotY = px * 2 * maxDeg
+    const maxDeg = hover ? 22 : 15
+    /* Vers le curseur (repère écran : py bas = +). rotateX(-py) + rotateY(px) = coin sous la souris qui se rapproche. */
+    const k = 2.35 * maxDeg
+    const rotX = -py * k
+    const rotY = px * k
 
-    const pop = hover ? 1.055 : 1
-    const micro = 1 + Math.min(0.022, Math.hypot(px, py) * 0.04)
-    const scale = pop * micro
-    const tz = hover ? 20 : 6 + 14 * Math.min(1, Math.hypot(px, py) * 2)
+    const tz = hover ? 26 : 10 + 18 * Math.min(1, Math.hypot(px, py) * 2)
 
-    inner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${tz}px) scale3d(${scale}, ${scale}, ${scale})`
+    inner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${tz}px)`
 
     const settled = Math.abs(px) < 0.004 && Math.abs(py) < 0.004
     if (settled && !hover) {

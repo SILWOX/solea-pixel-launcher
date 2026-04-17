@@ -12,15 +12,15 @@ export default defineConfig({
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/main/index.ts'),
-          gameLaunchWorker: resolve(__dirname, 'src/main/gameLaunchWorker.ts')
-        }
-      }
-    }
+          gameLaunchWorker: resolve(__dirname, 'src/main/gameLaunchWorker.ts'),
+        },
+      },
+    },
   },
   preload: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
   },
   renderer: {
-    plugins: [react()]
-  }
+    plugins: [react()],
+  },
 })

@@ -108,6 +108,8 @@
         <div class="ambient-blob ambient-blob--green"></div>
         <div class="ambient-blob ambient-blob--violet"></div>
       </div>
+      <canvas id="solea-hub-stars" class="hub-stars" aria-hidden="true" width="300" height="150"></canvas>
+      <canvas id="solea-hub-bg-fx" class="hub-bg-fx" aria-hidden="true" width="300" height="150"></canvas>
       <div class="ambient__grain"></div>
     </div>
 
@@ -227,6 +229,9 @@
           <div class="site-section__inner site-section__inner--hub">
             <div class="hub-shell">
               <div class="hub__grid">
+                <div class="glass-surface glass-surface--hub">
+                  <span class="glass-surface__orbit" aria-hidden="true"></span>
+                  <div class="glass-surface__body">
                 <div class="hub__copy">
                   <div class="hub-tags" aria-label="">
                     <span class="hub-tag hub-tag--green" data-i18n="hub.tag1">100% free</span>
@@ -257,19 +262,24 @@
                   </div>
                   <p class="hub__version hub__version--pending" id="hub-version" data-i18n="hub.versionLoading">…</p>
                 </div>
+                  </div>
+                </div>
 
                 <div class="hub__showcase">
                   <div class="tilt-wrap" id="tilt-wrap" tabindex="-1">
                     <div class="tilt-frame" id="tilt-frame">
                       <div class="tilt-inner" id="tilt-inner">
-                        <img
-                          src="assets/hub-launcher.png"
-                          width="1024"
-                          height="575"
-                          alt="Solea Pixel launcher — Home &amp; news"
-                          decoding="async"
-                          fetchpriority="high"
-                        />
+                        <div class="tilt-mockup">
+                          <img
+                            class="tilt-mockup__img"
+                            src="assets/hub-launcher.png"
+                            width="1024"
+                            height="575"
+                            alt="Solea Pixel launcher — Home &amp; news"
+                            decoding="async"
+                            fetchpriority="high"
+                          />
+                        </div>
                         <div class="tilt-anno tilt-anno--1" aria-hidden="true">
                           <span class="tilt-anno__stripe" aria-hidden="true"></span>
                           <span class="tilt-anno__label" data-i18n="tilt.1l">Home</span>
@@ -316,27 +326,41 @@
             </header>
 
             <div class="about-bento">
-              <article class="about-card about-card--1 about-bento__tile">
+              <article class="about-card about-card--1 about-bento__tile glass-surface glass-surface--card">
+                <span class="glass-surface__orbit" aria-hidden="true"></span>
+                <div class="glass-surface__body">
                 <div class="about-card__icon" aria-hidden="true">◇</div>
                 <h3 class="about-card__title" data-i18n="about.c1t"></h3>
                 <p class="about-card__body" data-i18n="about.c1b"></p>
+                </div>
               </article>
-              <article class="about-card about-card--2 about-bento__tile">
+              <article class="about-card about-card--2 about-bento__tile glass-surface glass-surface--card">
+                <span class="glass-surface__orbit" aria-hidden="true"></span>
+                <div class="glass-surface__body">
                 <div class="about-card__icon" aria-hidden="true">◎</div>
                 <h3 class="about-card__title" data-i18n="about.c2t"></h3>
                 <p class="about-card__body" data-i18n="about.c2b"></p>
+                </div>
               </article>
-              <article class="about-card about-card--3 about-bento__tile">
+              <article class="about-card about-card--3 about-bento__tile glass-surface glass-surface--card">
+                <span class="glass-surface__orbit" aria-hidden="true"></span>
+                <div class="glass-surface__body">
                 <div class="about-card__icon" aria-hidden="true">✦</div>
                 <h3 class="about-card__title" data-i18n="about.c3t"></h3>
                 <p class="about-card__body" data-i18n="about.c3b"></p>
+                </div>
               </article>
-              <article class="about-card about-card--4 about-bento__tile">
+              <article class="about-card about-card--4 about-bento__tile glass-surface glass-surface--card">
+                <span class="glass-surface__orbit" aria-hidden="true"></span>
+                <div class="glass-surface__body">
                 <div class="about-card__icon" aria-hidden="true">↻</div>
                 <h3 class="about-card__title" data-i18n="about.c4t"></h3>
                 <p class="about-card__body" data-i18n="about.c4b"></p>
+                </div>
               </article>
-              <article class="about-card about-card--6 about-card--wide about-card--compare about-bento__span">
+              <article class="about-card about-card--6 about-card--wide about-card--compare about-bento__span glass-surface glass-surface--card">
+                <span class="glass-surface__orbit" aria-hidden="true"></span>
+                <div class="glass-surface__body">
                 <div class="about-card__icon about-card__icon--svg" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
@@ -344,17 +368,23 @@
                 </div>
                 <h3 class="about-card__title" data-i18n="about.c6t"></h3>
                 <p class="about-card__body" data-i18n="about.c6b"></p>
+                </div>
               </article>
-              <article class="about-card about-card--5 about-card--wide about-bento__span">
+              <article class="about-card about-card--5 about-card--wide about-bento__span glass-surface glass-surface--card">
+                <span class="glass-surface__orbit" aria-hidden="true"></span>
+                <div class="glass-surface__body">
                 <div class="about-card__icon" aria-hidden="true">✺</div>
                 <h3 class="about-card__title" data-i18n="about.c5t"></h3>
                 <p class="about-card__body" data-i18n="about.c5b"></p>
+                </div>
               </article>
 
               <article
-                class="about-card about-card--wide about-card--smartscreen about-bento__smart"
+                class="about-card about-card--wide about-card--smartscreen about-bento__smart glass-surface glass-surface--card"
                 aria-labelledby="about-smartscreen-title"
               >
+                <span class="glass-surface__orbit" aria-hidden="true"></span>
+                <div class="glass-surface__body">
                 <div class="about-smartscreen__head">
                   <div class="about-card__icon about-card__icon--tip" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -387,6 +417,7 @@
                       <li data-i18n="about.smartscreenStep2" data-i18n-html></li>
                     </ol>
                   </div>
+                </div>
                 </div>
               </article>
             </div>
@@ -651,6 +682,8 @@
 
     <script src="i18n.js"></script>
     <script src="actu-markup.js"></script>
+    <script src="hub-stars.js" defer></script>
+    <script src="hub-bg-fx.js" defer></script>
     <script src="main.js" defer></script>
   </body>
 </html>

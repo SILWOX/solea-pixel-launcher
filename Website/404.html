@@ -17,17 +17,29 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/error404-fx.css" />
   </head>
   <body class="page-error">
     <a class="skip-link" href="#page-error-main" data-i18n="page404.skip">Skip to content</a>
     <div class="ambient" aria-hidden="true">
       <div class="ambient__base"></div>
-      <div class="ambient__blobs">
-        <div class="ambient-blob ambient-blob--orange"></div>
-        <div class="ambient-blob ambient-blob--blue"></div>
-        <div class="ambient-blob ambient-blob--violet"></div>
+      <div class="ambient__blobs page-error-ambient-blobs">
+        <div class="ambient-blob page-error-blob page-error-blob--a"></div>
+        <div class="ambient-blob page-error-blob page-error-blob--b"></div>
+        <div class="ambient-blob page-error-blob page-error-blob--c"></div>
       </div>
       <div class="ambient__grain"></div>
+    </div>
+
+    <div class="page-error-fx" aria-hidden="true">
+      <canvas id="err-particles" class="page-error-particles" width="400" height="300"></canvas>
+      <div class="page-error-fx__orb page-error-fx__orb--1"></div>
+      <div class="page-error-fx__orb page-error-fx__orb--2"></div>
+      <div class="page-error-fx__orb page-error-fx__orb--3"></div>
+      <div class="page-error-fx__glow page-error-fx__glow--a"></div>
+      <div class="page-error-fx__glow page-error-fx__glow--b"></div>
+      <div class="page-error-fx__glow page-error-fx__glow--c"></div>
+      <div class="page-error-fx__vignette"></div>
     </div>
 
     <div class="page-error__shell">
@@ -76,7 +88,157 @@
       </main>
     </div>
 
+    <button
+      type="button"
+      id="err-golden-404"
+      class="page-error-golden-404"
+      hidden
+      aria-hidden="true"
+      data-i18n-aria="page404.easterGoldenAria"
+    >
+      <span class="page-error-golden-404__text" aria-hidden="true">404</span>
+    </button>
+
+    <div id="err-easter-rocket" class="page-error-rocket" hidden aria-hidden="true" style="--rocket-deg: 0deg">
+      <div class="page-error-rocket__ship" aria-hidden="true">
+        <span class="page-error-rocket__trail"></span>
+        <span class="page-error-rocket__fin page-error-rocket__fin--tl"></span>
+        <span class="page-error-rocket__fin page-error-rocket__fin--bl"></span>
+        <span class="page-error-rocket__body"></span>
+        <span class="page-error-rocket__window"></span>
+        <span class="page-error-rocket__nose"></span>
+      </div>
+    </div>
+
+    <div id="err-void-stage" class="page-error-void-stage" hidden aria-hidden="true">
+      <div class="page-error-void-lensing" aria-hidden="true"></div>
+      <div id="err-void-hole" class="page-error-void-hole" aria-hidden="true">
+        <span class="page-error-void-hole__streaks" aria-hidden="true"></span>
+        <span class="page-error-void-hole__rings page-error-void-hole__rings--a" aria-hidden="true"></span>
+        <span class="page-error-void-hole__rings page-error-void-hole__rings--b" aria-hidden="true"></span>
+        <span class="page-error-void-hole__disk" aria-hidden="true"></span>
+        <span class="page-error-void-hole__lens" aria-hidden="true"></span>
+        <span class="page-error-void-hole__core" aria-hidden="true"></span>
+      </div>
+      <div class="page-error-void-blackout" aria-hidden="true"></div>
+      <div class="page-error-void-stars" id="err-void-stars" hidden aria-hidden="true"></div>
+      <div class="page-error-void-meme-layer" id="err-void-meme-layer" aria-hidden="true"></div>
+      <div id="err-void-lucky-wrap" class="page-error-void-lucky-wrap" hidden aria-hidden="true">
+        <button type="button" id="err-void-lucky-star" class="page-error-void-lucky-star" aria-label="Étoile singulière">
+          <span class="page-error-void-lucky-star__halo" aria-hidden="true"></span>
+          <span class="page-error-void-lucky-star__core" aria-hidden="true"></span>
+        </button>
+      </div>
+      <canvas id="err-void-zero-canvas" class="page-error-void-zero-canvas" hidden aria-hidden="true"></canvas>
+      <div id="err-void-explosion" class="page-error-void-explosion" hidden aria-hidden="true"></div>
+      <div id="err-void-rebuild" class="page-error-void-rebuild" hidden aria-hidden="true">
+        <p class="page-error-void-rebuild__title">404</p>
+        <p class="page-error-void-rebuild__hint" data-i18n="page404.voidSequelRebuildHint">
+          Replace les morceaux comme sur l’accueil — glisse-les avec la souris.
+        </p>
+        <div id="err-void-rebuild-pieces" class="page-error-void-rebuild-pieces"></div>
+        <button type="button" id="err-void-rebuild-end" class="page-error-void-rebuild-end" hidden data-i18n="page404.voidSequelEndGame">
+          Mettre fin au jeu
+        </button>
+      </div>
+      <div id="err-void-mist" class="page-error-void-mist" hidden aria-hidden="true">
+        <div class="page-error-void-mist__vignette" aria-hidden="true"></div>
+        <canvas id="err-void-mist-canvas" class="page-error-void-mist-canvas"></canvas>
+        <div id="err-void-mist-tutorial" class="page-error-void-mist-tutorial" hidden></div>
+        <div id="err-void-mist-hud" class="page-error-void-mist-hud" aria-live="polite"></div>
+      </div>
+      <button type="button" id="err-void-reset" class="page-error-void-reset" hidden data-i18n="page404.easterVoidReset">
+        Retour au point de départ
+      </button>
+    </div>
+
+    <dialog class="page-error-void-sequel-dialog" id="err-void-sequel-finale" aria-labelledby="err-void-sequel-finale-title">
+      <div class="page-error-void-sequel-dialog__panel">
+        <h2 id="err-void-sequel-finale-title" class="page-error-void-sequel-dialog__title" data-i18n="page404.voidSequelDialogTitle">
+          Fin de l’épreuve
+        </h2>
+        <div id="err-void-sequel-dialogue-body" class="page-error-void-sequel-dialogue-body"></div>
+        <div class="page-error-void-sequel-dialog__actions">
+          <button type="button" class="btn btn-line btn-lg" id="err-void-sequel-continue" hidden disabled data-i18n="page404.voidSequelContinue">
+            Continuer
+          </button>
+          <button type="button" class="btn btn-download btn-lg" id="err-void-sequel-gohome" hidden data-i18n="page404.voidSequelGoHome">
+            Retourner au site
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <div id="err-void-p2" class="page-error-void-p2" hidden aria-hidden="true" tabindex="-1">
+      <canvas id="err-void-p2-canvas" class="page-error-void-p2-canvas" width="300" height="150"></canvas>
+      <div id="err-void-p2-hud" class="page-error-void-p2-hud" aria-live="polite"></div>
+      <div id="err-void-p2-frag" class="page-error-void-p2-fraglayer" aria-hidden="true"></div>
+      <div id="err-void-p2-intro" class="page-error-void-p2-intro" aria-hidden="false">
+        <div class="page-error-void-p2-intro__panel">
+          <p class="page-error-void-p2-intro__tag" data-i18n="page404.voidP2PacTag">Épreuve 2</p>
+          <h2 class="page-error-void-p2-intro__title" data-i18n="page404.voidP2PacTitle">Pac enragé</h2>
+          <p class="page-error-void-p2-intro__hint" data-i18n="page404.voidP2PacHint">
+            Tiens 60 secondes. Flèches ou ZQSD / WASD.
+          </p>
+          <p id="err-void-p2-intro-lose" class="page-error-void-p2-intro__lose" hidden></p>
+          <button type="button" id="err-void-p2-launch" class="btn btn-download btn-lg" data-i18n="page404.voidP2PacLaunch">
+            Lancer
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="err-void-p2-gold" class="page-error-void-p2-gold" hidden aria-hidden="true">
+      <div class="page-error-void-p2-trophy" aria-hidden="true">🏆</div>
+      <button type="button" id="err-void-p2-gold-btn" class="btn btn-lg page-error-void-p2-gold-btn" data-i18n="page404.voidP2GoldBtn">
+        Continuer
+      </button>
+    </div>
+    <div id="err-void-p2-cine" class="page-error-void-p2-cine" hidden aria-hidden="true">
+      <div id="err-void-p2-black" class="page-error-void-p2-black" aria-hidden="true"></div>
+      <div id="err-void-p2-red404" class="page-error-void-p2-red404" aria-hidden="true">404</div>
+      <p id="err-void-p2-rocket-hint" class="page-error-void-p2-rocket-hint" hidden></p>
+    </div>
+    <div id="err-void-p2-license" class="page-error-void-p2-license" hidden aria-hidden="true">
+      <header class="page-error-void-p2-license__bar">
+        <span class="page-error-void-p2-license__brand" data-i18n="page404.voidP2LicBrand">SPL</span>
+        <span class="page-error-void-p2-license__glitch" data-i18n="page404.voidP2LicGlitch">ERROR 404</span>
+      </header>
+      <div id="err-void-p2-license-scroll" class="page-error-void-p2-license-scroll">
+        <div id="err-void-p2-license-feed" class="page-error-void-p2-license-feed"></div>
+        <button type="button" id="err-void-p2-catch404" class="page-error-void-p2-catch404">404</button>
+      </div>
+    </div>
+    <dialog id="err-void-p2-dlg-hack" class="page-error-void-p2-dlg page-error-void-p2-dlg--hack" aria-labelledby="err-void-p2-dlg-hack-title">
+      <div class="page-error-void-p2-dlg__panel">
+        <h2 id="err-void-p2-dlg-hack-title" class="page-error-void-p2-dlg__title" data-i18n="page404.voidP2HackTitle">Signal</h2>
+        <div id="err-void-p2-hack-body" class="page-error-void-p2-dlg__body"></div>
+      </div>
+    </dialog>
+    <dialog id="err-void-p2-dlg-win" class="page-error-void-p2-dlg page-error-void-p2-dlg--win" aria-labelledby="err-void-p2-dlg-win-title">
+      <form method="dialog" class="page-error-void-p2-dlg__panel">
+        <h2 id="err-void-p2-dlg-win-title" class="page-error-void-p2-dlg__title" data-i18n="page404.voidP2WinTitle">Bien joué</h2>
+        <p class="page-error-void-p2-dlg__lead" data-i18n="page404.voidP2WinBody">Tu as isolé le 404 fuyard.</p>
+        <button type="submit" class="btn btn-download btn-lg" data-i18n="page404.voidP2WinOk">OK</button>
+      </form>
+    </dialog>
+
+    <dialog class="page-error-easter-dialog" id="err-easter-dialog" aria-labelledby="err-easter-title">
+      <div class="page-error-easter-dialog__panel">
+        <h2 id="err-easter-title" class="page-error-easter-dialog__title" data-i18n="page404.easterTitle">Bravo !</h2>
+        <p class="page-error-easter-dialog__lead" data-i18n="page404.easterLead">Tu as gagné une récompense.</p>
+        <div class="page-error-easter-dialog__actions">
+          <button type="button" class="btn btn-download btn-lg" id="err-easter-claim" data-i18n="page404.easterClaim">
+            Obtenir
+          </button>
+          <button type="button" class="btn btn-line btn-lg" id="err-easter-dismiss" data-i18n="page404.easterDismiss">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </dialog>
+
     <script src="/i18n.js"></script>
+    <script src="/error404-particles.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         if (window.SoleaI18n) window.SoleaI18n.init()
@@ -90,5 +252,8 @@
         }
       })
     </script>
+    <script src="/error404-void-sequel.js"></script>
+    <script src="/error404-void-phase2.js"></script>
+    <script src="/error404-easter.js"></script>
   </body>
 </html>
