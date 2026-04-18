@@ -10,8 +10,9 @@ type VersionManifestEntry = { id: string; url: string; type?: string; releaseTim
 type VersionManifest = { versions: VersionManifestEntry[] }
 type VersionJson = {
   id?: string
+  inheritsFrom?: string
   downloads?: { server?: { url: string; sha1?: string; size?: number } }
-  /** Présent sur les versions récentes — ex. 21, 25 pour Minecraft 26.x */
+  /** Présent sur les versions récentes — ex. 21, 25 pour Minecraft 26.x (souvent sur la feuille après `inheritsFrom`) */
   javaVersion?: { component?: string; majorVersion?: number }
 }
 
@@ -45,7 +46,10 @@ export async function listMojangVanillaReleaseIdsFrom18(): Promise<string[]> {
   return releases.map((v) => v.id)
 }
 
-/** Lit `javaVersion.majorVersion` dans le JSON de version Mojang (pour contrôle JVM au démarrage). */
+/**
+ * Lit `javaVersion.majorVersion` via le manifeste Mojang + JSON de version,
+ * en suivant `inheritsFrom` (comme sur le disque) — nécessaire quand le JSON racine 26.x ne contient que `inheritsFrom`.
+ */
 export async function fetchVanillaVersionJavaMajor(versionId: string): Promise<number | null> {
   const want = versionId.trim()
   if (!want) return null
@@ -53,13 +57,26 @@ export async function fetchVanillaVersionJavaMajor(versionId: string): Promise<n
     const manRes = await fetch(MANIFEST_URL, { signal: AbortSignal.timeout(25000) })
     if (!manRes.ok) return null
     const manifest = (await manRes.json()) as VersionManifest
-    const entry = manifest.versions?.find((e) => e.id === want)
-    if (!entry?.url) return null
-    const verRes = await fetch(entry.url, { signal: AbortSignal.timeout(25000) })
-    if (!verRes.ok) return null
-    const verJson = (await verRes.json()) as VersionJson
-    const jm = verJson.javaVersion?.majorVersion
-    return typeof jm === 'number' && jm > 0 ? jm : null
+    const versions = manifest.versions ?? []
+    const byId = (id: string) => versions.find((e) => e.id === id)
+
+    let cur = want
+    const seen = new Set<string>()
+    for (let depth = 0; depth < 16 && cur; depth += 1) {
+      if (seen.has(cur)) return null
+      seen.add(cur)
+      const entry = byId(cur)
+      if (!entry?.url) return null
+      const verRes = await fetch(entry.url, { signal: AbortSignal.timeout(25000) })
+      if (!verRes.ok) return null
+      const verJson = (await verRes.json()) as VersionJson
+      const jm = verJson.javaVersion?.majorVersion
+      if (typeof jm === 'number' && jm > 0) return jm
+      const inh = typeof verJson.inheritsFrom === 'string' ? verJson.inheritsFrom.trim() : ''
+      if (!inh) return null
+      cur = inh
+    }
+    return null
   } catch {
     return null
   }

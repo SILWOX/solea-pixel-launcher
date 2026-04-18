@@ -134,10 +134,12 @@ import {
 import {
   backupVanillaSaves,
   defaultShaderStackForReleaseId,
+  ensureSoleaVanillaVersionLayout,
   ensureVanillaSoleaVersionMarker,
   vanillaJavaMajorHint,
   ensureVanillaProfileLayout,
   getDefaultDotMinecraftPath,
+  getSoleaVanillaProfileModsDir,
   getVanillaClientVersionsDir,
   getVanillaProfileGameDir,
   listAllVanillaInstallFolders,
@@ -152,10 +154,7 @@ import {
 } from './vanillaPaths.js'
 import { fetchVanillaVersionJavaMajor } from './soleaVanillaDedicatedServer.js'
 import { ensureVanillaIrisSodiumMods } from './vanillaShaderMods.js'
-import {
-  SOLEA_VANILLA_SCREENSHOTS_PACK_ID,
-  SOLEA_VANILLA_SCREENSHOTS_STUB_DIR
-} from '../soleaVanillaScreenshotsId.js'
+import { SOLEA_VANILLA_SCREENSHOTS_PACK_ID } from '../soleaVanillaScreenshotsId.js'
 
 type ModpackAllActionRow = {
   id: ModpackId
@@ -258,25 +257,12 @@ function isSoleaInstanceInstalled(instanceRoot: string): boolean {
   return existsSync(join(instanceRoot, '.solea-installed.json'))
 }
 
-/** Dossier parent de `screenshots/` : instance modpack, ou `.minecraft` si client vanilla installé ; sinon stub. */
+/** Dossier parent de `screenshots/` : instance modpack, ou racine `.minecraft` pour l’entrée « Minecraft » (vanilla). */
 function getScreenshotsParentDir(rawId: string): string {
   if (rawId === SOLEA_VANILLA_SCREENSHOTS_PACK_ID) {
     const ud = app.getPath('userData')
-    const st = loadSettings()
-    const hubV = st.vanillaHubLastSelectedVersion?.trim()
-    if (hubV) {
-      const folder = vanillaInstallFolderName(hubV, defaultShaderStackForReleaseId(hubV))
-      if (listVanillaClientVersionIds(ud, folder).length > 0) {
-        ensureVanillaProfileLayout(ud, folder)
-        return getVanillaProfileGameDir(ud, folder)
-      }
-    }
-    const entries = listAllVanillaInstallFolders(ud)
-    if (entries[0]) {
-      ensureVanillaProfileLayout(ud, entries[0].folder)
-      return getVanillaProfileGameDir(ud, entries[0].folder)
-    }
-    return join(ud, SOLEA_VANILLA_SCREENSHOTS_STUB_DIR)
+    ensureVanillaProfileLayout(ud, 'soleapixel')
+    return getVanillaProfileGameDir(ud)
   }
   const resolved = resolveModpackId(rawId)
   return getInstanceRootForModpack(resolved)
@@ -2120,7 +2106,8 @@ ipcMain.handle('vanilla:open-folder', async (_e, profileId: unknown, kind: unkno
     if (err) return { ok: false as const, error: err }
     return { ok: true as const }
   }
-  if (listVanillaClientVersionIds(ud, id).length === 0) {
+  const vids = listVanillaClientVersionIds(ud, id)
+  if (vids.length === 0) {
     return {
       ok: false as const,
       error: fr
@@ -2129,7 +2116,10 @@ ipcMain.handle('vanilla:open-folder', async (_e, profileId: unknown, kind: unkno
     }
   }
   ensureVanillaProfileLayout(ud, id)
-  const err = await shell.openPath(getVanillaClientVersionsDir(ud))
+  const gameDirForLayout = getVanillaProfileGameDir(ud)
+  ensureSoleaVanillaVersionLayout(gameDirForLayout, id, vids[0]!)
+  const soleaDir = join(getVanillaClientVersionsDir(ud), id)
+  const err = await shell.openPath(soleaDir)
   if (err) return { ok: false as const, error: err }
   return { ok: true as const }
 })
@@ -2256,17 +2246,21 @@ type BuildVanillaLaunchContextOpts = {
   forbidIfDotMinecraftRunning?: boolean
 }
 
-/** JVM pour minecraft-java-core : meta profil, JSON client local, manifeste Mojang, puis heuristique (26.x → 25, …). */
+/**
+ * JVM pour minecraft-java-core : JSON client local → manifeste Mojang (`inheritsFrom` inclus) →
+ * méta profil (sync) → heuristique (26.x → 25, …).
+ * La méta n’est plus prioritaire : une ancienne valeur « 21 » bloquait Java 25 pour Minecraft 26.x.
+ */
 async function resolveVanillaLaunchJavaMajorString(
   versionId: string,
   metaJava: string | null | undefined
 ): Promise<string> {
-  const trimmed = typeof metaJava === 'string' ? metaJava.trim() : ''
-  if (trimmed && /^\d+$/.test(trimmed)) return trimmed
   const fromDisk = readInstalledClientVersionJavaMajor(versionId)
   if (fromDisk != null) return String(fromDisk)
   const fromRemote = await fetchVanillaVersionJavaMajor(versionId)
   if (fromRemote != null) return String(fromRemote)
+  const trimmed = typeof metaJava === 'string' ? metaJava.trim() : ''
+  if (trimmed && /^\d+$/.test(trimmed)) return trimmed
   const fb = vanillaJavaMajorHint(versionId).trim()
   return fb || '21'
 }
@@ -2376,13 +2370,19 @@ async function buildVanillaLaunchWorkerContext(
   }
   const gameExtra = parseArgsBlock(game.gameArgs)
 
+  ensureSoleaVanillaVersionLayout(gameDir, profileId, version)
+  const useFabricLoader = stack === 'iris'
+  if (useFabricLoader) {
+    const soleaMods = getSoleaVanillaProfileModsDir(gameDir, profileId)
+    jvmExtra.unshift(`-Dfabric.modsFolder=${soleaMods}`)
+  }
+
   const memMin = settings.diagnosticLaunch ? '512M' : game.memoryMin
   const memMax = settings.diagnosticLaunch ? '1G' : game.memoryMax
   const downloadMult = settings.diagnosticLaunch
     ? Math.min(2, Math.max(1, settings.downloadThreads))
     : settings.downloadThreads
 
-  const useFabricLoader = stack === 'iris'
   /** 1.8–1.15 (profil OptiFine) : Forge installé par minecraft-java-core ; le jar OptiFine se place ensuite dans mods/. */
   const useForgeLoader = stack === 'optifine'
 
@@ -2447,10 +2447,18 @@ async function buildVanillaLaunchWorkerContext(
   return { ok: true, ud, profileId, version, gameDir, launchOpts, settings, fr }
 }
 
-async function ensureVanillaIrisSodiumAfterClient(ud: string, version: string, stack: 'iris' | 'optifine'): Promise<void> {
+async function ensureVanillaIrisSodiumAfterClient(
+  ud: string,
+  version: string,
+  stack: 'iris' | 'optifine',
+  profileId: string
+): Promise<void> {
   if (stack !== 'iris') return
   const dotMc = getVanillaProfileGameDir(ud)
-  const r = await ensureVanillaIrisSodiumMods({ gameVersion: version, dotMinecraft: dotMc })
+  const pid = sanitizeVanillaFolderSegment(profileId)
+  ensureSoleaVanillaVersionLayout(dotMc, pid, version.trim())
+  const soleaMods = getSoleaVanillaProfileModsDir(dotMc, pid)
+  const r = await ensureVanillaIrisSodiumMods({ gameVersion: version, soleaProfileModsDir: soleaMods })
   if (!r.ok) logMain('warn', 'vanilla iris/sodium mods', r.error)
 }
 
@@ -2514,7 +2522,7 @@ ipcMain.handle('vanilla:download-client', async (_e, payload: unknown) => {
   const soleaMk = ensureVanillaSoleaVersionMarker(ctx.profileId, ctx.version)
   if (!soleaMk.ok) logMain('warn', 'vanilla solea version marker after download', soleaMk.error)
   /* Attendre Modrinth : sinon le lancement immédiat après ce IPC peut démarrer le jeu sans les jars. */
-  await ensureVanillaIrisSodiumAfterClient(ctx.ud, ctx.version, stackDl)
+  await ensureVanillaIrisSodiumAfterClient(ctx.ud, ctx.version, stackDl, ctx.profileId)
   return { ok: true as const }
 })
 
@@ -2549,7 +2557,7 @@ ipcMain.handle('vanilla:launch', async (_e, payload: unknown) => {
   })
   try {
     await new Promise<void>((r) => setImmediate(r))
-    await ensureVanillaIrisSodiumAfterClient(ud, version, stackL)
+    await ensureVanillaIrisSodiumAfterClient(ud, version, stackL, profileId)
     await runMinecraftGameWorker(launchOpts as unknown as Record<string, unknown>, 'launch')
     const metaAfter = readVanillaMeta(ud, profileId)
     const javaUsed =

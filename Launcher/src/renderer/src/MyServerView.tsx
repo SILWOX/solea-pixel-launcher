@@ -81,6 +81,26 @@ const WORLD_LEVEL_TYPES = [
   { value: 'minecraft:amplified', labelKey: 'myServer.worldTypeAmplified' as const }
 ]
 
+function serverConsoleLineClass(line: string): string {
+  const base = 'my-server-console-line'
+  const lower = line.toLowerCase()
+  if (lower.startsWith('[stderr]')) return `${base} ${base}--err`
+  const inner = line.startsWith('[stderr]') ? line.slice(9) : line
+  if (line.includes('[Solea]')) return `${base} ${base}--solea`
+  if (
+    /\[.*\/error\]|\[.*\/err\]|fatal error|\bfatal\b|\berror:\b|unhandled|exception in thread|java\.lang\.|could not|cannot find|failed to load|failed to bind|address already in use|incompatible|nosuchfile|classnotfound/i.test(
+      inner
+    )
+  ) {
+    return `${base} ${base}--err`
+  }
+  if (/\[.*\/warn\]|\bwarn\b|warning:/i.test(inner)) return `${base} ${base}--warn`
+  if (/\/(info|init)\]/i.test(inner)) return `${base} ${base}--info`
+  if (/\/debug\]/i.test(inner)) return `${base} ${base}--debug`
+  if (/for help, type/i.test(inner)) return `${base} ${base}--success`
+  return base
+}
+
 type SoleServerListRowUi = {
   id: string
   name: string
@@ -1032,7 +1052,7 @@ function MyServerDetail({
   const [propsForm, setPropsForm] = useState<ServerPropsForm>(() => defaultFormFromMap(new Map()))
   const [detailTab, setDetailTab] = useState<MyServerDetailTab>('console')
   const [jvmExtra, setJvmExtra] = useState('')
-  const consoleRef = useRef<HTMLPreElement>(null)
+  const consoleRef = useRef<HTMLDivElement>(null)
 
   const maxRam = Math.min(64 * 1024, Math.max(1024, Math.floor(memoryGiB * 1024 * 0.92)))
 
@@ -1244,6 +1264,16 @@ function MyServerDetail({
     setCmd('')
     if (!r.ok) pushToast(r.error, 'error')
     void pullConsole()
+  }
+
+  const copyConsoleLogs = async () => {
+    if (!lines.length) return
+    try {
+      await navigator.clipboard.writeText(lines.join('\n'))
+      pushToast(t('myServer.consoleCopied'), 'success')
+    } catch {
+      pushToast(t('myServer.copyFailed'), 'error')
+    }
   }
 
   const worldTypeOptions = useMemo(
@@ -1499,9 +1529,27 @@ function MyServerDetail({
                           </div>
                           <div className="my-server-detail-section-body my-server-detail-section-body--console">
                             <div className="my-server-console-wrap">
-                              <pre ref={consoleRef} className="my-server-console" tabIndex={0}>
-                                {lines.length ? lines.join('\n') : '—'}
-                              </pre>
+                              <div className="my-server-console-toolbar">
+                                <button
+                                  type="button"
+                                  className="btn-muted my-server-console-toolbar-btn"
+                                  disabled={!lines.length}
+                                  onClick={() => void copyConsoleLogs()}
+                                >
+                                  {t('myServer.consoleCopy')}
+                                </button>
+                              </div>
+                              <div ref={consoleRef} className="my-server-console" tabIndex={0} role="log">
+                                {lines.length ? (
+                                  lines.map((ln, idx) => (
+                                    <div key={idx} className={serverConsoleLineClass(ln)}>
+                                      {ln}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="my-server-console-line my-server-console-line--muted">—</div>
+                                )}
+                              </div>
                               <div className="my-server-console-input-row">
                                 <input
                                   type="text"

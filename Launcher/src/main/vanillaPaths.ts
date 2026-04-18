@@ -2,10 +2,23 @@
  * Vanilla Solea : jeu dans le **.minecraft** officiel ; métadonnées dans `userData/vanilla-profiles-meta/`.
  * Install détectée seulement si `.minecraft/versions/soleapixel-<release>-IrisLoader|OptiFine/` existe avec le JSON marqueur
  * (`inheritsFrom` → id Mojang réel). Les dossiers `1.12.2` seuls (launcher officiel) ne comptent pas comme install Solea.
+ *
+ * Par profil Solea, sous ce dossier : `mods/` (Iris/Sodium…), `fabric/` (réservé), `minecraft-version/<id>` → lien vers
+ * le client Mojang `versions/<id>/` (junction Windows ou symlink Unix) — le `.minecraft/mods` global reste indépendant.
  */
-import { join, dirname } from 'node:path'
+import { join, dirname, resolve, relative } from 'node:path'
 import os from 'node:os'
-import { mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync } from 'node:fs'
+import {
+  mkdirSync,
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  statSync,
+  rmSync,
+  symlinkSync,
+  lstatSync
+} from 'node:fs'
 import AdmZip from 'adm-zip'
 import { sanitizeVanillaFolderSegment } from '../vanillaFolderNames.js'
 
@@ -242,6 +255,73 @@ export function ensureVanillaSoleaVersionMarker(
   return writeVanillaSoleaVersionMarker(profileId, mojangVersionId)
 }
 
+/**
+ * Arborescence par profil Solea sous `.minecraft/versions/<soleapixel-…>/` :
+ * `mods/`, `fabric/`, et `minecraft-version/<idMojang>` → dossier réel `versions/<idMojang>/`.
+ * Appeler après téléchargement du client (dossier Mojang présent) et avant lancement Fabric.
+ */
+export function ensureSoleaVanillaVersionLayout(
+  gameDir: string,
+  profileId: string,
+  mojangVersionId: string
+): void {
+  const id = sanitizeVanillaFolderSegment(profileId)
+  const mc = String(mojangVersionId ?? '')
+    .trim()
+    .replace(/[^\w.-]/g, '')
+  if (!id || !SOLEA_VERSION_DIR_RE.test(id) || !mc || mc.includes('..')) return
+
+  const verRoot = join(gameDir, 'versions')
+  const base = join(verRoot, id)
+  mkdirSync(join(base, 'mods'), { recursive: true })
+  mkdirSync(join(base, 'fabric'), { recursive: true })
+  const nestedRoot = join(base, 'minecraft-version')
+  mkdirSync(nestedRoot, { recursive: true })
+
+  const targetAbs = resolve(join(verRoot, mc))
+  if (!existsSync(targetAbs)) return
+
+  const linkPath = join(nestedRoot, mc)
+  try {
+    if (existsSync(linkPath)) {
+      const st = lstatSync(linkPath)
+      if (st.isSymbolicLink() || st.isDirectory()) return
+      rmSync(linkPath, { force: true })
+    }
+    if (process.platform === 'win32') {
+      symlinkSync(targetAbs, linkPath, 'junction')
+    } else {
+      const rel = relative(dirname(linkPath), targetAbs)
+      symlinkSync(rel || '.', linkPath)
+    }
+  } catch {
+    /* junction/symlink peut échouer (droits, FS) — les mods restent utilisables via fabric.modsFolder */
+  }
+
+  const readMeFabric = join(base, 'fabric', 'readme.txt')
+  if (!existsSync(readMeFabric)) {
+    try {
+      writeFileSync(
+        readMeFabric,
+        [
+          'Solea Pixel — dossier réservé au profil Fabric (loader principal géré par le launcher sous .soleapixel/loader).',
+          'Les mods du hub (Iris, Sodium, …) sont dans ../mods/ .',
+          ''
+        ].join('\n'),
+        'utf8'
+      )
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+/** Chemin absolu du dossier mods isolé pour un profil vanilla Solea. */
+export function getSoleaVanillaProfileModsDir(gameDir: string, profileId: string): string {
+  const id = sanitizeVanillaFolderSegment(profileId)
+  return resolve(join(gameDir, 'versions', id, 'mods'))
+}
+
 /** Indique si le client vanilla **Solea** est installé (dossier marqueur `soleapixel-…` + client Mojang de base). */
 export function listVanillaClientVersionIds(userData: string, profileId: string): string[] {
   void userData
@@ -315,7 +395,7 @@ export function listAllVanillaInstallFolders(userData: string): { folder: string
 }
 
 /**
- * Supprime uniquement le dossier marqueur Solea `.minecraft/versions/<soleapixel-…>/` (quelques Ko de JSON).
+ * Supprime le dossier profil Solea `.minecraft/versions/<soleapixel-…>/` (marqueur JSON, `mods/`, `fabric/`, `minecraft-version/`…).
  * Le cache client Mojang `versions/<release>/` (ex. `1.12.2`) n’est pas supprimé — le launcher officiel peut encore l’utiliser.
  */
 export function uninstallVanillaClientVersion(

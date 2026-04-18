@@ -111,14 +111,14 @@ export const EN: Record<string, string> = {
   'shell.sidebarAria': 'Main navigation',
   'shell.vanillaMinecraft': 'Vanilla Minecraft',
   'shell.vanillaMinecraftTitle':
-    'Official Minecraft .minecraft folder — Solea profile ids soleapixel-version-IrisLoader or OptiFine',
+    'Official .minecraft — Solea profiles under versions/soleapixel-<release>-IrisLoader or -OptiFine (own mods/, shared saves & screenshots)',
   'shell.vanillaMinecraftAria': 'Vanilla Minecraft entry',
   'shell.blockSelectPackDuringVanilla':
     'Wait for vanilla install or launch to finish before switching modpack instance.',
   'vanillaMc.lazyLoading': 'Loading…',
   'vanillaMc.title': 'Vanilla Minecraft',
   'vanillaMc.subtitle':
-    'Worlds, screenshots and options live in your real .minecraft directory (same as the Mojang launcher). Clients download under .minecraft/versions/. Modpack instances stay separate.',
+    'Worlds, screenshots and options use your real .minecraft (like the Mojang launcher). Fabric mods for each Solea line stay under .minecraft/versions/soleapixel-…/mods/ so the global mods folder is untouched. Modpack instances stay separate.',
   'vanillaMc.linkChangelog': 'Minecraft.net — notes & updates',
   'vanillaMc.sectionVersions': 'Version',
   'vanillaMc.quickLatestRelease': 'Latest release {{v}}',
@@ -197,7 +197,7 @@ export const EN: Record<string, string> = {
   'vanillaHub.chipLauncherHint': 'Solea Pixel Launcher build',
   'vanillaHub.playTag': 'Vanilla profile',
   'vanillaHub.playSub':
-    'Each line uses a Solea profile id (soleapixel-release-IrisLoader or OptiFine) for settings; the game shares your normal .minecraft (saves, screenshots, mods).',
+    'Each line uses a Solea profile id (soleapixel-<release>-IrisLoader or OptiFine). The game uses your real .minecraft for worlds, options and screenshots; Fabric mods for that line live only under .minecraft/versions/<that profile>/mods/, not in the global mods folder.',
   'vanillaHub.versionPitch.fallback': 'Minecraft {{maj}} — Java Edition release.',
   'vanillaHub.versionPitch.1_8':
     'Bountiful Update — granite, andesite, diorite, rabbits, slime blocks, and dozens of tweaks.',
@@ -452,6 +452,8 @@ export const EN: Record<string, string> = {
   'myServer.jvmExtraSaved': 'Extra JVM arguments saved.',
   'myServer.consolePlaceholder': 'Server command (e.g. op Player)',
   'myServer.consoleSend': 'Send',
+  'myServer.consoleCopy': 'Copy logs',
+  'myServer.consoleCopied': 'Logs copied to clipboard.',
   'myServer.installBarTitle': 'Server pack install',
   'discordPresence.boot': 'Starting…',
   'discordPresence.login': 'Microsoft sign-in',
@@ -466,7 +468,7 @@ export const EN: Record<string, string> = {
   'screenshots.vanillaInstanceName': 'Minecraft',
   'screenshots.instanceGroupModpacks': 'Modpack instances',
   'screenshots.instancePickerHint':
-    "Minecraft (top) is vanilla from the launcher's Minecraft hub. Entries under the line are modpack instances.",
+    'Minecraft (top): your real `.minecraft/screenshots` folder (shared with the Mojang launcher). Entries under the line are modpack instances.',
   'screenshots.instanceSection': 'Instance to show',
   'screenshots.toolbarAria': 'Instance and folder actions',
   'screenshots.galleryTitle': 'Gallery',
@@ -936,19 +938,20 @@ export const EN: Record<string, string> = {
   'settings.vanillaGameArgsSub': 'Extra arguments passed to the vanilla game only.',
   'settings.vanillaInstalledTitle': 'Downloaded client versions',
   'settings.vanillaInstalledSub':
-    'Per row: removes only the Solea marker folder under .minecraft/versions/soleapixel-… (not the Mojang cache folder like 1.12.2). Your worlds, options and mods in .minecraft stay.',
+    'Each row removes the whole Solea profile folder `.minecraft/versions/soleapixel-…/` (marker JSON, profile `mods/`, `fabric/`, `minecraft-version/`, etc.). The Mojang client folder `.minecraft/versions/<release>/` is not removed. Your worlds, options, global `.minecraft/mods` and `.minecraft/screenshots` are kept.',
   'settings.vanillaInstalledProfileHint':
-    'Only Solea installs are listed: a folder soleapixel-<release>-IrisLoader or OptiFine with a small marker JSON, plus the real Mojang client folder for that release. A plain 1.12.2 folder from the official launcher alone is ignored.',
+    'Only Solea lines are listed: `soleapixel-<release>-IrisLoader` or `OptiFine` under versions/, with `mods/` (Fabric stack for that profile), `fabric/`, and `minecraft-version/<release>` pointing at the real Mojang client. A plain `1.12.2`-style folder from the official launcher alone is not a Solea row and is ignored here.',
   'settings.vanillaVersionsLoading': 'Loading installed versions…',
   'settings.vanillaVersionsEmpty':
     'No Solea vanilla installs detected yet — use Install / Launch from the Vanilla hub (this creates soleapixel-… under .minecraft/versions).',
   'settings.vanillaUninstall': 'Remove client files',
   'settings.vanillaUninstalling': 'Removing…',
   'settings.vanillaUninstallModalEyebrow': 'Vanilla Minecraft',
-  'settings.vanillaUninstallModalTitle': 'Remove only the {{v}} client cache (folder « {{folder}} »)?',
+  'settings.vanillaUninstallModalTitle':
+    'Remove Solea profile « {{folder}} » (Minecraft {{v}})?',
   'settings.vanillaUninstallConfirm':
-    'This deletes only the Solea folder .minecraft/versions/{{folder}}/ (marker for release {{v}}). The Mojang client cache .minecraft/versions/{{v}}/ is not removed. Worlds, options, mods and screenshots elsewhere in .minecraft are kept.',
-  'settings.vanillaUninstallOk': 'Removed client cache for {{v}}.',
+    'This deletes the entire Solea profile folder `.minecraft/versions/{{folder}}/` — including that line’s Fabric mods in `mods/` inside it. The official client files under `.minecraft/versions/{{v}}/` stay on disk. Your worlds, options, the usual global `.minecraft/mods` folder and `.minecraft/screenshots` are not touched.',
+  'settings.vanillaUninstallOk': 'Removed Solea profile folder for Minecraft {{v}}.',
   'settings.creditsNav': 'Credits',
   'settings.licenseNav': 'License',
   'settings.creditsEyebrow': 'Credits',

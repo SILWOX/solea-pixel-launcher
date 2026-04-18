@@ -114,14 +114,14 @@ export const FR: Record<string, string> = {
   'shell.sidebarAria': 'Navigation principale',
   'shell.vanillaMinecraft': 'Minecraft vanilla',
   'shell.vanillaMinecraftTitle':
-    'Dossier .minecraft officiel — profils Solea soleapixel-version-IrisLoader ou OptiFine',
+    '.minecraft officiel — profils sous versions/soleapixel-<release>-IrisLoader ou -OptiFine (mods/ par profil, saves & captures partagés)',
   'shell.vanillaMinecraftAria': 'Accès Minecraft vanilla',
   'shell.blockSelectPackDuringVanilla':
     'Attends la fin de l’installation ou du lancement vanilla avant de changer d’instance modpack.',
   'vanillaMc.lazyLoading': 'Chargement…',
   'vanillaMc.title': 'Minecraft vanilla',
   'vanillaMc.subtitle':
-    'Mondes, captures et options sont dans ton vrai dossier .minecraft (comme le launcher Mojang). Les clients vont sous .minecraft/versions/. Les instances modpack restent à part.',
+    'Mondes, captures et options utilisent ton vrai .minecraft (comme le launcher Mojang). Les mods Fabric de chaque ligne Solea sont sous `.minecraft/versions/soleapixel-…/mods/` pour ne pas toucher au dossier mods global. Les instances modpack restent à part.',
   'vanillaMc.linkChangelog': 'Minecraft.net — notes et mises à jour',
   'vanillaMc.sectionVersions': 'Version',
   'vanillaMc.quickLatestRelease': 'Dernière release {{v}}',
@@ -202,7 +202,7 @@ export const FR: Record<string, string> = {
   'vanillaHub.chipLauncherHint': 'Build du launcher Solea Pixel',
   'vanillaHub.playTag': 'Profil vanilla',
   'vanillaHub.playSub':
-    'Chaque ligne utilise un id de profil Solea (soleapixel-release-IrisLoader ou OptiFine) pour les réglages ; le jeu partage ton .minecraft habituel (saves, captures, mods).',
+    'Chaque ligne = id Solea (soleapixel-<release>-IrisLoader ou OptiFine). Le jeu utilise ton vrai .minecraft pour mondes, options et captures ; les mods Fabric de cette ligne sont uniquement dans `.minecraft/versions/<ce profil>/mods/`, pas dans le dossier mods global.',
   'vanillaHub.versionPitch.fallback': 'Minecraft {{maj}} — version Java officielle.',
   'vanillaHub.versionPitch.1_8':
     'Mise à jour des biens de l’ère — granite, andésite, diorite, lapins, blocs de slime et tas de petits plus.',
@@ -471,6 +471,8 @@ export const FR: Record<string, string> = {
   'myServer.jvmExtraSaved': 'Arguments JVM supplémentaires enregistrés.',
   'myServer.consolePlaceholder': 'Commande serveur (ex. op Joueur)',
   'myServer.consoleSend': 'Envoyer',
+  'myServer.consoleCopy': 'Copier les logs',
+  'myServer.consoleCopied': 'Logs copiés dans le presse-papiers.',
   'myServer.installBarTitle': 'Installation du pack serveur',
   'discordPresence.boot': 'Démarrage…',
   'discordPresence.login': 'Connexion Microsoft',
@@ -486,7 +488,7 @@ export const FR: Record<string, string> = {
   'screenshots.vanillaInstanceName': 'Minecraft',
   'screenshots.instanceGroupModpacks': 'Instances modpack',
   'screenshots.instancePickerHint':
-    '« Minecraft » (en haut) = jeu vanilla via le hub Minecraft du launcher. Sous la ligne : tes instances modpack.',
+    '« Minecraft » (en haut) : ton vrai dossier `.minecraft/screenshots` (partagé avec le launcher Mojang). Sous la ligne : instances modpack.',
   'screenshots.instanceSection': 'Instance à afficher',
   'screenshots.toolbarAria': 'Instance et actions dossier',
   'screenshots.galleryTitle': 'Galerie',
@@ -964,19 +966,20 @@ export const FR: Record<string, string> = {
   'settings.vanillaGameArgsSub': 'Arguments supplémentaires passés au jeu vanilla uniquement.',
   'settings.vanillaInstalledTitle': 'Versions client téléchargées',
   'settings.vanillaInstalledSub':
-    'Par ligne : supprime seulement le dossier marqueur Solea sous .minecraft/versions/soleapixel-… (pas le cache Mojang du type 1.12.2). Les mondes, options et mods dans le reste du .minecraft sont conservés.',
+    'Chaque ligne supprime tout le dossier profil Solea `.minecraft/versions/soleapixel-…/` (JSON marqueur, `mods/` du profil, `fabric/`, `minecraft-version/`, etc.). Le dossier client Mojang `.minecraft/versions/<release>/` n’est pas supprimé. Mondes, options, le `.minecraft/mods` global et `.minecraft/screenshots` sont conservés.',
   'settings.vanillaInstalledProfileHint':
-    'Seules les installs Solea sont listées : un dossier soleapixel-<release>-IrisLoader ou OptiFine avec un petit JSON marqueur, plus le dossier client Mojang de cette release. Un simple dossier 1.12.2 du launcher officiel seul est ignoré.',
+    'Seules les lignes Solea sont listées : `soleapixel-<release>-IrisLoader` ou `OptiFine` sous versions/, avec `mods/` (stack Fabric du profil), `fabric/` et `minecraft-version/<release>` vers le client Mojang. Un dossier type `1.12.2` seul du launcher officiel n’apparaît pas ici.',
   'settings.vanillaVersionsLoading': 'Chargement des versions installées…',
   'settings.vanillaVersionsEmpty':
     'Aucune install vanilla Solea détectée — utilise Installer / Lancer depuis le hub Vanilla (cela crée soleapixel-… sous .minecraft/versions).',
   'settings.vanillaUninstall': 'Supprimer les fichiers client',
   'settings.vanillaUninstalling': 'Suppression…',
   'settings.vanillaUninstallModalEyebrow': 'Minecraft vanilla',
-  'settings.vanillaUninstallModalTitle': 'Supprimer uniquement le cache client {{v}} (dossier « {{folder}} ») ?',
+  'settings.vanillaUninstallModalTitle':
+    'Supprimer le profil Solea « {{folder}} » (Minecraft {{v}}) ?',
   'settings.vanillaUninstallConfirm':
-    'Cela supprime seulement le dossier Solea .minecraft/versions/{{folder}}/ (marqueur pour la release {{v}}). Le cache client Mojang .minecraft/versions/{{v}}/ n’est pas supprimé. Les mondes, options, mods et captures ailleurs dans .minecraft sont conservés.',
-  'settings.vanillaUninstallOk': 'Cache client supprimé pour {{v}}.',
+    'Cela efface tout le dossier profil `.minecraft/versions/{{folder}}/` — y compris les mods Fabric de cette ligne dans son `mods/`. Les fichiers client officiels sous `.minecraft/versions/{{v}}/` restent. Mondes, options, le dossier global `.minecraft/mods` et `.minecraft/screenshots` ne sont pas modifiés.',
+  'settings.vanillaUninstallOk': 'Dossier profil Solea supprimé pour Minecraft {{v}}.',
   'settings.creditsNav': 'Crédits',
   'settings.licenseNav': 'Licence',
   'settings.creditsEyebrow': 'Crédits',

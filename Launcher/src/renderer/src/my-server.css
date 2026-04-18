@@ -1368,19 +1368,100 @@
   min-height: 220px;
 }
 
+.my-server-console-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.4rem;
+}
+
+.my-server-console-toolbar-btn {
+  font-size: 0.76rem !important;
+  padding: 0.35rem 0.65rem !important;
+}
+
 .my-server-console {
   flex: 1;
   font-family: ui-monospace, 'Cascadia Mono', monospace;
   font-size: 0.78rem;
-  line-height: 1.45;
-  padding: 0.65rem 0.75rem;
+  line-height: 1.5;
+  padding: 0.55rem 0.65rem;
   border-radius: 10px;
-  background: #0a0a0c;
+  background: #070709;
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: auto;
   max-height: 320px;
-  white-space: pre-wrap;
   word-break: break-word;
+}
+
+.my-server-console-line {
+  padding: 0.06rem 0;
+  white-space: pre-wrap;
+  color: rgba(230, 235, 245, 0.92);
+}
+
+.my-server-console-line--muted {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.my-server-console-line--solea {
+  color: color-mix(in srgb, var(--accent-orange, #ff8c42) 72%, #fff);
+}
+
+.my-server-console-line--err {
+  color: #fca5a5;
+}
+
+.my-server-console-line--warn {
+  color: #fcd34d;
+}
+
+.my-server-console-line--info {
+  color: #93c5fd;
+}
+
+.my-server-console-line--debug {
+  color: rgba(180, 190, 210, 0.55);
+}
+
+.my-server-console-line--success {
+  color: #86efac;
+}
+
+[data-theme='light'] .my-server-console {
+  background: #f4f4f7;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .my-server-console-line {
+  color: #1a1d24;
+}
+
+[data-theme='light'] .my-server-console-line--muted {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+[data-theme='light'] .my-server-console-line--solea {
+  color: color-mix(in srgb, var(--accent-orange, #e85d10) 85%, #1a1a1a);
+}
+
+[data-theme='light'] .my-server-console-line--err {
+  color: #b91c1c;
+}
+
+[data-theme='light'] .my-server-console-line--warn {
+  color: #a16207;
+}
+
+[data-theme='light'] .my-server-console-line--info {
+  color: #1d4ed8;
+}
+
+[data-theme='light'] .my-server-console-line--debug {
+  color: rgba(60, 65, 80, 0.65);
+}
+
+[data-theme='light'] .my-server-console-line--success {
+  color: #15803d;
 }
 
 .my-server-console-input-row {

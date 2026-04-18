@@ -295,13 +295,13 @@ function initTilt() {
     py += (ay - py) * toward
 
     const hover = wrap.matches(':hover')
-    const maxDeg = hover ? 22 : 15
+    const maxDeg = hover ? 15 : 10
     /* Vers le curseur (repère écran : py bas = +). rotateX(-py) + rotateY(px) = coin sous la souris qui se rapproche. */
-    const k = 2.35 * maxDeg
+    const k = 1.85 * maxDeg
     const rotX = -py * k
     const rotY = px * k
 
-    const tz = hover ? 26 : 10 + 18 * Math.min(1, Math.hypot(px, py) * 2)
+    const tz = hover ? 18 : 8 + 12 * Math.min(1, Math.hypot(px, py) * 2)
 
     inner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${tz}px)`
 

@@ -1,6 +1,6 @@
 /**
- * Télécharge Sodium + Iris (Fabric) depuis Modrinth dans `.minecraft/mods/`
- * après installation client vanilla (ligne Iris / Fabric — pas OptiFine).
+ * Télécharge Sodium + Iris (Fabric) depuis Modrinth dans le dossier **mods du profil Solea**
+ * (`.minecraft/versions/<soleapixel-…>/mods/`), pas dans `.minecraft/mods/`.
  *
  * Utilise l’API Modrinth **filtrée** (`game_versions` + `loaders`) : sans filtre,
  * la liste est paginée (~20 entrées) et les builds récentes pour une vraie release MC
@@ -54,12 +54,14 @@ async function listFabricVersionsForGame(slug: string, gameVersion: string): Pro
  */
 export async function ensureVanillaIrisSodiumMods(options: {
   gameVersion: string
-  dotMinecraft: string
+  /** Dossier mods isolé pour ce profil (ex. …/versions/soleapixel-1.21.1-IrisLoader/mods). */
+  soleaProfileModsDir: string
 }): Promise<{ ok: true } | { ok: false; error: string }> {
-  const { gameVersion, dotMinecraft } = options
+  const { gameVersion, soleaProfileModsDir } = options
   const gv = gameVersion.trim()
   if (!gv) return { ok: false, error: 'Missing game version.' }
-  const modsDir = join(dotMinecraft, 'mods')
+  const modsDir = soleaProfileModsDir.trim()
+  if (!modsDir) return { ok: false, error: 'Missing Solea profile mods directory.' }
   mkdirSync(modsDir, { recursive: true })
   const errors: string[] = []
   try {

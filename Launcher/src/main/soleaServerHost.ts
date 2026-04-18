@@ -111,6 +111,100 @@ async function assertVanillaJavaForStart(
   return { ok: true }
 }
 
+async function assertModpackJavaForStart(
+  rec: SoleServerRecord
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (rec.modpackId === SOLEA_SERVER_VANILLA_PACK_ID) return { ok: true }
+  const root = serverDir(rec.id)
+  const meta = readModpackInstalledMeta(root)
+  let mcVersion = meta?.gameVersion?.trim()
+  if (!mcVersion) {
+    try {
+      mcVersion = getModpackSpec(rec.modpackId as ModpackId).gameVersion
+    } catch {
+      /* ignore */
+    }
+  }
+  if (!mcVersion) return { ok: true }
+  let required: number | null =
+    typeof meta?.javaMajor === 'number' && meta.javaMajor > 0 ? meta.javaMajor : null
+  if (required == null) {
+    required = await fetchVanillaVersionJavaMajor(mcVersion)
+  }
+  if (required == null || required <= 0) return { ok: true }
+  const javaBin = resolveJavaExecutableForServer()
+  const have = await getJavaRuntimeMajor(javaBin)
+  if (have == null) {
+    return {
+      ok: false,
+      error: `Impossible de lire la version de Java pour « ${javaBin} ». Vérifie le chemin dans les réglages du launcher.`
+    }
+  }
+  if (have < required) {
+    return {
+      ok: false,
+      error: `Ce pack (Minecraft ${mcVersion}) demande au moins Java ${String(required)}. Ta JVM actuelle est Java ${String(have)}. Installe une JDK ${String(required)} ou plus récente et indique son java.exe dans les paramètres du launcher, puis réessaie.`
+    }
+  }
+  return { ok: true }
+}
+
+function readModpackInstalledMeta(instanceRoot: string): {
+  gameVersion?: string
+  versionNumber?: string
+  javaMajor?: number
+} | null {
+  const p = join(instanceRoot, '.solea-installed.json')
+  if (!existsSync(p)) return null
+  try {
+    const j = JSON.parse(readFileSync(p, 'utf8')) as Record<string, unknown>
+    const gameVersion = typeof j.gameVersion === 'string' ? j.gameVersion : undefined
+    const versionNumber = typeof j.versionNumber === 'string' ? j.versionNumber : undefined
+    const javaMajor = typeof j.javaMajor === 'number' ? j.javaMajor : undefined
+    return { gameVersion, versionNumber, javaMajor }
+  } catch {
+    return null
+  }
+}
+
+/** Fusionne les lignes Windows batch terminées par `^` (continuation). */
+function mergeWindowsBatchContinuations(fileContent: string): string[] {
+  const lines = fileContent.replace(/\r\n/g, '\n').split('\n')
+  const out: string[] = []
+  let buf = ''
+  for (const rawLine of lines) {
+    const trimmedRight = rawLine.replace(/\s+$/, '')
+    const isCont = trimmedRight.endsWith('^')
+    const piece = (isCont ? trimmedRight.slice(0, -1) : trimmedRight).trimEnd()
+    buf = buf ? `${buf} ${piece}` : piece
+    if (!isCont) {
+      out.push(buf)
+      buf = ''
+    }
+  }
+  if (buf) out.push(buf)
+  return out
+}
+
+/** Fusionne les lignes shell terminées par `\` (continuation). */
+function mergeShContinuations(fileContent: string): string[] {
+  const lines = fileContent.replace(/\r\n/g, '\n').split('\n')
+  const out: string[] = []
+  let buf = ''
+  for (const rawLine of lines) {
+    const trimmedRight = rawLine.replace(/\s+$/, '')
+    const isCont = trimmedRight.endsWith('\\')
+    const piece = (isCont ? trimmedRight.slice(0, -1) : trimmedRight).trimEnd()
+    buf = buf ? `${buf} ${piece}` : piece
+    if (!isCont) {
+      out.push(buf)
+      buf = ''
+    }
+  }
+  if (buf) out.push(buf)
+  return out
+}
+
 /** Découpe une ligne de commande (espaces + guillemets simples/doubles). */
 function parseQuotedCommandArgs(line: string): string[] {
   const out: string[] = []
@@ -141,22 +235,26 @@ function parseQuotedCommandArgs(line: string): string[] {
 }
 
 /**
- * Extrait les arguments après `java` / `java.exe` dans run.bat ou run.sh (Forge / NeoForge).
- * Permet de lancer le JAR directement : stdin = console Minecraft (les commandes du launcher arrivent au serveur).
+ * Extrait les arguments après `java` / `java.exe` / `javaw.exe` dans run.bat ou run.sh (Forge / NeoForge).
+ * Gère les continuations `^` (Windows) et `\` (shell), pour éviter le repli cmd.exe + `pause` qui bloque stdin.
  */
 function extractJavaArgvFromRunScript(root: string, scriptName: 'run.bat' | 'run.sh'): string[] | null {
   const p = join(root, scriptName)
   if (!existsSync(p)) return null
-  const lines = readFileSync(p, 'utf8').replace(/\r\n/g, '\n').split('\n')
-  for (let raw of lines) {
+  const fileContent = readFileSync(p, 'utf8')
+  const physicalLines =
+    scriptName === 'run.bat'
+      ? mergeWindowsBatchContinuations(fileContent)
+      : mergeShContinuations(fileContent)
+  for (let raw of physicalLines) {
     raw = raw.trim()
     if (!raw || /^rem\b/i.test(raw) || /^#/i.test(raw) || /^@echo\b/i.test(raw)) continue
     raw = raw.split('&')[0]?.trim() ?? raw
     raw = raw.replace(/^\^/g, '').trim()
     raw = raw.replace(/^\s*(?:call|exec)\s+/i, '').trim()
-    const m = raw.match(/\bjava(?:\.exe)?\s+(.+)$/i)
+    const m = raw.match(/\b(javaw\.exe|java\.exe|java)\s+(.+)$/i)
     if (!m) continue
-    let rest = m[1].trim()
+    let rest = m[2].trim()
     rest = rest.replace(/%[*]\s*$/i, '').replace(/"\$@"\s*$/, '').replace(/\$\@\s*$/, '').trim()
     if (!rest) continue
     const args = parseQuotedCommandArgs(rest)
@@ -233,6 +331,8 @@ function saveRegistry(servers: SoleServerRecord[]) {
 }
 
 const lineBuffers = new Map<string, string[]>()
+const streamCarryOut = new Map<string, string>()
+const streamCarryErr = new Map<string, string>()
 const processes = new Map<string, ChildProcess>()
 const runtimeState = new Map<string, RuntimeState>()
 let runningServerId: string | null = null
@@ -243,6 +343,27 @@ function pushLine(serverId: string, line: string) {
   const next = [...prev, line].slice(-MAX_CONSOLE_LINES)
   lineBuffers.set(serverId, next)
   sendEvent({ kind: 'line', serverId, line })
+}
+
+function appendServerStreamChunk(serverId: string, chunk: Buffer, isStderr: boolean) {
+  const carryMap = isStderr ? streamCarryErr : streamCarryOut
+  const prev = carryMap.get(serverId) ?? ''
+  const s = prev + chunk.toString('utf8')
+  const parts = s.split(/\r?\n/)
+  const tail = parts.pop() ?? ''
+  carryMap.set(serverId, tail)
+  for (const raw of parts) {
+    const line = raw.replace(/\s+$/, '')
+    if (!line) continue
+    pushLine(serverId, isStderr ? `[stderr] ${line}` : line)
+  }
+}
+
+function flushServerStreamCarry(serverId: string, isStderr: boolean) {
+  const carryMap = isStderr ? streamCarryErr : streamCarryOut
+  const tail = (carryMap.get(serverId) ?? '').trimEnd()
+  carryMap.delete(serverId)
+  if (tail) pushLine(serverId, isStderr ? `[stderr] ${tail}` : tail)
 }
 
 function setRuntime(serverId: string, state: RuntimeState) {
@@ -442,6 +563,27 @@ async function startInstall(rec: SoleServerRecord) {
   }
 }
 
+/** Mojang exige eula=true — sinon le JVM quitte sans crash-report. */
+function ensureServerEulaAccepted(root: string): boolean {
+  const p = join(root, 'eula.txt')
+  let wrote = false
+  try {
+    if (!existsSync(p)) {
+      writeFileSync(p, 'eula=true\n', 'utf8')
+      wrote = true
+    } else {
+      const t = readFileSync(p, 'utf8').toLowerCase()
+      if (!t.includes('eula=true')) {
+        writeFileSync(p, 'eula=true\n', 'utf8')
+        wrote = true
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  return wrote
+}
+
 function trySpawnServerProcess(rec: SoleServerRecord): boolean {
   const root = serverDir(rec.id)
   const runWin = join(root, 'run.bat')
@@ -470,6 +612,12 @@ function trySpawnServerProcess(rec: SoleServerRecord): boolean {
   } catch {
     /* ignore */
   }
+  if (ensureServerEulaAccepted(root)) {
+    pushLine(
+      rec.id,
+      '[Solea] eula.txt absent ou non accepté — enregistrement de eula=true (requis par Mojang pour démarrer un serveur dédié).'
+    )
+  }
   setRuntime(rec.id, 'starting')
   const isWin = process.platform === 'win32'
   const scriptName = isWin ? 'run.bat' : 'run.sh'
@@ -477,49 +625,64 @@ function trySpawnServerProcess(rec: SoleServerRecord): boolean {
   const javaBin = resolveJavaExecutableForServer()
   const spawnOpts = {
     cwd: root,
-    windowsHide: false,
+    windowsHide: true,
     stdio: ['pipe', 'pipe', 'pipe'] as const,
     env: { ...process.env, SOLEA_SERVER: '1' }
   }
   let child: ChildProcess
-  if (javaArgs?.length) {
-    child = spawn(javaBin, javaArgs, spawnOpts)
-    pushLine(
-      rec.id,
-      `[Solea] Processus Java lancé directement (les commandes de la console du launcher sont envoyées au serveur).`
-    )
-  } else {
-    pushLine(
-      rec.id,
-      `[Solea] Impossible d’analyser ${scriptName} — lancement via ${isWin ? 'cmd.exe' : 'sh'} (console du launcher : commandes peut‑être sans effet).`
-    )
-    const cmd = isWin ? 'cmd.exe' : '/bin/sh'
-    const args = isWin ? ['/d', '/s', '/c', 'run.bat'] : ['-lc', './run.sh']
-    child = spawn(cmd, args, spawnOpts)
+  try {
+    if (javaArgs?.length) {
+      child = spawn(javaBin, javaArgs, spawnOpts)
+      pushLine(
+        rec.id,
+        `[Solea] JVM lancée depuis ${scriptName} (Java : ${javaBin}) — les commandes ci-dessous sont envoyées au serveur.`
+      )
+    } else {
+      pushLine(
+        rec.id,
+        `[Solea] Impossible d’analyser ${scriptName} — repli ${isWin ? 'cmd.exe /c run.bat' : 'sh ./run.sh'} (stdin des commandes peut ne pas fonctionner ; préfère réinstaller le pack).`
+      )
+      const cmd = isWin ? 'cmd.exe' : '/bin/sh'
+      const args = isWin ? ['/d', '/s', '/c', 'run.bat'] : ['-lc', './run.sh']
+      child = spawn(cmd, args, spawnOpts)
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    pushLine(rec.id, `[Solea] Impossible de démarrer le processus : ${msg}`)
+    setRuntime(rec.id, 'stopped')
+    return false
   }
   processes.set(rec.id, child)
   runningServerId = rec.id
   setRuntime(rec.id, 'running')
-  child.stdout?.on('data', (ch) => {
-    String(ch)
-      .split(/\r?\n/)
-      .filter(Boolean)
-      .forEach((ln) => pushLine(rec.id, ln))
-  })
-  child.stderr?.on('data', (ch) => {
-    String(ch)
-      .split(/\r?\n/)
-      .filter(Boolean)
-      .forEach((ln) => pushLine(rec.id, `[stderr] ${ln}`))
-  })
+  child.stdout?.on('data', (ch) =>
+    appendServerStreamChunk(rec.id, typeof ch === 'string' ? Buffer.from(ch, 'utf8') : ch, false)
+  )
+  child.stderr?.on('data', (ch) =>
+    appendServerStreamChunk(rec.id, typeof ch === 'string' ? Buffer.from(ch, 'utf8') : ch, true)
+  )
   child.on('exit', (code, signal) => {
+    flushServerStreamCarry(rec.id, false)
+    flushServerStreamCarry(rec.id, true)
     processes.delete(rec.id)
     if (runningServerId === rec.id) runningServerId = null
     setRuntime(rec.id, 'stopped')
-    pushLine(rec.id, `[Solea] Processus terminé (code ${code ?? '?'}, signal ${signal ?? '—'}).`)
+    const hint =
+      (code === 1 || code === 255) && !signal
+        ? ' Vérifie la version de Java (onglet Java du serveur / réglages du launcher) et les logs ci-dessus.'
+        : ''
+    pushLine(
+      rec.id,
+      `[Solea] Processus terminé (code ${code ?? '?'}, signal ${signal ?? '—'}).${hint}`
+    )
   })
   child.on('error', (err) => {
-    pushLine(rec.id, `[Solea] Erreur processus: ${err.message}`)
+    flushServerStreamCarry(rec.id, false)
+    flushServerStreamCarry(rec.id, true)
+    processes.delete(rec.id)
+    if (runningServerId === rec.id) runningServerId = null
+    setRuntime(rec.id, 'stopped')
+    pushLine(rec.id, `[Solea] Erreur processus : ${err.message}`)
   })
   return true
 }
@@ -752,6 +915,8 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
       /* ignore */
     }
     lineBuffers.delete(id)
+    streamCarryOut.delete(id)
+    streamCarryErr.delete(id)
     return { ok: true as const }
   })
 
@@ -771,6 +936,8 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
       if (processes.has(id)) return { ok: false, error: 'Déjà démarré.' }
       const jv = await assertVanillaJavaForStart(rec)
       if (!jv.ok) return jv
+      const mp = await assertModpackJavaForStart(rec)
+      if (!mp.ok) return mp
       if (!trySpawnServerProcess(rec)) {
         return { ok: false, error: 'Script serveur introuvable (run.bat / run.sh).' }
       }
@@ -817,6 +984,8 @@ export function setupSoleaServerIpc(getWindow: () => BrowserWindow | null) {
     }
     const jv = await assertVanillaJavaForStart(rec)
     if (!jv.ok) return jv
+    const mp = await assertModpackJavaForStart(rec)
+    if (!mp.ok) return mp
     if (!trySpawnServerProcess(rec)) {
       return { ok: false as const, error: 'Script serveur introuvable (run.bat / run.sh).' }
     }
