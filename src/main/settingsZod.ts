@@ -69,6 +69,7 @@ export const launcherSettingsStoredSchema = z
     uiShortcutGoNews: z.string().optional(),
     uiShortcutGoAccount: z.string().optional(),
     nativeNotifications: z.boolean().optional(),
+    experimentalServerSystemEnabled: z.boolean().optional(),
     diagnosticLaunch: z.boolean().optional(),
     networkSlowDownloads: z.boolean().optional(),
     uiChromeGlass: z.boolean().optional(),

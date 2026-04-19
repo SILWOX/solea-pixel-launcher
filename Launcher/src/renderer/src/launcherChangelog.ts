@@ -13,6 +13,18 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.3.3',
+    date: '2026-03-30',
+    changed: [
+      '**Settings → Launcher:** **Experimental (BETA)** is a collapsible section **below Keyboard shortcuts** (same tab). It contains only **My servers (experimental)** and **Launcher interface (home & settings — AETHER v2.0 vs Legacy)**.',
+      '**Settings → Launcher:** **Notifications**, **Discord Rich Presence**, **update channel**, and **Audio** are back in the main **Appearance & language** flow — they are no longer isolated under a separate sidebar “Experimental” entry.',
+      '**Release branding:** footer and Home & news badge show **26.3.3 | Release** (package **26.3.3**).'
+    ],
+    added: [
+      '**macOS distribution:** DMG artifacts (`Solea-Pixel-<version>-mac-arm64.dmg` / `-mac-x64.dmg`) are built for GitHub releases; the storefront download block resolves the **arm64** DMG from the **latest** release API when present.'
+    ]
+  },
+  {
     version: '26.3.2',
     date: '2026-03-30',
     fixed: [

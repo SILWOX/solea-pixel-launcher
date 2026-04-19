@@ -812,6 +812,7 @@ function emptySettings(): LauncherSettingsUI {
     uiShortcutGoNews: 'CommandOrControl+Shift+KeyH',
     uiShortcutGoAccount: 'CommandOrControl+Shift+KeyU',
     nativeNotifications: true,
+    experimentalServerSystemEnabled: true,
     diagnosticLaunch: false,
     networkSlowDownloads: false,
     uiChromeGlass: false,
@@ -826,7 +827,11 @@ function normalizeLauncherSettingsUi(s: LauncherSettingsUI): LauncherSettingsUI 
   return {
     ...s,
     uiHomeCardVariant: legacy ? 'classic' : 'studio',
-    uiSettingsShell: legacy ? 'legacy' : 'aether2'
+    uiSettingsShell: legacy ? 'legacy' : 'aether2',
+    experimentalServerSystemEnabled:
+      typeof s.experimentalServerSystemEnabled === 'boolean'
+        ? s.experimentalServerSystemEnabled
+        : true
   }
 }
 
@@ -860,6 +865,7 @@ function pickLauncherTabDefaultPatch(): Partial<LauncherSettingsUI> {
     uiShortcutGoNews: d.uiShortcutGoNews,
     uiShortcutGoAccount: d.uiShortcutGoAccount,
     nativeNotifications: d.nativeNotifications,
+    experimentalServerSystemEnabled: d.experimentalServerSystemEnabled,
     diagnosticLaunch: d.diagnosticLaunch
   }
 }
@@ -2079,6 +2085,12 @@ export function App() {
       setView('news')
     }
   }, [activeAcc?.offline, view])
+
+  useEffect(() => {
+    if (!settings.experimentalServerSystemEnabled && view === 'my-server') {
+      setView('news')
+    }
+  }, [settings.experimentalServerSystemEnabled, view])
 
   useEffect(() => {
     if (screen !== 'app') return
@@ -3488,7 +3500,7 @@ export function App() {
           >
             <IconGear />
           </button>
-          {!activeAcc?.offline ? (
+          {!activeAcc?.offline && settings.experimentalServerSystemEnabled ? (
             <button
               type="button"
               className={`sb-btn ${view === 'my-server' ? 'active' : ''}`}
@@ -4332,18 +4344,18 @@ export function App() {
                             settingsTab === 'launcher'
                               ? t('settings.navLauncher')
                               : isModpackId(settingsTab)
-                                ? modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
-                                : t('settings.navLauncher')
+                                  ? modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
+                                  : t('settings.navLauncher')
                         })}
                       </p>
                       <h2 className="settings-page-title">
                         {settingsTab === 'launcher'
                           ? t('settings.headerLauncher')
                           : isModpackId(settingsTab)
-                            ? t('settings.headerGame', {
-                                name: modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
-                              })
-                            : t('settings.headerLauncher')}
+                              ? t('settings.headerGame', {
+                                  name: modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
+                                })
+                              : t('settings.headerLauncher')}
                       </h2>
                     </div>
                   </header>
@@ -4590,25 +4602,6 @@ export function App() {
                           {t(`settings.themeDetail.${settings.uiTheme}`)}
                         </p>
                       </label>
-                      <label className="full">
-                        {t('settings.uiLauncherExperience')}
-                        <div className="sub">{t('settings.uiLauncherExperienceSub')}</div>
-                        <LauncherSelect
-                          value={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
-                          onChange={(v) => {
-                            const legacy = v === 'classic'
-                            setSettings((s) => ({
-                              ...s,
-                              uiHomeCardVariant: legacy ? 'classic' : 'studio',
-                              uiSettingsShell: legacy ? 'legacy' : 'aether2'
-                            }))
-                          }}
-                          options={[
-                            { value: 'studio', label: t('settings.uiHomeCardStudio') },
-                            { value: 'classic', label: t('settings.uiHomeCardClassic') }
-                          ]}
-                        />
-                      </label>
                       <div className="full settings-theme-glass-block">
                         <SettingsToggle
                           checked={settings.uiChromeGlass}
@@ -4642,6 +4635,8 @@ export function App() {
                           onChange={(next) => setSettings((s) => ({ ...s, uiCompact: next }))}
                           label={t('settings.uiCompact')}
                         />
+                      </div>
+                      <div className="full settings-toggle-stack">
                         <SettingsToggle
                           checked={settings.nativeNotifications !== false}
                           onChange={(next) => setSettings((s) => ({ ...s, nativeNotifications: next }))}
@@ -4829,6 +4824,46 @@ export function App() {
                           </dd>
                         </div>
                       </dl>
+                    </div>
+                  </details>
+
+                  <details className="set-card" open>
+                    <summary>
+                      <div>
+                        {t('settings.navSectionExperimental')}
+                        <div className="sub">{t('settings.experimentalIntro')}</div>
+                      </div>
+                    </summary>
+                    <div className="inner field-grid">
+                      <div className="full settings-toggle-stack">
+                        <SettingsToggle
+                          checked={settings.experimentalServerSystemEnabled}
+                          onChange={(next) =>
+                            setSettings((s) => ({ ...s, experimentalServerSystemEnabled: next }))
+                          }
+                          label={t('settings.experimentalServerToggle')}
+                          description={t('settings.experimentalServerToggleSub')}
+                        />
+                      </div>
+                      <label className="full">
+                        {t('settings.uiLauncherExperience')}
+                        <div className="sub">{t('settings.uiLauncherExperienceSub')}</div>
+                        <LauncherSelect
+                          value={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
+                          onChange={(v) => {
+                            const legacy = v === 'classic'
+                            setSettings((s) => ({
+                              ...s,
+                              uiHomeCardVariant: legacy ? 'classic' : 'studio',
+                              uiSettingsShell: legacy ? 'legacy' : 'aether2'
+                            }))
+                          }}
+                          options={[
+                            { value: 'studio', label: t('settings.uiHomeCardStudio') },
+                            { value: 'classic', label: t('settings.uiHomeCardClassic') }
+                          ]}
+                        />
+                      </label>
                     </div>
                   </details>
                 </>

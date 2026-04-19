@@ -89,6 +89,8 @@ export type LauncherSettingsUI = {
   uiShortcutGoNews: string
   uiShortcutGoAccount: string
   nativeNotifications: boolean
+  /** Affiche l’entrée « Mes serveurs » et active les fonctions serveur intégrées (expérimental). */
+  experimentalServerSystemEnabled: boolean
   diagnosticLaunch: boolean
   networkSlowDownloads: boolean
 }

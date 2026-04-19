@@ -754,8 +754,20 @@ export const EN: Record<string, string> = {
   'settings.pageEyebrowSection': '{{section}} - Setup',
   'settings.navSectionGeneral': 'General',
   'settings.navSectionPacks': 'Modpacks',
+  'settings.navSectionExperimental': 'Experimental (BETA)',
   'settings.navSectionMore': 'More',
   'settings.navLauncher': 'Launcher',
+  'settings.navExperimental': 'Experimental',
+  'settings.headerExperimental': 'Experimental settings',
+  'settings.experimentalIntro':
+    'Features here are in testing — they may change or be removed in a future release.',
+  'settings.experimentalServerSection': 'Server',
+  'settings.experimentalServerToggle': 'Server system (My servers)',
+  'settings.experimentalServerToggleSub':
+    'Shows the My servers button in the sidebar and enables built-in server tools. Turn off if you do not use this area.',
+  'settings.experimentalLauncherUiSection': 'Launcher UI',
+  'settings.experimentalLauncherUiSectionSub':
+    'Notifications, updates, UI sounds and global shortcuts — shared across all modpacks.',
   'settings.creditsNav': 'Credits',
   'settings.licenseNav': 'License',
   'settings.creditsEyebrow': 'Credits',

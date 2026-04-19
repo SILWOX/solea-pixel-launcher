@@ -39,6 +39,19 @@ function pickWindowsSetupAsset(assets) {
   return anyExe ?? null
 }
 
+/** DMG macOS depuis la release GitHub (préfère arm64 Apple Silicon, puis x64). */
+function pickMacDmgAsset(assets) {
+  if (!assets?.length) return null
+  const dmgs = assets.filter((a) => /\.dmg$/i.test(a.name))
+  if (!dmgs.length) return null
+  return (
+    dmgs.find((a) => /arm64/i.test(a.name)) ||
+    dmgs.find((a) => /(\bx64\b|intel|amd64)/i.test(a.name)) ||
+    dmgs.find((a) => /solea|pixel/i.test(a.name)) ||
+    dmgs[0]
+  )
+}
+
 function normalizeVersion(tag) {
   if (!tag) return ''
   return tag.replace(/^v/i, '')
@@ -222,6 +235,7 @@ function replaceLocationHash(hashNoPound) {
 
 async function loadLatestRelease() {
   const btn = document.getElementById('btn-download-win')
+  const btnMac = document.getElementById('btn-download-mac')
   const versionEl = document.getElementById('hub-version')
   const statVersion = document.getElementById('stat-version')
   const t = (k) => (window.SoleaI18n ? window.SoleaI18n.t(k) : k)
@@ -242,7 +256,9 @@ async function loadLatestRelease() {
     window.clearTimeout(slowTimer)
     releaseFetchResolved = true
     cachedReleaseVersion = ''
+    const btnMac = document.getElementById('btn-download-mac')
     if (btn) btn.href = CONFIG.releasesLatestUrl
+    if (btnMac) btnMac.href = CONFIG.releasesLatestUrl
     if (versionEl) {
       versionEl.classList.remove('hub__version--pending', 'hub__version--slow')
       versionEl.textContent = t('hub.versionFallback')
@@ -259,7 +275,9 @@ async function loadLatestRelease() {
       return
     }
     const data = await res.json()
-    const asset = pickWindowsSetupAsset(data.assets ?? [])
+    const assets = data.assets ?? []
+    const asset = pickWindowsSetupAsset(assets)
+    const macDmg = pickMacDmgAsset(assets)
     const version = normalizeVersion(data.tag_name)
     cachedReleaseVersion = version || '—'
     releaseFetchResolved = true
@@ -267,6 +285,14 @@ async function loadLatestRelease() {
 
     if (asset?.browser_download_url && btn) btn.href = asset.browser_download_url
     else if (btn) btn.href = CONFIG.releasesLatestUrl
+
+    if (macDmg?.browser_download_url && btnMac) {
+      btnMac.href = macDmg.browser_download_url
+      btnMac.removeAttribute('aria-disabled')
+      btnMac.classList.remove('dl-card__btn--disabled')
+    } else if (btnMac) {
+      btnMac.href = CONFIG.releasesLatestUrl
+    }
 
     applyHubVersionLine()
     if (statVersion) statVersion.textContent = version || '—'
@@ -426,15 +452,25 @@ function initSnapPage() {
   const sections = [...root.querySelectorAll('.site-section[id]')]
   const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')]
   const fabTop = document.getElementById('fab-top')
+  /** Pixels de scroll dans `.snap-root` avant d’afficher la barre nav « pleine » (fond + verre). */
+  const NAV_ELEVATE_AFTER_PX = 56
 
   let lockNavSyncUntil = 0
 
+  const syncNavScrollState = () => {
+    const elevated = root.scrollTop >= NAV_ELEVATE_AFTER_PX
+    document.documentElement.toggleAttribute('data-nav-scrolled', elevated)
+  }
+
   const setActiveNav = (id) => {
-    activeSectionId = id || 'hub'
+    const next = id || 'hub'
+    const ds = document.documentElement.getAttribute('data-active-section')
+    if (next === activeSectionId && ds === next) return
+    activeSectionId = next
     document.documentElement.dataset.activeSection = activeSectionId
     navLinks.forEach((a) => {
       const h = a.getAttribute('href')
-      a.classList.toggle('is-active', h === `#${id}`)
+      a.classList.toggle('is-active', h === `#${activeSectionId}`)
     })
   }
 
@@ -442,6 +478,11 @@ function initSnapPage() {
     if (!fabTop) return
     const show = root.scrollTop > 180
     fabTop.hidden = !show
+  }
+
+  const afterScrollLayout = () => {
+    updateFabVisibility()
+    syncNavScrollState()
   }
 
   const scrollToId = (id, behavior = 'smooth') => {
@@ -454,7 +495,13 @@ function initSnapPage() {
     setActiveNav(navSectionId)
     scrollSectionToTop(el, root, behavior)
     replaceLocationHash(navSectionId)
-    updateFabVisibility()
+    afterScrollLayout()
+    // Scroll `smooth` : le `scrollTop` n’est pas encore à jour ici — resync après l’animation
+    if (behavior === 'smooth') {
+      window.setTimeout(() => {
+        afterScrollLayout()
+      }, duration + 50)
+    }
   }
 
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
@@ -471,6 +518,9 @@ function initSnapPage() {
   })
 
   const syncFromScroll = () => {
+    // Toujours aligner FAB + barre nav sur le `scrollTop` réel (même pendant le verrou des onglets actifs).
+    afterScrollLayout()
+
     if (performance.now() < lockNavSyncUntil) return
     const maxScroll = Math.max(0, root.scrollHeight - root.clientHeight)
     if (sections.length && root.scrollTop >= maxScroll - 6) {
@@ -491,13 +541,20 @@ function initSnapPage() {
       }
     }
     if (best?.id) setActiveNav(best.id)
-    updateFabVisibility()
   }
 
   root.addEventListener(
     'scroll',
     () => {
       requestAnimationFrame(syncFromScroll)
+    },
+    { passive: true },
+  )
+
+  root.addEventListener(
+    'scrollend',
+    () => {
+      afterScrollLayout()
     },
     { passive: true },
   )
@@ -535,7 +592,7 @@ function initSnapPage() {
     root.scrollTop = 0
     replaceLocationHash('hub')
     setActiveNav('hub')
-    updateFabVisibility()
+    afterScrollLayout()
   }
 
   const applyInitialRoute = () => {
@@ -545,7 +602,7 @@ function initSnapPage() {
       replaceLocationHash('hub')
       root.scrollTop = 0
       setActiveNav('hub')
-      updateFabVisibility()
+      afterScrollLayout()
       return
     }
     const valid = hasValidSectionHash(raw)
@@ -554,7 +611,7 @@ function initSnapPage() {
       root.scrollTop = 0
       replaceLocationHash('hub')
       setActiveNav('hub')
-      updateFabVisibility()
+      afterScrollLayout()
       return
     }
 
@@ -575,7 +632,7 @@ function initSnapPage() {
       root.scrollTop = 0
       replaceLocationHash('hub')
       setActiveNav('hub')
-      updateFabVisibility()
+      afterScrollLayout()
       return
     }
     if (raw === 'legal') {

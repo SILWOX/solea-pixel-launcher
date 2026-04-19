@@ -97,6 +97,8 @@ export interface LauncherSettings {
   uiShortcutGoAccount: string
   /** Notifications système (Windows / macOS) pour install finie, maj dispo. */
   nativeNotifications: boolean
+  /** Entrée UI « Mes serveurs » et fonctions associées (désactivable). */
+  experimentalServerSystemEnabled: boolean
   /** Lancement avec tas JVM réduit (support / debug). */
   diagnosticLaunch: boolean
   /** Limite les téléchargements parallèles (réseau lent). */
@@ -144,6 +146,7 @@ export const DEFAULT_SETTINGS: LauncherSettings = {
   uiShortcutGoNews: 'CommandOrControl+Shift+KeyH',
   uiShortcutGoAccount: 'CommandOrControl+Shift+KeyU',
   nativeNotifications: true,
+  experimentalServerSystemEnabled: true,
   diagnosticLaunch: false,
   networkSlowDownloads: false,
   uiChromeGlass: false,
@@ -416,6 +419,9 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
   }
   if (typeof next.nativeNotifications !== 'boolean') {
     next.nativeNotifications = DEFAULT_SETTINGS.nativeNotifications
+  }
+  if (typeof next.experimentalServerSystemEnabled !== 'boolean') {
+    next.experimentalServerSystemEnabled = DEFAULT_SETTINGS.experimentalServerSystemEnabled
   }
   if (typeof next.diagnosticLaunch !== 'boolean') {
     next.diagnosticLaunch = DEFAULT_SETTINGS.diagnosticLaunch

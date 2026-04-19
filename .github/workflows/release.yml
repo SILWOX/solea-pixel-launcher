@@ -1,4 +1,6 @@
-# Publie une release GitHub (installateur NSIS, portable, latest.yml) quand tu pousses un tag v*.
+# Publie une release GitHub (Windows NSIS + portable + auto-update, macOS DMG arm64/x64)
+# quand tu pousses un tag v*. Les deux jobs peuvent tourner en parallèle ; electron-builder
+# attache les assets à la même release.
 name: Release
 
 on:
@@ -10,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  release-windows:
     runs-on: windows-latest
     timeout-minutes: 45
     defaults:
@@ -30,7 +32,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and publish
+      - name: Build and publish (Windows)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run dist:publish
+        run: npm run predist && npm run build && npx electron-builder --win --publish always
+
+  release-macos:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: Launcher
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: Launcher/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and publish (macOS DMG)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Pas de certificat Apple sur CI : build non notarisé (Gatekeeper peut avertir).
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run predist && npm run build && npx electron-builder --mac --publish always

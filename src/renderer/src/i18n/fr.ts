@@ -767,8 +767,20 @@ export const FR: Record<string, string> = {
   'settings.pageEyebrowSection': '{{section}} · Réglages',
   'settings.navSectionGeneral': 'Général',
   'settings.navSectionPacks': 'Modpacks',
+  'settings.navSectionExperimental': 'Expérimental (BÊTA)',
   'settings.navSectionMore': 'Plus',
   'settings.navLauncher': 'Launcher',
+  'settings.navExperimental': 'Expérimental',
+  'settings.headerExperimental': 'Réglages expérimentaux',
+  'settings.experimentalIntro':
+    'Les fonctions listées ici sont en test — elles peuvent évoluer ou disparaître dans une prochaine version.',
+  'settings.experimentalServerSection': 'Serveur',
+  'settings.experimentalServerToggle': 'Système serveur (Mes serveurs)',
+  'settings.experimentalServerToggleSub':
+    'Affiche le bouton « Mes serveurs » dans la barre latérale et active les outils serveur intégrés. Désactive si tu n’utilises pas cette zone.',
+  'settings.experimentalLauncherUiSection': 'Interface du launcher',
+  'settings.experimentalLauncherUiSectionSub':
+    'Notifications, mises à jour, sons d’interface et raccourcis globaux — communs à tous les modpacks.',
   'settings.creditsNav': 'Crédits',
   'settings.licenseNav': 'Licence',
   'settings.creditsEyebrow': 'Crédits',

@@ -1,5 +1,6 @@
 /**
  * Fond : étoiles variées + filantes. Accueil : révélation progressive (peu → beaucoup).
+ * À propos (#features) : scintillement un peu plus marqué (aboutSky), plafonné pour rester lisible.
  * FAQ : orbes latéraux (--ambient-orbs) s’estompent, ciel plus riche, étoiles or SOLEA PIXEL, plus de filantes.
  * prefers-reduced-motion : pas d’animations longues ni météores.
  */
@@ -44,6 +45,8 @@
   let buildup = 0
   /** Ciel FAQ : intensité visuelle 0 → 1 */
   let faqSky = 0
+  /** À propos (#features) : scintillement un peu plus vif, en douceur (0 → 1) */
+  let aboutSky = 0
   /** Opacité des blobs latéraux (1 → 0 en FAQ) */
   let orbFade = 1
 
@@ -123,32 +126,50 @@
     nextMeteorAt = performance.now() + (5000 + Math.random() * 9000)
   }
 
-  /** @param {Star} s */
-  function twinkleAlpha(s, t, faqBlend) {
+  /**
+   * @param {Star} s
+   * @param {number} aboutBlend 0–1 sur À propos ; atténué si FAQ actif pour ne pas cumuler
+   */
+  function twinkleAlpha(s, t, faqBlend, aboutBlend = 0) {
+    const ab = Math.max(0, Math.min(1, aboutBlend)) * (1 - Math.min(1, faqBlend * 1.15))
+    const tEff = t * (1 + ab * 0.52)
+    const spdEff = s.spd * (1 + ab * 0.44)
+    const ampEff = s.amp * (1 + ab * 0.36)
+    const micro = ab * 0.042 * Math.sin(tEff * spdEff * 3.25 + s.ph * 1.65)
+
     const boost = 1 + faqBlend * 0.22 * (s.isGold ? 1.35 : 1)
-    const base = (s.a0 + s.amp * Math.sin(t * s.spd + s.ph)) * boost
+    const base = (s.a0 + ampEff * Math.sin(tEff * spdEff + s.ph) + micro) * boost
+
     if (s.kind === 0) {
-      return Math.max(0.04, Math.min(0.36, base * 0.85))
+      return Math.max(0.04, Math.min(0.36 + ab * 0.05, base * 0.85))
     }
     if (s.kind === 1) {
-      return Math.max(0.06, Math.min(0.52, base))
+      return Math.max(0.06, Math.min(0.52 + ab * 0.06, base))
     }
     if (s.kind === 2) {
-      const slow = 0.55 + 0.45 * Math.sin(t * s.spd * 0.55 + s.ph * 0.5)
-      const fast = 0.92 + 0.08 * Math.sin(t * s.spd * 2.8 + s.ph * 1.7)
-      return Math.max(0.08, Math.min(0.58, (s.a0 + s.amp * slow) * fast * boost))
+      const slow = 0.55 + 0.45 * Math.sin(tEff * spdEff * 0.55 + s.ph * 0.5)
+      const fast = 0.92 + 0.08 * Math.sin(tEff * spdEff * 2.8 + s.ph * 1.7)
+      const v = (s.a0 + ampEff * slow) * fast * boost + micro * 0.55
+      return Math.max(0.08, Math.min(0.58 + ab * 0.07, v))
     }
-    const beat = Math.sin(t * s.spd + s.ph)
-    const sparkle = Math.pow(Math.max(0, beat), 3.2)
-    return Math.max(0.1, Math.min(0.68, (s.a0 * 0.65 + s.amp * (0.35 + sparkle * 1.4)) * boost))
+    const beat = Math.sin(tEff * spdEff + s.ph)
+    const exp = 3.2 - ab * 0.22
+    const sparkle = Math.pow(Math.max(0, beat), exp)
+    const v =
+      (s.a0 * 0.65 + ampEff * (0.35 + sparkle * (1.4 + ab * 0.38))) * boost + micro * 0.48
+    return Math.max(0.1, Math.min(0.68 + ab * 0.07, v))
   }
 
   /**
    * @param {Star} s
    * @param {number} a
    * @param {number} faqBlend
+   * @param {number} [aboutBlend]
    */
-  function drawStar(s, a, faqBlend) {
+  function drawStar(s, a, faqBlend, aboutBlend = 0) {
+    const ab = Math.max(0, Math.min(1, aboutBlend)) * (1 - Math.min(1, faqBlend * 1.1))
+    const aboutHaloPulse = 1 + ab * 0.09 * (0.82 + 0.18 * Math.sin(performance.now() * 0.002 + s.ph))
+
     let tr = s.tr
     let tg = s.tg
     let tb = s.tb
@@ -159,8 +180,11 @@
       tb = tb * (1 - u) + 105 * u
     }
 
-    const haloR = s.r * (s.kind >= 2 ? 3.1 : 2.5) * (1 + faqBlend * 0.08)
-    const haloA = Math.min(0.32 + faqBlend * 0.08, a * (s.kind >= 2 ? 0.46 : 0.34))
+    const haloR = s.r * (s.kind >= 2 ? 3.1 : 2.5) * (1 + faqBlend * 0.08) * (1 + ab * 0.04)
+    const haloA = Math.min(
+      0.32 + faqBlend * 0.08 + ab * 0.028,
+      a * (s.kind >= 2 ? 0.46 : 0.34) * aboutHaloPulse,
+    )
     const coreA = Math.min(s.kind === 3 ? 0.78 : 0.62, a * (s.kind === 3 ? 1.18 : 1.05))
 
     ctx.beginPath()
@@ -173,9 +197,9 @@
     ctx.fillStyle = `rgba(${Math.min(255, tr + 8)},${Math.min(255, tg + 6)},${tb},${coreA})`
     ctx.fill()
 
-    if (s.kind >= 2 && a > 0.22) {
-      const flare = s.r * 1.85
-      const fa = Math.min(0.22 + faqBlend * 0.08, a * 0.24)
+    if (s.kind >= 2 && a > 0.22 - ab * 0.055) {
+      const flare = s.r * (1.85 + ab * 0.22)
+      const fa = Math.min(0.22 + faqBlend * 0.08 + ab * 0.045, a * (0.24 + ab * 0.05))
       const lineW = s.kind === 3 ? 0.55 : 0.4
       ctx.strokeStyle = s.isGold && faqBlend > 0.35 ? `rgba(255,230,160,${fa})` : `rgba(255,255,255,${fa})`
       ctx.lineWidth = lineW
@@ -324,7 +348,9 @@
       buildup = 1
       faqSky = isFaq ? 1 : 0
       orbFade = isFaq ? 0 : 1
+      aboutSky = 0
     } else {
+      const isFeatures = sec === 'features'
       if (isHub) {
         buildup = Math.min(1, buildup + dt * 0.000095)
       } else if (!isFaq) {
@@ -338,6 +364,12 @@
         faqSky = Math.max(0, faqSky - dt * 0.00115)
         orbFade = Math.min(1, orbFade + dt * 0.001)
       }
+
+      if (isFeatures) {
+        aboutSky = Math.min(1, aboutSky + dt * 0.00105)
+      } else {
+        aboutSky = Math.max(0, aboutSky - dt * 0.001)
+      }
     }
 
     document.documentElement.style.setProperty('--ambient-orbs', orbFade.toFixed(4))
@@ -346,8 +378,8 @@
     ctx.clearRect(0, 0, w, h)
     for (const s of stars) {
       if (!shouldDrawStar(s, sec, buildup)) continue
-      const a = twinkleAlpha(s, t, faqSky)
-      drawStar(s, a, faqSky)
+      const a = twinkleAlpha(s, t, faqSky, aboutSky)
+      drawStar(s, a, faqSky, aboutSky)
     }
 
     if (!mqReduce.matches) {

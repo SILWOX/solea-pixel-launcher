@@ -1,5 +1,11 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.3.3': {
+    en:
+      '**26.3.3 | Release** (package **26.3.3**): **Settings → Launcher** — the **Experimental (BETA)** block now lives **under Keyboard shortcuts** (same tab): **My servers** toggle plus **Launcher interface (AETHER v2.0 / Legacy)**. Notifications, update channel, and **Audio** are back in the main Launcher flow (no longer grouped under the old sidebar “Experimental” page). **macOS** DMG builds are produced for GitHub releases; the public site picks the **arm64** DMG from `latest` when available.',
+    fr:
+      '**26.3.3 | Release** (paquet **26.3.3**) : **Paramètres → Launcher** — le bloc **Expérimental (BÉTA)** est maintenant **sous Raccourcis clavier** : interrupteur **Mes serveurs** + **Interface du launcher (AETHER v2.0 / Legacy)**. Notifications, canal de mise à jour et **Audio** sont de nouveau dans le flux principal du Launcher (plus de page « Expérimental » séparée dans la barre latérale). **macOS** : DMG publiés sur les releases GitHub ; le site vitrine pointe le DMG **arm64** du `latest` quand il est présent.'
+  },
   '26.3.2': {
     en:
       '**26.3.2 | Release** (package **26.3.2**): Vanilla hub — correct JVM major for **Minecraft 26.x / calendar-era** ids (reads Mojang version JSON on disk, then manifest, then heuristic) so installs/launches no longer default to Java 21 only. **Legacy (AETHER v1)** — main left shell sidebar always visible on **Settings**; dedicated **sidebarClassicV1.css** rail (flat background, thin section dividers, squircle tiles, stronger active border) closer to the pre–v2.0 look.',

@@ -48,7 +48,7 @@
   let running = true
   let scrollY = 0
 
-  /** @type {{ px: number; py: number; pz: number; half: number; ax: number; ay: number; az: number; wx: number; wy: number; wz: number; rotStep: number; driftAx: number; driftAy: number; driftAmp: number; driftFreq: number; aBase: number; layer: number }[]} */
+  /** @type {{ px: number; py: number; pz: number; half: number; ax: number; ay: number; az: number; wx: number; wy: number; wz: number; rotStep: number; driftAx: number; driftAy: number; driftAmp: number; driftFreq: number; aBase: number; layer: number; bornAt: number }[]} */
   let cubes = []
 
   const ptr = { tx: 0, ty: 0, lx: 0, ly: 0 }
@@ -74,6 +74,24 @@
 
   function clamp(v, lo, hi) {
     return Math.max(lo, Math.min(hi, v))
+  }
+
+  function activeSectionId() {
+    return document.documentElement.dataset.activeSection || 'hub'
+  }
+
+  /** Cubes denses (téléchargements) vs léger — ne pas confondre avec l’URL tant qu’un fondu de sortie est actif */
+  let cubeArrayHeavy = false
+  /** 0..1 : fondu d’entrée / sortie du lot « dense » (téléchargements) */
+  let denseBlend = 1
+  let denseBlendTarget = 1
+  let lastObservedDataSection = ''
+
+  function cubeCountForDensity(area, heavy) {
+    if (heavy) {
+      return clamp(14 + Math.floor(area / 95000), 16, 28)
+    }
+    return clamp(4 + Math.floor(area / 240000), 5, 8)
   }
 
   function rotate(v, ax, ay, az) {
@@ -115,7 +133,10 @@
   function initCubes() {
     cubes = []
     const area = w * h
-    const n = clamp(4 + Math.floor(area / 240000), 5, 8)
+    const heavy = cubeArrayHeavy
+    const n = cubeCountForDensity(area, heavy)
+    const downloadsBoost = heavy
+    const bornAt = performance.now()
     for (let i = 0; i < n; i += 1) {
       const roll = Math.random()
       let half
@@ -133,7 +154,7 @@
       const layerAlpha = layer === 0 ? 0.82 : layer === 2 ? 1.08 : 1
 
       const rotScale = 0.07 + Math.random() * 0.62
-      const rotStep = (0.0095 + Math.random() * 0.024) * layerRot
+      const rotStep = (0.0095 + Math.random() * 0.024) * layerRot * (downloadsBoost ? 1.08 : 1)
 
       cubes.push({
         px: Math.random() * w,
@@ -149,10 +170,14 @@
         rotStep,
         driftAx: Math.random() * Math.PI * 2,
         driftAy: Math.random() * Math.PI * 2,
-        driftAmp: (0.06 + Math.random() * 0.26) * layerDrift,
-        driftFreq: 0.00004 + Math.random() * 0.00012,
-        aBase: (half > 20 ? 0.04 + Math.random() * 0.05 : 0.075 + Math.random() * 0.09) * layerAlpha,
+        driftAmp: (0.06 + Math.random() * 0.26) * layerDrift * (downloadsBoost ? 1.22 : 1),
+        driftFreq: (0.00004 + Math.random() * 0.00012) * (downloadsBoost ? 1.15 : 1),
+        aBase:
+          (half > 20 ? 0.04 + Math.random() * 0.05 : 0.075 + Math.random() * 0.09) *
+          layerAlpha *
+          (downloadsBoost ? 1.28 : 1),
         layer,
+        bornAt,
       })
     }
   }
@@ -171,7 +196,41 @@
     ptr.ty = ptr.ly = h * 0.5
     nextGlitchAt = performance.now() + 2000 + Math.random() * 4000
     applyColorScheme()
+    lastObservedDataSection = activeSectionId()
+    cubeArrayHeavy = lastObservedDataSection === 'downloads'
+    denseBlend = 1
+    denseBlendTarget = 1
     initCubes()
+  }
+
+  const DENSE_BLEND_LERP = 0.075
+  const DENSE_FADE_OUT_THRESHOLD = 0.04
+  const SPAWN_FADE_MS = 560
+
+  function syncCubesWithDataSection() {
+    if (w < 32 || h < 32) return
+    const now = document.documentElement.dataset.activeSection || 'hub'
+    if (now === lastObservedDataSection) return
+    lastObservedDataSection = now
+
+    const wantHeavy = now === 'downloads'
+
+    if (wantHeavy && !cubeArrayHeavy) {
+      cubeArrayHeavy = true
+      initCubes()
+      denseBlend = 0
+      denseBlendTarget = 1
+      return
+    }
+
+    if (wantHeavy && cubeArrayHeavy) {
+      denseBlendTarget = 1
+      return
+    }
+
+    if (!wantHeavy && cubeArrayHeavy) {
+      denseBlendTarget = 0
+    }
   }
 
   function buildCubeVerts(c) {
@@ -201,7 +260,15 @@
     const verts = buildCubeVerts(c)
 
     const depth = (verts[0].sc + verts[6].sc) * 0.5
-    let alpha = c.aBase * clamp(0.5 + depth * 0.42, 0.35, 1.08) * scheme.lineMul
+    const dlBoost = cubeArrayHeavy ? 1.22 : 1
+    const spawnFade = Math.min(1, Math.max(0, (t - c.bornAt) / SPAWN_FADE_MS))
+    let alpha =
+      c.aBase *
+      clamp(0.5 + depth * 0.42, 0.35, 1.08) *
+      scheme.lineMul *
+      dlBoost *
+      spawnFade *
+      denseBlend
 
     const { r: R, g: G, b: B } = scheme.ink
     const { r: Gr, g: Gg, b: Gb } = scheme.glitch
@@ -266,6 +333,19 @@
     ctx.clearRect(0, 0, w, h)
     scheduleGlitch(t)
 
+    denseBlend += (denseBlendTarget - denseBlend) * DENSE_BLEND_LERP
+    if (denseBlendTarget === 1 && denseBlend > 0.998) denseBlend = 1
+    if (
+      denseBlendTarget === 0 &&
+      denseBlend < DENSE_FADE_OUT_THRESHOLD &&
+      cubeArrayHeavy
+    ) {
+      cubeArrayHeavy = false
+      denseBlend = 1
+      denseBlendTarget = 1
+      initCubes()
+    }
+
     ctx.save()
     ctx.translate(shiftX, shiftY)
 
@@ -305,6 +385,12 @@
 
   applyColorScheme()
   resize()
+
+  const sectionObs = new MutationObserver(() => {
+    syncCubesWithDataSection()
+  })
+  sectionObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-active-section'] })
+
   window.addEventListener('resize', resize, { passive: true })
   window.addEventListener('pointermove', onPtr, { passive: true })
   if (snapRoot) snapRoot.addEventListener('scroll', onScroll, { passive: true })
@@ -318,6 +404,7 @@
       running = false
       stop()
       window.removeEventListener('resize', resize)
+      sectionObs.disconnect()
       window.removeEventListener('pointermove', onPtr)
       if (snapRoot) snapRoot.removeEventListener('scroll', onScroll)
       mqLight.removeEventListener('change', onSchemeChange)
