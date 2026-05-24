@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "bmcmod:light_smooth_stone"
+  },
+  "result": {
+    "count": 1,
+    "id": "bmcmod:chiseled_light_smooth_stone"
+  }
+}

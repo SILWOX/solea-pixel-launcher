@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "bmcmod:block/light_stone_slab"
+    },
+    "type=double": { "model": "bmcmod:block/light_stone" },
+    "type=top": {
+      "model": "bmcmod:block/light_stone_slab_top"
+    }
+  }
+}

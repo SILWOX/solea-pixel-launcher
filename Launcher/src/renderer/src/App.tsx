@@ -23,14 +23,18 @@ import type {
 } from './launcherTypes'
 import logoUrl from './assets/branding/logo.png?url'
 import homeMinecraftWallpaperUrl from './assets/branding/home-minecraft-wallpaper.png?url'
+import bootSplashUrl from './assets/branding/boot-splash.png?url'
+import loginWallpaperUrl from './assets/branding/login-wallpaper.png?url'
 import soleaLoginLogoUrl from './assets/branding/solea-pixel-login-logo.png?url'
-import bootLogoUrl from './assets/branding/boot-logo.png?url'
 import vanillaGrassIconUrl from './assets/branding/vanilla-grass-icon.png?url'
 import './App.css'
 import './liquidGlass.css'
 import './settingsAether2.css'
 import './homeCardStudio.css'
 import './sidebarClassicV1.css'
+import './aetherV3.css'
+import './login-v3.css'
+import './ui/v3Primitives.css'
 import './actus/actus.css'
 import { fetchAndCacheActuSolea, ACTU_SOLEA_UPDATED_EVENT } from './actus/actusoleaFetch'
 import { ActuSoleaFeed } from './actus/ActuSoleaFeed'
@@ -53,8 +57,8 @@ import { LoginInfoModal } from './LoginInfoModal'
 import { CacheClearConfirmModal, type CacheClearKind } from './CacheClearConfirmModal'
 import { MemoryClearConfirmModal } from './MemoryClearConfirmModal'
 import { CreditsModal } from './CreditsModal'
-import { MyServerView } from './MyServerView'
 import { applyAppearanceSettings, subscribeSystemTheme } from './appearance'
+import { isLegacyOrangeAccent } from '../../shared/soleaBrandColors.js'
 import { useI18n, type TFunction } from './i18n/I18nContext'
 import { LauncherSelect, type LauncherSelectEntry } from './ui/LauncherSelect'
 import { ShellSidebarTip } from './ui/ShellSidebarTip'
@@ -98,6 +102,7 @@ const THEME_ROWS: ThemeRow[] = [
   { kind: 'opt', value: 'dark', labelKey: 'settings.themeDark' },
   { kind: 'group', labelKey: 'settings.themeGroupStudio' },
   { kind: 'opt', value: 'amber', labelKey: 'settings.themeAmber' },
+  { kind: 'opt', value: 'solea_pixel', labelKey: 'settings.themeSoleaPixelLegacy' },
   { kind: 'opt', value: 'midnight', labelKey: 'settings.themeMidnight' },
   { kind: 'opt', value: 'high_contrast', labelKey: 'settings.themeHighContrast' },
   { kind: 'group', labelKey: 'settings.themeGroupWorlds' },
@@ -133,7 +138,6 @@ function coerceUiThemeForIpc(v: unknown): UiTheme {
 const LOGO = logoUrl
 /** Fond écran Microsoft + hub Accueil & actus (même artwork, centré / cover). */
 const LOGIN_WALLPAPER = homeMinecraftWallpaperUrl
-const SOLEA_LOGIN_LOGO = soleaLoginLogoUrl
 const NEWS_WALLPAPER = homeMinecraftWallpaperUrl
 
 /** 5 clics rapides sur l’icône Paramètres ouvrent la fenêtre debug (développeur). */
@@ -165,7 +169,10 @@ const FAKE_INSTALL_DEBUG_FILES = [
 
 /** Titre sur deux lignes (maquette) : coupe équilibrée pour les noms longs. */
 function packTitleLines(displayName: string): { first: string; second: string | null } {
-  const w = displayName.trim().split(/\s+/).filter(Boolean)
+  const normalized = displayName.trim()
+  if (normalized.toLowerCase() === 'better mc') return { first: 'Better MC', second: null }
+
+  const w = normalized.split(/\s+/).filter(Boolean)
   if (w.length === 0) return { first: displayName, second: null }
   if (w.length === 1) return { first: w[0]!, second: null }
   const last = w[w.length - 1]!
@@ -178,6 +185,12 @@ function packTitleLines(displayName: string): { first: string; second: string | 
   if (w.length === 2) return { first: w[0]!, second: w[1]! }
   const mid = Math.ceil(w.length / 2)
   return { first: w.slice(0, mid).join(' '), second: w.slice(mid).join(' ') }
+}
+
+function normalizeModpackDisplayName(id: string | null | undefined, displayName: string | null | undefined): string {
+  if ((id ?? '').toLowerCase() === 'aeloria') return 'Better MC'
+  if ((id ?? '').toLowerCase() === 'solea-optimised') return 'SOLEA OPTIMISED'
+  return displayName ?? ''
 }
 
 /** Tags + titre + accroche — partagés entre carte Classique et refonte Studio (structure HTML différente). */
@@ -778,11 +791,12 @@ function emptySettings(): LauncherSettingsUI {
       'wither-storm': { ...packs },
       'mythic-trials-1': { ...packs },
       'mythic-trials-2': { ...packs },
-      aeloria: { ...packs }
+      aeloria: { ...packs },
+      'solea-optimised': { ...packs }
     },
     uiLanguage: 'en',
     uiTheme: 'dark',
-    uiAccentHex: '#ff6a1a',
+    uiAccentHex: '#FFD54A',
     uiFontScale: 'm',
     uiReduceMotion: false,
     uiCompact: false,
@@ -798,7 +812,6 @@ function emptySettings(): LauncherSettingsUI {
     uiShortcutGoNews: 'CommandOrControl+Shift+KeyH',
     uiShortcutGoAccount: 'CommandOrControl+Shift+KeyU',
     nativeNotifications: true,
-    experimentalServerSystemEnabled: true,
     diagnosticLaunch: false,
     networkSlowDownloads: false,
     uiChromeGlass: false,
@@ -822,17 +835,14 @@ function applyExclusiveGlassUi(s: LauncherSettingsUI): LauncherSettingsUI {
 /** Accueil + écran Paramètres partagent le même mode v2 / Legacy (champs disque toujours alignés). */
 function normalizeLauncherSettingsUi(s: LauncherSettingsUI): LauncherSettingsUI {
   const legacy = s.uiHomeCardVariant === 'classic' || s.uiSettingsShell === 'legacy'
+  const homeVariant = legacy ? 'classic' : 'studio'
   const hubV = s.vanillaHubLastSelectedVersion
   return applyExclusiveGlassUi({
     ...s,
-    uiHomeCardVariant: legacy ? 'classic' : 'studio',
+    uiHomeCardVariant: homeVariant,
     uiSettingsShell: legacy ? 'legacy' : 'aether2',
     vanillaHubLastSelectedVersion:
       typeof hubV === 'string' ? (hubV.trim() || null) : hubV === null || hubV === undefined ? null : null,
-    experimentalServerSystemEnabled:
-      typeof s.experimentalServerSystemEnabled === 'boolean'
-        ? s.experimentalServerSystemEnabled
-        : true
   })
 }
 
@@ -867,7 +877,6 @@ function pickLauncherTabDefaultPatch(): Partial<LauncherSettingsUI> {
     uiShortcutGoNews: d.uiShortcutGoNews,
     uiShortcutGoAccount: d.uiShortcutGoAccount,
     nativeNotifications: d.nativeNotifications,
-    experimentalServerSystemEnabled: d.experimentalServerSystemEnabled,
     diagnosticLaunch: d.diagnosticLaunch
   }
 }
@@ -991,16 +1000,6 @@ function IconScreenshots() {
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <path d="M7 15l3-3 3 3 4-5" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="8.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  )
-}
-
-function IconServer() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <rect x="3" y="4" width="18" height="6" rx="1.5" />
-      <rect x="3" y="14" width="18" height="6" rx="1.5" />
-      <path d="M7 7h2M7 17h2" strokeLinecap="round" />
     </svg>
   )
 }
@@ -1431,11 +1430,9 @@ function FlagFr({ className }: { className?: string } = {}) {
 }
 
 function LoginGate({
-  testMode,
   onLoggedIn,
   onPersistLocale
 }: {
-  testMode: boolean
   onLoggedIn: () => void
   onPersistLocale: (l: 'en' | 'fr') => void
 }) {
@@ -1460,6 +1457,12 @@ function LoginGate({
     document.addEventListener('click', close)
     return () => document.removeEventListener('click', close)
   }, [langOpen])
+
+  useEffect(() => {
+    void window.solea.getSettings().then((s) => {
+      setLocale(s.uiLanguage === 'fr' ? 'fr' : 'en')
+    })
+  }, [setLocale])
 
   const pickLang = (l: 'en' | 'fr') => {
     setLocale(l)
@@ -1506,18 +1509,13 @@ function LoginGate({
 
   return (
     <div
-      className="login-root"
+      className="login-root login-root--aether-v3"
       style={{
-        backgroundImage: `url(${LOGIN_WALLPAPER})`,
+        backgroundImage: `url(${loginWallpaperUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center center'
       }}
     >
-      {testMode && (
-        <div className="test-strip login-test-strip">
-          {t('login.testMode')} <code style={{ color: '#ffcc66' }}>test/electron-user-data</code>
-        </div>
-      )}
       <div className="login-lang-switch" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
@@ -1601,8 +1599,8 @@ function LoginGate({
         <span>{t('login.infoTrigger')}</span>
       </button>
       <LoginInfoModal open={infoOpen} onClose={() => setInfoOpen(false)} />
-      <div className="login-card">
-        <img src={SOLEA_LOGIN_LOGO} alt="" className="login-wordmark" />
+      <div className="login-card login-card--aether-v3">
+        <img src={soleaLoginLogoUrl} alt="" className="login-wordmark login-wordmark--aether-v3" />
         <h2 className="login-welcome-title">{t('login.title')}</h2>
         <p className="login-lead">{t('login.lead')}</p>
         <p className="login-welcome-extra">{t('login.extra')}</p>
@@ -1736,7 +1734,7 @@ export function App() {
   const [modpackName, setModpackName] = useState('Palamod Recreated')
   /** Par défaut : onglet Accueil (actus). Les modpacks restent sur `home`. */
   const [view, setView] = useState<
-    'home' | 'news' | 'settings' | 'account' | 'screenshots' | 'my-server' | 'vanilla-minecraft'
+    'home' | 'news' | 'settings' | 'account' | 'screenshots' | 'vanilla-minecraft'
   >(
     'news'
   )
@@ -1778,10 +1776,6 @@ export function App() {
   const primaryActionAckTimerRef = useRef(0)
   const modpackRefreshFlightRef = useRef<Promise<void> | null>(null)
   const [memoryStats, setMemoryStats] = useState<{ totalGiB: number } | null>(null)
-  const [myServerInstallProgress, setMyServerInstallProgress] = useState<
-    | null
-    | { serverId: string; phase: string; current: number; total: number; detail?: string }
-  >(null)
   const [packInstanceDetails, setPackInstanceDetails] = useState<{
     installed: boolean
     sizeBytes: number | null
@@ -1920,7 +1914,6 @@ export function App() {
                 settings: t('shell.settings'),
                 account: t('shell.account'),
                 screenshots: t('shell.screenshots'),
-                'my-server': t('shell.myServer'),
                 'vanilla-minecraft': t('shell.vanillaMinecraft')
               } as const
             )[view]
@@ -1954,6 +1947,7 @@ export function App() {
     () => settings.uiReduceMotion || prefersRm,
     [settings.uiReduceMotion, prefersRm]
   )
+  const isV3 = settings.uiHomeCardVariant !== 'classic'
 
   const triggerPrimaryActionAck = useCallback(() => {
     if (reduceMotionEffective) return
@@ -1987,7 +1981,7 @@ export function App() {
     if (
       view === 'news' ||
       view === 'screenshots' ||
-      ((view === 'my-server' || view === 'vanilla-minecraft') && uiGlassBackdrop)
+      (view === 'vanilla-minecraft' && uiGlassBackdrop)
     )
       return NEWS_WALLPAPER
     if (view === 'home' && isModpackId(activeModpackId)) return MODPACK_THEME[activeModpackId].wallpaper
@@ -2121,36 +2115,6 @@ export function App() {
   }, [activeAcc?.offline, activeAcc?.uuid, view])
 
   useEffect(() => {
-    if (activeAcc?.offline && view === 'my-server') {
-      setView('news')
-    }
-  }, [activeAcc?.offline, view])
-
-  useEffect(() => {
-    if (!settings.experimentalServerSystemEnabled && view === 'my-server') {
-      setView('news')
-    }
-  }, [settings.experimentalServerSystemEnabled, view])
-
-  useEffect(() => {
-    if (screen !== 'app') return
-    return window.solea.onSoleaServerEvent((ev) => {
-      if (ev.kind !== 'progress') return
-      if (ev.phase === 'done' || ev.phase === 'error') {
-        setMyServerInstallProgress(null)
-        return
-      }
-      setMyServerInstallProgress({
-        serverId: ev.serverId,
-        phase: ev.phase,
-        current: ev.current,
-        total: Math.max(1, ev.total),
-        detail: typeof ev.detail === 'string' ? ev.detail : undefined
-      })
-    })
-  }, [screen])
-
-  useEffect(() => {
     if (!settingsGlossaryKey || view !== 'settings') return
     const onDoc = (e: MouseEvent) => {
       const tgt = e.target
@@ -2206,6 +2170,11 @@ export function App() {
 
   useLayoutEffect(() => {
     applyAppearanceSettings(settings)
+    if (settings.uiTheme !== 'solea_pixel' && isLegacyOrangeAccent(settings.uiAccentHex)) {
+      void window.solea.saveSettings({ uiAccentHex: '#FFD54A' }).then(() => {
+        void window.solea.getSettings().then((s) => setSettings(normalizeLauncherSettingsUi(s)))
+      })
+    }
   }, [settings])
 
   useEffect(() => {
@@ -2228,6 +2197,13 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    const root = document.documentElement
+    if (isV3) root.setAttribute('data-ui-v3', '1')
+    else root.removeAttribute('data-ui-v3')
+    return () => root.removeAttribute('data-ui-v3')
+  }, [isV3])
+
+  useEffect(() => {
     let cancelled = false
     const start = performance.now()
     let rafId = 0
@@ -2244,8 +2220,17 @@ export function App() {
     const pathsP = window.solea.getPaths().then((p) => {
       if (cancelled) return
       setTestMode(p.testMode)
-      if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
-      if (p.modpacks?.length) setModpacksList(p.modpacks)
+      if (p.modpackDisplayName) {
+        setModpackName(normalizeModpackDisplayName(p.activeModpackId, p.modpackDisplayName))
+      }
+      if (p.modpacks?.length) {
+        setModpacksList(
+          p.modpacks.map((m) => ({
+            ...m,
+            displayName: normalizeModpackDisplayName(m.id, m.displayName) || m.displayName
+          }))
+        )
+      }
       if (p.activeModpackId && isModpackId(p.activeModpackId)) setActiveModpackId(p.activeModpackId)
     })
 
@@ -2294,8 +2279,17 @@ export function App() {
       if (run) setLaunchPhase('running')
     })
     void window.solea.getPaths().then((p) => {
-      if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
-      if (p.modpacks?.length) setModpacksList(p.modpacks)
+      if (p.modpackDisplayName) {
+        setModpackName(normalizeModpackDisplayName(p.activeModpackId, p.modpackDisplayName))
+      }
+      if (p.modpacks?.length) {
+        setModpacksList(
+          p.modpacks.map((m) => ({
+            ...m,
+            displayName: normalizeModpackDisplayName(m.id, m.displayName) || m.displayName
+          }))
+        )
+      }
       if (p.activeModpackId && isModpackId(p.activeModpackId)) setActiveModpackId(p.activeModpackId)
     })
   }, [screen, loadAccounts, refreshAllModpacksAction])
@@ -2371,7 +2365,9 @@ export function App() {
     }
     setActiveModpackId(r.activeModpackId as ModpackIdUi)
     const p = await window.solea.getPaths()
-    if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
+    if (p.modpackDisplayName) {
+      setModpackName(normalizeModpackDisplayName(p.activeModpackId, p.modpackDisplayName))
+    }
     await refreshAllModpacksAction()
     void refreshModpackActivity()
     void window.solea.isGameRunning().then((run) => {
@@ -3532,27 +3528,43 @@ export function App() {
         <div className="app-chrome-body">
           <TitleBar />
           <div className="app-fill">
-          <div className="boot-screen">
-            <div className="boot-screen-inner">
-              <div className="boot-logo-wrap">
-                <img src={bootLogoUrl} alt="Solea Pixel" className="boot-logo" />
+          <div
+            className="boot-screen boot-screen--splash"
+            style={{
+              backgroundImage: `url(${bootSplashUrl})`
+            }}
+          >
+            <div className="boot-screen-inner boot-screen-inner--splash">
+              <div className="boot-progress-wrap boot-progress-wrap--splash">
+                <div
+                  className="boot-progress-track boot-progress-track--pixel"
+                  role="progressbar"
+                  aria-valuenow={Math.round(bootProgress)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuetext={formatPercent(Math.round(bootProgress))}
+                  aria-label={t('boot.aria')}
+                >
+                  <div className="boot-progress-fill" style={{ width: `${bootProgress}%` }} />
+                  <div className="boot-progress-glow" aria-hidden style={{ width: `${bootProgress}%` }} />
+                </div>
+                <div className="boot-progress-segments" aria-hidden>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <span
+                      key={i}
+                      className={`boot-progress-segment${bootProgress >= ((i + 1) / 12) * 100 ? ' is-lit' : ''}`}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="boot-progress-wrap">
-              <div
-                className="boot-progress-track"
-                role="progressbar"
-                aria-valuenow={Math.round(bootProgress)}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuetext={formatPercent(Math.round(bootProgress))}
-                aria-label={t('boot.aria')}
-              >
-                <div className="boot-progress-fill" style={{ width: `${bootProgress}%` }} />
-              </div>
-              </div>
-              <span className="boot-progress-label" aria-live="polite">
-                {t('boot.loadingBase')}
-                {reduceMotionEffective ? '…' : '.'.repeat(bootDots)}
+              <span className="boot-progress-label boot-progress-label--splash" aria-live="polite">
+                <span className="boot-progress-label-text">
+                  {t('boot.loadingBase')}
+                  {reduceMotionEffective ? '…' : '.'.repeat(bootDots)}
+                </span>
+                <span className="boot-progress-pct" aria-hidden>
+                  {formatPercent(Math.round(bootProgress))}
+                </span>
               </span>
             </div>
           </div>
@@ -3569,7 +3581,6 @@ export function App() {
           <TitleBar />
           <div className="app-fill">
           <LoginGate
-            testMode={testMode}
             onLoggedIn={() => {
               setScreen('app')
               setView('news')
@@ -3583,7 +3594,12 @@ export function App() {
   }
 
   return (
-    <div className="app-chrome" data-app-view={view} data-home-card={settings.uiHomeCardVariant}>
+    <div
+      className={`app-chrome${isV3 ? ' app-chrome--v3' : ''}`}
+      data-app-view={view}
+      data-ui-v3={isV3 ? '1' : undefined}
+      data-home-card={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
+    >
       {uiGlassBackdrop ? (
         <div
           key={view === 'home' && isModpackId(activeModpackId) ? activeModpackId : view}
@@ -3597,7 +3613,11 @@ export function App() {
           showFloatingTitle={view === 'home' && isModpackId(activeModpackId)}
         />
         <div className="app-fill">
-    <div className="shell" data-home-card={settings.uiHomeCardVariant}>
+    <div
+      className={`shell${isV3 ? ' shell--v3' : ''}`}
+      data-ui-v3={isV3 ? '1' : undefined}
+      data-home-card={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
+    >
       <aside className="shell-sidebar" aria-label={t('shell.sidebarAria')}>
         <div className="sb-rail-section sb-rail-section--top">
           <ShellSidebarTip label={t('shell.home')}>
@@ -3623,18 +3643,6 @@ export function App() {
               <IconGear />
             </button>
           </ShellSidebarTip>
-          {!activeAcc?.offline && settings.experimentalServerSystemEnabled ? (
-            <ShellSidebarTip label={t('shell.myServer')}>
-              <button
-                type="button"
-                className={`sb-btn ${view === 'my-server' ? 'active' : ''}`}
-                aria-label={t('shell.myServer')}
-                onClick={() => tryLeaveSettings(() => setView('my-server'))}
-              >
-                <IconServer />
-              </button>
-            </ShellSidebarTip>
-          ) : null}
         </div>
         <div className="sb-rail-vanilla" aria-label={t('shell.vanillaMinecraftAria')}>
           <ShellSidebarTip label={t('shell.vanillaMinecraft')}>
@@ -3714,11 +3722,11 @@ export function App() {
 
       <div
         className={`shell-main ${
-          view === 'settings' || view === 'account' || view === 'my-server' || view === 'vanilla-minecraft'
+          view === 'settings' || view === 'account' || view === 'vanilla-minecraft'
             ? 'settings-mode'
             : ''
         } ${
-          view === 'news' || view === 'screenshots' || view === 'my-server' || view === 'vanilla-minecraft'
+          view === 'news' || view === 'screenshots' || view === 'vanilla-minecraft'
             ? 'shell-main-news'
             : ''
         } ${
@@ -3735,7 +3743,7 @@ export function App() {
         )}
         {(view === 'news' ||
           view === 'screenshots' ||
-          ((view === 'my-server' || view === 'vanilla-minecraft') && uiGlassBackdrop)) && (
+          (view === 'vanilla-minecraft' && uiGlassBackdrop)) && (
           <div
             className="shell-main-wallpaper"
             style={{ backgroundImage: `url(${NEWS_WALLPAPER})` }}
@@ -3749,7 +3757,6 @@ export function App() {
         {view === 'home' && (
           <>
           <div className="shell-content shell-content-home">
-            {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
             {testMode && (
               <div className="home-debug-fake-install" role="region" aria-label={t('debug.fakeHomeAria')}>
                 <button
@@ -3772,24 +3779,26 @@ export function App() {
             )}
 
             <div
-              className={`home-panel${settings.uiHomeCardVariant === 'studio' ? ' home-panel--studio' : ''}`}
+              className={`home-panel${settings.uiHomeCardVariant !== 'classic' ? ' home-panel--studio' : ''}`}
             >
               <div className="home-panel-inner">
                 <div
-                  className={`home-body${settings.uiHomeCardVariant === 'studio' ? ' home-body--studio' : ''}`}
+                  className={`home-body${settings.uiHomeCardVariant !== 'classic' ? ' home-body--studio' : ''}`}
                 >
-                  {settings.uiHomeCardVariant === 'studio' ? (
+                  {settings.uiHomeCardVariant !== 'classic' ? (
                     <section className="home-studio-hero" aria-labelledby="home-studio-title">
                       <div className="home-studio-hero-glow" aria-hidden />
-                      <div className="home-studio-accent" aria-hidden />
-                      <div className="home-studio-tags-row">
-                        <HomeHeroTagsPack activeModpackId={activeModpackId} studio t={t} />
-                      </div>
-                      <p className="home-studio-eyebrow">{t('home.studioEyebrow')}</p>
-                      <div className="home-studio-main">
-                        <HomePackTitlePack modpackName={modpackName} studio />
-                        <div className="home-studio-lead-wrap">
-                          <HomePackLeadPack activeModpackId={activeModpackId} studio t={t} />
+                      <div className="home-studio-info-wrap">
+                        <div className="home-studio-accent" aria-hidden />
+                        <div className="home-studio-tags-row">
+                          <HomeHeroTagsPack activeModpackId={activeModpackId} studio t={t} />
+                        </div>
+                        <p className="home-studio-eyebrow">{t('home.studioEyebrow')}</p>
+                        <div className="home-studio-main">
+                          <HomePackTitlePack modpackName={modpackName} studio />
+                          <div className="home-studio-lead-wrap">
+                            <HomePackLeadPack activeModpackId={activeModpackId} studio t={t} />
+                          </div>
                         </div>
                       </div>
                     </section>
@@ -3810,7 +3819,7 @@ export function App() {
                   <div className="home-action-deck-wrap">
                   <div
                     className={`home-action-deck${
-                      settings.uiHomeCardVariant === 'studio' ? ' home-action-deck--studio' : ''
+                      settings.uiHomeCardVariant !== 'classic' ? ' home-action-deck--studio' : ''
                     }`}
                   >
                 <div className={`play-row${packNeedsAction ? ' play-row--pack-cta' : ''}`}>
@@ -4052,25 +4061,6 @@ export function App() {
                   </button>
                 )}
 
-                {(homeActivityLabels.lastLauncherUpdate || homeActivityLabels.lastPlay) && (
-                  <footer className="home-panel-foot">
-                    <div className="home-last-activity">
-                      <p className="home-last-activity-label">{t('home.lastActivityTitle')}</p>
-                      <ul className="home-last-activity-list">
-                        {homeActivityLabels.lastLauncherUpdate ? (
-                          <li>
-                            {t('home.lastLauncherUpdated', {
-                              date: homeActivityLabels.lastLauncherUpdate
-                            })}
-                          </li>
-                        ) : null}
-                        {homeActivityLabels.lastPlay ? (
-                          <li>{t('home.lastPlay', { date: homeActivityLabels.lastPlay })}</li>
-                        ) : null}
-                      </ul>
-                    </div>
-                  </footer>
-                )}
                 </div>
               </div>
             </div>
@@ -4083,10 +4073,9 @@ export function App() {
           <>
             <div
               className={`shell-content shell-content-news news-hub-layout news-hub-layout--${
-                settings.uiHomeCardVariant === 'studio' ? 'v2' : 'v1'
+                settings.uiHomeCardVariant !== 'classic' ? 'v2' : 'v1'
               }`}
             >
-              {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
               <div className="news-hub-body">
                 <div className="news-hub-canvas">
                 <header className="news-hub-page-hero">
@@ -4400,13 +4389,6 @@ export function App() {
             >
               <ScreenshotsViewLazy modpacksList={modpacksList} initialModpackId={activeModpackId} />
             </Suspense>
-            <footer className="shell-footer">{t('home.footer', { name: shellFooterLegalName })}</footer>
-          </>
-        )}
-
-        {view === 'my-server' && (
-          <>
-            <MyServerView modpacksList={modpacksList} chromeGlass={uiGlassBackdrop} />
             <footer className="shell-footer">{t('home.footer', { name: shellFooterLegalName })}</footer>
           </>
         )}
@@ -5068,21 +5050,11 @@ export function App() {
                       </div>
                     </summary>
                     <div className="inner field-grid">
-                      <div className="full settings-toggle-stack">
-                        <SettingsToggle
-                          checked={settings.experimentalServerSystemEnabled}
-                          onChange={(next) =>
-                            setSettings((s) => ({ ...s, experimentalServerSystemEnabled: next }))
-                          }
-                          label={t('settings.experimentalServerToggle')}
-                          description={t('settings.experimentalServerToggleSub')}
-                        />
-                      </div>
                       <label className="full">
                         {t('settings.uiLauncherExperience')}
                         <div className="sub">{t('settings.uiLauncherExperienceSub')}</div>
                         <LauncherSelect
-                          value={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
+                          value={settings.uiHomeCardVariant}
                           onChange={(v) => {
                             const legacy = v === 'classic'
                             setSettings((s) => ({
@@ -6417,40 +6389,6 @@ export function App() {
                   </span>
                 ) : null}
               </div>
-            </div>
-          </div>
-        ) : null}
-        {myServerInstallProgress ? (
-          <div className="solea-myserver-progress" role="status" aria-live="polite">
-            <div className="solea-myserver-progress-inner solea-modal-surface">
-              <p
-                className={`solea-myserver-progress-title${uiGlassBackdrop ? ' font-mc' : ''}`}
-              >
-                {t('myServer.installBarTitle')}
-              </p>
-              <div
-                className="solea-global-progress-track"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.round(
-                  (myServerInstallProgress.current / myServerInstallProgress.total) * 100
-                )}
-              >
-                <div
-                  className="solea-global-progress-fill"
-                  style={{
-                    width: `${Math.max(
-                      0,
-                      Math.min(100, (myServerInstallProgress.current / myServerInstallProgress.total) * 100)
-                    )}%`
-                  }}
-                />
-              </div>
-              <p className="solea-myserver-progress-detail">
-                {myServerInstallProgress.phase}
-                {myServerInstallProgress.detail ? ` — ${myServerInstallProgress.detail}` : ''}
-              </p>
             </div>
           </div>
         ) : null}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:disk",
+  "config": {
+    "half_height": 2,
+    "radius": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 3,
+      "max_inclusive": 6
+    },
+    "state_provider": {
+      "rules": [],
+      "fallback": {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "bmcmod:quicksand"
+        }
+      }
+    },
+    "target": {
+      "type": "minecraft:matching_blocks",
+      "blocks": [
+        "minecraft:sand",
+        "minecraft:sandstone"
+      ]
+    }
+  }
+}

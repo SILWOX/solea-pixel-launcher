@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:emerald"
+  },
+  "base": {
+    "item": "bmcmod:diamond_bow"
+  },
+  "result": {
+    "count": 1,
+    "id": "bmcmod:emerald_bow"
+  },
+  "template": {
+    "item": "bmcmod:bow_upgrade_smithing_template"
+  }
+}

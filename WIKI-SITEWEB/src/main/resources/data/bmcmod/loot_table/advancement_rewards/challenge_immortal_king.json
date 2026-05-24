@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "bmcmod:morph_crystal" },
+        { "type": "minecraft:item", "name": "bmcmod:builder_wand_enderite" },
+        { "type": "minecraft:item", "name": "bmcmod:sealed_experience_bottle", "functions": [{ "function": "minecraft:set_count", "count": 2 }] }
+      ]
+    }
+  ]
+}

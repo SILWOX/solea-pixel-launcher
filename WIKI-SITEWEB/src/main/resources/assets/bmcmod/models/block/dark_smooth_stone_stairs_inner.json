@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "bmcmod:block/stone/dark_smooth_stone",
+    "side": "bmcmod:block/stone/dark_smooth_stone",
+    "top": "bmcmod:block/stone/dark_smooth_stone"
+  }
+}

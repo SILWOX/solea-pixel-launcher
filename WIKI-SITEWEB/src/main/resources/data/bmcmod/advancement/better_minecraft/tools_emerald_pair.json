@@ -1,0 +1,23 @@
+{
+  "parent": "bmcmod:better_minecraft/infusion_adept",
+  "display": {
+    "icon": { "id": "bmcmod:emerald_pickaxe" },
+    "title": { "translate": "advancement.bmcmod.tools_emerald_pair.title" },
+    "description": { "translate": "advancement.bmcmod.tools_emerald_pair.description" },
+    "frame": "task",
+    "x": 4.0,
+    "y": -6.0
+  },
+  "criteria": {
+    "sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:emerald_sword" }] }
+    },
+    "pick": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:emerald_pickaxe" }] }
+    }
+  },
+  "requirements": [["sword"], ["pick"]],
+  "rewards": { "experience": 60 }
+}

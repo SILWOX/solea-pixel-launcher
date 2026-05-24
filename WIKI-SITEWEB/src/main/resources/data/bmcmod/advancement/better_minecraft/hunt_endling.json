@@ -1,0 +1,26 @@
+{
+  "parent": "bmcmod:better_minecraft/storm_scout",
+  "display": {
+    "icon": { "id": "bmcmod:endling_spawn_egg" },
+    "title": { "translate": "advancement.bmcmod.hunt_endling.title" },
+    "description": { "translate": "advancement.bmcmod.hunt_endling.description" },
+    "frame": "task",
+    "x": 4.0,
+    "y": 3.5
+  },
+  "criteria": {
+    "kill": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "type": "bmcmod:endling" }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": { "experience": 35 }
+}

@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/storm_cataclysm",
+  "display": {
+    "icon": { "id": "bmcmod:end_storm_banner" },
+    "title": { "translate": "advancement.bmcmod.storm_bannerlord.title" },
+    "description": { "translate": "advancement.bmcmod.storm_bannerlord.description" },
+    "frame": "task",
+    "x": 8.5,
+    "y": 3.5
+  },
+  "criteria": {
+    "banner": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:end_storm_banner" }] }
+    }
+  },
+  "rewards": { "experience": 95 }
+}

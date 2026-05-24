@@ -1,0 +1,26 @@
+{
+  "parent": "bmcmod:better_minecraft/welcome_journey",
+  "display": {
+    "icon": { "id": "minecraft:ender_pearl" },
+    "title": { "translate": "advancement.bmcmod.hunt_blink.title" },
+    "description": { "translate": "advancement.bmcmod.hunt_blink.description" },
+    "frame": "task",
+    "x": -4.0,
+    "y": 1.0
+  },
+  "criteria": {
+    "kill": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "type": "bmcmod:blink" }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": { "experience": 40 }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "bmcmod:block/stone/chiseled_dark_smooth_stone_top",
+    "bottom": "bmcmod:block/stone/chiseled_dark_smooth_stone_top",
+    "side": "bmcmod:block/stone/chiseled_dark_smooth_stone_bottom"
+  }
+}

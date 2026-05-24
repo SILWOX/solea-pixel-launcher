@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "bmcmod:undead_totem" },
+        { "type": "minecraft:item", "name": "bmcmod:undead_bottle_6" },
+        { "type": "minecraft:item", "name": "bmcmod:undead_crown" }
+      ]
+    }
+  ]
+}

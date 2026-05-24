@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "bmcmod:emerald_backpack" },
+        { "type": "minecraft:item", "name": "bmcmod:armor_upgrade", "functions": [{ "function": "minecraft:set_count", "count": 1 }] },
+        { "type": "minecraft:item", "name": "bmcmod:health_upgrade", "functions": [{ "function": "minecraft:set_count", "count": 1 }] }
+      ]
+    }
+  ]
+}

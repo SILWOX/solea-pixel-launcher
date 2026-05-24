@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_shovel",
+    "bmcmod:emerald_shovel",
+    "bmcmod:enderite_shovel",
+    "bmcmod:boreal_shovel"
+  ]
+}

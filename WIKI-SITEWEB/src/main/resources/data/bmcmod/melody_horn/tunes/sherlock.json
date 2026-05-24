@@ -1,0 +1,90 @@
+{
+  "loop_length_ticks": 59,
+  "events": [
+    {
+      "t": 0,
+      "i": "iron_xylophone",
+      "n": 15
+    },
+    {
+      "t": 2,
+      "i": "iron_xylophone",
+      "n": 12
+    },
+    {
+      "t": 4,
+      "i": "iron_xylophone",
+      "n": 15
+    },
+    {
+      "t": 6,
+      "i": "iron_xylophone",
+      "n": 17
+    },
+    {
+      "t": 9,
+      "i": "iron_xylophone",
+      "n": 15
+    },
+    {
+      "t": 12,
+      "i": "iron_xylophone",
+      "n": 12
+    },
+    {
+      "t": 15,
+      "i": "iron_xylophone",
+      "n": 10
+    },
+    {
+      "t": 18,
+      "i": "iron_xylophone",
+      "n": 12
+    },
+    {
+      "t": 21,
+      "i": "iron_xylophone",
+      "n": 14
+    },
+    {
+      "t": 24,
+      "i": "iron_xylophone",
+      "n": 12
+    },
+    {
+      "t": 27,
+      "i": "iron_xylophone",
+      "n": 10
+    },
+    {
+      "t": 30,
+      "i": "iron_xylophone",
+      "n": 8
+    },
+    {
+      "t": 34,
+      "i": "iron_xylophone",
+      "n": 10
+    },
+    {
+      "t": 37,
+      "i": "iron_xylophone",
+      "n": 12
+    },
+    {
+      "t": 41,
+      "i": "iron_xylophone",
+      "n": 15
+    },
+    {
+      "t": 45,
+      "i": "iron_xylophone",
+      "n": 12
+    },
+    {
+      "t": 51,
+      "i": "iron_xylophone",
+      "n": 10
+    }
+  ]
+}

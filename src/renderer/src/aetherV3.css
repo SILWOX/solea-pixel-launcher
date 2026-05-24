@@ -1,0 +1,614 @@
+/* AETHER UI V3 radical (beta) — theme-adaptive; sidebar comme V2; fonds visibles; modales blur léger */
+
+.app-chrome[data-ui-v3='1'] {
+  --v3-text: color-mix(in srgb, var(--text) 96%, #fff 4%);
+  --v3-muted: color-mix(in srgb, var(--text-muted) 85%, #fff 15%);
+  --v3-surface-0: color-mix(in srgb, var(--bg-panel) 82%, transparent);
+  --v3-surface-1: color-mix(in srgb, var(--bg-card) 84%, transparent);
+  --v3-surface-2: color-mix(in srgb, var(--bg-card-hover) 80%, transparent);
+  --v3-border-soft: color-mix(in srgb, var(--border) 80%, rgba(255, 255, 255, 0.14));
+  --v3-border-strong: color-mix(in srgb, var(--accent-orange) 34%, var(--border));
+  --v3-focus: color-mix(in srgb, var(--accent-orange) 46%, transparent);
+  --v3-shadow-xl: 0 28px 62px rgba(0, 0, 0, 0.48);
+  --v3-shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.34);
+  --v3-shadow-md: 0 9px 20px rgba(0, 0, 0, 0.24);
+  --v3-radius-xl: 24px;
+  --v3-radius-lg: 18px;
+  --v3-radius-md: 13px;
+  --v3-home-card-radius: 24px;
+  --v3-action-wrap-radius: 22px;
+  --v3-play-radius: 16px;
+  --v3-ease: cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+/* Même tokens sur <html> pour modales / toasts en portal (hors .app-chrome) */
+html[data-ui-v3='1'] {
+  --v3-text: color-mix(in srgb, var(--text) 96%, #fff 4%);
+  --v3-muted: color-mix(in srgb, var(--text-muted) 85%, #fff 15%);
+  --v3-surface-1: color-mix(in srgb, var(--bg-card) 84%, transparent);
+  --v3-surface-2: color-mix(in srgb, var(--bg-card-hover) 80%, transparent);
+  --v3-border-soft: color-mix(in srgb, var(--border) 80%, rgba(255, 255, 255, 0.14));
+  --v3-shadow-xl: 0 28px 62px rgba(0, 0, 0, 0.48);
+  --v3-shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.34);
+  --v3-radius-lg: 18px;
+  --v3-radius-md: 13px;
+  --v3-ease: cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+/* Ne pas recouvrir le launcher d’un dégradé opaque : laisser les wallpapers / thème respirer */
+.app-chrome[data-ui-v3='1'] .app-fill {
+  background: transparent;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) {
+  background-color: transparent !important;
+}
+
+/* Voile léger sur le fond modpack / accueil — lisibilité sans masquer l’image */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode):not(.shell-main-news)::before {
+  background: linear-gradient(
+    125deg,
+    rgba(0, 0, 0, 0.16) 0%,
+    rgba(0, 0, 0, 0.05) 46%,
+    transparent 88%
+  ) !important;
+}
+
+/* Hub actus & écrans voisins : un peu plus de contraste texte, toujours léger */
+.app-chrome[data-ui-v3='1'] .shell-main.shell-main-news::before {
+  background: linear-gradient(
+    115deg,
+    rgba(14, 12, 18, 0.28) 0%,
+    rgba(22, 18, 22, 0.12) 48%,
+    rgba(14, 12, 18, 0.18) 100%
+  ) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .titlebar.titlebar--float {
+  min-height: 54px;
+  border-bottom: 1px solid var(--v3-border-soft);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+}
+
+/* Barre latérale : reprendre le gabarit V2 (80px, dégradé base App.css) — pas de surcharges larges/boutons */
+.shell.shell--v3 .shell-sidebar {
+  width: 80px;
+  padding: 1rem 0 1.05rem;
+}
+
+.shell[data-ui-v3='1'] .shell-main {
+  padding: clamp(0.75rem, 1.6vw, 1.1rem);
+}
+
+/*
+ * Accueil modpack : pas de « deuxième cadre » autour du contenu — le fin liseré / vitrage
+ * sur .shell-view-shell est retiré ; seule la carte modpack reste mise en forme.
+ */
+.shell[data-ui-v3='1'] .shell-main:not(.settings-mode) .shell-view-shell {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.shell[data-ui-v3='1'] .shell-main.settings-mode .shell-view-shell {
+  border-radius: var(--v3-radius-xl);
+  border: 1px solid color-mix(in srgb, var(--border) 65%, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.22);
+  background: rgba(6, 8, 14, 0.2);
+  backdrop-filter: blur(11px) saturate(1.06);
+  -webkit-backdrop-filter: blur(11px) saturate(1.06);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-content {
+  color: var(--v3-text);
+}
+
+/* Cartes & panneaux — hors réglages : pas de blur ; fond noir léger type V2 */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .news-card,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .set-card,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .account-card,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .screenshots-card,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .my-server-panel,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .my-server-panel-card {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--v3-radius-lg);
+  background: linear-gradient(
+    155deg,
+    rgba(0, 0, 0, 0.44) 0%,
+    rgba(6, 6, 10, 0.56) 46%,
+    rgba(2, 2, 6, 0.58) 100%
+  );
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Screenshots: panneau plein opaque (pas d'effet transparent). */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .screenshots-card {
+  background: linear-gradient(168deg, #181818 0%, #111111 56%, #0d0d0d 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme='light'] .app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .screenshots-card {
+  background: linear-gradient(170deg, #fcfbf9 0%, #f5f2ec 100%);
+  border-color: #d8cec2;
+  box-shadow:
+    0 8px 24px rgba(17, 24, 39, 0.08),
+    inset 0 1px 0 #fff;
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav,
+.app-chrome[data-ui-v3='1'] .settings-body {
+  position: relative;
+  border: 1px solid var(--v3-border-soft);
+  border-radius: var(--v3-radius-lg);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--v3-surface-1) 52%, transparent),
+    color-mix(in srgb, var(--v3-surface-2) 48%, transparent)
+  );
+  box-shadow: var(--v3-shadow-lg);
+  backdrop-filter: blur(12px) saturate(1.05);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
+}
+
+/* Carte modpack : tinte thème très légère par-dessus le noir transparent (lisibilité type V2) */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel {
+  border-radius: var(--v3-home-card-radius) !important;
+  background: linear-gradient(
+    155deg,
+    rgba(0, 0, 0, 0.42) 0%,
+    color-mix(in srgb, var(--bg-panel) 28%, rgba(0, 0, 0, 0.62)) 44%,
+    color-mix(in srgb, var(--bg-card) 22%, rgba(0, 0, 0, 0.65)) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Studio (homeCardStudio) : même lecture — pas de blur ; carte ~24px comme la ref., fond noir vitré */
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel.home-panel--studio {
+  border-radius: var(--v3-home-card-radius) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: linear-gradient(
+    152deg,
+    rgba(0, 0, 0, 0.46) 0%,
+    rgba(8, 8, 14, 0.58) 48%,
+    rgba(4, 4, 10, 0.62) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel.home-panel--studio::before {
+  background: radial-gradient(
+    120% 80% at 0% 0%,
+    color-mix(in srgb, var(--accent-orange) 14%, transparent) 0%,
+    transparent 52%
+  ) !important;
+  opacity: 0.55 !important;
+}
+
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel.home-panel--studio::after {
+  border-radius: calc(var(--v3-home-card-radius) - 1px) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Voile d’accent discret ; ligne décorative en haut plus soft */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel::before {
+  inset: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  height: auto !important;
+  border-radius: inherit !important;
+  background: radial-gradient(
+    120% 85% at 12% -8%,
+    color-mix(in srgb, var(--accent-orange) 16%, transparent) 0%,
+    transparent 52%
+  ) !important;
+  opacity: 0.5 !important;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel::after {
+  border-radius: calc(var(--v3-home-card-radius) - 1px) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .set-card::before,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .news-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--v3-border-strong), transparent);
+  opacity: 0.55;
+}
+
+/*
+ * Carte Studio : bloc infos (tags + titre + description) = même « boîte » que le rail Play,
+ * contour teinté par l’accent du modpack — sans blur sur le fond.
+ */
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap {
+  padding: 1.12rem 1.22rem 1.18rem;
+  border-radius: var(--v3-action-wrap-radius);
+  border: 1px solid color-mix(in srgb, var(--accent-orange) 46%, rgba(255, 255, 255, 0.14));
+  background: linear-gradient(
+    168deg,
+    rgba(0, 0, 0, 0.48) 0%,
+    rgba(0, 0, 0, 0.3) 46%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 0 0 1px color-mix(in srgb, var(--accent-orange) 22%, transparent),
+    0 16px 46px rgba(0, 0, 0, 0.38);
+}
+
+@media (hover: hover) {
+  html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap:hover {
+    border-color: color-mix(in srgb, var(--accent-orange) 54%, rgba(255, 255, 255, 0.16));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px color-mix(in srgb, var(--accent-orange) 28%, transparent),
+      0 20px 52px rgba(0, 0, 0, 0.42);
+  }
+}
+
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap .home-studio-lead-wrap {
+  border-radius: 0;
+  border: none;
+  border-left: 3px solid color-mix(in srgb, var(--accent-orange) 72%, rgba(255, 255, 255, 0.35));
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Rail Play + actions : encadré comme la capture — fond noir vitré (pas de blur), liseré léger */
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap {
+  margin-top: 1.05rem;
+  padding: 1.18rem 1.22rem 1.12rem;
+  border-radius: var(--v3-action-wrap-radius);
+  border: 1px solid color-mix(in srgb, var(--accent-orange) 44%, rgba(255, 255, 255, 0.12));
+  background: linear-gradient(
+    168deg,
+    rgba(0, 0, 0, 0.52) 0%,
+    rgba(0, 0, 0, 0.36) 48%,
+    rgba(0, 0, 0, 0.26) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 0 0 1px color-mix(in srgb, var(--accent-orange) 18%, transparent),
+    0 18px 48px rgba(0, 0, 0, 0.42);
+}
+
+@media (hover: hover) {
+  html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap:hover {
+    border-color: color-mix(in srgb, var(--accent-orange) 52%, rgba(255, 255, 255, 0.15));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px color-mix(in srgb, var(--accent-orange) 22%, transparent),
+      0 22px 54px rgba(0, 0, 0, 0.46);
+  }
+}
+
+/* Carte classique (non Studio) : bandeau actions même langage que la capture */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel:not(.home-panel--studio) .home-action-deck {
+  margin-top: 0.95rem;
+  padding: 1.05rem 1.12rem 1rem;
+  border-radius: var(--v3-action-wrap-radius);
+  background: linear-gradient(
+    175deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.34) 55%,
+    rgba(0, 0, 0, 0.24) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 44px rgba(0, 0, 0, 0.38);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel:not(.home-panel--studio) .home-action-deck::before {
+  opacity: 0.38;
+}
+
+/* Rangée Play : grille respirante, gros CTA + contrôles vitrés sombres */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-action-deck .play-row:not(.play-row--pack-cta) {
+  gap: 0.55rem 0.72rem;
+  align-items: center;
+}
+
+.app-chrome[data-ui-v3='1']
+  .shell-main:not(.settings-mode)
+  .home-action-deck
+  .play-row
+  .btn-play:not(.btn-play--pack-action):not(.btn-play-close) {
+  border-radius: var(--v3-play-radius);
+  min-height: 2.85rem;
+  padding: 0.58rem 1.25rem;
+  font-size: clamp(0.82rem, 0.38rem + 1.15vw, 1.06rem);
+  letter-spacing: 0.04em;
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--accent-orange) 55%, rgba(0, 0, 0, 0.35));
+  box-shadow:
+    0 14px 38px color-mix(in srgb, var(--accent-orange) 38%, transparent),
+    0 6px 18px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.app-chrome[data-ui-v3='1']
+  .shell-main:not(.settings-mode)
+  .home-action-deck
+  .play-row-primary
+  .btn-play--pack-action {
+  border-radius: var(--v3-play-radius);
+  min-height: 2.85rem;
+  padding: 0.58rem 1.25rem;
+  box-shadow:
+    0 14px 38px color-mix(in srgb, var(--accent-orange) 38%, transparent),
+    0 6px 18px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row > .btn-check-update {
+  border-radius: var(--v3-play-radius);
+  min-width: 2.85rem;
+  min-height: 2.85rem;
+  background: rgba(0, 0, 0, 0.44);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row > .btn-check-update:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.55);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row .profile-bar {
+  border-radius: var(--v3-play-radius);
+  min-height: 2.85rem;
+  padding: 0.48rem 1.05rem 0.48rem 0.52rem;
+  background: rgba(0, 0, 0, 0.44);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row .profile-bar:hover {
+  background: rgba(0, 0, 0, 0.54);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.app-chrome[data-ui-v3='1'] .home-studio-main,
+.app-chrome[data-ui-v3='1'] .home-action-deck,
+.app-chrome[data-ui-v3='1'] .settings-layout,
+.app-chrome[data-ui-v3='1'] .news-layout,
+.app-chrome[data-ui-v3='1'] .account-main,
+.app-chrome[data-ui-v3='1'] .screenshots-grid,
+.app-chrome[data-ui-v3='1'] .my-server-main {
+  gap: clamp(0.8rem, 1.8vw, 1.25rem);
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav {
+  border-right: 1px solid var(--v3-border-soft);
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav button.nav-item {
+  border-radius: var(--v3-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav button.nav-item:hover {
+  border-color: var(--v3-border-strong);
+  background: color-mix(in srgb, var(--accent-orange) 13%, var(--v3-surface-2));
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav button.nav-item.on {
+  border-color: color-mix(in srgb, var(--accent-orange) 58%, var(--border));
+  background: color-mix(in srgb, var(--accent-orange) 20%, var(--v3-surface-2));
+  box-shadow: var(--v3-shadow-md);
+}
+
+.app-chrome[data-ui-v3='1'] .btn-play,
+.app-chrome[data-ui-v3='1'] .btn-save,
+.app-chrome[data-ui-v3='1'] .btn-muted,
+.app-chrome[data-ui-v3='1'] .btn-check-update,
+.app-chrome[data-ui-v3='1'] .btn-danger-outline,
+.app-chrome[data-ui-v3='1'] .launcher-select-trigger {
+  border-radius: var(--v3-radius-md);
+  border: 1px solid var(--v3-border-soft);
+  transition:
+    transform 165ms var(--v3-ease),
+    box-shadow 165ms var(--v3-ease),
+    border-color 165ms var(--v3-ease),
+    background-color 165ms var(--v3-ease);
+}
+
+.app-chrome[data-ui-v3='1'] .btn-muted,
+.app-chrome[data-ui-v3='1'] .btn-check-update,
+.app-chrome[data-ui-v3='1'] .btn-danger-outline,
+.app-chrome[data-ui-v3='1'] .launcher-select-trigger {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--v3-surface-2) 96%, transparent), var(--v3-surface-1));
+  color: var(--v3-text);
+}
+
+.app-chrome[data-ui-v3='1'] .btn-play,
+.app-chrome[data-ui-v3='1'] .btn-save {
+  background: linear-gradient(
+    142deg,
+    color-mix(in srgb, var(--accent-orange) 78%, white 22%),
+    color-mix(in srgb, var(--accent-orange) 62%, black 38%)
+  );
+  border-color: color-mix(in srgb, var(--accent-orange) 62%, var(--border));
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .btn-play:not(.btn-play-close),
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .btn-save {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  filter: none;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .btn-play .btn-play-label {
+  color: inherit;
+  text-shadow: inherit;
+}
+
+.app-chrome[data-ui-v3='1'] .btn-play:hover,
+.app-chrome[data-ui-v3='1'] .btn-save:hover,
+.app-chrome[data-ui-v3='1'] .btn-muted:hover,
+.app-chrome[data-ui-v3='1'] .btn-check-update:hover,
+.app-chrome[data-ui-v3='1'] .btn-danger-outline:hover,
+.app-chrome[data-ui-v3='1'] .launcher-select-trigger:hover {
+  transform: translateY(-1px);
+  border-color: var(--v3-border-strong);
+  box-shadow: var(--v3-shadow-md);
+}
+
+.app-chrome[data-ui-v3='1']
+  .shell-main:not(.settings-mode)
+  .home-action-deck
+  .play-row
+  .btn-play:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent-orange) 72%, rgba(255, 255, 255, 0.2));
+  box-shadow:
+    0 20px 50px color-mix(in srgb, var(--accent-orange) 45%, transparent),
+    0 8px 24px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.app-chrome[data-ui-v3='1'] .btn-play:focus-visible,
+.app-chrome[data-ui-v3='1'] .btn-save:focus-visible,
+.app-chrome[data-ui-v3='1'] .btn-muted:focus-visible,
+.app-chrome[data-ui-v3='1'] .btn-check-update:focus-visible,
+.app-chrome[data-ui-v3='1'] .launcher-select-trigger:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--v3-focus),
+    var(--v3-shadow-md);
+}
+
+.app-chrome[data-ui-v3='1'] .home-pack-action-title,
+.app-chrome[data-ui-v3='1'] .settings-nav-brand-title,
+.app-chrome[data-ui-v3='1'] .settings h2,
+.app-chrome[data-ui-v3='1'] .news-title,
+.app-chrome[data-ui-v3='1'] .modpack-name {
+  color: var(--v3-text);
+  letter-spacing: 0.01em;
+}
+
+.app-chrome[data-ui-v3='1'] .sub,
+.app-chrome[data-ui-v3='1'] .home-pack-meta,
+.app-chrome[data-ui-v3='1'] .settings-nav-section-label,
+.app-chrome[data-ui-v3='1'] .settings-body p {
+  color: var(--v3-muted);
+}
+
+/* Modales : fond quasi transparent + blur net (theme.css a rgba(0,0,0,.58) — on écrase en V3) */
+html[data-ui-v3='1'] .pack-confirm-backdrop,
+html[data-ui-v3='1'] .settings-unsaved-backdrop,
+html[data-ui-v3='1'] .credits-backdrop,
+html[data-ui-v3='1'] .my-server-modal-backdrop,
+html[data-ui-v3='1'] .account-modal-backdrop,
+html[data-ui-v3='1'] .whatsnew-backdrop,
+html[data-ui-v3='1'] .cape-modal-backdrop {
+  background: rgba(5, 8, 14, 0.12) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+}
+
+html[data-ui-v3='1'] .pack-confirm-modal,
+html[data-ui-v3='1'] .settings-unsaved-modal,
+html[data-ui-v3='1'] .credits-modal,
+html[data-ui-v3='1'] .modpack-updates-modal,
+html[data-ui-v3='1'] .my-server-modal-aether {
+  border: 1px solid var(--v3-border-soft);
+  border-radius: var(--v3-radius-lg);
+  background: linear-gradient(166deg, var(--v3-surface-1), var(--v3-surface-2));
+  box-shadow: var(--v3-shadow-xl);
+  color: var(--v3-text);
+}
+
+html[data-ui-v3='1'] .toast-stack {
+  bottom: 1.2rem;
+  right: 1.2rem;
+}
+
+html[data-ui-v3='1'] .toast-item {
+  border-radius: var(--v3-radius-md);
+  border: 1px solid var(--v3-border-soft);
+  box-shadow: var(--v3-shadow-lg);
+}
+
+html[data-ui-v3='1'] .toast-item-surface {
+  background: linear-gradient(165deg, var(--v3-surface-1), var(--v3-surface-2));
+}
+
+html[data-ui-v3='1'] .toast-item-kind {
+  color: var(--v3-muted);
+}
+
+html[data-ui-v3='1'] .toast-item-text,
+html[data-ui-v3='1'] .toast-item-action {
+  color: var(--v3-text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-ui-v3='1'] .shell-view-shell,
+  html[data-ui-v3='1'] .set-card,
+  html[data-ui-v3='1'] .pack-confirm-modal,
+  html[data-ui-v3='1'] .toast-item {
+    animation: v3-rise-in 260ms var(--v3-ease) both;
+  }
+}
+
+@keyframes v3-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+html[data-ui-v3='1'][data-reduce-motion='1'] .btn-play,
+html[data-ui-v3='1'][data-reduce-motion='1'] .btn-save,
+html[data-ui-v3='1'][data-reduce-motion='1'] .btn-muted,
+html[data-ui-v3='1'][data-reduce-motion='1'] .btn-check-update,
+html[data-ui-v3='1'][data-reduce-motion='1'] .launcher-select-trigger,
+html[data-ui-v3='1'][data-reduce-motion='1'] .toast-item,
+html[data-ui-v3='1'][data-reduce-motion='1'] .pack-confirm-modal {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}

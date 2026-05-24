@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_leggings",
+    "bmcmod:emerald_leggings",
+    "bmcmod:enderite_leggings",
+    "bmcmod:boreal_leggings",
+    "bmcmod:obsidian_leggings",
+    "bmcmod:shulker_leggings"
+  ]
+}

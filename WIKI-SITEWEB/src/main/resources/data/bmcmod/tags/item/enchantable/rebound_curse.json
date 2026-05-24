@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#bmcmod:enchantable/melee_weapon",
+    "#minecraft:pickaxes",
+    "#minecraft:shovels",
+    "#minecraft:hoes"
+  ]
+}

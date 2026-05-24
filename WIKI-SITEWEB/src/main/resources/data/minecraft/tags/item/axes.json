@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_axe",
+    "bmcmod:emerald_axe",
+    "bmcmod:enderite_axe",
+    "bmcmod:boreal_axe"
+  ]
+}

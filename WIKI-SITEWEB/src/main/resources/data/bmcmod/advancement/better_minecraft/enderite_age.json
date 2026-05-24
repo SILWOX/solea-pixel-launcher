@@ -1,0 +1,65 @@
+{
+  "parent": "bmcmod:better_minecraft/foundry_mastery",
+  "display": {
+    "icon": {
+      "id": "bmcmod:enderite_chestplate"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.enderite_age.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.enderite_age.description"
+    },
+    "frame": "task",
+    "x": 5.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_enderite_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:enderite_helmet"
+          }
+        ]
+      }
+    },
+    "has_enderite_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:enderite_chestplate"
+          }
+        ]
+      }
+    },
+    "has_enderite_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:enderite_leggings"
+          }
+        ]
+      }
+    },
+    "has_enderite_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:enderite_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_enderite_helmet"],
+    ["has_enderite_chestplate"],
+    ["has_enderite_leggings"],
+    ["has_enderite_boots"]
+  ]
+}

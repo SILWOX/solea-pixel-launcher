@@ -3,6 +3,11 @@ import { join } from 'path'
 import { app } from 'electron'
 import { MODPACKS, resolveModpackId } from './modpacks.js'
 import { parseLauncherSettingsFromDisk } from './settingsZod.js'
+import {
+  isLegacyOrangeAccent,
+  SOLEA_ACCENT_BEE_GOLD,
+  SOLEA_ACCENT_LEGACY_ORANGE
+} from '../shared/soleaBrandColors.js'
 import { validateModpackInstanceParentPaths } from './instancePaths.js'
 
 /** RAM, résolution et arguments de lancement Minecraft — un jeu par modpack. */
@@ -22,6 +27,7 @@ export type UiTheme =
   | 'dark'
   | 'system'
   | 'amber'
+  | 'solea_pixel'
   | 'midnight'
   | 'high_contrast'
   | 'forest'
@@ -43,7 +49,7 @@ export type SkinViewerAnimation =
   | 'crouch'
   | 'hit'
 export type UpdateChannel = 'stable' | 'beta'
-export type UiHomeCardVariant = 'studio' | 'classic'
+export type UiHomeCardVariant = 'studio' | 'classic' | 'beta'
 export type UiSettingsShellVariant = 'aether2' | 'legacy'
 
 export interface LauncherSettings {
@@ -101,8 +107,6 @@ export interface LauncherSettings {
   uiShortcutGoAccount: string
   /** Notifications système (Windows / macOS) pour install finie, maj dispo. */
   nativeNotifications: boolean
-  /** Entrée « Mes serveurs » et fonctions associées. */
-  experimentalServerSystemEnabled: boolean
   /** Lancement avec tas JVM réduit (support / debug). */
   diagnosticLaunch: boolean
   /** Limite les téléchargements parallèles (réseau lent). */
@@ -139,7 +143,7 @@ export const DEFAULT_SETTINGS: LauncherSettings = {
   modpackInstanceParentPath: {},
   uiLanguage: 'en',
   uiTheme: 'dark',
-  uiAccentHex: '#ff6a1a',
+  uiAccentHex: SOLEA_ACCENT_BEE_GOLD,
   uiFontScale: 'm',
   uiReduceMotion: false,
   uiCompact: false,
@@ -178,6 +182,7 @@ const ALL_UI_THEMES: readonly UiTheme[] = [
   'dark',
   'system',
   'amber',
+  'solea_pixel',
   'midnight',
   'high_contrast',
   'forest',
@@ -285,6 +290,21 @@ function settingsPath(): string {
   return join(app.getPath('userData'), 'launcher-settings.json')
 }
 
+/** Première installation : français si la langue système est fr*, sinon anglais. */
+export function resolveSystemUiLanguage(): UiLanguage {
+  try {
+    const preferred =
+      typeof app.getPreferredSystemLanguages === 'function' ? app.getPreferredSystemLanguages() : []
+    const candidates = preferred.length > 0 ? preferred : [app.getLocale()]
+    for (const tag of candidates) {
+      if (String(tag).toLowerCase().startsWith('fr')) return 'fr'
+    }
+  } catch {
+    /* ignore */
+  }
+  return 'en'
+}
+
 function legacyGameSlice(s: LauncherSettings): ModpackGameProfile {
   return {
     memoryMin: s.memoryMin,
@@ -347,6 +367,17 @@ function migrateLegacyUiTheme(raw: unknown, merged: LauncherSettings): LauncherS
   return merged
 }
 
+/** Orange historique → jaune abeille sauf si thème « Ancien SOLEA PIXEL ». */
+function migrateLegacyDefaultAccent(s: LauncherSettings): LauncherSettings {
+  if (s.uiTheme === 'solea_pixel') {
+    return { ...s, uiAccentHex: SOLEA_ACCENT_LEGACY_ORANGE }
+  }
+  if (isLegacyOrangeAccent(s.uiAccentHex) || !s.uiAccentHex?.trim()) {
+    return { ...s, uiAccentHex: SOLEA_ACCENT_BEE_GOLD }
+  }
+  return s
+}
+
 function normalizeShortcutFields(s: LauncherSettings): LauncherSettings {
   const fix = (v: string, d: string) => (isValidUiShortcutAccel(v) ? v.trim() : d)
   return {
@@ -360,8 +391,14 @@ function normalizeShortcutFields(s: LauncherSettings): LauncherSettings {
 export function loadSettings(): LauncherSettings {
   const p = settingsPath()
   if (!existsSync(p)) {
-    return normalizeShortcutFields(
-      applyExclusiveGlassModes(normalizeVanillaGameProfile(normalizeModpackProfiles({ ...DEFAULT_SETTINGS })))
+    return migrateLegacyDefaultAccent(
+      normalizeShortcutFields(
+        applyExclusiveGlassModes(
+          normalizeVanillaGameProfile(
+            normalizeModpackProfiles({ ...DEFAULT_SETTINGS, uiLanguage: resolveSystemUiLanguage() })
+          )
+        )
+      )
     )
   }
   try {
@@ -377,10 +414,16 @@ export function loadSettings(): LauncherSettings {
       vanillaHubLastSelectedVersion:
         typeof hubV === 'string' ? (hubV.trim() || null) : hubV === null || hubV === undefined ? null : null
     }
-    return normalizeShortcutFields(applyExclusiveGlassModes(merged))
+    return migrateLegacyDefaultAccent(normalizeShortcutFields(applyExclusiveGlassModes(merged)))
   } catch {
-    return normalizeShortcutFields(
-      applyExclusiveGlassModes(normalizeVanillaGameProfile(normalizeModpackProfiles({ ...DEFAULT_SETTINGS })))
+    return migrateLegacyDefaultAccent(
+      normalizeShortcutFields(
+        applyExclusiveGlassModes(
+          normalizeVanillaGameProfile(
+            normalizeModpackProfiles({ ...DEFAULT_SETTINGS, uiLanguage: resolveSystemUiLanguage() })
+          )
+        )
+      )
     )
   }
 }
@@ -449,6 +492,9 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
   if (typeof next.uiChromeGlass !== 'boolean') next.uiChromeGlass = DEFAULT_SETTINGS.uiChromeGlass
   if (typeof next.uiLiquidGlass !== 'boolean') next.uiLiquidGlass = DEFAULT_SETTINGS.uiLiquidGlass
   next = applyExclusiveGlassModes(next)
+  if (next.uiHomeCardVariant === 'beta') {
+    next.uiHomeCardVariant = 'studio'
+  }
   if (next.uiHomeCardVariant !== 'studio' && next.uiHomeCardVariant !== 'classic') {
     next.uiHomeCardVariant = DEFAULT_SETTINGS.uiHomeCardVariant
   }
@@ -497,9 +543,6 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
   }
   if (typeof next.nativeNotifications !== 'boolean') {
     next.nativeNotifications = DEFAULT_SETTINGS.nativeNotifications
-  }
-  if (typeof next.experimentalServerSystemEnabled !== 'boolean') {
-    next.experimentalServerSystemEnabled = DEFAULT_SETTINGS.experimentalServerSystemEnabled
   }
   if (typeof next.diagnosticLaunch !== 'boolean') {
     next.diagnosticLaunch = DEFAULT_SETTINGS.diagnosticLaunch

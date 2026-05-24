@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/bottle_adept",
+  "display": {
+    "icon": { "id": "bmcmod:undead_bottle_6" },
+    "title": { "translate": "advancement.bmcmod.bottle_mastery.title" },
+    "description": { "translate": "advancement.bmcmod.bottle_mastery.description" },
+    "frame": "task",
+    "x": 9.0,
+    "y": 6.5
+  },
+  "criteria": {
+    "has_undead_bottle_6": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:undead_bottle_6" }] }
+    }
+  },
+  "rewards": { "experience": 110 }
+}

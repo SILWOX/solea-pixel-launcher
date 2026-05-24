@@ -69,8 +69,8 @@ export const MODPACKS: ModpackSpec[] = [
   },
   {
     id: 'aeloria',
-    displayName: 'AELORIA',
-    projectSlug: 'aeloria',
+    displayName: 'Better MC',
+    projectSlug: 'bmcmod',
     gameVersion: '1.21.1',
     loader: 'neoforge',
     recommendedJava: '21',
@@ -81,6 +81,7 @@ export const MODPACKS: ModpackSpec[] = [
 
 /** Page Modrinth du modpack (slug projet). */
 export function modrinthModpackPageUrl(spec: ModpackSpec): string {
+  if (spec.id === 'aeloria') return `https://modrinth.com/mod/${spec.projectSlug}`
   return `https://modrinth.com/modpack/${spec.projectSlug}`
 }
 

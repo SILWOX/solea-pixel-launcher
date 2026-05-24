@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_wall_side",
+  "textures": {
+    "wall": "bmcmod:block/stone/dark_stone"
+  }
+}

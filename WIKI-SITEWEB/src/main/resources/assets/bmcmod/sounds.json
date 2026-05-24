@@ -1,0 +1,23 @@
+{
+  "music_disc.beyond_the_enderman": {
+    "subtitle": "subtitles.record",
+    "sounds": [
+      {
+        "name": "bmcmod:music/beyond_the_endermans",
+        "stream": true
+      }
+    ]
+  },
+  "entity.mimic_chest.chase": {
+    "subtitle": "subtitles.entity.bmcmod.mimic_chest.chase",
+    "sounds": [
+      { "name": "minecraft:mob/zombie/say1", "weight": 4, "volume": 0.92 },
+      { "name": "minecraft:mob/zombie/say2", "weight": 4, "volume": 0.92 },
+      { "name": "minecraft:mob/zombie/say3", "weight": 4, "volume": 0.92 },
+      { "name": "minecraft:block/chest/open", "weight": 2, "volume": 0.58, "pitch": 0.86 },
+      { "name": "minecraft:block/chest/close1", "weight": 2, "volume": 0.52, "pitch": 0.95 },
+      { "name": "minecraft:block/chest/close2", "weight": 2, "volume": 0.52, "pitch": 1.02 },
+      { "name": "minecraft:block/chest/close3", "weight": 2, "volume": 0.52, "pitch": 1.08 }
+    ]
+  }
+}

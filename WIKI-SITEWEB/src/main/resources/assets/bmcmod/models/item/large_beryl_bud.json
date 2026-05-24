@@ -1,0 +1,7 @@
+{
+    "textures":  {
+                     "layer0":  "bmcmod:block/gems/large_beryl_bud"
+                 },
+    "parent":  "minecraft:item/generated"
+}
+

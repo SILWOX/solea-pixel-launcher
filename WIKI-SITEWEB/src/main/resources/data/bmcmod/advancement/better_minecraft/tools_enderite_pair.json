@@ -1,0 +1,23 @@
+{
+  "parent": "bmcmod:better_minecraft/enderite_age",
+  "display": {
+    "icon": { "id": "bmcmod:enderite_pickaxe" },
+    "title": { "translate": "advancement.bmcmod.tools_enderite_pair.title" },
+    "description": { "translate": "advancement.bmcmod.tools_enderite_pair.description" },
+    "frame": "task",
+    "x": 10.0,
+    "y": -2.0
+  },
+  "criteria": {
+    "sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:enderite_sword" }] }
+    },
+    "pick": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:enderite_pickaxe" }] }
+    }
+  },
+  "requirements": [["sword"], ["pick"]],
+  "rewards": { "experience": 85 }
+}

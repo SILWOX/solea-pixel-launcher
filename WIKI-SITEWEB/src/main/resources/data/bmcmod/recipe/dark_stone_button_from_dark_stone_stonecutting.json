@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "bmcmod:dark_stone"
+  },
+  "result": {
+    "count": 1,
+    "id": "bmcmod:dark_stone_button"
+  }
+}

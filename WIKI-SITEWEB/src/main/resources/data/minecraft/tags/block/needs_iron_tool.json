@@ -1,0 +1,27 @@
+{
+    "replace":  false,
+    "values":  [
+                   "bmcmod:ruby_ore",
+                   "bmcmod:deepslate_ruby_ore",
+                   "bmcmod:ruby_block",
+                   "bmcmod:opal_block",
+                   "bmcmod:budding_opal",
+                   "bmcmod:small_opal_bud",
+                   "bmcmod:medium_opal_bud",
+                   "bmcmod:large_opal_bud",
+                   "bmcmod:opal_cluster",
+                   "bmcmod:topaz_block",
+                   "bmcmod:budding_topaz",
+                   "bmcmod:small_topaz_bud",
+                   "bmcmod:medium_topaz_bud",
+                   "bmcmod:large_topaz_bud",
+                   "bmcmod:topaz_cluster",
+                   "bmcmod:beryl_block",
+                   "bmcmod:budding_beryl",
+                   "bmcmod:small_beryl_bud",
+                   "bmcmod:medium_beryl_bud",
+                   "bmcmod:large_beryl_bud",
+                   "bmcmod:beryl_cluster"
+               ]
+}
+

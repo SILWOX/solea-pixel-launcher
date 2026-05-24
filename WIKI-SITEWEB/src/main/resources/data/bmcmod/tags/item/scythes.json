@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:iron_scythe",
+    "bmcmod:golden_scythe",
+    "bmcmod:diamond_scythe",
+    "bmcmod:emerald_scythe",
+    "bmcmod:netherite_scythe",
+    "bmcmod:enderite_scythe",
+    "bmcmod:boreal_scythe"
+  ]
+}

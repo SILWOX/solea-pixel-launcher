@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "IIB",
+    "I T",
+    " HT"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "B": { "item": "minecraft:iron_block" },
+    "T": { "item": "minecraft:stick" },
+    "H": { "item": "minecraft:iron_hoe" }
+  },
+  "result": { "id": "bmcmod:iron_scythe", "count": 1 }
+}

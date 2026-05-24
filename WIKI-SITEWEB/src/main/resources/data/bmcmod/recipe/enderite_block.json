@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "enderite_block",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": { "item": "bmcmod:enderite_ingot" }
+  },
+  "result": {
+    "id": "bmcmod:enderite_block",
+    "count": 1
+  }
+}

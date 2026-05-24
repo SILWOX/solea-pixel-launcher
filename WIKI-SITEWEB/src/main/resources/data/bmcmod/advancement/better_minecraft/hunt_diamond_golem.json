@@ -1,0 +1,26 @@
+{
+  "parent": "bmcmod:better_minecraft/gem_collector",
+  "display": {
+    "icon": { "id": "bmcmod:diamond_golem_spawn_egg" },
+    "title": { "translate": "advancement.bmcmod.hunt_diamond_golem.title" },
+    "description": { "translate": "advancement.bmcmod.hunt_diamond_golem.description" },
+    "frame": "task",
+    "x": 6.5,
+    "y": 5.5
+  },
+  "criteria": {
+    "kill": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "type": "bmcmod:diamond_golem" }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": { "experience": 150 }
+}

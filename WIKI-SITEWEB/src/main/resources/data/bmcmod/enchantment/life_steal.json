@@ -1,0 +1,11 @@
+{
+  "description": {"translate": "enchantment.bmcmod.life_steal"},
+  "supported_items": "#bmcmod:enchantable/melee_weapon",
+  "weight": 2,
+  "max_level": 3,
+  "min_cost": {"base": 12, "per_level_above_first": 8},
+  "max_cost": {"base": 45, "per_level_above_first": 8},
+  "anvil_cost": 5,
+  "slots": ["hand"],
+  "effects": {}
+}

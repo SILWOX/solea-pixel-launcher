@@ -9,9 +9,15 @@
   --border: rgba(255, 255, 255, 0.08);
   --text: #f5f5f5;
   --text-muted: #9a9a9a;
-  --accent-orange: var(--accent, #ff6a1a);
-  --accent-orange-hover: color-mix(in srgb, var(--accent-orange) 85%, white);
-  --accent-glow: color-mix(in srgb, var(--accent-orange) 48%, transparent);
+  --accent-bee: #ffd54a;
+  --accent-bee-bright: #ffe082;
+  --accent-bee-deep: #ffb300;
+  --accent-bee-amber: #ffab00;
+  --v3-primary-btn-fg: #1a1008;
+  --v3-primary-btn-text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+  --accent-orange: var(--accent, var(--accent-bee));
+  --accent-orange-hover: color-mix(in srgb, var(--accent-bee-bright, #ffe082) 88%, white);
+  --accent-glow: color-mix(in srgb, var(--accent-orange) 52%, transparent);
   --glass: rgba(20, 20, 22, 0.55);
   /* Scrollbars AETHER — largeur par défaut (surchargée sur certains panneaux) */
   --aether-scroll-w: 9px;

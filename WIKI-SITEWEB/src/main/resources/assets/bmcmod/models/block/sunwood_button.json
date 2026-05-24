@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button",
+  "textures": {
+    "texture": "bmcmod:block/sunwood/sunwood_planks"
+  }
+}

@@ -18,6 +18,7 @@
     />
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/error404-fx.css" />
+    <link rel="stylesheet" href="/error404-v3.css" />
   </head>
   <body class="page-error">
     <a class="skip-link" href="#page-error-main" data-i18n="page404.skip">Skip to content</a>
@@ -33,6 +34,9 @@
 
     <div class="page-error-fx" aria-hidden="true">
       <canvas id="err-particles" class="page-error-particles" width="400" height="300"></canvas>
+      <div class="page-error-fx__aurora"></div>
+      <div class="page-error-fx__grid"></div>
+      <div class="page-error-fx__scanline"></div>
       <div class="page-error-fx__orb page-error-fx__orb--1"></div>
       <div class="page-error-fx__orb page-error-fx__orb--2"></div>
       <div class="page-error-fx__orb page-error-fx__orb--3"></div>
@@ -40,6 +44,19 @@
       <div class="page-error-fx__glow page-error-fx__glow--b"></div>
       <div class="page-error-fx__glow page-error-fx__glow--c"></div>
       <div class="page-error-fx__vignette"></div>
+    </div>
+
+    <div class="page-error__tap-streak" id="page-error-tap-streak" aria-hidden="true">
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
+      <span class="page-error__tap-streak-dot"></span>
     </div>
 
     <div class="page-error__shell">
@@ -70,19 +87,22 @@
       </header>
 
       <main id="page-error-main" class="page-error__main">
-        <div class="page-error__card">
-          <p class="page-error__code" aria-hidden="true" data-i18n="page404.code">404</p>
-          <h1 class="page-error__title" data-i18n="page404.title">Page not found</h1>
-          <p class="page-error__lead" data-i18n="page404.lead">
-            This address does not exist on this site. Check the URL or return to the home page.
-          </p>
-          <p class="page-error__path-wrap">
-            <span class="page-error__path-label" data-i18n="page404.pathLabel">Requested path</span>
-            <code class="page-error__path" id="page-error-path"></code>
-          </p>
-          <div class="page-error__actions">
-            <a class="btn btn-download btn-lg" href="/" data-i18n="page404.homeBtn">Back to home</a>
-            <a class="btn btn-line btn-lg" href="/license/" data-i18n="page404.licenseBtn">SPL license</a>
+        <div class="page-error__stage">
+          <p class="page-error__ghost" aria-hidden="true">404</p>
+          <div class="page-error__card page-error__card--v3">
+            <p class="page-error__code page-error__code--v3" aria-hidden="true" data-i18n="page404.code">404</p>
+            <h1 class="page-error__title page-error__title--v3" data-i18n="page404.title">Page not found</h1>
+            <p class="page-error__lead page-error__lead--v3" data-i18n="page404.lead">
+              This address does not exist on this site. Check the URL or return to the home page.
+            </p>
+            <p class="page-error__path-wrap">
+              <span class="page-error__path-label" data-i18n="page404.pathLabel">Requested path</span>
+              <code class="page-error__path page-error__path--v3" id="page-error-path"></code>
+            </p>
+            <div class="page-error__actions page-error__actions--v3">
+              <a class="btn btn-download btn-lg" href="/" data-i18n="page404.homeBtn">Back to home</a>
+              <a class="btn btn-line btn-lg" href="/license/" data-i18n="page404.licenseBtn">SPL license</a>
+            </div>
           </div>
         </div>
       </main>
@@ -238,6 +258,7 @@
     </dialog>
 
     <script src="/i18n.js"></script>
+    <script src="/error404-chapters.js"></script>
     <script src="/error404-particles.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
@@ -253,6 +274,7 @@
       })
     </script>
     <script src="/error404-void-sequel.js"></script>
+    <script src="/error404-void-maze.js"></script>
     <script src="/error404-void-phase2.js"></script>
     <script src="/error404-easter.js"></script>
   </body>

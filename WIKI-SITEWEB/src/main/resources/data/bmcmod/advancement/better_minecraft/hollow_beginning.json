@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": { "id": "bmcmod:hollow_planks" },
+    "title": { "translate": "advancement.bmcmod.hollow_beginning.title" },
+    "description": { "translate": "advancement.bmcmod.hollow_beginning.description" },
+    "frame": "task",
+    "x": 2.0,
+    "y": 2.0
+  },
+  "criteria": {
+    "has_hollow_planks": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_planks" }] }
+    }
+  },
+  "rewards": { "experience": 10 }
+}

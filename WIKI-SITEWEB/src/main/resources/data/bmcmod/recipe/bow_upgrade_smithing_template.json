@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "minecraft:bow"
+    }
+  },
+  "pattern": [
+    "RCR",
+    "CBC",
+    "RCR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bmcmod:bow_upgrade_smithing_template"
+  }
+}

@@ -1,11 +1,16 @@
 /** AETHER UI — v2 | Captures d’écran — Solea Pixel Launcher (proprietary interface layer). */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { isModpackId } from './modpackTheme'
+import { SOLEA_VANILLA_SCREENSHOTS_PACK_ID } from '../../soleaVanillaScreenshotsId'
 import { useI18n } from './i18n/I18nContext'
-import { LauncherSelect } from './ui/LauncherSelect'
+import { LauncherSelect, type LauncherSelectEntry } from './ui/LauncherSelect'
 import { useToast } from './ui/ToastContext'
 
 type ShotItem = { fileName: string; thumbDataUrl: string }
+
+function isScreenshotsPackId(id: string): boolean {
+  return id === SOLEA_VANILLA_SCREENSHOTS_PACK_ID || isModpackId(id)
+}
 
 export function ScreenshotsView({
   modpacksList,
@@ -16,9 +21,9 @@ export function ScreenshotsView({
 }) {
   const { t } = useI18n()
   const { pushToast } = useToast()
-  const packOptions = modpacksList.filter((m) => isModpackId(m.id))
+  const modpackOptions = modpacksList.filter((m) => isModpackId(m.id))
   const [packId, setPackId] = useState<string>(() =>
-    isModpackId(initialModpackId) ? initialModpackId : packOptions[0]?.id ?? ''
+    isModpackId(initialModpackId) ? initialModpackId : SOLEA_VANILLA_SCREENSHOTS_PACK_ID
   )
   const [items, setItems] = useState<ShotItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -31,18 +36,33 @@ export function ScreenshotsView({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const loadedImgRef = useRef<HTMLImageElement | null>(null)
 
-  const currentPackLabel = useMemo(
-    () => packOptions.find((p) => p.id === packId)?.displayName ?? packId,
-    [packOptions, packId]
-  )
+  const packSelectEntries = useMemo((): LauncherSelectEntry[] => {
+    const vanilla: LauncherSelectEntry = {
+      value: SOLEA_VANILLA_SCREENSHOTS_PACK_ID,
+      label: t('screenshots.vanillaInstanceName')
+    }
+    if (modpackOptions.length === 0) return [vanilla]
+    return [
+      vanilla,
+      { type: 'group', label: t('screenshots.instanceGroupModpacks') },
+      ...modpackOptions.map((m) => ({ value: m.id, label: m.displayName }))
+    ]
+  }, [t, modpackOptions])
 
-  const packSelectOptions = useMemo(
-    () => packOptions.map((m) => ({ value: m.id, label: m.displayName })),
-    [packOptions]
-  )
+  const currentPackLabel = useMemo(() => {
+    for (const e of packSelectEntries) {
+      if ('value' in e && e.value === packId) return e.label
+    }
+    return packId
+  }, [packSelectEntries, packId])
+
+  const activePreviewIndex = useMemo(() => {
+    if (!preview) return -1
+    return items.findIndex((it) => it.fileName === preview.fileName)
+  }, [items, preview])
 
   const refreshList = useCallback(async () => {
-    if (!isModpackId(packId)) {
+    if (!isScreenshotsPackId(packId)) {
       setItems([])
       return
     }
@@ -65,7 +85,7 @@ export function ScreenshotsView({
   }, [initialModpackId])
 
   const loadFull = async (fileName: string) => {
-    if (!isModpackId(packId)) return
+    if (!isScreenshotsPackId(packId)) return
     setFullLoading(true)
     setFullUrl(null)
     const r = await window.solea.getModpackScreenshotFull(packId, fileName)
@@ -85,6 +105,16 @@ export function ScreenshotsView({
     void loadFull(it.fileName)
   }
 
+  const openPreviewAt = useCallback(
+    (index: number) => {
+      if (index < 0 || index >= items.length) return
+      const it = items[index]
+      setPreview(it)
+      void loadFull(it.fileName)
+    },
+    [items]
+  )
+
   const closePreview = () => {
     setPreview(null)
     setFullUrl(null)
@@ -93,6 +123,18 @@ export function ScreenshotsView({
     setContrast(100)
     loadedImgRef.current = null
   }
+
+  const openPrevPreview = useCallback(() => {
+    if (items.length < 2 || activePreviewIndex < 0) return
+    const nextIndex = (activePreviewIndex - 1 + items.length) % items.length
+    openPreviewAt(nextIndex)
+  }, [activePreviewIndex, items.length, openPreviewAt])
+
+  const openNextPreview = useCallback(() => {
+    if (items.length < 2 || activePreviewIndex < 0) return
+    const nextIndex = (activePreviewIndex + 1) % items.length
+    openPreviewAt(nextIndex)
+  }, [activePreviewIndex, items.length, openPreviewAt])
 
   const exportDataUrl = async (dataUrl: string, defaultName: string) => {
     const r = await window.solea.saveDataUrlAsPng(dataUrl, defaultName)
@@ -132,6 +174,26 @@ export function ScreenshotsView({
     if (retouchOpen) drawRetouchCanvas()
   }, [brightness, contrast, retouchOpen, drawRetouchCanvas])
 
+  useEffect(() => {
+    if (!preview) return
+    const onKeyDown = (evt: KeyboardEvent) => {
+      if (evt.key === 'Escape') {
+        closePreview()
+        return
+      }
+      if (retouchOpen) return
+      if (evt.key === 'ArrowLeft') {
+        evt.preventDefault()
+        openPrevPreview()
+      } else if (evt.key === 'ArrowRight') {
+        evt.preventDefault()
+        openNextPreview()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [preview, retouchOpen, openPrevPreview, openNextPreview])
+
   const openRetouch = () => {
     if (!fullUrl || !preview) return
     setBrightness(100)
@@ -148,32 +210,16 @@ export function ScreenshotsView({
   }
 
   const openShotsFolder = () => {
-    if (!isModpackId(packId)) return
+    if (!isScreenshotsPackId(packId)) return
     void window.solea.openScreenshotsFolder(packId).then((r) => {
       if (!r.ok) pushToast(r.error, 'error')
     })
   }
 
-  if (!packOptions.length) {
-    return (
-      <div className="shell-content shell-content-news screenshots-view">
-        <div className="screenshots-scroll">
-          <div className="screenshots-page-inner">
-          <section className="screenshots-card screenshots-card--solo">
-            <p className="screenshots-eyebrow">{t('screenshots.eyebrow')}</p>
-            <h2 className="screenshots-h2">{t('screenshots.title')}</h2>
-            <p className="screenshots-muted-block">{t('screenshots.noPacks')}</p>
-          </section>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="shell-content shell-content-news screenshots-view">
       <div className="screenshots-scroll">
-        <div className="screenshots-page-inner">
+        <div className="screenshots-page-inner screenshots-page-inner--redesign">
         <section className="screenshots-card screenshots-card--hero" aria-labelledby="shots-title">
           <div className="screenshots-hero-intro">
             <p className="screenshots-eyebrow">{t('screenshots.eyebrow')}</p>
@@ -181,6 +227,22 @@ export function ScreenshotsView({
               {t('screenshots.title')}
             </h2>
             <p className="screenshots-subtitle">{t('screenshots.subtitle')}</p>
+            <div className="screenshots-hero-kpis">
+              <span className="screenshots-hero-kpi">
+                <span className="screenshots-hero-kpi-label">{t('screenshots.instanceSection')}</span>
+                <span className="screenshots-hero-kpi-value">{currentPackLabel}</span>
+              </span>
+              <span className="screenshots-hero-kpi">
+                <span className="screenshots-hero-kpi-label">{t('screenshots.galleryTitle')}</span>
+                <span className="screenshots-hero-kpi-value">
+                  {loading
+                    ? t('screenshots.loadingHint')
+                    : items.length === 0
+                      ? t('screenshots.countEmpty')
+                      : t('screenshots.count', { n: items.length })}
+                </span>
+              </span>
+            </div>
             <div className="screenshots-steps">
               <p className="screenshots-steps-title">{t('screenshots.howTitle')}</p>
               <ol className="screenshots-steps-list">
@@ -199,9 +261,11 @@ export function ScreenshotsView({
                   aria-label={t('screenshots.instanceSection')}
                   value={packId}
                   onChange={setPackId}
-                  options={packSelectOptions}
-                  disabled={packSelectOptions.length === 0}
+                  options={packSelectEntries}
                 />
+                {modpackOptions.length > 0 ? (
+                  <p className="screenshots-field-hint">{t('screenshots.instancePickerHint')}</p>
+                ) : null}
               </div>
               <div className="screenshots-toolbar-actions">
                 <button
@@ -215,12 +279,19 @@ export function ScreenshotsView({
                 <button
                   type="button"
                   className="btn-save screenshots-toolbar-btn screenshots-toolbar-btn--primary"
-                  disabled={!isModpackId(packId)}
+                  disabled={!isScreenshotsPackId(packId)}
                   onClick={openShotsFolder}
                 >
                   {t('screenshots.openFolder')}
                 </button>
               </div>
+              <p className="screenshots-toolbar-meta">
+                {loading
+                  ? t('screenshots.loadingHint')
+                  : items.length === 0
+                    ? t('screenshots.countEmpty')
+                    : t('screenshots.count', { n: items.length })}
+              </p>
             </div>
           </div>
         </section>
@@ -259,6 +330,19 @@ export function ScreenshotsView({
               <p className="screenshots-empty-body">{t('screenshots.emptyText')}</p>
               <p className="screenshots-empty-toolbar-hint">{t('screenshots.emptyToolbarHint')}</p>
               <p className="screenshots-empty-tip">{t('screenshots.actionHint')}</p>
+              <div className="screenshots-empty-actions">
+                <button type="button" className="btn-muted screenshots-toolbar-btn" onClick={() => void refreshList()}>
+                  {t('screenshots.refresh')}
+                </button>
+                <button
+                  type="button"
+                  className="btn-save screenshots-toolbar-btn screenshots-toolbar-btn--primary"
+                  disabled={!isScreenshotsPackId(packId)}
+                  onClick={openShotsFolder}
+                >
+                  {t('screenshots.openFolder')}
+                </button>
+              </div>
             </div>
           ) : (
             <>
@@ -269,12 +353,15 @@ export function ScreenshotsView({
                     key={it.fileName}
                     type="button"
                     className="screenshots-tile"
+                    aria-label={it.fileName}
                     onClick={() => openPreview(it)}
                   >
                     <span className="screenshots-tile-frame">
                       <img src={it.thumbDataUrl} alt="" loading="lazy" />
                     </span>
-                    <span className="screenshots-tile-name">{it.fileName}</span>
+                    <span className="screenshots-tile-meta">
+                      <span className="screenshots-tile-name">{it.fileName}</span>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -301,9 +388,29 @@ export function ScreenshotsView({
                 <p className="screenshots-preview-eyebrow">{t('screenshots.previewEyebrow')}</p>
                 <h3 className="screenshots-preview-title">{preview.fileName}</h3>
               </div>
-              <button type="button" className="btn-muted screenshots-preview-close" onClick={closePreview}>
-                {t('screenshots.close')}
-              </button>
+              <div className="screenshots-preview-head-actions">
+                <button
+                  type="button"
+                  className="btn-muted screenshots-preview-nav"
+                  onClick={openPrevPreview}
+                  disabled={items.length < 2}
+                  aria-label="Previous screenshot"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  className="btn-muted screenshots-preview-nav"
+                  onClick={openNextPreview}
+                  disabled={items.length < 2}
+                  aria-label="Next screenshot"
+                >
+                  ›
+                </button>
+                <button type="button" className="btn-muted screenshots-preview-close" onClick={closePreview}>
+                  {t('screenshots.close')}
+                </button>
+              </div>
             </div>
             <div className="screenshots-preview-body">
               {fullLoading ? (
@@ -342,6 +449,7 @@ export function ScreenshotsView({
                     <span className="screenshots-action-desc">{t('screenshots.retouchDesc')}</span>
                   </button>
                 </div>
+                <p className="screenshots-preview-shortcuts">{t('screenshots.actionHint')}</p>
               </>
             ) : (
               <div className="screenshots-retouch-panel">

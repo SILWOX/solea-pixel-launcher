@@ -1,0 +1,15 @@
+{
+  "description": {
+    "translate": "enchantment.bmcmod.curse_of_launchstrike"
+  },
+  "supported_items": "#bmcmod:enchantable/crossbow_only",
+  "primary_items": "#bmcmod:no_enchanting_table",
+  "weight": 1,
+  "max_level": 1,
+  "min_cost": { "base": 1, "per_level_above_first": 0 },
+  "max_cost": { "base": 1, "per_level_above_first": 0 },
+  "anvil_cost": 8,
+  "slots": ["mainhand", "offhand"],
+  "exclusive_set": "#bmcmod:launchstrike_exclusives",
+  "effects": {}
+}

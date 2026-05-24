@@ -1,0 +1,26 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": { "id": "bmcmod:radiant_slime_spawn_egg" },
+    "title": { "translate": "advancement.bmcmod.hunt_radiant_slime.title" },
+    "description": { "translate": "advancement.bmcmod.hunt_radiant_slime.description" },
+    "frame": "task",
+    "x": -2.0,
+    "y": -2.5
+  },
+  "criteria": {
+    "kill": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "type": "bmcmod:radiant_slime" }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": { "experience": 35 }
+}

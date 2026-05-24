@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/template_music_disc",
+  "textures": {
+    "layer0": "bmcmod:item/misc/beyond_the_enderman"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "solea-pixel-launcher",
-  "version": "26.3.3",
+  "version": "26.4.1",
   "description": "Launcher Solea Pixel — modpack Modrinth, NeoForge 1.21.1",
   "main": "out/main/index.js",
   "type": "module",
@@ -94,8 +94,8 @@
         {
           "target": "dmg",
           "arch": [
-            "x64",
-            "arm64"
+            "arm64",
+            "x64"
           ]
         }
       ],
@@ -105,7 +105,13 @@
       "gatekeeperAssess": false
     },
     "dmg": {
-      "artifactName": "Solea-Pixel-${version}-mac-${arch}.${ext}"
+      "artifactName": "Solea-Pixel-${version}-mac-${arch}.${ext}",
+      "title": "Solea Pixel ${version}",
+      "window": { "width": 540, "height": 380 },
+      "contents": [
+        { "x": 140, "y": 200 },
+        { "x": 400, "y": 200, "type": "link", "path": "/Applications" }
+      ]
     },
     "afterPack": "./scripts/after-pack-win-icon.mjs",
     "nsis": {

@@ -1,0 +1,42 @@
+{
+  "parent": "bmcmod:better_minecraft/bottle_mastery",
+  "display": {
+    "icon": {
+      "id": "bmcmod:undead_crown"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.challenge_invasion_legend.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.challenge_invasion_legend.description"
+    },
+    "frame": "challenge",
+    "x": 11.0,
+    "y": 8.0
+  },
+  "criteria": {
+    "undead_crown": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:undead_crown"}]}
+    },
+    "undead_bottle_6": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:undead_bottle_6"}]}
+    },
+    "undead_totem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:undead_totem"}]}
+    }
+  },
+  "requirements": [
+    ["undead_crown"],
+    ["undead_bottle_6"],
+    ["undead_totem"]
+  ],
+  "rewards": {
+    "experience": 620,
+    "loot": [
+      "bmcmod:advancement_rewards/challenge_invasion_legend"
+    ]
+  }
+}

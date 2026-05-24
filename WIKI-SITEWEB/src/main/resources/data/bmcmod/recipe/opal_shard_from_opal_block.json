@@ -1,0 +1,14 @@
+{
+    "ingredients":  [
+                        {
+                            "item":  "bmcmod:opal_block"
+                        }
+                    ],
+    "category":  "building",
+    "result":  {
+                   "count":  4,
+                   "id":  "bmcmod:opal_shard"
+               },
+    "type":  "minecraft:crafting_shapeless"
+}
+

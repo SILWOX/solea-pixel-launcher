@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld_rod",
+  "textures": {
+    "layer0": "bmcmod:item/staff/echo_staff"
+  }
+}

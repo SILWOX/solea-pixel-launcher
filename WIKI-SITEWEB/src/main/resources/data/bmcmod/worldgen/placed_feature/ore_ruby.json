@@ -1,0 +1,32 @@
+{
+  "feature": "bmcmod:ore_ruby",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 3
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 4
+    },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "minecraft:biased_to_bottom",
+        "min_inclusive": {
+          "absolute": 8
+        },
+        "max_inclusive": {
+          "absolute": 80
+        },
+        "inner": 10
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

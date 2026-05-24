@@ -596,7 +596,9 @@ export const FR: Record<string, string> = {
   'home.lead.mythic-trials-2':
     'Toujours plus difficile, toujours plus de défis : conquérir l’espace est ton nouveau grand défi. Affronte le vide, survie hors de la Terre avant que les radiations ne la détruisent.',
   'home.lead.aeloria':
-    'AELORIA est une version enrichie du Minecraft vanilla ! Tout en restant fidèle au jeu, il ajoute beaucoup de contenu, notamment le mod AERYN — le mod principal qui porte l’histoire.',
+    'Better MC est un modpack vanilla-like : enderite, équipements émeraude, infusion, biomes, créatures et nouveaux objectifs de progression, tout en gardant l’esprit Minecraft.',
+  'home.lead.solea-optimised':
+    'SOLEA OPTIMISED (Fabric 1.21.11) — le pack optimisation Solea Pixel : mods de perf + améliorations graphiques et support shaders. Revivez l’aventure vanilla en couleurs, sans mods de gameplay custom. Léger (~100 mods), 4 Go RAM minimum. Projet officiel : modrinth.com/modpack/solea-optimised',
   'home.playLaunching': 'En cours de lancement…',
   'home.playLaunchingBase': 'Lancement',
   'home.playLaunchingAria': 'Lancement de Minecraft, merci de patienter',
@@ -1106,6 +1108,7 @@ export const FR: Record<string, string> = {
   'settings.themeDark': 'Sombre AETHER',
   'settings.themeSystem': 'Comme le système AETHER',
   'settings.themeAmber': 'Ambré',
+  'settings.themeSoleaPixelLegacy': 'Ancien thème SOLEA PIXEL',
   'settings.themeMidnight': 'Minuit',
   'settings.themeHighContrast': 'Contraste élevé',
   'settings.themeForest': 'Forêt (émeraude)',
@@ -1116,9 +1119,12 @@ export const FR: Record<string, string> = {
   'settings.themeMonochrome': 'Monochrome Pro',
   'settings.themeSolarized': 'Style Solarized (sombre)',
   'settings.themeDetail.light': 'AETHER UI clair pour la journée.',
-  'settings.themeDetail.dark': 'AETHER UI sombre par défaut — thème du launcher à la première installation.',
+  'settings.themeDetail.dark':
+    'AETHER UI sombre par défaut — accent jaune abeille / or sur les boutons et le chrome.',
   'settings.themeDetail.system': 'Suit le mode clair ou sombre de Windows / macOS.',
   'settings.themeDetail.amber': 'Surfaces chaudes et chrome doré.',
+  'settings.themeDetail.solea_pixel':
+    'Look d’origine Solea Pixel — chrome orange-rouge (#ff6a1a) et panneaux chauds des anciennes versions.',
   'settings.themeDetail.midnight': 'Bleus froids et panneaux bleu nuit.',
   'settings.themeDetail.high_contrast': 'Contraste maximal pour la lisibilité.',
   'settings.themeDetail.forest': 'Verts profonds, ambiance nature / survie, moins « technique » que Minuit.',
@@ -1138,12 +1144,13 @@ export const FR: Record<string, string> = {
   'settings.uiCompact': 'Interface compacte (marges réduites)',
   'settings.uiLauncherExperience': 'Interface du launcher (accueil & paramètres)',
   'settings.uiLauncherExperienceSub':
-    'Le défaut (AETHER v2.0) modernise la carte d’accueil, la barre latérale gauche et l’écran Paramètres (mise en page et animations). Legacy (v1.0) restaure l’ancienne présentation de l’accueil, de la barre latérale et des Paramètres.',
+    'AETHER UI v3 (par défaut) modernise la carte d’accueil, la barre latérale et l’écran Paramètres. Legacy (v1.0) restaure l’ancienne présentation.',
   'settings.uiHomeCardVariant': 'Interface d’accueil du launcher',
   'settings.uiHomeCardVariantSub':
     'Le défaut (AETHER v2) modernise la barre latérale, la carte du modpack et l’écran Accueil & actus (trois colonnes lisibles, panneau liens regroupé, héros plus sobre). L’héritage (v1) conserve le hub classique, la barre latérale et la carte pack.',
-  'settings.uiHomeCardStudio': 'Launcher UI Default (AETHER v2.0)',
+  'settings.uiHomeCardStudio': 'AETHER UI v3 (par défaut)',
   'settings.uiHomeCardClassic': 'Launcher UI Legacy (AETHER v1.0)',
+  'login.v3Eyebrow': 'AETHER UI v3',
   'home.studioEyebrow': 'Pack actuel',
   'settings.chromeGlass': 'Chrome givré (fond derrière l’interface)',
   'settings.chromeGlassSub': 'Fond givré.',

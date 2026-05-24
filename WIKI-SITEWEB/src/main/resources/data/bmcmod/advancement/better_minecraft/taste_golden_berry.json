@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": { "id": "bmcmod:gold_berry" },
+    "title": { "translate": "advancement.bmcmod.taste_golden_berry.title" },
+    "description": { "translate": "advancement.bmcmod.taste_golden_berry.description" },
+    "frame": "task",
+    "x": 3.0,
+    "y": -2.0
+  },
+  "criteria": {
+    "berry": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:gold_berry" }] }
+    }
+  },
+  "rewards": { "experience": 20 }
+}

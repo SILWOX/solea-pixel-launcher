@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bmcmod:enderite_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "minecraft:netherite_sword"
+  },
+  "addition": {
+    "item": "bmcmod:enderite_ingot"
+  },
+  "result": {
+    "id": "bmcmod:enderite_sword",
+    "count": 1
+  }
+}

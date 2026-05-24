@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/liquid_scholar",
+  "display": {
+    "icon": { "id": "bmcmod:radiant_slime_spawn_egg" },
+    "title": { "translate": "advancement.bmcmod.radiant_hunter.title" },
+    "description": { "translate": "advancement.bmcmod.radiant_hunter.description" },
+    "frame": "task",
+    "x": 6.0,
+    "y": 1.8
+  },
+  "criteria": {
+    "has_radiant_spawn_egg": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:radiant_slime_spawn_egg" }] }
+    }
+  },
+  "rewards": { "experience": 120 }
+}

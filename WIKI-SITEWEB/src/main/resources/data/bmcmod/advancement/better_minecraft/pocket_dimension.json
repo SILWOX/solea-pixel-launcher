@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/melody_caller",
+  "display": {
+    "icon": { "id": "bmcmod:pocket_ender_chest" },
+    "title": { "translate": "advancement.bmcmod.pocket_dimension.title" },
+    "description": { "translate": "advancement.bmcmod.pocket_dimension.description" },
+    "frame": "task",
+    "x": 12.0,
+    "y": 0.7
+  },
+  "criteria": {
+    "has_pocket_ender_chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:pocket_ender_chest" }] }
+    }
+  },
+  "rewards": { "experience": 80 }
+}

@@ -1,0 +1,50 @@
+.v3-surface {
+  border: 1px solid var(--v3-border-soft, rgba(255, 255, 255, 0.12));
+  border-radius: var(--v3-radius-lg, 16px);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
+}
+
+.v3-surface--soft {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+}
+
+.v3-btn {
+  border: 1px solid var(--v3-border-soft, rgba(255, 255, 255, 0.14));
+  border-radius: var(--v3-radius-md, 12px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+  color: inherit;
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.v3-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--v3-border, color-mix(in srgb, var(--accent-orange) 30%, rgba(255, 255, 255, 0.2)));
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.v3-btn--accent {
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--accent-orange) 70%, white),
+    color-mix(in srgb, var(--accent-orange) 55%, #000 45%)
+  );
+  color: #20130b;
+  border-color: color-mix(in srgb, var(--accent-orange) 55%, rgba(255, 255, 255, 0.26));
+  font-weight: 700;
+}
+
+.v3-tab {
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.v3-tab[aria-selected='true'],
+.v3-tab.active {
+  border-color: var(--v3-border, color-mix(in srgb, var(--accent-orange) 30%, rgba(255, 255, 255, 0.2)));
+  background: color-mix(in srgb, var(--accent-orange) 20%, rgba(255, 255, 255, 0.06));
+}

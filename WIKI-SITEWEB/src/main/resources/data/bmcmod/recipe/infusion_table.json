@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " B ",
+    "EFE",
+    "FFF"
+  ],
+  "key": {
+    "B": { "item": "minecraft:book" },
+    "E": { "item": "minecraft:emerald" },
+    "F": { "item": "minecraft:quartz_block" }
+  },
+  "result": {
+    "id": "bmcmod:infusion_table",
+    "count": 1
+  }
+}

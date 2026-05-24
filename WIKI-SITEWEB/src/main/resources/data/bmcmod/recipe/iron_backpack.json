@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "IBI",
+    "IPI",
+    "III"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "B": { "item": "minecraft:iron_block" },
+    "P": { "item": "bmcmod:backpack" }
+  },
+  "result": {
+    "id": "bmcmod:iron_backpack",
+    "count": 1
+  }
+}

@@ -1,5 +1,17 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.4.1': {
+    en:
+      'Patch **26.4.1 | Release** (package **26.4.1**): **Better MC** installs correctly from Modrinth (mod `.jar` + NeoForge, no missing `modrinth.index.json`). New modpack **SOLEA OPTIMISED** (Fabric **1.21.11**) — optimization, shaders, vanilla-friendly (~100 mods, 4 GB RAM). modrinth.com/modpack/solea-optimised',
+    fr:
+      'Correctif **26.4.1 | Release** (paquet **26.4.1**) : **Better MC** s’installe correctement depuis Modrinth (mod `.jar` + NeoForge, plus d’erreur `modrinth.index.json`). Nouveau modpack **SOLEA OPTIMISED** (Fabric **1.21.11**) — optimisation, shaders, vanilla-friendly (~100 mods, 4 Go RAM). modrinth.com/modpack/solea-optimised'
+  },
+  '26.4.0': {
+    en:
+      '**26.4 | Release** (package **26.4.0**): **AETHER UI v3** — simple dark backgrounds without a global yellow wash; **bee gold** on primary buttons and UI accents (toggles, sliders, section strips). Modpack home pages keep their own **Play** / sidebar colors. Microsoft sign-in stays **blue**.',
+    fr:
+      '**26.4 | Release** (paquet **26.4.0**) : **AETHER UI v3** — fonds sombres neutres sans voile jaune global ; **or abeille** sur les boutons principaux et les accents (interrupteurs, curseurs, bandeaux de sections). Les pages modpack gardent leurs couleurs **Jouer** / barre latérale. Connexion Microsoft toujours en **bleu**.'
+  },
   '26.3.3': {
     en:
       '**26.3.3 | Release** (package **26.3.3**): **Settings → Launcher** — the **Experimental (BETA)** block now lives **under Keyboard shortcuts** (same tab): **My servers** toggle plus **Launcher interface (AETHER v2.0 / Legacy)**. Notifications, update channel, and **Audio** are back in the main Launcher flow (no longer grouped under the old sidebar “Experimental” page). **macOS** DMG builds are produced for GitHub releases; the public site picks the **arm64** DMG from `latest` when available.',

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "EEB",
+    "E T",
+    " HT"
+  ],
+  "key": {
+    "E": { "item": "minecraft:emerald" },
+    "B": { "item": "minecraft:emerald_block" },
+    "T": { "item": "minecraft:stick" },
+    "H": { "item": "bmcmod:emerald_hoe" }
+  },
+  "result": { "id": "bmcmod:emerald_scythe", "count": 1 }
+}

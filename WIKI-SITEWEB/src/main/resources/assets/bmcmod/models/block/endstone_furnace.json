@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "bmcmod:block/end/endstone_furnace_top",
+    "front": "bmcmod:block/end/endstone_furnace_front",
+    "side": "bmcmod:block/end/endstone_furnace_side"
+  }
+}

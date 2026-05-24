@@ -16,6 +16,12 @@ import { pipeline } from 'node:stream/promises'
 import { Readable } from 'node:stream'
 import AdmZip from 'adm-zip'
 import { createReadStream } from 'fs'
+import {
+  compareLoaderBuild,
+  readNeoForgeMinFromModJar,
+  resolveLatestNeoForgeBuild,
+  resolveNeoForgeBuildForInstance
+} from './neoForgeResolve.js'
 
 const API = 'https://api.modrinth.com/v2'
 
@@ -26,6 +32,7 @@ export interface ModrinthVersionFile {
   url: string
   filename: string
   primary?: boolean
+  hashes?: { sha512?: string; sha1?: string }
 }
 
 export interface ModrinthVersionDependency {
@@ -58,7 +65,7 @@ export interface MrpackIndex {
   name?: string
   versionId?: string
   files: MrpackIndexFile[]
-  dependencies: Record<string, string>
+  dependencies?: Record<string, string>
 }
 
 export interface IntegrityLock {
@@ -215,8 +222,116 @@ export function pickLatestVersion(
 }
 
 function getPrimaryMrpackFile(v: ModrinthVersion): ModrinthVersionFile | undefined {
+  const mrpack = v.files.find((f) => f.filename.toLowerCase().endsWith('.mrpack'))
+  if (mrpack) return mrpack
   const primary = v.files.find((f) => f.primary)
-  return primary ?? v.files.find((f) => f.filename.endsWith('.mrpack'))
+  if (primary?.filename.toLowerCase().endsWith('.mrpack')) return primary
+  return undefined
+}
+
+function getPrimaryModJarFile(v: ModrinthVersion): ModrinthVersionFile | undefined {
+  const primaryJar = v.files.find((f) => f.primary && f.filename.toLowerCase().endsWith('.jar'))
+  if (primaryJar) return primaryJar
+  return v.files.find((f) => f.filename.toLowerCase().endsWith('.jar'))
+}
+
+function maxLoaderBuild(a: string, b: string): string {
+  return compareLoaderBuild(a, b) >= 0 ? a : b
+}
+
+function resolveMrpackLoaderFromIndex(
+  index: MrpackIndex,
+  gameVersion: string,
+  specLoader: string,
+  specLoaderBuild?: string
+): { loaderType: 'neoforge' | 'forge' | 'fabric'; loaderBuild: string } {
+  const deps = index.dependencies ?? {}
+  const fallbackBuild = specLoaderBuild?.trim()
+  const loaderNorm = (specLoader || 'neoforge').toLowerCase()
+
+  /** Modrinth Pack v1 : `fabric-loader`, parfois `fabric`. */
+  const fabricVersion = deps['fabric-loader'] ?? deps.fabric
+  const neoForgeVersion = deps.neoforge
+  const forgeVersion = deps.forge
+
+  const loaderType: 'neoforge' | 'forge' | 'fabric' =
+    loaderNorm === 'fabric' ? 'fabric' : loaderNorm === 'forge' ? 'forge' : 'neoforge'
+
+  if (loaderType === 'fabric') {
+    return {
+      loaderType: 'fabric',
+      loaderBuild: fabricVersion ?? fallbackBuild ?? 'latest'
+    }
+  }
+
+  if (loaderType === 'forge') {
+    let loaderBuild = fallbackBuild
+    if (forgeVersion) {
+      loaderBuild =
+        forgeVersion.includes('-') && forgeVersion.split('-').length >= 2
+          ? forgeVersion
+          : `${gameVersion}-${forgeVersion}`
+    }
+    if (!loaderBuild) {
+      throw new Error(
+        'Le pack ne déclare pas Forge dans modrinth.index.json et aucune version de repli n’est configurée.'
+      )
+    }
+    return {
+      loaderType: 'forge',
+      loaderBuild: normalizeForgeLoaderBuild(gameVersion, 'forge', loaderBuild)
+    }
+  }
+
+  const loaderBuild = neoForgeVersion ?? fallbackBuild
+  if (!loaderBuild) {
+    throw new Error(
+      'Le pack ne déclare pas NeoForge dans modrinth.index.json et aucune version de repli n’est configurée.'
+    )
+  }
+  return { loaderType: 'neoforge', loaderBuild }
+}
+
+function normalizeForgeLoaderBuild(
+  gameVersion: string,
+  loaderType: string,
+  loaderBuild: string
+): string {
+  if (loaderType !== 'forge' || !loaderBuild) return loaderBuild
+  if (loaderBuild.includes('-')) return loaderBuild
+  return `${gameVersion}-${loaderBuild}`
+}
+
+function writeInstalledMeta(
+  instanceRoot: string,
+  meta: {
+    projectSlug: string
+    versionId: string
+    versionNumber: string
+    gameVersion: string
+    loader: string
+    loaderType: 'neoforge' | 'forge' | 'fabric'
+    loaderBuild: string
+  }
+): void {
+  writeFileSync(
+    join(instanceRoot, '.solea-installed.json'),
+    JSON.stringify(
+      {
+        projectSlug: meta.projectSlug,
+        versionId: meta.versionId,
+        versionNumber: meta.versionNumber,
+        gameVersion: meta.gameVersion,
+        loader: meta.loader,
+        loaderType: meta.loaderType,
+        loaderBuild: meta.loaderBuild,
+        neoForgeVersion: meta.loaderType === 'neoforge' ? meta.loaderBuild : undefined
+      },
+      null,
+      2
+    ),
+    'utf8'
+  )
 }
 
 export type InstallProgress = {
@@ -236,6 +351,8 @@ export async function installMrpackFromModrinth(options: {
   gameVersion: string
   loader: string
   instanceRoot: string
+  /** Version loader de repli si absente de modrinth.index.json (ex. mod .jar). */
+  loaderBuild?: string
   /** Fichiers du pack en parallèle (défaut 6). */
   downloadConcurrency?: number
   /** Client (défaut) ou profil serveur (.mrpack env.server). Si aucun fichier serveur, repli sur le client. */
@@ -272,6 +389,23 @@ export async function installMrpackFromModrinth(options: {
       : index.files.filter(shouldInstallForClient)
   if (installProfile === 'server' && toInstall.length === 0) {
     toInstall = index.files.filter(shouldInstallForClient)
+  }
+
+  // During updates, remove files managed by the previous lock that are no longer present
+  // in the new pack version. This avoids duplicate old mod jars after version bumps.
+  const previousLock = loadIntegrityLock(instanceRoot)
+  if (previousLock?.files?.length) {
+    const nextPaths = new Set(toInstall.map((f) => f.path.replace(/\\/g, '/').toLowerCase()))
+    for (const old of previousLock.files) {
+      const rel = old.path.replace(/\\/g, '/')
+      if (nextPaths.has(rel.toLowerCase())) continue
+      const abs = join(instanceRoot, rel.split('/').join(sep))
+      try {
+        rmSync(abs, { force: true })
+      } catch {
+        /* ignore stale file cleanup errors */
+      }
+    }
   }
   const total = toInstall.length
   let completed = 0
@@ -327,47 +461,141 @@ export async function installMrpackFromModrinth(options: {
     generatedAt: new Date().toISOString()
   }
   writeFileSync(join(instanceRoot, '.solea-integrity.json'), JSON.stringify(lock, null, 2), 'utf8')
-  const neoForgeVersion = index.dependencies?.neoforge
-  const forgeVersion = index.dependencies?.forge
-  let loaderType: 'neoforge' | 'forge'
-  let loaderBuild: string
-  if (neoForgeVersion) {
-    loaderType = 'neoforge'
-    loaderBuild = neoForgeVersion
-  } else if (forgeVersion) {
-    loaderType = 'forge'
-    /** Modrinth donne souvent « 47.4.10 » ; minecraft-java-core attend « 1.20.1-47.4.10 ». */
-    loaderBuild =
-      forgeVersion.includes('-') && forgeVersion.split('-').length >= 2
-        ? forgeVersion
-        : `${gameVersion}-${forgeVersion}`
-  } else {
-    throw new Error(
-      'Le pack ne déclare ni NeoForge (dependencies.neoforge) ni Forge (dependencies.forge). Impossible de lancer.'
-    )
+  let { loaderType, loaderBuild } = resolveMrpackLoaderFromIndex(
+    index,
+    gameVersion,
+    loader,
+    options.loaderBuild
+  )
+  if (loaderType === 'neoforge') {
+    loaderBuild = await resolveNeoForgeBuildForInstance(instanceRoot, loaderBuild)
   }
 
-  writeFileSync(
-    join(instanceRoot, '.solea-installed.json'),
-    JSON.stringify(
-      {
-        projectSlug,
-        versionId: version.id,
-        versionNumber: version.version_number,
-        gameVersion,
-        loader,
-        loaderType,
-        loaderBuild,
-        neoForgeVersion: loaderType === 'neoforge' ? loaderBuild : undefined
-      },
-      null,
-      2
-    ),
-    'utf8'
-  )
+  writeInstalledMeta(instanceRoot, {
+    projectSlug,
+    versionId: version.id,
+    versionNumber: version.version_number,
+    gameVersion,
+    loader,
+    loaderType,
+    loaderBuild
+  })
 
   return { version, index }
 }
+
+/** Installe un mod Modrinth (.jar) + loader NeoForge/Forge déclaré dans la spec. */
+export async function installModJarFromModrinth(options: {
+  projectSlug: string
+  gameVersion: string
+  loader: string
+  loaderBuild?: string
+  instanceRoot: string
+  onProgress?: (p: InstallProgress) => void
+}): Promise<{ version: ModrinthVersion }> {
+  const { projectSlug, gameVersion, loader, instanceRoot, onProgress } = options
+  const loaderBuild = options.loaderBuild?.trim() ?? ''
+  onProgress?.({ phase: 'versions', current: 0, total: 1, detail: 'Récupération des versions…' })
+  const versions = await fetchProjectVersions(projectSlug)
+  const version = pickLatestVersion(versions, gameVersion, loader)
+  if (!version) {
+    throw new Error(
+      `Aucune version Modrinth pour ${gameVersion} + ${loader}. Vérifiez le projet « ${projectSlug} ».`
+    )
+  }
+  const modFile = getPrimaryModJarFile(version)
+  if (!modFile?.url) throw new Error('Aucun fichier .jar principal sur cette version Modrinth.')
+
+  const relPath = `mods/${modFile.filename}`
+  const dest = join(instanceRoot, 'mods', modFile.filename)
+  mkdirSync(dirname(dest), { recursive: true })
+
+  const previousLock = loadIntegrityLock(instanceRoot)
+  if (previousLock?.files?.length) {
+    for (const old of previousLock.files) {
+      const abs = join(instanceRoot, old.path.replace(/\//g, sep))
+      try {
+        rmSync(abs, { force: true })
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+
+  onProgress?.({ phase: 'mod', current: 0, total: 1, detail: modFile.filename })
+  let sha512 = modFile.hashes?.sha512
+  await downloadToFile(modFile.url, dest, sha512)
+  if (!sha512) {
+    sha512 = createHash('sha512')
+      .update(readFileSync(dest))
+      .digest('hex')
+  }
+
+  const lock: IntegrityLock = {
+    versionId: version.id,
+    versionNumber: version.version_number,
+    gameVersion,
+    loader,
+    files: [{ path: relPath.replace(/\\/g, '/'), sha512 }],
+    modJarPaths: [relPath.replace(/\\/g, '/')],
+    generatedAt: new Date().toISOString()
+  }
+  writeFileSync(join(instanceRoot, '.solea-integrity.json'), JSON.stringify(lock, null, 2), 'utf8')
+
+  const loaderType = loader === 'forge' ? 'forge' : loader === 'fabric' ? 'fabric' : 'neoforge'
+  let resolvedLoaderBuild = loaderBuild
+  if (loaderType === 'neoforge') {
+    let minBuild = loaderBuild || '21.1.0'
+    const fromJar = readNeoForgeMinFromModJar(dest)
+    if (fromJar) minBuild = maxLoaderBuild(minBuild, fromJar)
+    resolvedLoaderBuild = await resolveNeoForgeBuildForInstance(instanceRoot, minBuild)
+  } else if (!resolvedLoaderBuild) {
+    throw new Error('Configuration loader manquante pour ce mod (loaderBuild).')
+  }
+  writeInstalledMeta(instanceRoot, {
+    projectSlug,
+    versionId: version.id,
+    versionNumber: version.version_number,
+    gameVersion,
+    loader,
+    loaderType,
+    loaderBuild: resolvedLoaderBuild
+  })
+
+  return { version }
+}
+
+export async function installFromModrinth(options: {
+  projectSlug: string
+  gameVersion: string
+  loader: string
+  instanceRoot: string
+  modrinthKind?: 'modpack' | 'mod'
+  loaderBuild?: string
+  downloadConcurrency?: number
+  installProfile?: 'client' | 'server'
+  onProgress?: (p: InstallProgress) => void
+}): Promise<{ version: ModrinthVersion; index?: MrpackIndex }> {
+  if (options.modrinthKind === 'mod') {
+    const loaderNorm = options.loader.toLowerCase()
+    const build = options.loaderBuild?.trim()
+    if (!build && loaderNorm !== 'neoforge') {
+      throw new Error('Configuration loader manquante pour ce mod (loaderBuild).')
+    }
+    const { version } = await installModJarFromModrinth({
+      projectSlug: options.projectSlug,
+      gameVersion: options.gameVersion,
+      loader: options.loader,
+      loaderBuild: build,
+      instanceRoot: options.instanceRoot,
+      onProgress: options.onProgress
+    })
+    return { version }
+  }
+  return installMrpackFromModrinth(options)
+}
+
+export { resolveNeoForgeBuildForInstance, resolveLatestNeoForgeBuild } from './neoForgeResolve.js'
 
 export function loadIntegrityLock(instanceRoot: string): IntegrityLock | null {
   const p = join(instanceRoot, '.solea-integrity.json')

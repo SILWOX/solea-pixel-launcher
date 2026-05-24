@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "bmcmod:block/machines/foundry_top",
+    "front": "bmcmod:block/machines/foundry_front_on",
+    "side": "bmcmod:block/machines/foundry_side"
+  }
+}

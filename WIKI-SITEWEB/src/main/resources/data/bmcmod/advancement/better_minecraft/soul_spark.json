@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/welcome_journey",
+  "display": {
+    "icon": {
+      "id": "bmcmod:crystal"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.soul_spark.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.soul_spark.description"
+    },
+    "frame": "task",
+    "x": 2.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_crystal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:crystal"
+          }
+        ]
+      }
+    }
+  }
+}

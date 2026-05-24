@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#bmcmod:has_beryl_geode",
+  "features": ["bmcmod:beryl_geode"],
+  "step": "underground_decoration"
+}

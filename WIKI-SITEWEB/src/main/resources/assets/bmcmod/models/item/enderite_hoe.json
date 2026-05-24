@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "bmcmod:item/tool/enderite_hoe"
+  }
+}

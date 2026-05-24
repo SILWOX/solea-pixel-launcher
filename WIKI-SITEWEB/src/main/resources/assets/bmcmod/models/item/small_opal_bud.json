@@ -1,0 +1,7 @@
+{
+    "textures":  {
+                     "layer0":  "bmcmod:block/gems/small_opal_bud"
+                 },
+    "parent":  "minecraft:item/generated"
+}
+

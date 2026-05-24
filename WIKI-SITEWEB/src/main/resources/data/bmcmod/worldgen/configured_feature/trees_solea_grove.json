@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:random_selector",
+  "config": {
+    "default": "bmcmod:sunwood_checked",
+    "features": [
+      {
+        "chance": 0.02,
+        "feature": "minecraft:oak_checked"
+      }
+    ]
+  }
+}

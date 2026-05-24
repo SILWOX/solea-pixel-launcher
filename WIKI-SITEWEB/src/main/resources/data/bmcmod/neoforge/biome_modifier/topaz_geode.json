@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#bmcmod:has_topaz_geode",
+  "features": ["bmcmod:topaz_geode"],
+  "step": "underground_decoration"
+}

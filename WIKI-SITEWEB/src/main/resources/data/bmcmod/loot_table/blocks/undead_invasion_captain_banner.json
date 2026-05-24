@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "bmcmod:undead_invasion_banner"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "bmcmod:blocks/undead_invasion_captain_banner"
+}

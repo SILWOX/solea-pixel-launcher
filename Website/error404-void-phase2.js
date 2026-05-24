@@ -11,6 +11,7 @@
 
   let started = false
   let pacRaf = 0
+  let mazeCleanup = null
   let keys = /** @type {Set<string>} */ (new Set())
   let keyEv = null
   let blurClearKeys = null
@@ -163,8 +164,8 @@
       intro.setAttribute('aria-hidden', 'false')
       if (isRetry && introLose) {
         introLose.textContent = fr()
-          ? "Les fantômes t'ont eu — recommence quand tu es prêt."
-          : 'The ghosts got you — try again when you are ready.'
+          ? "Les orbes t’ont eu — recommence quand tu es prêt."
+          : 'The orbs got you — try again when you are ready.'
         introLose.removeAttribute('hidden')
       } else if (introLose) {
         introLose.setAttribute('hidden', '')
@@ -206,11 +207,7 @@
       }
       window.addEventListener('blur', blurClearKeys)
       resize()
-      resetGhosts()
-      t0 = performance.now()
       hud.innerHTML = ''
-      fragIv = window.setInterval(spawnFrag, FRAG_SPAWN_MS)
-      pacRaf = window.requestAnimationFrame(tick)
       window.setTimeout(() => {
         try {
           root.focus({ preventScroll: true })
@@ -218,6 +215,37 @@
           root.focus()
         }
       }, 30)
+
+      if (window.Solea404VoidMaze && typeof window.Solea404VoidMaze.start === 'function') {
+        mazeCleanup = window.Solea404VoidMaze.start({
+          canvas,
+          root,
+          fragLayer,
+          hud,
+          fr,
+          keys,
+          isPlaying: () => playing,
+          onWin: () => {
+            won = true
+            endPac(true)
+          },
+          onLose: () => {
+            lost = true
+            endPac(false)
+          },
+          setRaf: (id) => {
+            pacRaf = id
+          },
+          getRaf: () => pacRaf,
+          cancelRaf: (id) => window.cancelAnimationFrame(id),
+        })
+        return
+      }
+
+      resetGhosts()
+      t0 = performance.now()
+      fragIv = window.setInterval(spawnFrag, FRAG_SPAWN_MS)
+      pacRaf = window.requestAnimationFrame(tick)
     }
 
     function spawnFrag() {
@@ -341,6 +369,10 @@
 
     function endPac(success) {
       playing = false
+      if (mazeCleanup) {
+        mazeCleanup()
+        mazeCleanup = null
+      }
       if (pacRaf) window.cancelAnimationFrame(pacRaf)
       pacRaf = 0
       if (fragIv) window.clearInterval(fragIv)
@@ -483,10 +515,12 @@
     function startRocketPhase() {
       setPhase('void_sequel_rocket')
       red404.classList.remove('page-error-void-p2-red404--show')
+      /** Le calque noir ciné restait actif et masquait tout le canvas (météorites, fond étoilé). */
+      black.classList.remove('page-error-void-p2-black--on')
       rocketHint.removeAttribute('hidden')
       rocketHint.textContent = fr()
-        ? "Attrape la fusée : elle t'esquive… parfois. Garde le curseur dessus 3 secondes."
-        : 'Catch the rocket: it dodges… sometimes. Hold your pointer on it for 3 seconds.'
+        ? "Fais entrer deux météorites l’une dans l’autre pour figer la fusée 5 s, puis garde le curseur dessus 3 s. Sinon elle esquive souvent."
+        : 'Crash two meteors together to freeze the rocket for 5s, then hold your pointer on it for 3s. Otherwise it dodges aggressively.'
       rocket.removeAttribute('hidden')
       rocket.setAttribute('aria-hidden', 'false')
       rocket.classList.add('page-error-rocket--p2')
@@ -498,25 +532,126 @@
       let last = performance.now()
       let dodgeT = 0
       let rRocket = 0
+      let stunUntil = 0
+      /** @type {{ x:number,y:number,vx:number,vy:number,r:number}[]} */
+      const meteors = []
+      let gal = /** @type {HTMLCanvasElement | null} */ (document.getElementById('err-void-p2-galaxy'))
+      if (!gal) {
+        gal = document.createElement('canvas')
+        gal.id = 'err-void-p2-galaxy'
+        gal.className = 'page-error-void-p2-galaxy'
+        cine.insertBefore(gal, cine.firstChild)
+      }
+      function sizeGal() {
+        if (!gal) return
+        const dpr = Math.min(window.devicePixelRatio || 1, 2)
+        gal.width = Math.floor(window.innerWidth * dpr)
+        gal.height = Math.floor(window.innerHeight * dpr)
+        gal.style.width = `${window.innerWidth}px`
+        gal.style.height = `${window.innerHeight}px`
+        const gctx = gal.getContext('2d')
+        if (gctx) gctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      }
+      sizeGal()
+      gal.removeAttribute('hidden')
+      for (let i = 0; i < 36; i += 1) {
+        meteors.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          vx: (Math.random() - 0.5) * 28,
+          vy: (Math.random() - 0.5) * 22,
+          r: 8 + Math.random() * 12,
+        })
+      }
+
+      function drawGalaxy(t) {
+        if (!gal) return
+        const gctx = gal.getContext('2d')
+        if (!gctx) return
+        const W = window.innerWidth
+        const H = window.innerHeight
+        const g = gctx.createRadialGradient(W * 0.35, H * 0.2, 0, W * 0.5, H * 0.55, Math.max(W, H))
+        g.addColorStop(0, 'rgba(40, 60, 120, 0.5)')
+        g.addColorStop(0.35, 'rgba(8, 4, 28, 0.95)')
+        g.addColorStop(1, '#020008')
+        gctx.fillStyle = g
+        gctx.fillRect(0, 0, W, H)
+        const tt = t / 1000
+        for (let i = 0; i < 160; i += 1) {
+          const sx = (i * 127) % W
+          const sy = (i * 83) % H
+          const tw = 0.4 + Math.sin(tt * 1.4 + i * 0.1) * 0.35
+          gctx.fillStyle = `rgba(255, 255, 255, ${0.04 + tw * 0.08})`
+          gctx.fillRect(sx, sy, 1.2, 1.2)
+        }
+        for (const m of meteors) {
+          gctx.beginPath()
+          gctx.fillStyle = 'rgba(220, 150, 95, 0.82)'
+          gctx.arc(m.x, m.y, m.r, 0, Math.PI * 2)
+          gctx.fill()
+          gctx.strokeStyle = 'rgba(255, 220, 170, 0.55)'
+          gctx.lineWidth = 1.5
+          gctx.stroke()
+          gctx.fillStyle = 'rgba(255, 245, 200, 0.35)'
+          gctx.beginPath()
+          gctx.arc(m.x - m.r * 0.25, m.y - m.r * 0.2, m.r * 0.22, 0, Math.PI * 2)
+          gctx.fill()
+        }
+      }
+
+      function stepMeteors(dt) {
+        const W = window.innerWidth
+        const H = window.innerHeight
+        for (const m of meteors) {
+          m.x += m.vx * dt * 18
+          m.y += m.vy * dt * 18
+          if (m.x < -20) m.x = W + 10
+          if (m.x > W + 20) m.x = -10
+          if (m.y < -20) m.y = H + 10
+          if (m.y > H + 20) m.y = -10
+        }
+        for (let i = 0; i < meteors.length; i += 1) {
+          for (let j = i + 1; j < meteors.length; j += 1) {
+            const a = meteors[i]
+            const b = meteors[j]
+            const d = Math.hypot(a.x - b.x, a.y - b.y)
+            if (d < a.r + b.r + 2 && d > 0.01) {
+              const mx = (a.x + b.x) * 0.5
+              const my = (a.y + b.y) * 0.5
+              if (Math.hypot(mx - rx, my - ry) < 120) {
+                stunUntil = performance.now() + 5000
+              }
+              a.vx *= -0.6
+              b.vx *= -0.6
+              a.vy *= -0.6
+              b.vy *= -0.6
+            }
+          }
+        }
+      }
 
       function rafRocket(now) {
         const dt = Math.min(0.05, (now - last) / 1000)
         last = now
+        drawGalaxy(now)
+        stepMeteors(dt)
+        const stunned = now < stunUntil
         dodgeT -= dt
-        if (dodgeT <= 0 && Math.random() < 0.45 * dt) {
-          dodgeT = 0.35 + Math.random() * 0.55
-          vx += (Math.random() - 0.5) * 420
-          vy += (Math.random() - 0.5) * 320
+        if (!stunned && dodgeT <= 0 && Math.random() < 0.92 * dt) {
+          dodgeT = 0.12 + Math.random() * 0.28
+          vx += (Math.random() - 0.5) * 520
+          vy += (Math.random() - 0.5) * 420
         }
-        vx *= Math.pow(0.92, dt * 60)
-        vy *= Math.pow(0.92, dt * 60)
+        vx *= Math.pow(stunned ? 0.96 : 0.92, dt * 60)
+        vy *= Math.pow(stunned ? 0.96 : 0.92, dt * 60)
         const tcx = window.__solea404P2mx ?? window.innerWidth * 0.5
         const tcy = window.__solea404P2my ?? window.innerHeight * 0.55
         const ax = tcx - rx
         const ay = tcy - ry
         const al = Math.hypot(ax, ay) || 1
-        vx += (ax / al) * 80 * dt
-        vy += (ay / al) * 80 * dt
+        const homing = stunned ? 28 : 80
+        vx += (ax / al) * homing * dt
+        vy += (ay / al) * homing * dt
         rx += vx * dt
         ry += vy * dt
         rx = Math.max(40, Math.min(window.innerWidth - 40, rx))
@@ -530,8 +665,8 @@
         const mx = window.__solea404P2mx ?? 0
         const my = window.__solea404P2my ?? 0
         const over = mx >= rr.left && mx <= rr.right && my >= rr.top && my <= rr.bottom
-        if (over) hold += dt * 1000
-        else hold = Math.max(0, hold - dt * 400)
+        if (over && stunned) hold += dt * 1000
+        else hold = Math.max(0, hold - dt * 420)
 
         if (hold >= ROCKET_HOLD_MS) {
           window.cancelAnimationFrame(rRocket)
@@ -541,6 +676,7 @@
           rocket.setAttribute('hidden', '')
           rocket.setAttribute('aria-hidden', 'true')
           rocketHint.setAttribute('hidden', '')
+          if (gal) gal.setAttribute('hidden', '')
           cine.setAttribute('hidden', '')
           black.classList.remove('page-error-void-p2-black--on')
           const msg = fr()
@@ -567,7 +703,28 @@
 
     function fillLicenseChaos() {
       licFeed.replaceChildren()
-      const blocks = 18
+      return fetch('/license/', { credentials: 'same-origin' })
+        .then((r) => (r.ok ? r.text() : Promise.reject(new Error('bad'))))
+        .then((html) => {
+          try {
+            const doc = new DOMParser().parseFromString(html, 'text/html')
+            const main = doc.querySelector('main') || doc.querySelector('.legal-page') || doc.body
+            const wrap = document.createElement('div')
+            wrap.className = 'page-error-void-p2-lic-extract'
+            const slice = (main && main.innerHTML) || html
+            wrap.innerHTML = slice.slice(0, 14000)
+            licFeed.appendChild(wrap)
+          } catch {
+            fillLicenseFallback()
+          }
+        })
+        .catch(() => {
+          fillLicenseFallback()
+        })
+    }
+
+    function fillLicenseFallback() {
+      const blocks = 22
       for (let i = 0; i < blocks; i += 1) {
         const d = document.createElement('div')
         d.className = 'page-error-void-p2-lic-block'
@@ -584,9 +741,11 @@
 
     function showLicenseChaos() {
       setPhase('void_sequel_license')
-      fillLicenseChaos()
       lic.removeAttribute('hidden')
       lic.setAttribute('aria-hidden', 'false')
+      fillLicenseChaos().finally(() => {
+        licScroll.scrollTop = 0
+      })
       catch404.removeAttribute('hidden')
       const rw0 = licScroll.clientWidth
       const rh0 = licScroll.clientHeight

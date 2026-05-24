@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "bmcmod:block/void_torch_wall"
+    },
+    "facing=north": {
+      "model": "bmcmod:block/void_torch_wall",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "bmcmod:block/void_torch_wall",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "bmcmod:block/void_torch_wall",
+      "y": 180
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GAG",
+    "ABA",
+    "GAG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_ingot" },
+    "A": { "item": "minecraft:golden_apple" },
+    "B": { "item": "minecraft:bone" }
+  },
+  "result": {
+    "id": "bmcmod:super_bone",
+    "count": 3
+  }
+}

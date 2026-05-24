@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "boreal_ingot",
+  "ingredients": [
+    { "item": "bmcmod:boreal_block" }
+  ],
+  "result": {
+    "id": "bmcmod:boreal_ingot",
+    "count": 9
+  }
+}

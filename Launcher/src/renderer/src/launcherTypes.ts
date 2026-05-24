@@ -13,6 +13,7 @@ export type UiTheme =
   | 'dark'
   | 'system'
   | 'amber'
+  | 'solea_pixel'
   | 'midnight'
   | 'high_contrast'
   | 'forest'
@@ -38,8 +39,8 @@ export const SKIN_VIEWER_ANIMATION_VALUES = [
 export type SkinViewerAnimation = (typeof SKIN_VIEWER_ANIMATION_VALUES)[number]
 export type UpdateChannel = 'stable' | 'beta'
 
-/** Barre latérale + carte d’accueil : v2.0 Studio (défaut) ou v1.0 Classique (legacy App.css). */
-export type UiHomeCardVariant = 'studio' | 'classic'
+/** Barre latérale + carte d’accueil : v2.0 Studio (défaut), v1.0 Classique, ou v3 bêta. */
+export type UiHomeCardVariant = 'studio' | 'classic' | 'beta'
 
 /** Onglet Paramètres : refonte AETHER 2.0 ou apparence d’origine (Legacy). */
 export type UiSettingsShellVariant = 'aether2' | 'legacy'
@@ -95,8 +96,6 @@ export type LauncherSettingsUI = {
   uiShortcutGoNews: string
   uiShortcutGoAccount: string
   nativeNotifications: boolean
-  /** Affiche « Mes serveurs » et les outils serveur intégrés (expérimental). */
-  experimentalServerSystemEnabled: boolean
   diagnosticLaunch: boolean
   networkSlowDownloads: boolean
 }

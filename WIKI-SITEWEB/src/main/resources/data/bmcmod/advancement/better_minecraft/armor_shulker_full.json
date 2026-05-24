@@ -1,0 +1,31 @@
+{
+  "parent": "bmcmod:better_minecraft/foundry_mastery",
+  "display": {
+    "icon": { "id": "bmcmod:shulker_chestplate" },
+    "title": { "translate": "advancement.bmcmod.armor_shulker_full.title" },
+    "description": { "translate": "advancement.bmcmod.armor_shulker_full.description" },
+    "frame": "task",
+    "x": 9.5,
+    "y": -6.5
+  },
+  "criteria": {
+    "helm": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:shulker_helmet" }] }
+    },
+    "chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:shulker_chestplate" }] }
+    },
+    "legs": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:shulker_leggings" }] }
+    },
+    "boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:shulker_boots" }] }
+    }
+  },
+  "requirements": [["helm"], ["chest"], ["legs"], ["boots"]],
+  "rewards": { "experience": 130 }
+}

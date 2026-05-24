@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/shape_shifter",
+  "display": {
+    "icon": { "id": "bmcmod:capture_crystal" },
+    "title": { "translate": "advancement.bmcmod.capture_spirit.title" },
+    "description": { "translate": "advancement.bmcmod.capture_spirit.description" },
+    "frame": "task",
+    "x": 11.0,
+    "y": 2.0
+  },
+  "criteria": {
+    "crystal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:capture_crystal" }] }
+    }
+  },
+  "rewards": { "experience": 85 }
+}

@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/gem_collector",
+  "display": {
+    "icon": { "id": "bmcmod:topaz_shard" },
+    "title": { "translate": "advancement.bmcmod.topaz_seeker.title" },
+    "description": { "translate": "advancement.bmcmod.topaz_seeker.description" },
+    "frame": "task",
+    "x": 3.0,
+    "y": 1.4
+  },
+  "criteria": {
+    "has_topaz": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:topaz_shard" }] }
+    }
+  },
+  "rewards": { "experience": 20 }
+}

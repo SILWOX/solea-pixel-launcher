@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/bow",
+  "textures": {
+    "layer0": "bmcmod:item/tool/iron_bow_0"
+  }
+}

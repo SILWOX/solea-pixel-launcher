@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "bmcmod:dark_smooth_stone_stairs"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "bmcmod:blocks/dark_smooth_stone_stairs"
+}

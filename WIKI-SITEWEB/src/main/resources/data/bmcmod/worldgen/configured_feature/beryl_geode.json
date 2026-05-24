@@ -1,0 +1,103 @@
+{
+    "config":  {
+                   "max_gen_offset":  16,
+                   "placements_require_layer0_alternate":  true,
+                   "invalid_blocks_threshold":  1,
+                   "layers":  {
+                                  "inner_layer":  2.2,
+                                  "outer_layer":  4.2,
+                                  "filling":  1.7,
+                                  "middle_layer":  3.2
+                              },
+                   "min_gen_offset":  -16,
+                   "use_potential_placements_chance":  0.35,
+                   "use_alternate_layer0_chance":  0.083,
+                   "crack":  {
+                                 "generate_crack_chance":  0.95,
+                                 "crack_point_offset":  2,
+                                 "base_crack_size":  2
+                             },
+                   "blocks":  {
+                                  "inner_placements":  [
+                                                           {
+                                                               "Properties":  {
+                                                                                  "waterlogged":  "false",
+                                                                                  "facing":  "up"
+                                                                              },
+                                                               "Name":  "bmcmod:small_beryl_bud"
+                                                           },
+                                                           {
+                                                               "Properties":  {
+                                                                                  "waterlogged":  "false",
+                                                                                  "facing":  "up"
+                                                                              },
+                                                               "Name":  "bmcmod:medium_beryl_bud"
+                                                           },
+                                                           {
+                                                               "Properties":  {
+                                                                                  "waterlogged":  "false",
+                                                                                  "facing":  "up"
+                                                                              },
+                                                               "Name":  "bmcmod:large_beryl_bud"
+                                                           },
+                                                           {
+                                                               "Properties":  {
+                                                                                  "waterlogged":  "false",
+                                                                                  "facing":  "up"
+                                                                              },
+                                                               "Name":  "bmcmod:beryl_cluster"
+                                                           }
+                                                       ],
+                                  "filling_provider":  {
+                                                           "state":  {
+                                                                         "Name":  "minecraft:air"
+                                                                     },
+                                                           "type":  "minecraft:simple_state_provider"
+                                                       },
+                                  "alternate_inner_layer_provider":  {
+                                                                         "state":  {
+                                                                                       "Name":  "bmcmod:budding_beryl"
+                                                                                   },
+                                                                         "type":  "minecraft:simple_state_provider"
+                                                                     },
+                                  "cannot_replace":  "#minecraft:features_cannot_replace",
+                                  "outer_layer_provider":  {
+                                                               "state":  {
+                                                                             "Name":  "minecraft:smooth_basalt"
+                                                                         },
+                                                               "type":  "minecraft:simple_state_provider"
+                                                           },
+                                  "middle_layer_provider":  {
+                                                                "state":  {
+                                                                              "Name":  "minecraft:calcite"
+                                                                          },
+                                                                "type":  "minecraft:simple_state_provider"
+                                                            },
+                                  "inner_layer_provider":  {
+                                                               "state":  {
+                                                                             "Name":  "bmcmod:beryl_block"
+                                                                         },
+                                                               "type":  "minecraft:simple_state_provider"
+                                                           },
+                                  "invalid_blocks":  "#minecraft:geode_invalid_blocks"
+                              },
+                   "noise_multiplier":  0.05,
+                   "outer_wall_distance":  {
+                                               "min_inclusive":  4,
+                                               "type":  "minecraft:uniform",
+                                               "max_inclusive":  6
+                                           },
+                   "point_offset":  {
+                                        "min_inclusive":  1,
+                                        "type":  "minecraft:uniform",
+                                        "max_inclusive":  2
+                                    },
+                   "distribution_points":  {
+                                               "min_inclusive":  3,
+                                               "type":  "minecraft:uniform",
+                                               "max_inclusive":  4
+                                           }
+               },
+    "type":  "minecraft:geode"
+}
+

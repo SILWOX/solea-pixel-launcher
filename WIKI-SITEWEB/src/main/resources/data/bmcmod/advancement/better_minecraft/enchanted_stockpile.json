@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/infusion_table_mastery",
+  "display": {
+    "icon": { "id": "bmcmod:enchanted_chest" },
+    "title": { "translate": "advancement.bmcmod.enchanted_stockpile.title" },
+    "description": { "translate": "advancement.bmcmod.enchanted_stockpile.description" },
+    "frame": "task",
+    "x": 8.5,
+    "y": -8.0
+  },
+  "criteria": {
+    "chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:enchanted_chest" }] }
+    }
+  },
+  "rewards": { "experience": 55 }
+}

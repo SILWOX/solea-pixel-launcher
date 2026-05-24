@@ -1,0 +1,43 @@
+{
+  "parent": "bmcmod:better_minecraft/boreal_age",
+  "display": {
+    "icon": {
+      "id": "bmcmod:boreal_sword"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.boreal_toolsmith.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.boreal_toolsmith.description"
+    },
+    "frame": "task",
+    "x": 10.0,
+    "y": -3.0
+  },
+  "criteria": {
+    "has_boreal_sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:boreal_sword"
+          }
+        ]
+      }
+    },
+    "has_boreal_pickaxe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:boreal_pickaxe"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_boreal_sword"],
+    ["has_boreal_pickaxe"]
+  ]
+}

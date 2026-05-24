@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.5,
+  "ingredient": {
+    "item": "bmcmod:fossil_debris"
+  },
+  "result": {
+    "id": "bmcmod:fossil_scrap",
+    "count": 1
+  }
+}

@@ -27,6 +27,8 @@ import bootLogoUrl from './assets/branding/boot-logo.png?url'
 import './App.css'
 import './settingsAether2.css'
 import './homeCardStudio.css'
+import './aetherV3.css'
+import './ui/v3Primitives.css'
 import './actus/actus.css'
 import { fetchAndCacheActuSolea, ACTU_SOLEA_UPDATED_EVENT } from './actus/actusoleaFetch'
 import { ActuSoleaFeed } from './actus/ActuSoleaFeed'
@@ -181,7 +183,10 @@ const FAKE_INSTALL_DEBUG_FILES = [
 
 /** Titre sur deux lignes (maquette) : coupe équilibrée pour les noms longs. */
 function packTitleLines(displayName: string): { first: string; second: string | null } {
-  const w = displayName.trim().split(/\s+/).filter(Boolean)
+  const normalized = displayName.trim()
+  if (normalized.toLowerCase() === 'better mc') return { first: 'Better MC', second: null }
+
+  const w = normalized.split(/\s+/).filter(Boolean)
   if (w.length === 0) return { first: displayName, second: null }
   if (w.length === 1) return { first: w[0]!, second: null }
   const last = w[w.length - 1]!
@@ -194,6 +199,11 @@ function packTitleLines(displayName: string): { first: string; second: string | 
   if (w.length === 2) return { first: w[0]!, second: w[1]! }
   const mid = Math.ceil(w.length / 2)
   return { first: w.slice(0, mid).join(' '), second: w.slice(mid).join(' ') }
+}
+
+function normalizeModpackDisplayName(id: string | null | undefined, displayName: string | null | undefined): string {
+  if ((id ?? '').toLowerCase() === 'aeloria') return 'Better MC'
+  return displayName ?? ''
 }
 
 /** Tags + titre + accroche — partagés entre carte Classique et refonte Studio (structure HTML différente). */
@@ -824,9 +834,10 @@ function emptySettings(): LauncherSettingsUI {
 /** Accueil + écran Paramètres partagent le même mode v2 / Legacy (champs disque toujours alignés). */
 function normalizeLauncherSettingsUi(s: LauncherSettingsUI): LauncherSettingsUI {
   const legacy = s.uiHomeCardVariant === 'classic' || s.uiSettingsShell === 'legacy'
+  const homeVariant = legacy ? 'classic' : s.uiHomeCardVariant === 'beta' ? 'beta' : 'studio'
   return {
     ...s,
-    uiHomeCardVariant: legacy ? 'classic' : 'studio',
+    uiHomeCardVariant: homeVariant,
     uiSettingsShell: legacy ? 'legacy' : 'aether2',
     experimentalServerSystemEnabled:
       typeof s.experimentalServerSystemEnabled === 'boolean'
@@ -1918,6 +1929,7 @@ export function App() {
     () => settings.uiReduceMotion || prefersRm,
     [settings.uiReduceMotion, prefersRm]
   )
+  const isV3 = settings.uiHomeCardVariant === 'beta'
 
   const triggerPrimaryActionAck = useCallback(() => {
     if (reduceMotionEffective) return
@@ -2188,6 +2200,13 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    const root = document.documentElement
+    if (isV3) root.setAttribute('data-ui-v3', '1')
+    else root.removeAttribute('data-ui-v3')
+    return () => root.removeAttribute('data-ui-v3')
+  }, [isV3])
+
+  useEffect(() => {
     let cancelled = false
     const start = performance.now()
     let rafId = 0
@@ -2204,8 +2223,17 @@ export function App() {
     const pathsP = window.solea.getPaths().then((p) => {
       if (cancelled) return
       setTestMode(p.testMode)
-      if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
-      if (p.modpacks?.length) setModpacksList(p.modpacks)
+      if (p.modpackDisplayName) {
+        setModpackName(normalizeModpackDisplayName(p.activeModpackId, p.modpackDisplayName))
+      }
+      if (p.modpacks?.length) {
+        setModpacksList(
+          p.modpacks.map((m) => ({
+            ...m,
+            displayName: normalizeModpackDisplayName(m.id, m.displayName) || m.displayName
+          }))
+        )
+      }
       if (p.activeModpackId && isModpackId(p.activeModpackId)) setActiveModpackId(p.activeModpackId)
     })
 
@@ -2254,8 +2282,17 @@ export function App() {
       if (run) setLaunchPhase('running')
     })
     void window.solea.getPaths().then((p) => {
-      if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
-      if (p.modpacks?.length) setModpacksList(p.modpacks)
+      if (p.modpackDisplayName) {
+        setModpackName(normalizeModpackDisplayName(p.activeModpackId, p.modpackDisplayName))
+      }
+      if (p.modpacks?.length) {
+        setModpacksList(
+          p.modpacks.map((m) => ({
+            ...m,
+            displayName: normalizeModpackDisplayName(m.id, m.displayName) || m.displayName
+          }))
+        )
+      }
       if (p.activeModpackId && isModpackId(p.activeModpackId)) setActiveModpackId(p.activeModpackId)
     })
   }, [screen, loadAccounts, refreshAllModpacksAction])
@@ -2330,7 +2367,9 @@ export function App() {
     }
     setActiveModpackId(r.activeModpackId as ModpackIdUi)
     const p = await window.solea.getPaths()
-    if (p.modpackDisplayName) setModpackName(p.modpackDisplayName)
+    if (p.modpackDisplayName) {
+      setModpackName(normalizeModpackDisplayName(p.activeModpackId, p.modpackDisplayName))
+    }
     await refreshAllModpacksAction()
     void refreshModpackActivity()
     void window.solea.isGameRunning().then((run) => {
@@ -3462,7 +3501,12 @@ export function App() {
   }
 
   return (
-    <div className="app-chrome" data-app-view={view} data-home-card={settings.uiHomeCardVariant}>
+    <div
+      className={`app-chrome${isV3 ? ' app-chrome--v3' : ''}`}
+      data-app-view={view}
+      data-ui-v3={isV3 ? '1' : undefined}
+      data-home-card={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
+    >
       {settings.uiChromeGlass ? (
         <div
           key={view === 'home' && isModpackId(activeModpackId) ? activeModpackId : view}
@@ -3476,7 +3520,11 @@ export function App() {
           showFloatingTitle={view === 'home' && isModpackId(activeModpackId)}
         />
         <div className="app-fill">
-    <div className="shell" data-home-card={settings.uiHomeCardVariant}>
+    <div
+      className={`shell${isV3 ? ' shell--v3' : ''}`}
+      data-ui-v3={isV3 ? '1' : undefined}
+      data-home-card={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
+    >
       <aside className="shell-sidebar" aria-label={t('shell.sidebarAria')}>
         <div className="sb-rail-section sb-rail-section--top">
           <button
@@ -3614,24 +3662,26 @@ export function App() {
             )}
 
             <div
-              className={`home-panel${settings.uiHomeCardVariant === 'studio' ? ' home-panel--studio' : ''}`}
+              className={`home-panel${settings.uiHomeCardVariant !== 'classic' ? ' home-panel--studio' : ''}`}
             >
               <div className="home-panel-inner">
                 <div
-                  className={`home-body${settings.uiHomeCardVariant === 'studio' ? ' home-body--studio' : ''}`}
+                  className={`home-body${settings.uiHomeCardVariant !== 'classic' ? ' home-body--studio' : ''}`}
                 >
-                  {settings.uiHomeCardVariant === 'studio' ? (
+                  {settings.uiHomeCardVariant !== 'classic' ? (
                     <section className="home-studio-hero" aria-labelledby="home-studio-title">
                       <div className="home-studio-hero-glow" aria-hidden />
-                      <div className="home-studio-accent" aria-hidden />
-                      <div className="home-studio-tags-row">
-                        <HomeHeroTagsPack activeModpackId={activeModpackId} studio t={t} />
-                      </div>
-                      <p className="home-studio-eyebrow">{t('home.studioEyebrow')}</p>
-                      <div className="home-studio-main">
-                        <HomePackTitlePack modpackName={modpackName} studio />
-                        <div className="home-studio-lead-wrap">
-                          <HomePackLeadPack activeModpackId={activeModpackId} studio t={t} />
+                      <div className="home-studio-info-wrap">
+                        <div className="home-studio-accent" aria-hidden />
+                        <div className="home-studio-tags-row">
+                          <HomeHeroTagsPack activeModpackId={activeModpackId} studio t={t} />
+                        </div>
+                        <p className="home-studio-eyebrow">{t('home.studioEyebrow')}</p>
+                        <div className="home-studio-main">
+                          <HomePackTitlePack modpackName={modpackName} studio />
+                          <div className="home-studio-lead-wrap">
+                            <HomePackLeadPack activeModpackId={activeModpackId} studio t={t} />
+                          </div>
                         </div>
                       </div>
                     </section>
@@ -3652,7 +3702,7 @@ export function App() {
                   <div className="home-action-deck-wrap">
                   <div
                     className={`home-action-deck${
-                      settings.uiHomeCardVariant === 'studio' ? ' home-action-deck--studio' : ''
+                      settings.uiHomeCardVariant !== 'classic' ? ' home-action-deck--studio' : ''
                     }`}
                   >
                 <div className={`play-row${packNeedsAction ? ' play-row--pack-cta' : ''}`}>
@@ -3894,25 +3944,6 @@ export function App() {
                   </button>
                 )}
 
-                {(homeActivityLabels.lastLauncherUpdate || homeActivityLabels.lastPlay) && (
-                  <footer className="home-panel-foot">
-                    <div className="home-last-activity">
-                      <p className="home-last-activity-label">{t('home.lastActivityTitle')}</p>
-                      <ul className="home-last-activity-list">
-                        {homeActivityLabels.lastLauncherUpdate ? (
-                          <li>
-                            {t('home.lastLauncherUpdated', {
-                              date: homeActivityLabels.lastLauncherUpdate
-                            })}
-                          </li>
-                        ) : null}
-                        {homeActivityLabels.lastPlay ? (
-                          <li>{t('home.lastPlay', { date: homeActivityLabels.lastPlay })}</li>
-                        ) : null}
-                      </ul>
-                    </div>
-                  </footer>
-                )}
                 </div>
               </div>
             </div>
@@ -3925,7 +3956,7 @@ export function App() {
           <>
             <div
               className={`shell-content shell-content-news news-hub-layout news-hub-layout--${
-                settings.uiHomeCardVariant === 'studio' ? 'v2' : 'v1'
+                settings.uiHomeCardVariant !== 'classic' ? 'v2' : 'v1'
               }`}
             >
               {testMode && <div className="test-strip home-test-strip">{t('home.testStrip')}</div>}
@@ -4849,18 +4880,19 @@ export function App() {
                         {t('settings.uiLauncherExperience')}
                         <div className="sub">{t('settings.uiLauncherExperienceSub')}</div>
                         <LauncherSelect
-                          value={settings.uiHomeCardVariant === 'classic' ? 'classic' : 'studio'}
+                          value={settings.uiHomeCardVariant}
                           onChange={(v) => {
                             const legacy = v === 'classic'
                             setSettings((s) => ({
                               ...s,
-                              uiHomeCardVariant: legacy ? 'classic' : 'studio',
+                              uiHomeCardVariant: legacy ? 'classic' : v,
                               uiSettingsShell: legacy ? 'legacy' : 'aether2'
                             }))
                           }}
                           options={[
                             { value: 'studio', label: t('settings.uiHomeCardStudio') },
-                            { value: 'classic', label: t('settings.uiHomeCardClassic') }
+                            { value: 'classic', label: t('settings.uiHomeCardClassic') },
+                            { value: 'beta', label: t('settings.uiHomeCardBeta') }
                           ]}
                         />
                       </label>

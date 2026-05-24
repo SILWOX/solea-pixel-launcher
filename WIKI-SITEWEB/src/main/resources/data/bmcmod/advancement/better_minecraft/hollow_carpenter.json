@@ -1,0 +1,31 @@
+{
+  "parent": "bmcmod:better_minecraft/hollow_beginning",
+  "display": {
+    "icon": { "id": "bmcmod:hollow_stairs" },
+    "title": { "translate": "advancement.bmcmod.hollow_carpenter.title" },
+    "description": { "translate": "advancement.bmcmod.hollow_carpenter.description" },
+    "frame": "task",
+    "x": 3.0,
+    "y": 2.0
+  },
+  "criteria": {
+    "has_hollow_stairs": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_stairs" }] }
+    },
+    "has_hollow_slab": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_slab" }] }
+    },
+    "has_hollow_fence": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_fence" }] }
+    }
+  },
+  "requirements": [
+    ["has_hollow_stairs"],
+    ["has_hollow_slab"],
+    ["has_hollow_fence"]
+  ],
+  "rewards": { "experience": 20 }
+}

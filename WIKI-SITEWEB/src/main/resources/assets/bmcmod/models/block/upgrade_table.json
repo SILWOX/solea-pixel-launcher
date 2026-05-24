@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "bmcmod:block/machines/upgrade_table_1",
+    "down": "bmcmod:block/machines/upgrade_table_back",
+    "up": "bmcmod:block/machines/upgrade_table_top",
+    "north": "bmcmod:block/machines/upgrade_table_1",
+    "south": "bmcmod:block/machines/upgrade_table_1",
+    "east": "bmcmod:block/machines/upgrade_table_2",
+    "west": "bmcmod:block/machines/upgrade_table_2"
+  }
+}

@@ -408,7 +408,7 @@ export const FR: Record<string, string> = {
   'home.lead.mythic-trials-2':
     'Toujours plus difficile, toujours plus de défis : conquérir l’espace est ton nouveau grand défi. Affronte le vide, survie hors de la Terre avant que les radiations ne la détruisent.',
   'home.lead.aeloria':
-    'AELORIA est une version enrichie du Minecraft vanilla ! Tout en restant fidèle au jeu, il ajoute beaucoup de contenu, notamment le mod AERYN — le mod principal qui porte l’histoire.',
+    'Better MC est un modpack vanilla-like : enderite, équipements émeraude, infusion, biomes, créatures et nouveaux objectifs de progression, tout en gardant l’esprit Minecraft.',
   'home.playLaunching': 'En cours de lancement…',
   'home.playLaunchingBase': 'Lancement',
   'home.playLaunchingAria': 'Lancement de Minecraft, merci de patienter',
@@ -923,6 +923,7 @@ export const FR: Record<string, string> = {
     'Le défaut (AETHER v2) modernise la barre latérale, la carte du modpack et l’écran Accueil & actus (trois colonnes lisibles, panneau liens regroupé, héros plus sobre). L’héritage (v1) conserve le hub classique, la barre latérale et la carte pack.',
   'settings.uiHomeCardStudio': 'Launcher UI Default (AETHER v2.0)',
   'settings.uiHomeCardClassic': 'Launcher UI Legacy (AETHER v1.0)',
+  'settings.uiHomeCardBeta': 'Launcher UI Beta (AETHER UI v3) [BETA]',
   'home.studioEyebrow': 'Pack actuel',
   'settings.chromeGlass': 'Chrome givré (fond derrière l’interface)',
   'settings.chromeGlassSub': 'Fond givré.',

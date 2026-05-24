@@ -1,0 +1,65 @@
+{
+  "parent": "bmcmod:better_minecraft/enderite_age",
+  "display": {
+    "icon": {
+      "id": "bmcmod:boreal_chestplate"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.boreal_age.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.boreal_age.description"
+    },
+    "frame": "task",
+    "x": 6.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_boreal_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:boreal_helmet"
+          }
+        ]
+      }
+    },
+    "has_boreal_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:boreal_chestplate"
+          }
+        ]
+      }
+    },
+    "has_boreal_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:boreal_leggings"
+          }
+        ]
+      }
+    },
+    "has_boreal_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:boreal_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_boreal_helmet"],
+    ["has_boreal_chestplate"],
+    ["has_boreal_leggings"],
+    ["has_boreal_boots"]
+  ]
+}

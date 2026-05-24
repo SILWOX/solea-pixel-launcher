@@ -13,6 +13,28 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.4.1',
+    date: '2026-05-24',
+    fixed: [
+      '**Better MC:** Modrinth install uses the mod `.jar` path instead of treating it as an `.mrpack` (fixes missing `modrinth.index.json`).'
+    ],
+    added: [
+      'SOLEA OPTIMISED modpack (modrinth.com/modpack/solea-optimised, Fabric 1.21.11) — optimization + visual upgrades, shader support, vanilla-friendly (~100 mods, 4 GB RAM), green UI theme and custom assets.'
+    ],
+    changed: [
+      '**Release branding:** footer and Home & news badge show **26.4.1 | Release** (package **26.4.1**).'
+    ]
+  },
+  {
+    version: '26.4',
+    date: '2026-05-24',
+    changed: [
+      '**AETHER UI v3:** neutral dark backgrounds (no warm yellow tint on settings and studio theme); **bee gold** accent restored on primary buttons (**Save**, **Play** on hub) and kept on toggles, sliders, section accents, and nav highlights.',
+      '**Modpack themes:** sidebar pills and **Play** buttons keep each pack’s brand color (Palamod, Better MC / Aeloria, Wither Storm, Mythic Trials).',
+      '**Release branding:** footer and Home & news badge show **26.4 | Release** (package **26.4.0**).'
+    ]
+  },
+  {
     version: '26.3.3',
     date: '2026-03-30',
     changed: [

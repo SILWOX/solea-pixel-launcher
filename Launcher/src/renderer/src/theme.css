@@ -1544,6 +1544,36 @@ html[data-reduce-motion='1'] .pack-confirm-backdrop .pack-confirm-modal {
   --text-muted: #a89888;
 }
 
+/* AETHER UI v3 — fonds neutres sombres ; or abeille réservé aux boutons / détails */
+[data-theme='dark'][data-ui-preset='studio'] {
+  --bg-void: #08080c;
+  --bg-sidebar: #0c0c10;
+  --bg-panel: rgba(10, 10, 14, 0.82);
+  --bg-card: #121218;
+  --bg-card-hover: #181820;
+  --border: rgba(255, 255, 255, 0.1);
+  --text-muted: #9090a0;
+}
+
+[data-theme='light'][data-ui-preset='studio'] {
+  --bg-void: #e8e8ec;
+  --bg-sidebar: #dedee4;
+  --bg-panel: rgba(255, 255, 255, 0.9);
+  --bg-card: #f4f4f8;
+  --bg-card-hover: #ececf2;
+  --border: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'][data-ui-preset='solea_pixel'] {
+  --bg-void: #16121c;
+  --bg-sidebar: #0f0d14;
+  --bg-panel: rgba(12, 10, 18, 0.82);
+  --bg-card: #1a1520;
+  --bg-card-hover: #221c2a;
+  --border: rgba(255, 106, 26, 0.22);
+  --text-muted: #a89ca8;
+}
+
 [data-theme='dark'][data-ui-preset='midnight'] {
   --bg-void: #050810;
   --bg-sidebar: #080d16;
@@ -1572,6 +1602,15 @@ html[data-reduce-motion='1'] .pack-confirm-backdrop .pack-confirm-modal {
   --bg-card: #faf6f0;
   --bg-card-hover: #f3ebe2;
   --border: rgba(120, 72, 32, 0.14);
+}
+
+[data-theme='light'][data-ui-preset='solea_pixel'] {
+  --bg-void: #ece6e0;
+  --bg-sidebar: #e0d6cc;
+  --bg-panel: rgba(255, 248, 242, 0.92);
+  --bg-card: #f8f0e8;
+  --bg-card-hover: #efe4d8;
+  --border: rgba(255, 106, 26, 0.28);
 }
 
 [data-theme='light'][data-ui-preset='midnight'] {

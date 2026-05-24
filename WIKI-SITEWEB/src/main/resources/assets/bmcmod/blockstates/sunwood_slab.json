@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "bmcmod:block/sunwood_slab"
+    },
+    "type=double": {
+      "model": "bmcmod:block/sunwood_planks"
+    },
+    "type=top": {
+      "model": "bmcmod:block/sunwood_slab_top"
+    }
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "bmcmod:purple_berry",
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "min": 1.0,
+                    "max": 2.0
+                  },
+                  "add": false
+                }
+              ],
+              "conditions": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "items": "minecraft:shears"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:alternatives",
+              "children": [
+                {
+                  "type": "minecraft:item",
+                  "name": "bmcmod:purple_berry",
+                  "functions": [
+                    {
+                      "function": "minecraft:set_count",
+                      "count": {
+                        "type": "minecraft:uniform",
+                        "min": 2.0,
+                        "max": 3.0
+                      },
+                      "add": false
+                    },
+                    {
+                      "function": "minecraft:explosion_decay"
+                    }
+                  ],
+                  "conditions": [
+                    {
+                      "condition": "minecraft:block_state_property",
+                      "block": "bmcmod:purple_berry_bush",
+                      "properties": {
+                        "age": "3"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "minecraft:item",
+                  "name": "bmcmod:purple_berry",
+                  "functions": [
+                    {
+                      "function": "minecraft:set_count",
+                      "count": {
+                        "type": "minecraft:uniform",
+                        "min": 1.0,
+                        "max": 2.0
+                      },
+                      "add": false
+                    },
+                    {
+                      "function": "minecraft:explosion_decay"
+                    }
+                  ],
+                  "conditions": [
+                    {
+                      "condition": "minecraft:block_state_property",
+                      "block": "bmcmod:purple_berry_bush",
+                      "properties": {
+                        "age": "2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "minecraft:item",
+                  "name": "bmcmod:purple_berry",
+                  "functions": [
+                    {
+                      "function": "minecraft:set_count",
+                      "count": {
+                        "type": "minecraft:uniform",
+                        "min": 0.0,
+                        "max": 1.0
+                      },
+                      "add": false
+                    },
+                    {
+                      "function": "minecraft:explosion_decay"
+                    }
+                  ],
+                  "conditions": [
+                    {
+                      "condition": "minecraft:block_state_property",
+                      "block": "bmcmod:purple_berry_bush",
+                      "properties": {
+                        "age": "1"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "conditions": [
+                {
+                  "condition": "minecraft:survives_explosion"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "bmcmod:blocks/purple_berry_bush"
+}

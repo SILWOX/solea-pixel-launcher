@@ -1,0 +1,8 @@
+{
+    "variants":  {
+                     "":  {
+                              "model": "bmcmod:block/budding_beryl"
+                          }
+                 }
+}
+

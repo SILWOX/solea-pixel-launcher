@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "bmcmod:block/machines/feeder_top",
+    "front": "bmcmod:block/machines/potato_feeder_front",
+    "side": "bmcmod:block/machines/feeder_side"
+  }
+}

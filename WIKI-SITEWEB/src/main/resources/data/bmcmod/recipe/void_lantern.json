@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "NEN",
+    "ETE",
+    "NEN"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "E": {
+      "item": "minecraft:end_stone"
+    },
+    "T": {
+      "item": "bmcmod:void_torch"
+    }
+  },
+  "result": {
+    "id": "bmcmod:void_lantern",
+    "count": 1
+  }
+}

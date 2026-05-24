@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:base_stone_overworld",
+    "#minecraft:deepslate_ore_replaceables",
+    "minecraft:end_stone",
+    "minecraft:netherrack",
+    "minecraft:blackstone",
+    "minecraft:basalt",
+    "minecraft:smooth_basalt"
+  ]
+}

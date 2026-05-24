@@ -1,0 +1,71 @@
+{
+  "carvers": {},
+  "downfall": 0.5,
+  "effects": {
+    "fog_color": 12638463,
+    "foliage_color": 6273125,
+    "grass_color": 7059314,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 9000
+    },
+    "sky_color": 2106168,
+    "water_color": 5995883,
+    "water_fog_color": 2373683
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    ["minecraft:end_gateway_return"],
+    [],
+    [],
+    [],
+    [],
+    [
+      "bmcmod:hollow_garden_chorus_soil",
+      "bmcmod:hollow_garden_hollow_tree",
+      "bmcmod:hollow_garden_chorus_plant_sparse",
+      "bmcmod:hollow_garden_obsidian_spire",
+      "bmcmod:hollow_garden_calcite_scatter",
+      "bmcmod:hollow_garden_glow_lichen",
+      "bmcmod:hollow_garden_lake_water",
+      "bmcmod:hollow_garden_lake_experience",
+      "bmcmod:hollow_garden_jaerys_patch",
+      "bmcmod:hollow_garden_purple_berry_patch",
+      "bmcmod:hollow_garden_short_grass_tuft",
+      "bmcmod:hollow_garden_tall_grass",
+      "bmcmod:hollow_garden_nebrith_nodule"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [
+      {
+        "type": "minecraft:enderman",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 4
+      },
+      {
+        "type": "bmcmod:radiant_slime",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 10
+      }
+    ],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.5
+}

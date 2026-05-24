@@ -2,5 +2,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+# Wiki BMC : brouillon — retirer cette ligne quand la page sera publique.
+Disallow: /betterminecraft/wiki/
 
 Sitemap: https://soleapixel.com/sitemap.xml

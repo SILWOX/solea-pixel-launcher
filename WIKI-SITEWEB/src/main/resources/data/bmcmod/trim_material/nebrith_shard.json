@@ -1,0 +1,9 @@
+{
+  "asset_name": "nebrith",
+  "description": {
+    "color": "#E0D8B8",
+    "translate": "trim_material.bmcmod.nebrith"
+  },
+  "ingredient": "bmcmod:nebrith_shard",
+  "item_model_index": 0.518
+}

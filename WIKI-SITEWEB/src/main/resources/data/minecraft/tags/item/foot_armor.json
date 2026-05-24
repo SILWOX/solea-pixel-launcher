@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_boots",
+    "bmcmod:emerald_boots",
+    "bmcmod:enderite_boots",
+    "bmcmod:boreal_boots",
+    "bmcmod:obsidian_boots",
+    "bmcmod:shulker_boots"
+  ]
+}

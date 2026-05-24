@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 import { DICTIONARY, type Locale } from './dictionary'
+import { detectBrowserUiLanguage } from './detectLocale'
 
 export type TFunction = (key: string, vars?: Record<string, string | number>) => string
 
@@ -27,7 +28,7 @@ function interpolate(template: string, vars?: Record<string, string | number>): 
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('en')
+  const [locale, setLocaleState] = useState<Locale>(detectBrowserUiLanguage)
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l === 'fr' ? 'fr' : 'en')

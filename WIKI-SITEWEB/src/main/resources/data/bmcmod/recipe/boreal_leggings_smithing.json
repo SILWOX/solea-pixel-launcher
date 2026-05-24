@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bmcmod:boreal_upgrade_smithing_template" },
+  "base": { "item": "bmcmod:enderite_leggings" },
+  "addition": { "item": "bmcmod:boreal_ingot" },
+  "result": { "id": "bmcmod:boreal_leggings", "count": 1 }
+}

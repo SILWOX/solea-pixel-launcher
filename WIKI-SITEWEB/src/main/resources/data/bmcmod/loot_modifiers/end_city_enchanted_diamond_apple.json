@@ -1,0 +1,9 @@
+{
+  "type": "bmcmod:end_city_enchanted_diamond_apple",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:chests/end_city_treasure"
+    }
+  ]
+}

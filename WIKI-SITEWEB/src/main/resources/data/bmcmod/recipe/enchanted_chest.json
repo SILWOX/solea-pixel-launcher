@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "AXA",
+    "OCO",
+    "OOO"
+  ],
+  "key": {
+    "A": { "item": "minecraft:amethyst_shard" },
+    "X": { "item": "minecraft:experience_bottle" },
+    "O": { "item": "minecraft:gold_block" },
+    "C": { "item": "minecraft:chest" }
+  },
+  "result": {
+    "id": "bmcmod:enchanted_chest",
+    "count": 1
+  }
+}

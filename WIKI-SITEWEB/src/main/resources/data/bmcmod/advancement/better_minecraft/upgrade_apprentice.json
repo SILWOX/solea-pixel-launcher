@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": {
+      "id": "bmcmod:copper_chestplate"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.upgrade_apprentice.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.upgrade_apprentice.description"
+    },
+    "frame": "task",
+    "x": 2.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_copper_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:copper_chestplate"
+          }
+        ]
+      }
+    }
+  }
+}

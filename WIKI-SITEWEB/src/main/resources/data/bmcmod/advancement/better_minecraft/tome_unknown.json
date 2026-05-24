@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/quest_writer",
+  "display": {
+    "icon": { "id": "bmcmod:unknown_book" },
+    "title": { "translate": "advancement.bmcmod.tome_unknown.title" },
+    "description": { "translate": "advancement.bmcmod.tome_unknown.description" },
+    "frame": "task",
+    "x": 13.5,
+    "y": 1.5
+  },
+  "criteria": {
+    "book": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:unknown_book" }] }
+    }
+  },
+  "rewards": { "experience": 45 }
+}

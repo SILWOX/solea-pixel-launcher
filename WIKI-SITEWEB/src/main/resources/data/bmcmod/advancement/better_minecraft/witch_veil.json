@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": { "id": "bmcmod:witch_hat" },
+    "title": { "translate": "advancement.bmcmod.witch_veil.title" },
+    "description": { "translate": "advancement.bmcmod.witch_veil.description" },
+    "frame": "task",
+    "x": 2.5,
+    "y": -3.5
+  },
+  "criteria": {
+    "hat": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:witch_hat" }] }
+    }
+  },
+  "rewards": { "experience": 35 }
+}

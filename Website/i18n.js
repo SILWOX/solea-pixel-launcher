@@ -10,6 +10,8 @@
       'meta.description':
         'WELCOME: install our launcher here and discover the features offered by the launcher.',
       'nav.home': 'Home',
+      'nav.bmc': 'Better MC',
+      'nav.bmcAria': 'Better Minecraft mod — teaser page',
       'nav.news': 'News',
       'nav.about': 'About',
       'nav.downloads': 'Downloads',
@@ -52,9 +54,9 @@
       'page404.voidP2WinBody': 'You caught the rogue 404.',
       'page404.voidP2WinOk': 'OK',
       'page404.voidP2PacTag': 'Phase 2',
-      'page404.voidP2PacTitle': 'Angry Pac',
+      'page404.voidP2PacTitle': 'Maze run',
       'page404.voidP2PacHint':
-        'Survive 60 seconds. Move with the arrow keys or WASD. Pac gets faster and meaner over time — don’t let the ghosts touch you.',
+        'Random maze each run (larger grid). Reach the green exit. Two hostile orbs at first — a third joins after 67s. If they see you in a straight line, they chase (slow steps). You have 3 lives. After 60s a few internal walls shift (exit stays open). Arrow keys or WASD.',
       'page404.voidP2PacLaunch': 'Start',
       'page404.voidP2PacRetry': 'Try again',
       'page404.voidSequelGoHome': 'Return to the site',
@@ -69,7 +71,7 @@
       'hub.h1b': 'SOLEA packs',
       'hub.typePrefix': 'The SOLEA PIXEL universe:',
       'hub.lead':
-        'One launcher: news, Microsoft accounts, NeoForge modpacks — and a **Local server** space to run a world on your PC, with files kept tidy.',
+        'Discover our new launcher, optimized for all Minecraft use. You will find SOLEA PIXEL modpacks, access to vanilla Minecraft, and various other options available.',
       'hub.btnDl': 'Download',
       'hub.btnDiscover': 'Discover',
       'hub.versionLoading': 'Loading latest installer…',
@@ -335,6 +337,351 @@
       'content.backHome': '← Home',
       'content.sitemap': 'Site map & links',
       'content.footerLicense': 'SPL license',
+      'betterminecraft.pageTitle': 'Better Minecraft (BMC) — SOLEA PIXEL',
+      'betterminecraft.metaDescription':
+        'Better Minecraft (BMC) for NeoForge 1.21.1: vanilla+ survival expansion — gear, infusion, biomes, goals. Long-form teaser by SOLEA PIXEL; downloads on Modrinth.',
+      'betterminecraft.heroBadge': 'NeoForge · Minecraft Java 1.21.1 · Modrinth',
+      'betterminecraft.heroTitle': 'Better Minecraft',
+      'betterminecraft.heroSubtitle': '[ BMC MOD ]',
+      'betterminecraft.heroLead':
+        'Vanilla+ survival you can read at a glance: new goals, crafted pacing, and atmosphere that still feels like Minecraft.',
+      'betterminecraft.introTitle': 'What is Better Minecraft?',
+      'betterminecraft.introLead':
+        'Better Minecraft (**BMC**) is a **NeoForge** mod for **Java 1.21.1** that stretches survival with handcrafted content — not random clutter, not a tech-tree simulator.',
+      'betterminecraft.introP1':
+        'We design around one question: **would this feel at home in a Mojang changelog?** That means readable progression, readable UI clutter (we play with **JEI** / **Jade** in mind), and features that reward planning — new tiers, new reasons to explore, and small loops that sit beside vanilla instead of replacing it.',
+      'betterminecraft.introP2':
+        'You will find **gear lines** (including enderite & emerald direction), **infusion-style crafting hooks**, **enchantments & systems** that extend the mid/late game, and **world flavour** that pushes the End & Overworld forward over time. Exact recipes and numbers evolve with the overhaul — the Modrinth changelog stays the source of truth.',
+      'betterminecraft.introP3':
+        'BMC is meant for **modpack authors** who want “more Minecraft” without teaching players a second game, and for **solo worlds** where you want fresh milestones after the dragon without installing twenty unrelated mods.',
+      'betterminecraft.pillarsTitle': 'Three big selling points',
+      'betterminecraft.pillar1Title': 'Modpack-friendly',
+      'betterminecraft.pillar1Body':
+        'Built to **slot into packs** you already play: plays nice with staples like **JEI** and **Jade**, and does not fight the rest of your mod list for attention.',
+      'betterminecraft.pillar2Title': 'Vanilla-like',
+      'betterminecraft.pillar2Body':
+        'Adds goals, gear, and world flavour that still **feel like Minecraft** — closer to a chunky vanilla update than a whole new game.',
+      'betterminecraft.pillar3Title': 'Not too complex',
+      'betterminecraft.pillar3Body':
+        'No homework wall: **readable progression**, systems you can explain in one breath, and fewer “learn my entire tech tree first” moments.',
+      'betterminecraft.detailsTitle': 'Concrete directions (overview)',
+      'betterminecraft.detailsHtml':
+        '<ul class="bmc-detail-list"><li><strong>Gear &amp; materials</strong> — new lines to plan around (enderite &amp; emerald are headline examples), with room for polish as the 1.21.1 rewrite lands.</li><li><strong>Infusion &amp; crafting goals</strong> — extra reasons to farm, explore, and revisit the world between two bases.</li><li><strong>Enchantments &amp; small mechanics</strong> — hooks that stretch combat and preparation without replacing core balance wholesale.</li><li><strong>Biomes &amp; ambience</strong> — End &amp; Overworld treated as first-class spaces; specifics shift version to version — follow the changelog.</li><li><strong>Documentation</strong> — release notes on Modrinth; deeper wiki pages appear as the overhaul stabilises.</li></ul>',
+      'betterminecraft.fitTitle': 'Who should install it?',
+      'betterminecraft.fitP1':
+        'Perfect if you want **more checklist after diamond** — new stations to build, new routes to optimise, new excuses to wander the map — while keeping the “Minecraft brain” you already have.',
+      'betterminecraft.fitP2':
+        'Less ideal if you are looking for **factory automation**, **magic tech trees**, or **dimension packs** that ignore the base game. BMC hugs vanilla; it does not replace it.',
+      'betterminecraft.featuresTitle': 'Feature spotlight',
+      'betterminecraft.feat1Title': 'Gear that paces you',
+      'betterminecraft.feat1Body':
+        'Enderite & emerald style lines give you **long-term projects** without invalidating iron or diamond overnight. Stats and recipes are tuned during the NeoForge migration — check Modrinth for the latest numbers.',
+      'betterminecraft.feat2Title': 'Infusion & crafting identity',
+      'betterminecraft.feat2Body':
+        'Infusion-style workflows tie late-game materials to **meaningful choices** — what to charge first, what to farm next — instead of a single OP craft.',
+      'betterminecraft.feat3Title': 'Worlds that grow with you',
+      'betterminecraft.feat3Body':
+        'End & Overworld content is built to **reward return trips**: new sights, new reasons to bring shulker boxes, and ambience that reads “expansion pack” rather than “random biome mod”.',
+      'betterminecraft.feat4Title': 'Systems, not noise',
+      'betterminecraft.feat4Body':
+        'Enchantments and light-touch mechanics extend survival loops — **sidegrades, trade-offs, preparation** — instead of stacking unrelated gimmicks.',
+      'betterminecraft.feat5Title': 'Vanilla+ promise',
+      'betterminecraft.feat5Body':
+        'If a feature cannot be explained to a returning player in one sentence, it probably does not belong here. BMC is the “**wider sandbox**” lane: more goals, same vocabulary.',
+      'betterminecraft.compatTitle': 'Compatibility',
+      'betterminecraft.compatBody': 'Minecraft **Java 1.21.1** · **NeoForge** · runs on **client & dedicated server**.',
+      'betterminecraft.compatNote':
+        'Mod loaders change fast — always match the **NeoForge** version range listed on the Modrinth file you download. When in doubt, ask on Discord with your latest log.',
+      'betterminecraft.linksTitle': 'Official links',
+      'betterminecraft.linkProject': 'Modrinth — project page',
+      'betterminecraft.linkChangelog': 'Changelog & files',
+      'betterminecraft.linkOrgShort': 'SOLEA PIXEL org',
+      'betterminecraft.linkDiscord': 'Community Discord',
+      'betterminecraft.ctaModrinth': 'Open on Modrinth',
+      'betterminecraft.ctaOrg': 'SOLEA PIXEL on Modrinth',
+      'betterminecraft.footerNote': 'Art & branding belong to their respective owners. Not an official Minecraft service.',
+      'betterminecraft.backHome': '← Back to home',
+      'betterminecraft.showcaseTitle': 'Textures & gear (preview)',
+      'betterminecraft.showcaseHint': 'Hover a card (or focus it) to read the blurb — on touch devices the text stays visible.',
+      'betterminecraft.showcaseArmorFloatNote':
+        '**Emerald** (left edge) and **enderite** (right edge) spin in **3D** like in-game — soft background preview (handy for a wiki layout too).',
+      'betterminecraft.showcase1Name': 'Nebrith block',
+      'betterminecraft.showcase1Desc':
+        'Found in **End geodes**: a distinctive material and a great-looking decorative block.',
+      'betterminecraft.showcase2Name': 'Ruby ore',
+      'betterminecraft.showcase2Desc':
+        'Rubies are rare gems mainly used for **special trades** with the **Cured Witch**.',
+      'betterminecraft.showcase3Name': 'Enderite block',
+      'betterminecraft.showcase3Desc':
+        'Even rarer than Netherite: crafted from **nine enderite ingots** and genuinely hard to obtain.',
+      'betterminecraft.showcase4Name': 'Dragon staff',
+      'betterminecraft.showcase4Desc':
+        'A magic staff that channels the **Ender Dragon’s** power as its energy source.',
+      'betterminecraft.showcase5Name': 'Echo staff',
+      'betterminecraft.showcase5Desc':
+        'The **Warden** is no longer the only keeper of that power — the Echo staff wields it too.',
+      'betterminecraft.showcase6Name': 'Enderite sword',
+      'betterminecraft.showcase6Desc':
+        'Stronger and tougher than Netherite — a new emblem for your adventure.',
+      'betterminecraft.showcase7Name': 'Lightning bow',
+      'betterminecraft.showcase7Desc':
+        'True to its name: **tighter shots**, **longer range**, and a **powerful lightning strike** on impact. Do not stand in the way.',
+      'betterminecraft.showcase8Name': 'Liquid experience',
+      'betterminecraft.showcase8Desc':
+        'Liquid XP found in the End — **not quite** what you might expect.',
+      'betterminecraft.showcase9Name': 'Emerald armor',
+      'betterminecraft.showcase9Desc':
+        'No stronger than diamond, but the **full set** has an edge — equip it all and **visit the villagers**.',
+      'betterminecraft.showcase10Name': 'Enderite armor',
+      'betterminecraft.showcase10Desc':
+        'Dark **purple** and true to its name — tougher than older armor that is starting to feel dated.',
+      'betterminecraft.showcase11Name': 'Soul crystal',
+      'betterminecraft.showcase11Desc':
+        'Whatever you think, you are wrong! **Trap souls** in the crystal and use them at the **Infusion Table** — pure sorcery.',
+      'bmcwiki.pageTitle': 'Better Minecraft Wiki (draft) — SOLEA PIXEL',
+      'bmcwiki.metaDescription':
+        'Draft BMC wiki: category tree only — **not indexed** and **not intended** for the next public site update until you enable it.',
+      'bmcwiki.draftBadge': 'Draft · not for next release',
+      'bmcwiki.draftBody':
+        'This URL is **noindex** and listed as **Disallow** in `robots.txt` so search engines skip it. Remove those guards and add real content when you are ready to publish.',
+      'bmcwiki.mainTitle': 'Better Minecraft wiki',
+      'bmcwiki.mainLead':
+        'Articles synced from the **Better Minecraft** mod sources in this repo: armor tiers, wood sets, storage, infusion, mobs, and utility items. **Correct anything** that drifts from your build.',
+      'bmcwiki.quickNavAria': 'Quick jumps within this wiki page',
+      'bmcwiki.quickNavLabel': 'Jump',
+      'bmcwiki.quickNavInfusion': 'Infusion',
+      'bmcwiki.quickNavEnd': 'End & ruby',
+      'bmcwiki.quickNavArmor': 'Enderite gear',
+      'bmcwiki.quickNavItems': 'Backpacks',
+      'bmcwiki.quickNavStorage': 'Storage',
+      'bmcwiki.navLabel': 'Contents',
+      'bmcwiki.sidebarAria': 'Wiki categories',
+      'bmcwiki.navTreeAria': 'Category tree',
+      'bmcwiki.sidebarToggle': 'Show / hide categories',
+      'bmcwiki.sidebarToggleAria': 'Toggle the wiki category panel',
+      'bmcwiki.catArmor': 'Armor & tools',
+      'bmcwiki.linkArmorEnderite': 'Enderite',
+      'bmcwiki.linkArmorEmerald': 'Emerald',
+      'bmcwiki.linkArmorCopper': 'Copper',
+      'bmcwiki.linkArmorObsidian': 'Obsidian',
+      'bmcwiki.linkArmorShulker': 'Shulker',
+      'bmcwiki.linkArmorHats': 'Villager hats & witch',
+      'bmcwiki.catBlocks': 'Blocks',
+      'bmcwiki.linkNebrith': 'Nebrith',
+      'bmcwiki.linkInfusionTable': 'Infusion table',
+      'bmcwiki.linkBlocksStone': 'Light & dark stone',
+      'bmcwiki.linkBlocksEnd': 'End ores & ruby',
+      'bmcwiki.linkBlocksStorage': 'Enchanted chest & furnace',
+      'bmcwiki.linkBlocksHollow': 'Hollow wood set',
+      'bmcwiki.linkBlocksSunwood': 'Sunwood & Solea Grove',
+      'bmcwiki.catItems': 'Items',
+      'bmcwiki.linkItemEnderite': 'Enderite (materials)',
+      'bmcwiki.linkItemCrystals': 'Soul crystals',
+      'bmcwiki.linkItemLightningBow': 'Lightning bow',
+      'bmcwiki.linkAllStaff': 'All staves',
+      'bmcwiki.linkItemBackpacks': 'Backpacks',
+      'bmcwiki.linkItemFood': 'Berries & apples',
+      'bmcwiki.linkItemUtility': 'Utility & drops',
+      'bmcwiki.catMobs': 'Mobs',
+      'bmcwiki.linkMobsOverview': 'Other mod mobs',
+      'bmcwiki.linkRadiantSlime': 'Radiant slime',
+      'bmcwiki.linkMetaRarity': 'Rarity display',
+      'bmcwiki.linkProgressFossil': 'Fossil debris & XP',
+      'bmcwiki.catEnchants': 'Enchantments & effects',
+      'bmcwiki.catWorld': 'Biomes & structures',
+      'bmcwiki.linkWorldBiomes': 'Hollow Garden & Solea Grove',
+      'bmcwiki.catProgress': 'Progression & goals',
+      'bmcwiki.catSoon': 'Sub-pages to add later.',
+      'bmcwiki.titleItemEnderite': 'Items: Enderite (materials)',
+      'bmcwiki.itemEnderiteIntro':
+        '**Enderite** is an End-tier material: scrap from **Forgotten Debris** (smelt or blast), combine with diamonds into ingots, then compress into a block or duplicate the **smithing template**.',
+      'bmcwiki.enderiteScrapSmelt':
+        'Smelt or blast **Forgotten Debris** in a furnace — same timing as common ore smelts — to get **Enderite Scrap**.',
+      'bmcwiki.armorEnderiteIntro':
+        '**Enderite armor and tools** are forged from **Netherite** at the smithing table using the upgrade template and **Enderite Ingots** (see **Items: Enderite** for how to make ingots).',
+      'bmcwiki.xrefToArmorEnderite': '→ Enderite armor & tools',
+      'bmcwiki.xrefToItemEnderite': '→ Enderite materials',
+      'bmcwiki.xrefToInfusion': '→ Infusion table',
+      'bmcwiki.xrefToArmorEmerald': '→ Emerald armor',
+      'bmcwiki.xrefToCrystals': '→ Soul crystals',
+      'bmcwiki.xrefEmeraldBootsInfusion': '→ Sky boots (infusion)',
+      'bmcwiki.xrefEmeraldBootsCraft': '→ Emerald armor (boots)',
+      'bmcwiki.xrefRubyOres': '→ End & ores (ruby)',
+      'bmcwiki.xrefToInfusionRecipe': '→ Infusion recipe',
+      'bmcwiki.xrefNetheriteForBow': '→ Netherite (smithing)',
+      'bmcwiki.xrefStaffInfusion': '→ Infusion recipes for staves',
+      'bmcwiki.xrefNebrithInfusion': '→ Infusion (uses Nebrith shards in other crafts)',
+      'bmcwiki.xrefPocketEnderInfusion': '→ Pocket ender chest (infusion)',
+      'bmcwiki.xrefToBackpacks': '→ Backpacks',
+      'bmcwiki.xrefToFossil': '→ Fossil debris & XP',
+      'bmcwiki.xrefToWorldBiomes': '→ Biomes (worldgen)',
+      'bmcwiki.xrefToUtility': '→ Utility & drops',
+      'bmcwiki.xrefToRadiant': '→ Radiant slime',
+      'bmcwiki.xrefWardenTendril': '→ Warden tendril (drops)',
+      'bmcwiki.titleArmorObsidian': 'Armor: Obsidian',
+      'bmcwiki.bodyArmorObsidian':
+        'Full **obsidian** armor set (helmet through boots) — **Epic** tier gear registered in `ModItems` with its own material stats; craft like other armor tiers (see **JEI** / in-game recipes).',
+      'bmcwiki.titleArmorShulker': 'Armor: Shulker',
+      'bmcwiki.bodyArmorShulker':
+        '**Shulker** armor is a four-piece **Epic** set themed on shulker shells — separate progression path from emerald or enderite.',
+      'bmcwiki.titleArmorHats': 'Armor: Villager hats & witch hat',
+      'bmcwiki.bodyArmorHats':
+        'Cosmetic-style **helmet** slots for villager jobs (butcher, librarian, weaponsmith, shepherd, fisherman, cartographer, armorer, farmer) plus a **Witch Hat** with extra behaviour (soul storage line in tooltips — see `WitchHatItem`).',
+      'bmcwiki.titleItemBackpacks': 'Items: Backpacks',
+      'bmcwiki.bodyItemBackpacks':
+        'Tiered **backpack** line: leather → iron → gold → diamond → emerald (rising rows and **rarity**). Datapack-friendly tag **`bmcmod:backpack`**; **Shift** shows a contents preview in tooltips. Used as an ingredient on the **Pocket Ender Chest** infusion card.',
+      'bmcwiki.titleItemFood': 'Items: Berries, apples & XP bottle',
+      'bmcwiki.bodyItemFood':
+        '**Purple berries** drop from the **Purple Berry Bush** in Hollow Garden biomes (food + short regen). **Gold berries** are a high-tier reward food. **Diamond apple** and **Enchanted diamond apple** are custom gapple-style items with long timed effects. **Sealed experience bottle** stores XP in bottle form (see item class in the mod).',
+      'bmcwiki.titleItemUtility': 'Items: Utility & rare drops',
+      'bmcwiki.bodyItemUtility':
+        '**Void shard** — End-related consumable/stackable utility (`VoidShardItem`). **Melody Horn** — hold to play looping tunes. **Unknown Book** — rare single-stack book. **Music Disc** — *Beyond The Enderman* (`beyond_the_enderman` jukebox song). **Experience liquid bucket** — fluid bucket from mod fluids. **Warden tendril** — Warden loot (loot modifier in code). **End Golem Heart** — mythic drop tied to the End Golem. **Fossil scrap** — exotic material from **Fossil Debris**.',
+      'bmcwiki.titleBlocksStorage': 'Blocks: Enchanted chest & Endstone furnace',
+      'bmcwiki.bodyBlocksStorage':
+        '**Enchanted chest** stores **XP** with HUD lines for upgrades (max **3** upgrades) and rolling gain; **Enchanted Chest Upgrade** is consumed with a cap. **Endstone furnace** is a themed furnace block (`EndstoneFurnaceBlock`). Recipes live under `data/bmcmod/recipe/`.',
+      'bmcwiki.titleBlocksHollow': 'Blocks: Hollow wood (Hollow Garden)',
+      'bmcwiki.bodyBlocksHollow':
+        'Full **hollow** wood family: logs, stripped variants, **hollow planks**, stairs, slabs, fence, gate, door, trapdoor, pressure plate, button, **barrel**, **bookshelf**, **leaves**, **sapling**. Grows in **Hollow Garden**–style biomes alongside **hollow grass** and **purple berry** bushes.',
+      'bmcwiki.titleBlocksSunwood': 'Blocks: Sunwood (Solea Grove)',
+      'bmcwiki.bodyBlocksSunwood':
+        '**Sunwood** log / wood / planks and building set (stairs, slabs, fence, gate, door, trapdoor, plates, buttons), **signs** and **hanging signs**, **leaves**, **sapling**, decorative **sunbloom** and **surface moss**, plus **Sunwood boat** and **chest boat**.',
+      'bmcwiki.titleMetaRarity': 'UI: Rarity tiers & tooltips',
+      'bmcwiki.bodyMetaRarity':
+        'The mod defines extra **BmcMod** rarity tiers (Uncommon through **Fragmented**) used for borders and tooltips (`BmcModRarity`, client `RarityTooltipHandler`). **Rarity sticks** in `ModItems` are **debug / test** items for previewing those tiers — not progression gear.',
+      'bmcwiki.titleProgressFossil': 'Progression: Fossil debris & liquid XP',
+      'bmcwiki.bodyProgressFossil':
+        '**Fossil Debris** is a very tough underground ore (`ModBlocks.FOSSIL_DEBRIS`) with deep-world generation; it drops toward **fossil scrap**. **Liquid experience** generates in the End and feeds the **Radiant slime** ecosystem — see worldgen under `data/bmcmod/worldgen` and fluid registration in code.',
+      'bmcwiki.copperFullBody':
+        'The **full copper armor** and **tool set** (sword through hoe) exists alongside the helmet; stats sit between stone and iron as in `CopperEquipment`.',
+      'bmcwiki.itemCrystalsMorph':
+        '**Morph crystal** — kill a mob with the crystal in your **off-hand** to store its form; **hold use** to morph (soul consumed). **Capture crystal** — similar flow for capture gameplay with higher durability pool. Both are **infusion** crafts once you have a primed **soul crystal**.',
+      'bmcwiki.enderiteScrapTitle': 'Enderite scrap',
+      'bmcwiki.enderiteScrapBody':
+        'Mine **Forgotten Debris** in the End (similar vein feel to Ancient Debris). Smelt or blast the ore block to get **Enderite Scrap**.',
+      'bmcwiki.enderiteIngotTitle': 'Enderite ingot (shapeless)',
+      'bmcwiki.craftShapelessEnderiteIngotAria':
+        'Shapeless recipe (shown in a 3×3 grid): four Enderite Scrap and four Diamonds → one Enderite Ingot — ingredients can be placed in any arrangement.',
+      'bmcwiki.legendEnderiteIngot':
+        'Vanilla **diamond** textures from Minecraft **1.21.1** assets (community mirror). Mod textures copied from your `bmcmod` pack.',
+      'bmcwiki.enderiteBlockTitle': 'Enderite block',
+      'bmcwiki.craftEnderiteBlockAria': 'Shaped 3×3: nine Enderite Ingots to one Enderite Block',
+      'bmcwiki.legendEnderiteBlock': 'Nine **Enderite Ingots** → one **Enderite Block** (storage).',
+      'bmcwiki.enderiteTemplateTitle': 'Enderite upgrade template (duplicate)',
+      'bmcwiki.enderiteTemplateBody':
+        'You need the **Enderite Upgrade Smithing Template** for smithing. Duplicate it like other templates: one template plus End Stone and diamonds yields **two** templates.',
+      'bmcwiki.craftTemplateDupAria': 'Shaped recipe to duplicate the Enderite upgrade smithing template',
+      'bmcwiki.legendTemplateDup':
+        'One **Enderite Upgrade Template**, **End Stone** centre, **diamonds** around — output **two** templates.',
+      'bmcwiki.enderiteSmithingTitle': 'Smithing (Netherite → Enderite)',
+      'bmcwiki.enderiteSmithingBody':
+        'At a **Smithing Table**: place the template, a **Netherite** tool or armor piece, and an **Enderite Ingot** in the addition slot.',
+      'bmcwiki.smithingEnderiteAria': 'Smithing transform layout: template plus Netherite base plus Enderite ingot',
+      'bmcwiki.smithSlotTemplate': 'Template',
+      'bmcwiki.smithSlotBase': 'Base',
+      'bmcwiki.smithSlotAdd': 'Add',
+      'bmcwiki.legendSmithingLetters':
+        '**Smithing table**: template + any **Netherite** piece + **Enderite Ingot** → matching **Enderite** item (example shown: **Netherite Sword** → **Enderite Sword**).',
+      'bmcwiki.enderiteSmithingList1':
+        '**Tools & weapons**: same pattern for sword, pickaxe, axe, shovel, and hoe smithing recipes.',
+      'bmcwiki.enderiteSmithingList2':
+        '**Armor & shields**: helmet, chestplate, leggings, boots, and the **Enderite Shield** use the same transform; shields follow the same smithing flow as other gear.',
+      'bmcwiki.emeraldIntro':
+        '**Emerald** tools and armor use emeralds as material. Gear is tuned as a **diamond-sidegrade** with slightly higher protection totals and repair/emerald theme.',
+      'bmcwiki.emeraldSetTitle': 'Full set bonus',
+      'bmcwiki.emeraldSetBody':
+        'With **all four** emerald armor pieces equipped, you keep **Hero of the Village I** with infinite duration — ideal for **villager trading** runs.',
+      'bmcwiki.emeraldToolsBody':
+        'Tools use the mod’s emerald tier (crafted like vanilla tier gear, replacing the base material with emeralds — see in-game recipes / JEI).',
+      'bmcwiki.copperIntro':
+        '**Copper** gear fills an early slot: tools sit **between stone and iron**; armor totals are **slightly below iron** but cheap to craft with copper ingots and nuggets.',
+      'bmcwiki.copperHelmetTitle': 'Copper helmet (storms)',
+      'bmcwiki.copperHelmetBody':
+        'During **thunderstorms**, while it is **raining**, you can see the **sky**, and you wear the **copper helmet**, the mod can spawn **lightning** at random nearby surface positions (rare tick).',
+      'bmcwiki.nebrithIntro':
+        '**Nebrith** is a purple crystal system: **buds** grow from **Budding Nebrith** into clusters. Break clusters for **shards**; shards craft storage blocks and several devices.',
+      'bmcwiki.nebrithShardsTitle': 'Shards & growth',
+      'bmcwiki.nebrithShardsBody':
+        'Clusters behave like **amethyst**: correct tool, Silk Touch optional depending on drops. Shards are the currency for nebrith-themed crafts (block, spyglass, tinted glass, etc.).',
+      'bmcwiki.nebrithBlockTitle': 'Nebrith block',
+      'bmcwiki.craftNebrithBlockAria': 'Four Nebrith Shards in a 2×2 pattern (shown inside a 3×3 crafting grid) → one Nebrith Block',
+      'bmcwiki.legendNebrithBlock': 'Four **Nebrith Shards** (2×2) → **Nebrith Block**.',
+      'bmcwiki.relicTableTitle': 'Relic table',
+      'bmcwiki.craftRelicTableAria': 'Shaped recipe: Purpur, End Stone, central Nebrith Shard to Relic Table',
+      'bmcwiki.legendRelicTable':
+        '**Purpur**, **End Stone**, one **Nebrith Shard** in the centre → **Relic Table** (top texture shown as result icon).',
+      'bmcwiki.infusionIntroFull':
+        'The **Infusion Table** has a GUI: place a **Soul Crystal** in its dedicated slot, stack the **four ingredient types** in the 2×2 grid (counts can be split across slots; only items that belong to the recipe may appear — see `InfusionRecipe.java`). When the recipe matches, **souls stored in the crystal** pay the **soul cost** and the result appears in the output slot. Recipes are registered in **`InfusionRecipes.java`** (multiset / shapeless logic).',
+      'bmcwiki.infusionRecipesTitle': 'Infusion recipes (in-game)',
+      'bmcwiki.infusionRecipesLead':
+        'Each card lists **total counts** across the four slots. **Order does not matter** as long as no extra item types are present.',
+      'bmcwiki.infuseLightningBowTitle': 'Lightning Bow',
+      'bmcwiki.infuseLightningBowSoul': 'Soul cost: **72**',
+      'bmcwiki.infuseMorphTitle': 'Morph Crystal',
+      'bmcwiki.infuseMorphSoul': 'Soul cost: **56**',
+      'bmcwiki.infuseCaptureTitle': 'Capture Crystal',
+      'bmcwiki.infuseCaptureSoul': 'Soul cost: **56**',
+      'bmcwiki.infuseSkyBootsTitle': 'Sky Boots',
+      'bmcwiki.infuseSkyBootsSoul': 'Soul cost: **120**',
+      'bmcwiki.infuseEchoStaffTitle': 'Echo Staff',
+      'bmcwiki.infuseEchoStaffSoul': 'Soul cost: **120**',
+      'bmcwiki.infuseFlameStaffTitle': 'Flame Staff',
+      'bmcwiki.infuseFlameStaffSoul': 'Soul cost: **100**',
+      'bmcwiki.infuseEndStaffTitle': 'End Staff',
+      'bmcwiki.infuseEndStaffSoul': 'Soul cost: **110**',
+      'bmcwiki.infuseDragonStaffTitle': 'Dragon Staff',
+      'bmcwiki.infuseDragonStaffSoul': 'Soul cost: **115**',
+      'bmcwiki.infusePocketEnderTitle': 'Pocket Ender Chest',
+      'bmcwiki.infusePocketEnderSoul': 'Soul cost: **5**',
+      'bmcwiki.titleItemCrystals': 'Items: Soul crystals',
+      'bmcwiki.itemCrystalsIntro':
+        'The **Soul Crystal** captures souls (off-hand flow in the mod). **Morph** and **Capture** crystals are high-tier crafts at the infusion table.',
+      'bmcwiki.itemCrystalsBody':
+        '**Cracked crystal** appears when durability is exhausted. Uses tie into the **Infusion Table** and metamorphosis systems.',
+      'bmcwiki.titleItemLightningBow': 'Items: Lightning Bow',
+      'bmcwiki.itemLightningBowIntro':
+        'The **Lightning Bow** is an **Exotic** ranged weapon: tighter shots, long range, and lightning on impact (see in-game tooltip).',
+      'bmcwiki.itemLightningBowBody':
+        'Crafted only through **infusion** — see the recipe card below and the **Netherite** link for ingots used in the recipe.',
+      'bmcwiki.titleBlocksStone': 'Blocks: Light & dark stone',
+      'bmcwiki.blocksStoneBody':
+        '**Light stone** and variants spawn in the **Overworld**; **dark stone** and polished variants align with **Nether blackstone** rules. Stairs, slabs, walls, buttons, and pressure plates follow vanilla stonecutting / crafting patterns (see JEI).',
+      'bmcwiki.titleBlocksEnd': 'Blocks: End & ruby',
+      'bmcwiki.blocksEndBody':
+        '**Forgotten Debris** (End, high toughness) → **Enderite Scrap**. **Ruby ore** + **deepslate ruby ore** in the Overworld → **ruby** gem and **block of ruby**. **End sand**, **End anchor** (respawn-anchor rules, End-only validity), **void torch** / **void lantern**, **Jaerys** plant, and **hollow grass** (Hollow Garden ground) complete the surface kit shown above.',
+      'bmcwiki.titleMobsOverview': 'Mobs: overview',
+      'bmcwiki.mobsOverviewIntro': 'Spawn eggs and custom entities registered by the mod (names from `en_us.json`):',
+      'bmcwiki.mobBlink': '**Blink** — End-themed mob (spawn egg available).',
+      'bmcwiki.mobEndGolem': '**End Golem** — heavy End guardian (spawn egg).',
+      'bmcwiki.mobEndling': '**Endling** — End creature (spawn egg).',
+      'bmcwiki.mobDiamondGolem': '**Diamond Golem** — golem variant (spawn egg).',
+      'bmcwiki.mobIllusioner': '**Illusioner** — vanilla mob type exposed with a spawn egg in the mod.',
+      'bmcwiki.mobChargedCreeper': '**Charged Creeper** — spawn egg for testing or creative.',
+      'bmcwiki.titleWorldBiomes': 'World: biomes',
+      'bmcwiki.worldBiomesBody':
+        'Datapack biomes include **Hollow Garden** (hollow wood, hollow grass, purple berries, End-adjacent feel) and **Solea Grove** (sunwood, sunbloom, surface moss). See `data/bmcmod/worldgen/biome` and `placed_feature` / `configured_feature` trees plus lang keys `biome.bmcmod.*`.',
+      'bmcwiki.craftInfusionAria': 'Shaped crafting recipe for the Infusion Table',
+      'bmcwiki.legendInfusion':
+        '**Book**, **Emeralds**, **End Stone Bricks** as in the shaped recipe → **Infusion Table** (top texture as icon).',
+      'bmcwiki.infusionNote':
+        'Soul totals and ingredients follow **`InfusionRecipes.java`** in your mod copy — rebalance there if you change costs.',
+      'bmcwiki.allStaffIntro':
+        'Magic **staves** use durability / charges; several support **Ctrl + use** to **cycle modes** (see item tooltips in-game).',
+      'bmcwiki.staffDragon':
+        '**Dragon Staff** — Mode 1: charge and release a **dragon fireball** toward your aim. Mode 2: hold for a **breath beam** along your line of sight. **Ctrl + use** switches mode.',
+      'bmcwiki.staffEcho':
+        '**Echo Staff** — **Six** sonic charges. Hold use about **five seconds**, then **release** to fire a **sonic**-style blast (Warden-inspired).',
+      'bmcwiki.staffFlame':
+        '**Flame Staff** — Hold use: **flamethrower** in view direction; burning enemies take **bonus damage**. Durability **drains while firing**.',
+      'bmcwiki.staffEnd':
+        '**End Staff** — Three modes: **charged ender pearl**, **target warp** (creature in line of sight), **random escape** (enderman-style). **Ctrl + use** cycles modes; pearl mode uses hold → release.',
+      'bmcwiki.radiantIntro':
+        '**Radiant Slime** is a custom slime linked to **liquid experience** in the End ecosystem.',
+      'bmcwiki.radiantBullet1': 'Tougher than ordinary slimes; interacts with **player experience** (steals XP in combat context).',
+      'bmcwiki.radiantBullet2':
+        'Spawn logic ties to **night / lake** style surface spawns near XP fluid; some spawns **return to the lake at dawn** (see mod spawn logic).',
+      'bmcwiki.radiantBullet3': 'Spawn egg exists for creative / testing; world placement follows the mod’s configured rules.',
+      'bmcwiki.backBmc': '← Back to BMC teaser',
+      'bmcwiki.backHome': '← Home',
       'footer.legal':
         'Not affiliated with Mojang AB or Microsoft · <a href="#" class="js-legal-modal-open">Legal & privacy</a> · <a href="/content/">Site map</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">SPL license</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
     },
@@ -343,6 +690,8 @@
       'meta.description':
         'BIENVENUE : installez ici notre launcher et découvrez les fonctionnalités proposées par le launcher.',
       'nav.home': 'Accueil',
+      'nav.bmc': 'Better MC',
+      'nav.bmcAria': 'Mod Better Minecraft — page teaser',
       'nav.news': 'Actu',
       'nav.about': 'À propos',
       'nav.downloads': 'Téléchargements',
@@ -385,9 +734,9 @@
       'page404.voidP2WinBody': 'Tu as isolé le 404 fuyard.',
       'page404.voidP2WinOk': 'OK',
       'page404.voidP2PacTag': 'Épreuve',
-      'page404.voidP2PacTitle': 'Pac enragé',
+      'page404.voidP2PacTitle': 'Labyrinthe',
       'page404.voidP2PacHint':
-        'Tiens 60 secondes. Déplace-toi avec les flèches ou ZQSD / WASD. Plus le temps passe, plus Pac s’énerve — évite les fantômes.',
+        'Labyrinthe aléatoire à chaque partie (grille plus grande). Atteins la sortie verte. Deux orbes hostiles au début — une troisième arrive après 67 s. Si elles te voient en ligne droite, elles te poursuivent, avec des déplacements espacés. 3 vies. Après 60 s quelques murs internes bougent (la sortie reste). Flèches ou ZQSD / WASD.',
       'page404.voidP2PacLaunch': 'Lancer',
       'page404.voidP2PacRetry': 'Recommencer',
       'page404.voidSequelGoHome': 'Retourner au site',
@@ -402,7 +751,7 @@
       'hub.h1b': 'PACK SOLEA',
       'hub.typePrefix': "L'univers SOLEA PIXEL :",
       'hub.lead':
-        'Un seul outil : actus, comptes Microsoft, modpacks NeoForge — et un espace **Mon serveur** pour faire tourner un monde chez toi, sans mélanger les fichiers.',
+        'Découvrez notre nouveau launcher optimisé pour toute utilisation Minecraft. Vous retrouverez les modpack SOLEA PIXEL, un accès à Minecraft vanilla et diverses autres options disponibles.',
       'hub.btnDl': 'Télécharger',
       'hub.btnDiscover': 'Découvrir',
       'hub.versionLoading': 'Chargement de la dernière version…',
@@ -642,6 +991,354 @@
       'content.backHome': '← Accueil',
       'content.sitemap': 'Plan du site & liens',
       'content.footerLicense': 'Licence SPL',
+      'betterminecraft.pageTitle': 'Better Minecraft (BMC) — SOLEA PIXEL',
+      'betterminecraft.metaDescription':
+        'Better Minecraft (BMC) pour NeoForge 1.21.1 : extension survie vanilla+, équipements, infusion, biomes, objectifs. Teaser détaillé SOLEA PIXEL ; téléchargements sur Modrinth.',
+      'betterminecraft.heroBadge': 'NeoForge · Minecraft Java 1.21.1 · Modrinth',
+      'betterminecraft.heroTitle': 'Better Minecraft',
+      'betterminecraft.heroSubtitle': '[ BMC MOD ]',
+      'betterminecraft.heroLead':
+        'Survie **vanilla+** lisible d’un coup d’œil : nouveaux objectifs, rythme maîtrisé, ambiance toujours Minecraft.',
+      'betterminecraft.introTitle': "C'est quoi Better Minecraft ?",
+      'betterminecraft.introLead':
+        'Better Minecraft (**BMC**) est un mod **NeoForge** pour **Java 1.21.1** qui allonge le survie avec du contenu pensé — pas du bruit aléatoire, ni une usine à machines.',
+      'betterminecraft.introP1':
+        'On part d’une question : **est-ce que ça pourrait tenir dans un changelog Mojang ?** Progression lisible, interface familière (on pense **JEI** / **Jade**), et des mécaniques qui récompensent l’anticipation — nouveaux paliers, nouvelles raisons d’explorer, petites boucles **à côté** du vanilla plutôt qu’à la place.',
+      'betterminecraft.introP2':
+        'Tu y trouveras des **lignes d’équipement** (dont enderite & émeraude comme fils conducteurs), des **boucles d’infusion / d’artisanat**, des **enchantements & systèmes** pour le milieu / fin de jeu, et du **relief monde** (End & Overworld) qui avance au fil des versions. Chiffres et recettes bougent avec la refonte : le **changelog Modrinth** reste la référence.',
+      'betterminecraft.introP3':
+        'C’est pensé pour les **auteurs de modpacks** qui veulent « plus de Minecraft » sans réécrire la courbe d’apprentissage, et pour les **mondes solo** où tu veux de nouveaux jalons après le dragon sans empiler vingt mods sans lien.',
+      'betterminecraft.pillarsTitle': 'Trois gros points du mod',
+      'betterminecraft.pillar1Title': 'Compatible modpack',
+      'betterminecraft.pillar1Body':
+        'Pensé pour **s’insérer dans tes packs** : bon voisin avec **JEI**, **Jade** et le reste de la liste, sans voler la vedette aux autres mods.',
+      'betterminecraft.pillar2Title': 'Proche du vanilla',
+      'betterminecraft.pillar2Body':
+        'Du contenu qui reste dans l’**esprit Minecraft** — objectifs, équipements, monde : plutôt une **grosse couche vanilla** qu’un jeu à part.',
+      'betterminecraft.pillar3Title': 'Pas trop complexe',
+      'betterminecraft.pillar3Body':
+        'Pas de mur de devoirs : **progression lisible**, des systèmes qu’on peut résumer vite, sans « apprends tout mon arbre tech avant de t’amuser ».',
+      'betterminecraft.detailsTitle': 'Axes concrets (vue d’ensemble)',
+      'betterminecraft.detailsHtml':
+        '<ul class="bmc-detail-list"><li><strong>Équipement &amp; matériaux</strong> — nouvelles lignes à planifier (enderite &amp; émeraude en tête d’affiche), affinées pendant la migration 1.21.1.</li><li><strong>Infusion &amp; objectifs d’artisanat</strong> — plus de raisons de farmer, d’explorer et de relier le monde entre deux bases.</li><li><strong>Enchantements &amp; petites mécaniques</strong> — des leviers qui allongent combat &amp; préparation sans remplacer l’équilibre de base.</li><li><strong>Biomes &amp; ambiance</strong> — End &amp; Overworld comme espaces de premier plan ; le détail évolue — suis le changelog.</li><li><strong>Documentation</strong> — notes de version sur Modrinth ; pages wiki plus poussées au fur et à mesure que la refonte se stabilise.</li></ul>',
+      'betterminecraft.fitTitle': 'Pour qui ?',
+      'betterminecraft.fitP1':
+        'Idéal si tu veux **plus de cases à cocher après le diamant** — nouvelles stations, nouvelles routes d’optimisation, nouvelles excuses pour arpenter la carte — en gardant le « cerveau Minecraft » que tu as déjà.',
+      'betterminecraft.fitP2':
+        'Moins adapté si tu cherches **l’automatisation usine**, les **arbres de magie tech** ou les **dimensions** qui ignorent le jeu de base. BMC reste collé au vanilla ; il ne le remplace pas.',
+      'betterminecraft.featuresTitle': 'Zoom sur les blocs',
+      'betterminecraft.feat1Title': 'Équipement qui te cadence',
+      'betterminecraft.feat1Body':
+        'Les lignes type enderite &amp; émeraude donnent des **projets long terme** sans rendre le fer ou le diamant ridicules du jour au lendemain. Stats et recettes suivent la migration NeoForge — voir Modrinth pour les valeurs à jour.',
+      'betterminecraft.feat2Title': 'Infusion & identité craft',
+      'betterminecraft.feat2Body':
+        'Les workflows type infusion lient les matériaux de fin de partie à des **choix** — quoi charger en premier, quoi farmer ensuite — plutôt qu’à une recette OP unique.',
+      'betterminecraft.feat3Title': 'Des mondes qui te rappellent',
+      'betterminecraft.feat3Body':
+        'Le contenu End & Overworld vise des **retours sur zone** : nouvelles raisons de remplir des shulkers, une ambiance « extension » plutôt que « biome random ».',
+      'betterminecraft.feat4Title': 'Des systèmes, pas du bruit',
+      'betterminecraft.feat4Body':
+        'Enchantements et mécaniques légères allongent les boucles — **compromis**, **sidegrades** et **préparation** — au lieu d’empiler des gadgets sans lien.',
+      'betterminecraft.feat5Title': 'Promesse vanilla+',
+      'betterminecraft.feat5Body':
+        'Si une feature ne s’explique pas en une phrase à un joueur qui revient, elle n’a probablement pas sa place ici. BMC, c’est le couloir **bac à sable plus large** : plus d’objectifs, le même vocabulaire.',
+      'betterminecraft.compatTitle': 'Compatibilité',
+      'betterminecraft.compatBody': 'Minecraft **Java 1.21.1** · **NeoForge** · **client & serveur dédié**.',
+      'betterminecraft.compatNote':
+        'Les loaders bougent vite — aligne toujours la **version de NeoForge** avec la plage indiquée sur le fichier Modrinth que tu télécharges. En cas de doute, demande sur Discord avec ton dernier log.',
+      'betterminecraft.linksTitle': 'Liens officiels',
+      'betterminecraft.linkProject': 'Modrinth — page projet',
+      'betterminecraft.linkChangelog': 'Changelog & fichiers',
+      'betterminecraft.linkOrgShort': 'Org SOLEA PIXEL',
+      'betterminecraft.linkDiscord': 'Discord communauté',
+      'betterminecraft.ctaModrinth': 'Voir sur Modrinth',
+      'betterminecraft.ctaOrg': 'SOLEA PIXEL sur Modrinth',
+      'betterminecraft.footerNote':
+        'Visuels & marques appartiennent à leurs détenteurs. Service Minecraft non officiel.',
+      'betterminecraft.backHome': '← Retour à l’accueil',
+      'betterminecraft.showcaseTitle': 'Textures & équipements (aperçu)',
+      'betterminecraft.showcaseHint':
+        'Survole une carte (ou mets-y le focus) pour lire le texte — sur écran tactile, la description reste affichée.',
+      'betterminecraft.showcaseArmorFloatNote':
+        '**Émeraude** (bord gauche) et **enderite** (bord droit) tournent en **3D** comme en jeu — aperçu discret sur le fond (réutilisable pour ton wiki).',
+      'betterminecraft.showcase1Name': 'Bloc de Nebrith',
+      'betterminecraft.showcase1Desc':
+        'Trouvable dans les **géodes de l’End** : une matière distinctive et une **belle décoration**.',
+      'betterminecraft.showcase2Name': 'Minerai de rubis',
+      'betterminecraft.showcase2Desc':
+        'Le rubis est une gemme rare, pensée surtout pour des **échanges spéciaux** avec le **villageois sorcier guéri**.',
+      'betterminecraft.showcase3Name': 'Bloc d’enderite',
+      'betterminecraft.showcase3Desc':
+        'Plus rare que la Netherite : se craft avec **neuf lingots d’enderite** et reste **très difficile** à obtenir.',
+      'betterminecraft.showcase4Name': 'Bâton du dragon',
+      'betterminecraft.showcase4Desc':
+        'Bâton de magie qui canalise la **puissance du dragon** comme source d’énergie.',
+      'betterminecraft.showcase5Name': 'Bâton d’écho',
+      'betterminecraft.showcase5Desc':
+        'Le **Warden** n’est plus le seul détenteur de ce pouvoir — le **bâton d’écho** s’en sert aussi.',
+      'betterminecraft.showcase6Name': 'Épée en enderite',
+      'betterminecraft.showcase6Desc':
+        'Plus tranchante et plus résistante que la Netherite — le **nouvel emblème** de ton aventure.',
+      'betterminecraft.showcase7Name': 'Arc foudre',
+      'betterminecraft.showcase7Desc':
+        'Comme son nom l’indique : **tir plus précis**, **portée accrue**, et un **éclair puissant** à l’impact. Ne reste pas sur la trajectoire !',
+      'betterminecraft.showcase8Name': 'Expérience liquide',
+      'betterminecraft.showcase8Desc':
+        'De l’XP sous forme liquide dans l’End — **ce n’est pas tout à fait** ce que tu imagines.',
+      'betterminecraft.showcase9Name': 'Armure en émeraude',
+      'betterminecraft.showcase9Desc':
+        'Pas plus forte que le diamant, mais le **set complet** a son atout : équipe-toi entièrement et **va voir les villageois**.',
+      'betterminecraft.showcase10Name': 'Armure en enderite',
+      'betterminecraft.showcase10Desc':
+        '**Violet sombre** et fidèle à son nom — plus résistante que l’ancienne armure qui commence à faire vieux jeu.',
+      'betterminecraft.showcase11Name': 'Cristal',
+      'betterminecraft.showcase11Desc':
+        'Quoi que tu croies, tu te trompes ! **Capture des âmes** dans le cristal et utilise-les à la **table d’infusion** — de la sorcellerie.',
+      'bmcwiki.pageTitle': 'Wiki Better Minecraft (brouillon) — SOLEA PIXEL',
+      'bmcwiki.metaDescription':
+        'Wiki BMC brouillon : **enderite**, **nebrith**, **table d’infusion**, bâtons, etc. — **non indexé** tant que tu ne publies pas.',
+      'bmcwiki.draftBadge': 'Brouillon · pas pour la prochaine mise en ligne',
+      'bmcwiki.draftBody':
+        'Cette URL est en **noindex** et **interdite** aux robots dans `robots.txt`. Retire ces garde-fous et complète le contenu quand tu voudras publier.',
+      'bmcwiki.mainTitle': 'Wiki Better Minecraft',
+      'bmcwiki.mainLead':
+        'Articles alignés sur les **sources du mod Better Minecraft** dans ce dépôt : paliers d’armure, bois, stockage, infusion, créatures et objets utilitaires. **Corrige** ce qui ne colle plus à ta version.',
+      'bmcwiki.quickNavAria': 'Raccourcis vers les grandes sections de cette page',
+      'bmcwiki.quickNavLabel': 'Aller à',
+      'bmcwiki.quickNavInfusion': 'Infusion',
+      'bmcwiki.quickNavEnd': 'End & rubis',
+      'bmcwiki.quickNavArmor': 'Équipement enderite',
+      'bmcwiki.quickNavItems': 'Sacs à dos',
+      'bmcwiki.quickNavStorage': 'Stockage',
+      'bmcwiki.navLabel': 'Sommaire',
+      'bmcwiki.sidebarAria': 'Catégories du wiki',
+      'bmcwiki.navTreeAria': 'Arborescence des catégories',
+      'bmcwiki.sidebarToggle': 'Afficher / masquer les catégories',
+      'bmcwiki.sidebarToggleAria': 'Ouvrir ou fermer le panneau des catégories',
+      'bmcwiki.catArmor': 'Armures & outils',
+      'bmcwiki.linkArmorEnderite': 'Enderite',
+      'bmcwiki.linkArmorEmerald': 'Émeraude',
+      'bmcwiki.linkArmorCopper': 'Cuivre',
+      'bmcwiki.linkArmorObsidian': 'Obsidienne',
+      'bmcwiki.linkArmorShulker': 'Shulker',
+      'bmcwiki.linkArmorHats': 'Coiffes village & sorcière',
+      'bmcwiki.catBlocks': 'Blocs',
+      'bmcwiki.linkNebrith': 'Nebrith',
+      'bmcwiki.linkInfusionTable': 'Table d’infusion',
+      'bmcwiki.linkBlocksStone': 'Pierres claire & sombre',
+      'bmcwiki.linkBlocksEnd': 'Minerai de l’End & rubis',
+      'bmcwiki.linkBlocksStorage': 'Coffre enchanté & four',
+      'bmcwiki.linkBlocksHollow': 'Bois creux (Hollow)',
+      'bmcwiki.linkBlocksSunwood': 'Sunwood & Solea Grove',
+      'bmcwiki.catItems': 'Objets',
+      'bmcwiki.linkItemEnderite': 'Enderite (matériaux)',
+      'bmcwiki.linkItemCrystals': 'Cristaux d’âmes',
+      'bmcwiki.linkItemLightningBow': 'Arc foudre',
+      'bmcwiki.linkAllStaff': 'Tous les bâtons',
+      'bmcwiki.linkItemBackpacks': 'Sacs à dos',
+      'bmcwiki.linkItemFood': 'Baies & pommes',
+      'bmcwiki.linkItemUtility': 'Utilitaires & butins',
+      'bmcwiki.catMobs': 'Créatures',
+      'bmcwiki.linkMobsOverview': 'Autres créatures du mod',
+      'bmcwiki.linkRadiantSlime': 'Radiant slime',
+      'bmcwiki.linkMetaRarity': 'Affichage des raretés',
+      'bmcwiki.linkProgressFossil': 'Débris fossiles & XP',
+      'bmcwiki.catEnchants': 'Enchantements & effets',
+      'bmcwiki.catWorld': 'Biomes & structures',
+      'bmcwiki.linkWorldBiomes': 'Hollow Garden & Solea Grove',
+      'bmcwiki.catProgress': 'Progression & objectifs',
+      'bmcwiki.catSoon': 'Sous-pages à ajouter plus tard.',
+      'bmcwiki.titleItemEnderite': 'Objets : Enderite (matériaux)',
+      'bmcwiki.itemEnderiteIntro':
+        'L’**enderite** : fragments (**Forgotten Debris** → four / haut fourneau), combinaison avec des **diamants** en lingots, compression en **bloc**, duplication du **gabarit**.',
+      'bmcwiki.enderiteScrapSmelt':
+        'Fonds ou haut fourneau le minerai **Forgotten Debris** comme une roche classique pour obtenir des **fragments d’enderite**.',
+      'bmcwiki.armorEnderiteIntro':
+        'L’**armure et les outils en enderite** viennent de la **netherite** au **tableau de forgeron** avec le gabarit et des **lingots d’enderite** (voir **Objets : Enderite** pour les lingots).',
+      'bmcwiki.xrefToArmorEnderite': '→ Armures & outils enderite',
+      'bmcwiki.xrefToItemEnderite': '→ Matériaux enderite',
+      'bmcwiki.xrefToInfusion': '→ Table d’infusion',
+      'bmcwiki.xrefToArmorEmerald': '→ Armure émeraude',
+      'bmcwiki.xrefToCrystals': '→ Cristaux d’âmes',
+      'bmcwiki.xrefEmeraldBootsInfusion': '→ Bottes ciel (infusion)',
+      'bmcwiki.xrefEmeraldBootsCraft': '→ Armure émeraude (bottes)',
+      'bmcwiki.xrefRubyOres': '→ End & rubis',
+      'bmcwiki.xrefToInfusionRecipe': '→ Recette d’infusion',
+      'bmcwiki.xrefNetheriteForBow': '→ Netherite (forge)',
+      'bmcwiki.xrefStaffInfusion': '→ Recettes d’infusion des bâtons',
+      'bmcwiki.xrefNebrithInfusion': '→ Infusion (éclats nebrith dans d’autres crafts)',
+      'bmcwiki.xrefPocketEnderInfusion': '→ Coffre de l’End de poche (infusion)',
+      'bmcwiki.xrefToBackpacks': '→ Sacs à dos',
+      'bmcwiki.xrefToFossil': '→ Débris fossiles & XP',
+      'bmcwiki.xrefToWorldBiomes': '→ Biomes (worldgen)',
+      'bmcwiki.xrefToUtility': '→ Utilitaires & butins',
+      'bmcwiki.xrefToRadiant': '→ Radiant slime',
+      'bmcwiki.xrefWardenTendril': '→ Tendril de warden (butin)',
+      'bmcwiki.titleArmorObsidian': 'Armure : obsidienne',
+      'bmcwiki.bodyArmorObsidian':
+        'Set complet **obsidienne** (casque → bottes), palier **épique** enregistré dans `ModItems` ; recettes type armure (voir **JEI** / jeu).',
+      'bmcwiki.titleArmorShulker': 'Armure : shulker',
+      'bmcwiki.bodyArmorShulker':
+        'Quatre pièces **shulker**, thème coque de shulker, palier **épique**, fil de progression distinct de l’émeraude ou de l’enderite.',
+      'bmcwiki.titleArmorHats': 'Armure : coiffes de village & chapeau de sorcière',
+      'bmcwiki.bodyArmorHats':
+        'Casques « **métier** » villageois (boucher, bibliothécaire, armurier, etc.) + **chapeau de sorcière** avec mécanique d’**âmes** stockées (voir `WitchHatItem` et infobulles).',
+      'bmcwiki.titleItemBackpacks': 'Objets : sacs à dos',
+      'bmcwiki.bodyItemBackpacks':
+        'Ligne de **sacs** : cuir → fer → or → diamant → émeraude (rangées et **rareté**). Tag **`bmcmod:backpack`** pour les datapacks ; **Maj** pour un aperçu du contenu. Ingrédient de la recette **coffre de l’End de poche** à l’infusion.',
+      'bmcwiki.titleItemFood': 'Objets : baies, pommes & fiole d’XP',
+      'bmcwiki.bodyItemFood':
+        '**Baies violettes** sur **buisson** dans le Hollow Garden (nourriture + régén courte). **Baie dorée** récompense haut palier. **Pomme diamant** / **pomme diamant enchantée** façon gapple avec effets longs. **Fiole d’expérience scellée** pour stocker de l’XP (voir classe dédiée).',
+      'bmcwiki.titleItemUtility': 'Objets : utilitaires & butins rares',
+      'bmcwiki.bodyItemUtility':
+        '**Éclat du vide**, **corne mélodie**, **livre inconnu**, **disque** (*Beyond The Enderman*), **seau de liquide d’expérience**, **tendril de warden** (butin Warden), **cœur de golem de l’End**, **fragment fossile** (débris fossiles).',
+      'bmcwiki.titleBlocksStorage': 'Blocs : coffre enchanté & four en pierre de l’End',
+      'bmcwiki.bodyBlocksStorage':
+        'Le **coffre enchanté** accumule de l’**XP** avec affichage HUD, **améliorations** (max **3**) et bonus sur ticks ; l’**amélioration** se consomme jusqu’au plafond. Le **four en pierre de l’End** est un four thématique. Recettes dans `data/bmcmod/recipe/`.',
+      'bmcwiki.titleBlocksHollow': 'Blocs : bois creux (Hollow Garden)',
+      'bmcwiki.bodyBlocksHollow':
+        'Famille **hollow** : bûches, écorcées, **planches**, escaliers, dalles, barrières, portillon, porte, trappe, plaque, bouton, **tonneau**, **bibliothèque**, **feuilles**, **pousse**. Biomes **Hollow Garden** avec **herbe creuse** et **buisson** de baies.',
+      'bmcwiki.titleBlocksSunwood': 'Blocs : sunwood (Solea Grove)',
+      'bmcwiki.bodyBlocksSunwood':
+        '**Sunwood** : bûches, bois, planches, set de construction, **panneaux** et **enseignes suspendues**, feuilles, pousse, **sunbloom**, **mousse de surface**, **bateau** et **bateau coffre**.',
+      'bmcwiki.titleMetaRarity': 'Interface : raretés & infobulles',
+      'bmcwiki.bodyMetaRarity':
+        'Le mod ajoute des paliers **BmcMod** (Commun → **Fragmenté**) pour bordures et infobulles (`BmcModRarity`, `RarityTooltipHandler`). Les **bâtons de test** servent d’aperçu — pas une progression joueur.',
+      'bmcwiki.titleProgressFossil': 'Progression : débris fossiles & XP liquide',
+      'bmcwiki.bodyProgressFossil':
+        'Les **débris fossiles** sont un minerai très résistant en profondeur (`ModBlocks.FOSSIL_DEBRIS`) ; ils mènent aux **fragments fossiles**. Le **liquide d’expérience** en End alimente le **Radiant slime** — voir `data/bmcmod/worldgen` et les fluides dans le code.',
+      'bmcwiki.copperFullBody':
+        'L’**armure cuivre complète** et les **outils** (épée à houe) existent en plus du casque ; stats entre pierre et fer (`CopperEquipment`).',
+      'bmcwiki.itemCrystalsMorph':
+        '**Cristal de métamorphose** : tuer une créature avec le cristal en **main secondaire** pour stocker la forme ; **maintenir utiliser** pour se transformer (âme consommée). **Cristal de capture** : flux voisin avec plus de durabilité. Les deux se **craftent à l’infusion** avec un cristal d’âmes approvisionné.',
+      'bmcwiki.enderiteScrapTitle': 'Fragment d’enderite',
+      'bmcwiki.enderiteScrapBody':
+        'Casse le minerai **Forgotten Debris** dans l’End (esprit proche des débris antiques). Fonds ou haut fourneau → **fragment d’enderite**.',
+      'bmcwiki.enderiteIngotTitle': 'Lingot d’enderite (sans forme)',
+      'bmcwiki.craftShapelessEnderiteIngotAria':
+        'Recette sans forme (affichée en grille 3×3) : quatre fragments d’enderite et quatre diamants → un lingot — placement libre.',
+      'bmcwiki.legendEnderiteIngot':
+        'Textures **diamant** vanilla Minecraft **1.21.1** (miroir communautaire). Textures du mod copiées depuis ton pack **bmcmod**.',
+      'bmcwiki.enderiteBlockTitle': 'Bloc d’enderite',
+      'bmcwiki.craftEnderiteBlockAria': 'Forme 3×3 : neuf lingots d’enderite pour un bloc d’enderite',
+      'bmcwiki.legendEnderiteBlock': 'Neuf **lingots d’enderite** → un **bloc** (stockage).',
+      'bmcwiki.enderiteTemplateTitle': 'Gabarit de forge d’enderite (duplication)',
+      'bmcwiki.enderiteTemplateBody':
+        'Le **gabarit de forge** « upgrade enderite » est requis au **tableau de forgeron**. Comme les autres gabarits : un gabarit + pierre de l’End + diamants → **deux** gabarits.',
+      'bmcwiki.craftTemplateDupAria': 'Recette en forme pour dupliquer le gabarit d’upgrade enderite',
+      'bmcwiki.legendTemplateDup':
+        'Un **gabarit d’upgrade enderite**, **pierre de l’End** au centre, **diamants** autour → **deux** gabarits.',
+      'bmcwiki.enderiteSmithingTitle': 'Forge (netherite → enderite)',
+      'bmcwiki.enderiteSmithingBody':
+        'Au **tableau de forgeron** : gabarit, pièce en **netherite**, **lingot d’enderite** dans la case addition.',
+      'bmcwiki.smithingEnderiteAria': 'Schéma de transformation : gabarit + base netherite + lingot d’enderite',
+      'bmcwiki.smithSlotTemplate': 'Gabarit',
+      'bmcwiki.smithSlotBase': 'Base',
+      'bmcwiki.smithSlotAdd': 'Ajout',
+      'bmcwiki.legendSmithingLetters':
+        '**Tableau de forgeron** : gabarit + pièce **netherite** + **lingot d’enderite** → version **enderite** (exemple : **épée netherite** → **épée enderite**).',
+      'bmcwiki.enderiteSmithingList1':
+        '**Outils & armes** : même logique pour épée, pioche, hache, pelle et houe.',
+      'bmcwiki.enderiteSmithingList2':
+        '**Armure & boucliers** : casque, plastron, jambières, bottes et **bouclier d’enderite** suivent la même transformation.',
+      'bmcwiki.emeraldIntro':
+        'L’**émeraude** sert de matériau pour outils et armure, calés comme **alternative au diamant** avec un peu plus de protection totale.',
+      'bmcwiki.emeraldSetTitle': 'Bonus armure complète',
+      'bmcwiki.emeraldSetBody':
+        'Avec les **quatre** pièces d’armure en émeraude, tu gardes **Héros du village I** en durée **infinie** — pratique pour le **commerce** avec les villageois.',
+      'bmcwiki.emeraldToolsBody':
+        'Les outils utilisent le palier émeraude du mod (recettes type vanilla avec émeraudes — voir en jeu / JEI).',
+      'bmcwiki.copperIntro':
+        'Le **cuivre** : outils **entre pierre et fer** ; armure un peu **sous le fer** en points totaux, économique en lingots et pépites.',
+      'bmcwiki.copperHelmetTitle': 'Casque en cuivre (orages)',
+      'bmcwiki.copperHelmetBody':
+        'Pendant un **orage**, s’il **pleut**, que tu vois le **ciel** et que tu portes le **casque en cuivre**, le mod peut faire tomber la **foudre** près de toi en surface (tick rare).',
+      'bmcwiki.nebrithIntro':
+        'Le **nebrith** est un cristal violet : **bourgeons** sur **nebrith en bourgeon** jusqu’aux grappes. Casser les grappes donne des **éclats** ; les éclats craftent blocs et machines.',
+      'bmcwiki.nebrithShardsTitle': 'Éclats & croissance',
+      'bmcwiki.nebrithShardsBody':
+        'Comportement proche de l’**améthyste** : bon outil, Toucher de soie selon tables de butin. Les éclats servent aux crafts « nebrith » (bloc, longue-vue, vitre teintée, etc.).',
+      'bmcwiki.nebrithBlockTitle': 'Bloc de nebrith',
+      'bmcwiki.craftNebrithBlockAria':
+        'Quatre éclats en carré 2×2 (affiché dans une grille 3×3) → bloc de nebrith',
+      'bmcwiki.legendNebrithBlock': 'Quatre **éclats de nebrith** (2×2) → **bloc de nebrith**.',
+      'bmcwiki.relicTableTitle': 'Table de reliques',
+      'bmcwiki.craftRelicTableAria': 'Forme : purpur, pierre de l’End, éclat central → table de reliques',
+      'bmcwiki.legendRelicTable':
+        '**Purpur**, **pierre de l’End**, un **éclat de nebrith** au centre → **table de reliques** (texture du dessus comme icône).',
+      'bmcwiki.infusionIntroFull':
+        'La **table d’infusion** a une interface : un slot pour le **cristal d’âmes**, une grille **2×2** pour les ingrédients (les quantités peuvent être réparties sur plusieurs cases ; aucun autre type d’objet — voir `InfusionRecipe.java`). Quand la recette correspond, les **âmes du cristal** paient le **coût en âmes** et le résultat apparaît. Les recettes sont listées dans **`InfusionRecipes.java`**.',
+      'bmcwiki.infusionRecipesTitle': 'Recettes d’infusion (en jeu)',
+      'bmcwiki.infusionRecipesLead':
+        'Chaque fiche donne les **totaux** à réunir sur la grille 2×2. **L’ordre des cases importe peu** tant qu’il n’y a pas d’objet en trop.',
+      'bmcwiki.infuseLightningBowTitle': 'Arc foudre',
+      'bmcwiki.infuseLightningBowSoul': 'Coût en âmes : **72**',
+      'bmcwiki.infuseMorphTitle': 'Cristal de métamorphose',
+      'bmcwiki.infuseMorphSoul': 'Coût en âmes : **56**',
+      'bmcwiki.infuseCaptureTitle': 'Cristal de capture',
+      'bmcwiki.infuseCaptureSoul': 'Coût en âmes : **56**',
+      'bmcwiki.infuseSkyBootsTitle': 'Bottes du ciel',
+      'bmcwiki.infuseSkyBootsSoul': 'Coût en âmes : **120**',
+      'bmcwiki.infuseEchoStaffTitle': 'Bâton d’écho',
+      'bmcwiki.infuseEchoStaffSoul': 'Coût en âmes : **120**',
+      'bmcwiki.infuseFlameStaffTitle': 'Bâton de flammes',
+      'bmcwiki.infuseFlameStaffSoul': 'Coût en âmes : **100**',
+      'bmcwiki.infuseEndStaffTitle': 'Bâton de l’End',
+      'bmcwiki.infuseEndStaffSoul': 'Coût en âmes : **110**',
+      'bmcwiki.infuseDragonStaffTitle': 'Bâton du dragon',
+      'bmcwiki.infuseDragonStaffSoul': 'Coût en âmes : **115**',
+      'bmcwiki.infusePocketEnderTitle': 'Coffre de l’End de poche',
+      'bmcwiki.infusePocketEnderSoul': 'Coût en âmes : **5**',
+      'bmcwiki.titleItemCrystals': 'Objets : Cristaux d’âmes',
+      'bmcwiki.itemCrystalsIntro':
+        'Le **cristal d’âmes** sert à capturer des âmes (flux main secondaire du mod). Les cristaux **métamorphose** et **capture** sont des crafts d’infusion de haut niveau.',
+      'bmcwiki.itemCrystalsBody':
+        'Le **cristal fissuré** apparaît quand la durabilité est épuisée. Tout se relie à la **table d’infusion** et aux systèmes de métamorphose.',
+      'bmcwiki.titleItemLightningBow': 'Objets : Arc foudre',
+      'bmcwiki.itemLightningBowIntro':
+        'L’**arc foudre** est une arme à distance **Exotique** : tir plus serré, longue portée, éclair à l’impact (voir l’infobulle en jeu).',
+      'bmcwiki.itemLightningBowBody':
+        'Se fabrique uniquement par **infusion** — voir la fiche ci-dessous et le lien **netherite** pour les lingots.',
+      'bmcwiki.titleBlocksStone': 'Blocs : pierres claire & sombre',
+      'bmcwiki.blocksStoneBody':
+        'La **pierre claire** et ses variantes apparaissent en **Overworld** ; la **pierre sombre** et le poli suivent la logique **blackstone** du Nether. Escaliers, dalles, murs, boutons et plaques reprennent les schémas vanilla / tailleur (voir JEI).',
+      'bmcwiki.titleBlocksEnd': 'Blocs : End & rubis',
+      'bmcwiki.blocksEndBody':
+        '**Forgotten Debris** (End, très résistant) → **fragments d’enderite**. **Minerai de rubis** + **ardoise** en Overworld → gemme et **bloc de rubis**. **Sable de l’End**, **ancre de l’End** (règles d’ancre, valide dans l’End), **torche du vide** / **lanterne du vide**, plante **Jaerys**, **herbe creuse** (sol du Hollow Garden) : le kit surface de l’aperçu ci-dessus.',
+      'bmcwiki.titleMobsOverview': 'Créatures : aperçu',
+      'bmcwiki.mobsOverviewIntro': 'Œufs et entités enregistrés par le mod (noms issus de `fr_fr.json`) :',
+      'bmcwiki.mobBlink': '**Blink** — créature de l’End (œuf disponible).',
+      'bmcwiki.mobEndGolem': '**Golem de l’End** — gardien (œuf).',
+      'bmcwiki.mobEndling': '**Endling** — créature de l’End (œuf).',
+      'bmcwiki.mobDiamondGolem': '**Golem de diamant** — variante (œuf).',
+      'bmcwiki.mobIllusioner': '**Illusionniste** — type vanilla exposé avec un œuf dans le mod.',
+      'bmcwiki.mobChargedCreeper': '**Creeper chargé** — œuf pour tests / créatif.',
+      'bmcwiki.titleWorldBiomes': 'Monde : biomes',
+      'bmcwiki.worldBiomesBody':
+        '**Hollow Garden** : bois creux, herbe creuse, baies violettes, ambiance proche de l’End. **Solea Grove** : sunwood, sunbloom, mousse de surface. Voir `data/bmcmod/worldgen/biome` et les arbres `placed_feature` / `configured_feature`, plus les clés `biome.bmcmod.*`.',
+      'bmcwiki.craftInfusionAria': 'Recette en forme pour la table d’infusion',
+      'bmcwiki.legendInfusion':
+        '**Livre**, **émeraudes**, **briques de pierre de l’End** comme dans la recette en forme → **table d’infusion** (texture du dessus).',
+      'bmcwiki.infusionNote':
+        'Les coûts et ingrédients suivent **`InfusionRecipes.java`** dans ta copie du mod — ajuste là si tu changes la balance.',
+      'bmcwiki.allStaffIntro':
+        'Les **bâtons** magiques consomment durabilité / charges ; plusieurs utilisent **Ctrl + clic droit** pour **changer de mode** (voir les infobulles en jeu).',
+      'bmcwiki.staffDragon':
+        '**Bâton du dragon** — Mode 1 : charge puis lâche une **boule de feu** de dragon. Mode 2 : maintien, **souffle** sur la ligne de mire. **Ctrl + utiliser** change le mode.',
+      'bmcwiki.staffEcho':
+        '**Bâton d’écho** — **Six** charges soniques. Maintien ~**5 s** puis **relâcher** pour l’onde (esprit **Warden**).',
+      'bmcwiki.staffFlame':
+        '**Bâton de flammes** — Maintien : **lance-flammes** ; ennemis en feu : **dégâts bonus**. La durabilité **baisse pendant le tir**.',
+      'bmcwiki.staffEnd':
+        '**Bâton de l’End** — Trois modes : **perle chargée**, **téléport cible** (créature visée), **fuite aléatoire**. **Ctrl + utiliser** pour cycler ; perle en maintien → relâcher.',
+      'bmcwiki.radiantIntro':
+        'Le **Radiant slime** est un slime custom lié au **liquide d’expérience** dans l’écosystème de l’End.',
+      'bmcwiki.radiantBullet1': 'Plus résistant qu’un slime classique ; peut **pomper de l’XP** au joueur en combat.',
+      'bmcwiki.radiantBullet2':
+        'Spawns liés à la **nuit / lacs** près du fluide ; certains retournent au **lac au lever du jour** (logique du mod).',
+      'bmcwiki.radiantBullet3': 'Œuf d’apparition pour le créatif / tests ; le monde suit les règles configurées dans le mod.',
+      'bmcwiki.backBmc': '← Retour au teaser BMC',
+      'bmcwiki.backHome': '← Accueil',
       'footer.legal':
         'Non affilié Mojang AB ni Microsoft · <a href="#" class="js-legal-modal-open">Mentions & confidentialité</a> · <a href="/content/">Plan du site</a> · <a href="/license/" class="footer-license-pill" target="_blank" rel="noopener noreferrer">Licence SPL</a> · <a href="https://discord.gg/jVGq5aZ6Wc" target="_blank" rel="noopener noreferrer">Discord</a>',
     },
@@ -711,7 +1408,11 @@
           ? t('page404.metaDescription')
           : profile === 'contentHub'
             ? t('content.metaDescription')
-            : t('meta.description')
+            : profile === 'betterminecraft'
+              ? t('betterminecraft.metaDescription')
+              : profile === 'betterminecraft-wiki'
+                ? t('bmcwiki.metaDescription')
+                : t('meta.description')
     const shareTitle =
       profile === 'license'
         ? t('license.pageTitle')
@@ -719,7 +1420,11 @@
           ? t('page404.docTitle')
           : profile === 'contentHub'
             ? t('content.pageTitle')
-            : t('page.title')
+            : profile === 'betterminecraft'
+              ? t('betterminecraft.pageTitle')
+              : profile === 'betterminecraft-wiki'
+                ? t('bmcwiki.pageTitle')
+                : t('page.title')
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', desc)
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', desc)

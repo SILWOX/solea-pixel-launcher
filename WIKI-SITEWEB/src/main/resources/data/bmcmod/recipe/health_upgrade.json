@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IPI",
+    "III",
+    "INI"
+  ],
+  "key": {
+    "P": {
+      "item": "bmcmod:upgrade_plate"
+    },
+    "N": {
+      "item": "bmcmod:nebrith_shard"
+    },
+    "I": {
+      "item": "minecraft:glistering_melon_slice"
+    }
+  },
+  "result": {
+    "id": "bmcmod:health_upgrade",
+    "count": 1
+  }
+}

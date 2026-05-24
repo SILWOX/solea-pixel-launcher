@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/upgrade_table_mastery",
+  "display": {
+    "icon": {
+      "id": "bmcmod:infusion_table"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.infusion_table_mastery.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.infusion_table_mastery.description"
+    },
+    "frame": "task",
+    "x": 6.0,
+    "y": -1.0
+  },
+  "criteria": {
+    "has_infusion_table": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:infusion_table"
+          }
+        ]
+      }
+    }
+  }
+}

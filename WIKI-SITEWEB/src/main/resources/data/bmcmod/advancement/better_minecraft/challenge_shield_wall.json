@@ -1,0 +1,42 @@
+{
+  "parent": "bmcmod:better_minecraft/upgrade_overdrive",
+  "display": {
+    "icon": {
+      "id": "bmcmod:enderite_shield"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.challenge_shield_wall.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.challenge_shield_wall.description"
+    },
+    "frame": "challenge",
+    "x": 11.0,
+    "y": -1.0
+  },
+  "criteria": {
+    "diamond_shield": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:diamond_shield"}]}
+    },
+    "netherite_shield": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:netherite_shield"}]}
+    },
+    "enderite_shield": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:enderite_shield"}]}
+    }
+  },
+  "requirements": [
+    ["diamond_shield"],
+    ["netherite_shield"],
+    ["enderite_shield"]
+  ],
+  "rewards": {
+    "experience": 520,
+    "loot": [
+      "bmcmod:advancement_rewards/challenge_shield_wall"
+    ]
+  }
+}

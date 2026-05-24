@@ -19,7 +19,7 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 85% 45% at 50% -8%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 18%, transparent), transparent 55%),
+    radial-gradient(ellipse 85% 45% at 50% -8%, color-mix(in srgb, var(--accent-orange, #ffd54a) 18%, transparent), transparent 55%),
     linear-gradient(168deg, #100b14 0%, var(--bg-void, #07050c) 52%, #06040a 100%);
 }
 
@@ -28,12 +28,12 @@
   z-index: 3;
   flex-shrink: 0;
   background: linear-gradient(180deg, rgba(18, 12, 22, 0.98) 0%, rgba(10, 8, 14, 0.97) 100%);
-  border-bottom: 1px solid color-mix(in srgb, var(--accent-orange, #ff6a1a) 35%, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-orange, #ffd54a) 35%, rgba(255, 255, 255, 0.08));
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
 
 .log-console-titlebar-product {
-  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 45%, rgba(255, 255, 255, 0.82)) !important;
+  color: color-mix(in srgb, var(--accent-orange, #ffd54a) 45%, rgba(255, 255, 255, 0.82)) !important;
 }
 
 .log-console-titlebar-badge {
@@ -131,7 +131,7 @@
 }
 
 .log-console-chip input {
-  accent-color: var(--accent, #ff6a1a);
+  accent-color: var(--accent, #ffd54a);
 }
 
 .log-console-seg-label {
@@ -166,7 +166,7 @@
 }
 
 .log-console-seg-btn.is-active {
-  background: color-mix(in srgb, var(--accent-orange, #ff6a1a) 28%, rgba(0, 0, 0, 0.2));
+  background: color-mix(in srgb, var(--accent-orange, #ffd54a) 28%, rgba(0, 0, 0, 0.2));
   color: #fff;
 }
 
@@ -185,7 +185,7 @@
 }
 
 .log-console-search:focus {
-  border-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, #fff);
+  border-color: color-mix(in srgb, var(--accent-orange, #ffd54a) 55%, #fff);
   box-shadow: 0 0 0 2px rgba(255, 106, 26, 0.15);
 }
 
@@ -232,7 +232,7 @@
   line-height: 1.55;
   letter-spacing: 0.01em;
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 45%, #666) rgba(0, 0, 0, 0.35);
+  scrollbar-color: color-mix(in srgb, var(--accent-orange, #ffd54a) 45%, #666) rgba(0, 0, 0, 0.35);
   background: rgba(4, 3, 8, 0.55);
   border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -286,7 +286,7 @@
 
 [data-theme='light'] .log-console-root::before {
   background:
-    radial-gradient(ellipse 85% 45% at 50% -8%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 12%, transparent), transparent 55%),
+    radial-gradient(ellipse 85% 45% at 50% -8%, color-mix(in srgb, var(--accent-orange, #ffd54a) 12%, transparent), transparent 55%),
     linear-gradient(168deg, #f0eef5 0%, var(--bg-void, #e4e4e8) 100%);
 }
 

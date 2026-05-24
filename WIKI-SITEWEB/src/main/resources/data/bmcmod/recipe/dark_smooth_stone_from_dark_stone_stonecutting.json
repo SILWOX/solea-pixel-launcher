@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "bmcmod:dark_stone"
+  },
+  "result": {
+    "id": "bmcmod:dark_smooth_stone"
+  }
+}

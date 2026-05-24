@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "bmcmod:block/dark_smooth_stone_slab"
+    },
+    "type=double": {
+      "model": "bmcmod:block/dark_smooth_stone_slab_double"
+    },
+    "type=top": {
+      "model": "bmcmod:block/dark_smooth_stone_slab_top"
+    }
+  }
+}

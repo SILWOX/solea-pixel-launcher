@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "bmcmod:block/hollow_slab"
+    },
+    "type=double": {
+      "model": "bmcmod:block/hollow_planks"
+    },
+    "type=top": {
+      "model": "bmcmod:block/hollow_slab_top"
+    }
+  }
+}

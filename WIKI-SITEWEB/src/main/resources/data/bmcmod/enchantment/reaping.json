@@ -1,0 +1,12 @@
+{
+  "description": {"translate": "enchantment.bmcmod.reaping"},
+  "supported_items": "#bmcmod:scythes",
+  "exclusive_set": "#bmcmod:scythe_partner_enchant_excludes_whirlwind",
+  "weight": 10,
+  "max_level": 5,
+  "min_cost": {"base": 2, "per_level_above_first": 10},
+  "max_cost": {"base": 52, "per_level_above_first": 14},
+  "anvil_cost": 3,
+  "slots": ["hand"],
+  "effects": {}
+}

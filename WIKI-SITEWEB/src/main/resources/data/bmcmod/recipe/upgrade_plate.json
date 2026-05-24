@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EEE",
+    "EEE",
+    "EEE"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:end_stone"
+    }
+  },
+  "result": {
+    "id": "bmcmod:upgrade_plate",
+    "count": 1
+  }
+}

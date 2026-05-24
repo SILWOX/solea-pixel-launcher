@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "bmcmod:quiver",
+  "key": {
+    "U": { "tag": "bmcmod:quiver_leather" },
+    "A": { "item": "minecraft:arrow" },
+    "C": { "item": "minecraft:chest" }
+  },
+  "pattern": [
+    "UAU",
+    "UCU",
+    "UUU"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bmcmod:quiver"
+  }
+}

@@ -4,8 +4,11 @@ export type ModpackId =
   | 'mythic-trials-1'
   | 'mythic-trials-2'
   | 'aeloria'
+  | 'solea-optimised'
 
-export type ModpackLoader = 'neoforge' | 'forge'
+export type ModpackLoader = 'neoforge' | 'forge' | 'fabric'
+
+export type ModrinthInstallKind = 'modpack' | 'mod'
 
 export interface ModpackSpec {
   id: ModpackId
@@ -15,6 +18,10 @@ export interface ModpackSpec {
   gameVersion: string
   /** Loader Modrinth + minecraft-java-core */
   loader: ModpackLoader
+  /** modpack = .mrpack ; mod = .jar unique (Better MC sur Modrinth). */
+  modrinthKind?: ModrinthInstallKind
+  /** Build loader de repli si absent du pack / du .jar (Fabric, Forge). NeoForge : détecté auto. */
+  loaderBuild?: string
   /** Version Java conseillée (affichage / défaut réglages) */
   recommendedJava: string
   /**
@@ -69,18 +76,31 @@ export const MODPACKS: ModpackSpec[] = [
   },
   {
     id: 'aeloria',
-    displayName: 'AELORIA',
-    projectSlug: 'aeloria',
+    displayName: 'Better MC',
+    projectSlug: 'bmcmod',
     gameVersion: '1.21.1',
     loader: 'neoforge',
+    modrinthKind: 'mod',
     recommendedJava: '21',
     discordLargeImageKey: 'solea_pack_aeloria',
+    discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
+  },
+  {
+    id: 'solea-optimised',
+    displayName: 'SOLEA OPTIMISED',
+    projectSlug: 'solea-optimised',
+    gameVersion: '1.21.11',
+    loader: 'fabric',
+    loaderBuild: '0.18.4',
+    recommendedJava: '21',
+    discordLargeImageKey: 'solea_pack_optimised',
     discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
   }
 ]
 
 /** Page Modrinth du modpack (slug projet). */
 export function modrinthModpackPageUrl(spec: ModpackSpec): string {
+  if (spec.id === 'aeloria') return `https://modrinth.com/mod/${spec.projectSlug}`
   return `https://modrinth.com/modpack/${spec.projectSlug}`
 }
 

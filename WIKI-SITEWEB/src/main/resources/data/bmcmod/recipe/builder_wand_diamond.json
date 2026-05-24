@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "PDP",
+    "DWD",
+    "ERE"
+  ],
+  "key": {
+    "P": { "item": "minecraft:prismarine_bricks" },
+    "D": { "item": "minecraft:diamond_block" },
+    "W": { "item": "bmcmod:builder_wand_gold" },
+    "E": { "item": "minecraft:experience_bottle" },
+    "R": { "item": "minecraft:amethyst_shard" }
+  },
+  "result": {
+    "id": "bmcmod:builder_wand_diamond",
+    "count": 1
+  }
+}

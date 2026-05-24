@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_hoe",
+    "bmcmod:emerald_hoe",
+    "bmcmod:enderite_hoe"
+  ]
+}

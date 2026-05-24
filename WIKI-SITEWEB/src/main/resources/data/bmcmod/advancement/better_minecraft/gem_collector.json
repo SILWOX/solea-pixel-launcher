@@ -1,0 +1,43 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": {
+      "id": "bmcmod:ruby"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.gem_collector.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.gem_collector.description"
+    },
+    "frame": "task",
+    "x": 2.0,
+    "y": 1.4
+  },
+  "criteria": {
+    "has_ruby": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:ruby"
+          }
+        ]
+      }
+    },
+    "has_opal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:opal_shard"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_ruby"],
+    ["has_opal"]
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "boreal_ingot",
+  "ingredients": [
+    { "item": "bmcmod:boreal_fragment" },
+    { "item": "bmcmod:boreal_fragment" },
+    { "item": "bmcmod:boreal_fragment" },
+    { "item": "bmcmod:boreal_fragment" },
+    { "item": "bmcmod:fossil_scrap" },
+    { "item": "bmcmod:fossil_scrap" },
+    { "item": "bmcmod:fossil_scrap" },
+    { "item": "bmcmod:fossil_scrap" }
+  ],
+  "result": {
+    "id": "bmcmod:boreal_ingot",
+    "count": 1
+  }
+}

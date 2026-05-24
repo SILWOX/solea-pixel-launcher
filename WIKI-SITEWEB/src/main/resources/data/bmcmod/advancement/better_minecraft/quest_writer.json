@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/shape_shifter",
+  "display": {
+    "icon": {
+      "id": "bmcmod:quest_log"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.quest_writer.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.quest_writer.description"
+    },
+    "frame": "task",
+    "x": 10.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_quest_log": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:quest_log"
+          }
+        ]
+      }
+    }
+  }
+}

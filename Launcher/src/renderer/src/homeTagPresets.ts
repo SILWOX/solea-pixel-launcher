@@ -41,6 +41,8 @@ export function homeTagsForModpack(modpackId: string): HomeTagPresetId[] {
     tags.push('huge')
   } else if (modpackId === 'aeloria') {
     tags.push('news', 'medium')
+  } else if (modpackId === 'solea-optimised') {
+    tags.push('featured', 'vanilla', 'small')
   }
 
   return tags

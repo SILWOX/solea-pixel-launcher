@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_chestplate",
+    "bmcmod:emerald_chestplate",
+    "bmcmod:enderite_chestplate",
+    "bmcmod:boreal_chestplate",
+    "bmcmod:obsidian_chestplate",
+    "bmcmod:shulker_chestplate"
+  ]
+}

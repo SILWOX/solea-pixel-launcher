@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_sword",
+    "bmcmod:emerald_sword",
+    "bmcmod:enderite_sword",
+    "bmcmod:boreal_sword"
+  ]
+}

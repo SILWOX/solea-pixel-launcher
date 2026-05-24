@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "CEC",
+    "EWE",
+    "ODO"
+  ],
+  "key": {
+    "C": { "item": "minecraft:crying_obsidian" },
+    "E": { "item": "minecraft:emerald_block" },
+    "W": { "item": "bmcmod:builder_wand_diamond" },
+    "O": { "item": "minecraft:obsidian" },
+    "D": { "item": "minecraft:dragon_breath" }
+  },
+  "result": {
+    "id": "bmcmod:builder_wand_emerald",
+    "count": 1
+  }
+}

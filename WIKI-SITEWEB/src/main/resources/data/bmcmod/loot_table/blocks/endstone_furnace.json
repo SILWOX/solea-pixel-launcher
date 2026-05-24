@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "bmcmod:endstone_furnace"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "bmcmod:blocks/endstone_furnace"
+}

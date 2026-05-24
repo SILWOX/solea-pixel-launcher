@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "LLL",
+    "LSL",
+    "SSS"
+  ],
+  "key": {
+    "L": { "item": "bmcmod:light_stone" },
+    "S": { "item": "minecraft:sand" }
+  },
+  "result": {
+    "id": "minecraft:end_stone",
+    "count": 1
+  }
+}

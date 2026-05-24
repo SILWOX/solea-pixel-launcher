@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "rotation=0": { "model": "bmcmod:block/skeleton_villager_skull" },
+    "rotation=1": { "model": "bmcmod:block/skeleton_villager_skull" },
+    "rotation=2": { "model": "bmcmod:block/skeleton_villager_skull" },
+    "rotation=3": { "model": "bmcmod:block/skeleton_villager_skull" },
+    "rotation=4": { "model": "bmcmod:block/skeleton_villager_skull", "y": 90 },
+    "rotation=5": { "model": "bmcmod:block/skeleton_villager_skull", "y": 90 },
+    "rotation=6": { "model": "bmcmod:block/skeleton_villager_skull", "y": 90 },
+    "rotation=7": { "model": "bmcmod:block/skeleton_villager_skull", "y": 90 },
+    "rotation=8": { "model": "bmcmod:block/skeleton_villager_skull", "y": 180 },
+    "rotation=9": { "model": "bmcmod:block/skeleton_villager_skull", "y": 180 },
+    "rotation=10": { "model": "bmcmod:block/skeleton_villager_skull", "y": 180 },
+    "rotation=11": { "model": "bmcmod:block/skeleton_villager_skull", "y": 180 },
+    "rotation=12": { "model": "bmcmod:block/skeleton_villager_skull", "y": 270 },
+    "rotation=13": { "model": "bmcmod:block/skeleton_villager_skull", "y": 270 },
+    "rotation=14": { "model": "bmcmod:block/skeleton_villager_skull", "y": 270 },
+    "rotation=15": { "model": "bmcmod:block/skeleton_villager_skull", "y": 270 }
+  }
+}

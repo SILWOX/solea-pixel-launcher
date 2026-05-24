@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "DBD",
+    "DGD",
+    "DDD"
+  ],
+  "key": {
+    "D": { "item": "minecraft:diamond" },
+    "B": { "item": "minecraft:diamond_block" },
+    "G": { "item": "bmcmod:gold_backpack" }
+  },
+  "result": {
+    "id": "bmcmod:diamond_backpack",
+    "count": 1
+  }
+}

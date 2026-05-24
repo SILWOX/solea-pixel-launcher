@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:upgrade_plate",
+    "bmcmod:armor_upgrade",
+    "bmcmod:discretion_upgrade",
+    "bmcmod:frost_walk_upgrade",
+    "bmcmod:health_upgrade",
+    "bmcmod:luck_upgrade",
+    "bmcmod:range_upgrade",
+    "bmcmod:speed_upgrade",
+    "bmcmod:step_upgrade",
+    "bmcmod:strenght_upgrade",
+    "bmcmod:dash_upgrade",
+    "bmcmod:rage_upgrade",
+    "bmcmod:heal_upgrade",
+    "bmcmod:critical_upgrade",
+    "bmcmod:swim_upgrade",
+    "bmcmod:camouflage_upgrade"
+  ]
+}

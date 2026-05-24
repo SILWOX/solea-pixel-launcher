@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "bmcmod:boreal_fragment"
+    },
+    "B": {
+      "item": "minecraft:basalt"
+    },
+    "D": {
+      "item": "bmcmod:fossil_debris"
+    }
+  },
+  "pattern": [
+    "BDB",
+    "DFD",
+    "BDB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bmcmod:boreal_upgrade_smithing_template"
+  }
+}

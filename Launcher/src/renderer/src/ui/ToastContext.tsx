@@ -9,12 +9,22 @@ import {
   type ReactNode
 } from 'react'
 import { useI18n } from '../i18n/I18nContext'
+import './toast-v3.css'
 
 export type ToastKind = 'info' | 'success' | 'error'
 
 export type ToastAction = { label: string; onClick: () => void }
 
-type ToastItem = { id: number; message: string; kind: ToastKind; action?: ToastAction }
+const MAX_TOASTS = 4
+
+type ToastItem = {
+  id: number
+  message: string
+  kind: ToastKind
+  action?: ToastAction
+  /** Horodatage absolu (ms) de disparition automatique. */
+  expiresAt: number
+}
 
 type ToastCtx = {
   pushToast: (message: string, kind?: ToastKind, durationMs?: number, action?: ToastAction) => void
@@ -136,36 +146,156 @@ function ToastChrome({ item, onDismiss }: { item: ToastItem; onDismiss: () => vo
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<ToastItem[]>([])
+  const [stackHovered, setStackHovered] = useState(false)
   const idRef = useRef(0)
   const timers = useRef<Map<number, number>>(new Map())
+  const pausedRef = useRef(false)
+  const itemsRef = useRef<ToastItem[]>([])
+  itemsRef.current = items
 
-  const remove = useCallback((id: number) => {
-    const t = timers.current.get(id)
-    if (t) window.clearTimeout(t)
-    timers.current.delete(id)
-    setItems((prev) => prev.filter((x) => x.id !== id))
+  const clearTimer = useCallback((id: number) => {
+    const tid = timers.current.get(id)
+    if (tid !== undefined) {
+      window.clearTimeout(tid)
+      timers.current.delete(id)
+    }
   }, [])
+
+  const remove = useCallback(
+    (id: number) => {
+      clearTimer(id)
+      setItems((prev) => prev.filter((x) => x.id !== id))
+    },
+    [clearTimer]
+  )
+
+  const scheduleExpiry = useCallback(
+    (id: number, delayMs: number) => {
+      clearTimer(id)
+      const ms = Math.max(120, delayMs)
+      const tid = window.setTimeout(() => {
+        if (!pausedRef.current) remove(id)
+      }, ms) as unknown as number
+      timers.current.set(id, tid)
+    },
+    [clearTimer, remove]
+  )
+
+  const rescheduleAll = useCallback(() => {
+    const now = Date.now()
+    for (const item of itemsRef.current) {
+      const remaining = item.expiresAt - now
+      if (remaining <= 0) remove(item.id)
+      else scheduleExpiry(item.id, remaining)
+    }
+  }, [remove, scheduleExpiry])
+
+  const pauseAll = useCallback(() => {
+    if (pausedRef.current) return
+    pausedRef.current = true
+    const now = Date.now()
+    setItems((prev) =>
+      prev.map((item) => {
+        clearTimer(item.id)
+        const remaining = Math.max(0, item.expiresAt - now)
+        return { ...item, expiresAt: now + remaining }
+      })
+    )
+  }, [clearTimer])
+
+  const resumeAll = useCallback(() => {
+    if (!pausedRef.current) return
+    pausedRef.current = false
+    rescheduleAll()
+  }, [rescheduleAll])
 
   const pushToast = useCallback(
     (message: string, kind: ToastKind = 'info', durationMs = 5200, action?: ToastAction) => {
       const id = ++idRef.current
       const effectiveMs = action ? Math.max(durationMs, 16_000) : durationMs
-      setItems((prev) => [...prev.slice(-4), { id, message, kind, action }])
-      const tid = window.setTimeout(() => remove(id), effectiveMs) as unknown as number
-      timers.current.set(id, tid)
+      const expiresAt = Date.now() + effectiveMs
+      setItems((prev) => {
+        const next = [...prev, { id, message, kind, action, expiresAt }]
+        if (next.length <= MAX_TOASTS) return next
+        const trimmed = next.slice(-MAX_TOASTS)
+        const kept = new Set(trimmed.map((t) => t.id))
+        for (const old of prev) {
+          if (!kept.has(old.id)) clearTimer(old.id)
+        }
+        return trimmed
+      })
+      if (!pausedRef.current) scheduleExpiry(id, effectiveMs)
     },
-    [remove]
+    [scheduleExpiry, clearTimer]
   )
 
   const value = useMemo(() => ({ pushToast }), [pushToast])
 
+  const stacked = items.length > 1
+  const stackClass = [
+    'toast-stack',
+    items.length > 0 ? 'toast-stack--has-items' : '',
+    stacked ? 'toast-stack--stacked' : '',
+    stackHovered ? 'toast-stack--expanded' : ''
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <Ctx.Provider value={value}>
       {children}
-      <div className="toast-stack" aria-live="polite">
-        {items.map((item) => (
-          <ToastChrome key={item.id} item={item} onDismiss={() => remove(item.id)} />
-        ))}
+      <div
+        className={stackClass}
+        aria-live="polite"
+        style={
+          stacked
+            ? ({
+                ['--toast-stack-count' as string]: String(Math.min(items.length, MAX_TOASTS))
+              } as React.CSSProperties)
+            : undefined
+        }
+        onMouseEnter={() => {
+          setStackHovered(true)
+          pauseAll()
+        }}
+        onMouseLeave={() => {
+          setStackHovered(false)
+          resumeAll()
+        }}
+        onFocusCapture={() => {
+          setStackHovered(true)
+          pauseAll()
+        }}
+        onBlurCapture={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+            setStackHovered(false)
+            resumeAll()
+          }
+        }}
+      >
+        {stacked && !stackHovered ? (
+          <span className="toast-stack-count" aria-hidden>
+            {items.length}
+          </span>
+        ) : null}
+        {items.map((item, index) => {
+          const fromTop = items.length - 1 - index
+          const isFront = fromTop === 0
+          return (
+            <div
+              key={item.id}
+              className={`toast-stack-slot${isFront ? ' toast-stack-slot--front' : ''}`}
+              style={
+                {
+                  ['--toast-stack-index' as string]: String(index),
+                  ['--toast-from-top' as string]: String(fromTop)
+                } as React.CSSProperties
+              }
+            >
+              <ToastChrome item={item} onDismiss={() => remove(item.id)} />
+            </div>
+          )
+        })}
       </div>
     </Ctx.Provider>
   )

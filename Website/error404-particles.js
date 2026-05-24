@@ -285,8 +285,8 @@
             const dx = cr.x - f.x
             const dy = cr.y - f.y
             const dist = Math.hypot(dx, dy)
-            const falloff = dist * dist * 0.0011 + 42 + (1 - ramp) * 80
-            const pull = ((cr.w || 1) * (55 + 420 * ramp) * d) / falloff
+            const falloff = dist * dist * 0.00085 + 28 + (1 - ramp) * 55
+            const pull = ((cr.w || 1) * (88 + 620 * ramp) * d) / falloff
             if (dist > 0.01) {
               ax += (dx / dist) * pull
               ay += (dy / dist) * pull
@@ -610,6 +610,12 @@
   }
 
   window.Solea404Particles = {
+    /** Test / chapitres : déclenche la fin d’absorption comme si tous les 404 flottants avaient été aspirés */
+    forceAbsorb() {
+      if (!glitchSuction) return
+      float404.length = 0
+      maybeAbsorbedCallback()
+    },
     addCrack(clientX, clientY) {
       if (!glitchSuction || suctionCracks.length >= MAX_CRACKS) return
       const { x, y } = clientToCanvasLogical(clientX, clientY)

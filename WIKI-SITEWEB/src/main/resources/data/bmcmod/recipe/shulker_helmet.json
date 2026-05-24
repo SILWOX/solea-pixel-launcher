@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "XXX",
+    "X X"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:shulker_shell"
+    }
+  },
+  "result": {
+    "id": "bmcmod:shulker_helmet",
+    "count": 1
+  }
+}

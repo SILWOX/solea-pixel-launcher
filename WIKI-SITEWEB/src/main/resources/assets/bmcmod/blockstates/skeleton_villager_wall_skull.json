@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "bmcmod:block/skeleton_villager_wall_skull" },
+    "facing=south": { "model": "bmcmod:block/skeleton_villager_wall_skull", "y": 180 },
+    "facing=west": { "model": "bmcmod:block/skeleton_villager_wall_skull", "y": 270 },
+    "facing=east": { "model": "bmcmod:block/skeleton_villager_wall_skull", "y": 90 }
+  }
+}

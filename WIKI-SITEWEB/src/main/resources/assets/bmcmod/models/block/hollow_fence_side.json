@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/fence_side",
+  "textures": {
+    "texture": "bmcmod:block/hollow/hollow_planks"
+  }
+}

@@ -226,6 +226,23 @@ export async function installMrpackFromModrinth(options: {
   if (installProfile === 'server' && toInstall.length === 0) {
     toInstall = index.files.filter(shouldInstallForClient)
   }
+
+  // During updates, remove files managed by the previous lock that are no longer present
+  // in the new pack version. This avoids duplicate old mod jars after version bumps.
+  const previousLock = loadIntegrityLock(instanceRoot)
+  if (previousLock?.files?.length) {
+    const nextPaths = new Set(toInstall.map((f) => f.path.replace(/\\/g, '/').toLowerCase()))
+    for (const old of previousLock.files) {
+      const rel = old.path.replace(/\\/g, '/')
+      if (nextPaths.has(rel.toLowerCase())) continue
+      const abs = join(instanceRoot, rel.split('/').join(sep))
+      try {
+        rmSync(abs, { force: true })
+      } catch {
+        /* ignore stale file cleanup errors */
+      }
+    }
+  }
   const total = toInstall.length
   let completed = 0
   await runWithConcurrency(toInstall, downloadConcurrency, async (f) => {

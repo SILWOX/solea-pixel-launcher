@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/quest_writer",
+  "display": {
+    "icon": { "id": "bmcmod:melody_horn" },
+    "title": { "translate": "advancement.bmcmod.melody_caller.title" },
+    "description": { "translate": "advancement.bmcmod.melody_caller.description" },
+    "frame": "task",
+    "x": 11.0,
+    "y": 0.7
+  },
+  "criteria": {
+    "has_melody_horn": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:melody_horn" }] }
+    }
+  },
+  "rewards": { "experience": 30 }
+}

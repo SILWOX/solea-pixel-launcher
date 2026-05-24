@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/totem_bearer",
+  "display": {
+    "icon": { "id": "bmcmod:undead_invasion_banner" },
+    "title": { "translate": "advancement.bmcmod.invasion_herald.title" },
+    "description": { "translate": "advancement.bmcmod.invasion_herald.description" },
+    "frame": "task",
+    "x": 4.5,
+    "y": 4.5
+  },
+  "criteria": {
+    "banner": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:undead_invasion_banner" }] }
+    }
+  },
+  "rewards": { "experience": 80 }
+}

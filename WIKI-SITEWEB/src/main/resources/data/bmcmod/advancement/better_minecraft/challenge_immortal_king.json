@@ -1,0 +1,42 @@
+{
+  "parent": "bmcmod:better_minecraft/pocket_dimension",
+  "display": {
+    "icon": {
+      "id": "bmcmod:enchanted_diamond_apple"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.challenge_immortal_king.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.challenge_immortal_king.description"
+    },
+    "frame": "challenge",
+    "x": 11.0,
+    "y": 3.5
+  },
+  "criteria": {
+    "enchanted_diamond_apple": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:enchanted_diamond_apple"}]}
+    },
+    "boreal_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:boreal_ingot"}]}
+    },
+    "undead_totem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:undead_totem"}]}
+    }
+  },
+  "requirements": [
+    ["enchanted_diamond_apple"],
+    ["boreal_ingot"],
+    ["undead_totem"]
+  ],
+  "rewards": {
+    "experience": 700,
+    "loot": [
+      "bmcmod:advancement_rewards/challenge_immortal_king"
+    ]
+  }
+}

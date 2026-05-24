@@ -1,0 +1,8 @@
+{
+    "textures":  {
+                     "cross":  "bmcmod:block/gems/large_beryl_bud"
+                 },
+    "parent":  "minecraft:block/cross",
+    "render_type":  "cutout"
+}
+

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GGB",
+    "G T",
+    " HT"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_ingot" },
+    "B": { "item": "minecraft:gold_block" },
+    "T": { "item": "minecraft:stick" },
+    "H": { "item": "minecraft:golden_hoe" }
+  },
+  "result": { "id": "bmcmod:golden_scythe", "count": 1 }
+}

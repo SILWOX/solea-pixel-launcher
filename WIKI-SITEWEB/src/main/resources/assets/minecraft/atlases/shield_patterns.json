@@ -1,0 +1,10 @@
+{
+  "sources": [
+    { "type": "single", "resource": "entity/shield_base" },
+    { "type": "single", "resource": "entity/shield_base_nopattern" },
+    { "type": "directory", "source": "entity/shield", "prefix": "entity/shield/" },
+    { "type": "single", "resource": "bmcmod:entity/shield/diamond_shield" },
+    { "type": "single", "resource": "bmcmod:entity/shield/netherite_shield" },
+    { "type": "single", "resource": "bmcmod:entity/shield/enderite_shield" }
+  ]
+}

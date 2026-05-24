@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/gem_collector",
+  "display": {
+    "icon": { "id": "bmcmod:fossil_debris" },
+    "title": { "translate": "advancement.bmcmod.fossil_fragment.title" },
+    "description": { "translate": "advancement.bmcmod.fossil_fragment.description" },
+    "frame": "task",
+    "x": 4.0,
+    "y": 5.5
+  },
+  "criteria": {
+    "fossil": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:fossil_debris" }] }
+    }
+  },
+  "rewards": { "experience": 40 }
+}

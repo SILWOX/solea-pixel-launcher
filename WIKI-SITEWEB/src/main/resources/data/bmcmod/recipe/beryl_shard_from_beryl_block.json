@@ -1,0 +1,14 @@
+{
+    "ingredients":  [
+                        {
+                            "item":  "bmcmod:beryl_block"
+                        }
+                    ],
+    "category":  "building",
+    "result":  {
+                   "count":  4,
+                   "id":  "bmcmod:beryl_shard"
+               },
+    "type":  "minecraft:crafting_shapeless"
+}
+

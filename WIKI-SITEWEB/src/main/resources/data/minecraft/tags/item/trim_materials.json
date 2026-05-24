@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:enderite_ingot",
+    "bmcmod:ruby",
+    "bmcmod:fossil_scrap",
+    "bmcmod:nebrith_shard",
+    "bmcmod:opal_shard",
+    "bmcmod:topaz_shard",
+    "bmcmod:beryl_shard",
+    "minecraft:echo_shard"
+  ]
+}

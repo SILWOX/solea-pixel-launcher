@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/topaz_seeker",
+  "display": {
+    "icon": { "id": "bmcmod:beryl_shard" },
+    "title": { "translate": "advancement.bmcmod.beryl_seeker.title" },
+    "description": { "translate": "advancement.bmcmod.beryl_seeker.description" },
+    "frame": "task",
+    "x": 4.0,
+    "y": 1.4
+  },
+  "criteria": {
+    "has_beryl": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:beryl_shard" }] }
+    }
+  },
+  "rewards": { "experience": 35 }
+}

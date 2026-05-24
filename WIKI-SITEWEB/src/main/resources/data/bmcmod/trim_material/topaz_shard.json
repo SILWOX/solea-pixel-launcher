@@ -1,0 +1,10 @@
+{
+    "ingredient":  "bmcmod:topaz_shard",
+    "item_model_index":  0.52,
+    "asset_name":  "topaz",
+    "description":  {
+                        "translate":  "trim_material.bmcmod.topaz",
+                        "color":  "#81E2CD"
+                    }
+}
+

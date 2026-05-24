@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/end_arcanist",
+  "display": {
+    "icon": { "id": "bmcmod:wither_staff" },
+    "title": { "translate": "advancement.bmcmod.wither_arcanist.title" },
+    "description": { "translate": "advancement.bmcmod.wither_arcanist.description" },
+    "frame": "task",
+    "x": 11.0,
+    "y": 1.0
+  },
+  "criteria": {
+    "has_wither_staff": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:wither_staff" }] }
+    }
+  },
+  "rewards": { "experience": 55 }
+}

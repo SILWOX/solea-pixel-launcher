@@ -20,8 +20,8 @@ html[data-settings-shell='aether2'] .settings-nav {
   border-radius: 0 18px 18px 0;
   background: linear-gradient(
     165deg,
-    color-mix(in srgb, var(--bg-card) 55%, rgba(12, 10, 20, 0.92)) 0%,
-    color-mix(in srgb, var(--bg-sidebar) 88%, rgba(6, 6, 10, 0.95)) 100%
+    rgba(14, 14, 18, 0.96) 0%,
+    rgba(8, 8, 12, 0.98) 100%
   );
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, rgba(255, 255, 255, 0.04)),
@@ -32,8 +32,8 @@ html[data-settings-shell='aether2'] .settings-nav {
 html[data-theme='light'][data-settings-shell='aether2'] .settings-nav {
   background: linear-gradient(
     165deg,
-    color-mix(in srgb, #fff 92%, var(--accent-orange) 2%) 0%,
-    rgba(248, 248, 252, 0.98) 100%
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(244, 244, 248, 0.98) 100%
   );
   box-shadow:
     inset 0 0 0 1px rgba(0, 0, 0, 0.06),
@@ -92,8 +92,8 @@ html[data-settings-shell='aether2'] .settings-nav button.nav-item::before {
   border-radius: 99px;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--accent-orange) 90%, #fff),
-    color-mix(in srgb, var(--accent-orange) 45%, #1a1a22)
+    color-mix(in srgb, var(--accent-bee, #ffd54a) 90%, #fff),
+    color-mix(in srgb, var(--accent-bee, #ffd54a) 45%, #1a1a22)
   );
   opacity: 0;
   transition:
@@ -356,13 +356,13 @@ html[data-settings-shell='aether2'] .settings-body-scroll::-webkit-scrollbar-tra
   margin: 38px 10px 1rem 0;
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--accent-orange) 12%, transparent) 0%,
+    rgba(255, 255, 255, 0.04) 0%,
     rgba(0, 0, 0, 0.28) 48%,
     rgba(0, 0, 0, 0.32) 100%
   );
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    inset 2px 0 0 color-mix(in srgb, var(--accent-orange) 28%, transparent);
+    inset 2px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 html[data-theme='light'][data-settings-shell='aether2'] .settings-body-scroll::-webkit-scrollbar-track {
@@ -380,12 +380,12 @@ html[data-theme='light'][data-settings-shell='aether2'] .settings-body-scroll::-
 html[data-settings-shell='aether2'] .settings-body-scroll::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--accent-orange) 78%, #ffffff 6%) 0%,
-    color-mix(in srgb, var(--accent-orange) 32%, #141018) 100%
+    color-mix(in srgb, var(--accent-bee, #ffd54a) 78%, #ffffff 6%) 0%,
+    color-mix(in srgb, var(--accent-bee, #ffd54a) 32%, #141018) 100%
   );
   border-radius: 100px;
   border: 2px solid rgba(0, 0, 0, 0.18);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--accent-orange) 24%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent-bee, #ffd54a) 24%, transparent);
 }
 
 html[data-theme='light'][data-settings-shell='aether2'] .settings-body-scroll::-webkit-scrollbar-thumb {
@@ -440,8 +440,8 @@ html[data-settings-shell='aether2'] details.set-card::before {
   border-radius: clamp(16px, 2vw, 22px) clamp(16px, 2vw, 22px) 0 0;
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--accent-orange) 95%, transparent) 0%,
-    color-mix(in srgb, var(--accent-orange) 35%, transparent) 45%,
+    color-mix(in srgb, var(--accent-bee, #ffd54a) 95%, transparent) 0%,
+    color-mix(in srgb, var(--accent-bee, #ffd54a) 35%, transparent) 45%,
     transparent 88%
   );
 }

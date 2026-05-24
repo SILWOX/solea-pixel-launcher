@@ -1,0 +1,12 @@
+{
+  "description": {"translate": "enchantment.bmcmod.explosive_shot"},
+  "supported_items": "#bmcmod:enchantable/bow_crossbow",
+  "primary_items": "#bmcmod:no_enchanting_table",
+  "weight": 2,
+  "max_level": 3,
+  "min_cost": {"base": 18, "per_level_above_first": 8},
+  "max_cost": {"base": 50, "per_level_above_first": 8},
+  "anvil_cost": 6,
+  "slots": ["hand"],
+  "effects": {}
+}

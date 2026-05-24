@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:iron_ingot"
+  },
+  "base": {
+    "item": "minecraft:bow"
+  },
+  "result": {
+    "count": 1,
+    "id": "bmcmod:iron_bow"
+  },
+  "template": {
+    "item": "bmcmod:bow_upgrade_smithing_template"
+  }
+}

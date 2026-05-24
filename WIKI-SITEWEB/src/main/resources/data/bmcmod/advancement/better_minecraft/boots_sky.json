@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/infusion_adept",
+  "display": {
+    "icon": { "id": "bmcmod:sky_boots" },
+    "title": { "translate": "advancement.bmcmod.boots_sky.title" },
+    "description": { "translate": "advancement.bmcmod.boots_sky.description" },
+    "frame": "task",
+    "x": 3.5,
+    "y": -7.5
+  },
+  "criteria": {
+    "boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:sky_boots" }] }
+    }
+  },
+  "rewards": { "experience": 45 }
+}

@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "com.soleapixel.bmcmod.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["BiomeSourceMixin", "VillagerMixin", "TheEndBiomeSourceMixin", "MultiNoiseBiomeSourceMixin", "RespawnAnchorBlockMixin", "ServerPlayerMixin", "AbstractFurnaceBlockEntityEndstoneMixin", "AbstractFurnaceBlockEntityHooks", "RaidMixin", "RangedAttributeMixin", "SmithingTrimRecipeMixin"],
+  "client": ["GameRendererUndeadTotemActivationMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

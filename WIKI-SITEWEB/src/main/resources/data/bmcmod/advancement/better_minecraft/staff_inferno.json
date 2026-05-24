@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/end_arcanist",
+  "display": {
+    "icon": { "id": "bmcmod:flame_staff" },
+    "title": { "translate": "advancement.bmcmod.staff_inferno.title" },
+    "description": { "translate": "advancement.bmcmod.staff_inferno.description" },
+    "frame": "task",
+    "x": 11.5,
+    "y": -3.5
+  },
+  "criteria": {
+    "staff": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:flame_staff" }] }
+    }
+  },
+  "rewards": { "experience": 90 }
+}

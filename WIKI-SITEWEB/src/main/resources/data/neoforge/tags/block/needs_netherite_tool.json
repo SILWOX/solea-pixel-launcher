@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:fossil_debris",
+    "bmcmod:forgotten_debris",
+    "bmcmod:enderite_block",
+    "bmcmod:boreal_block"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+    "textures":  {
+                     "layer0":  "bmcmod:item/material/topaz_shard"
+                 },
+    "parent":  "minecraft:item/generated"
+}
+

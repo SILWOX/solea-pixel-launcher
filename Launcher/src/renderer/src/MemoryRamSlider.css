@@ -1,7 +1,7 @@
 /* AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 
 .memory-ram-slider {
-  --ram-accent: var(--spx-accent, var(--accent-orange, #ff6a1a));
+  --ram-accent: var(--spx-accent, var(--accent-orange, #ffd54a));
   display: flex;
   flex-direction: column;
   gap: 0.65rem;

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "wooden_fence_gate",
+  "key": {
+    "#": {
+      "item": "bmcmod:sunwood_planks"
+    },
+    "W": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "#W#",
+    "#W#"
+  ],
+  "result": {
+    "id": "bmcmod:sunwood_fence_gate"
+  }
+}

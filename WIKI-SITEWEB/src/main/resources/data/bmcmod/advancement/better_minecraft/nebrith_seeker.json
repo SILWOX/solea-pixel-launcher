@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/beryl_seeker",
+  "display": {
+    "icon": {
+      "id": "bmcmod:nebrith_shard"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.nebrith_seeker.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.nebrith_seeker.description"
+    },
+    "frame": "task",
+    "x": 5.0,
+    "y": 1.4
+  },
+  "criteria": {
+    "has_nebrith": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:nebrith_shard"
+          }
+        ]
+      }
+    }
+  }
+}

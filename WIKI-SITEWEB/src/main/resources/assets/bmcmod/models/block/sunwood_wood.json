@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "bmcmod:block/sunwood/sunwood_log",
+    "side": "bmcmod:block/sunwood/sunwood_log"
+  }
+}

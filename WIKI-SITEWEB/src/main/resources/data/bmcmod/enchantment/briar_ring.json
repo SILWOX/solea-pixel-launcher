@@ -1,0 +1,12 @@
+{
+  "description": {"translate": "enchantment.bmcmod.briar_ring"},
+  "supported_items": "#bmcmod:scythes",
+  "exclusive_set": "#bmcmod:scythe_partner_enchant_excludes_whirlwind",
+  "weight": 8,
+  "max_level": 2,
+  "min_cost": {"base": 7, "per_level_above_first": 12},
+  "max_cost": {"base": 70, "per_level_above_first": 24},
+  "anvil_cost": 5,
+  "slots": ["hand"],
+  "effects": {}
+}

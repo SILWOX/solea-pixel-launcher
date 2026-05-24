@@ -1,0 +1,9 @@
+{
+    "step":  "underground_decoration",
+    "features":  [
+                     "bmcmod:opal_geode"
+                 ],
+    "type":  "neoforge:add_features",
+    "biomes":  "#minecraft:is_nether"
+}
+

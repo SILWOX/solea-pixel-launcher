@@ -1,0 +1,7 @@
+{
+    "textures":  {
+                     "all":  "bmcmod:block/gems/budding_opal"
+                 },
+    "parent":  "minecraft:block/cube_all"
+}
+

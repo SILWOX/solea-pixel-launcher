@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NSN",
+    "SBS",
+    "NSN"
+  ],
+  "key": {
+    "N": {
+      "tag": "bmcmod:foundry_shards"
+    },
+    "S": {
+      "item": "minecraft:blackstone"
+    },
+    "B": {
+      "item": "minecraft:blast_furnace"
+    }
+  },
+  "result": {
+    "id": "bmcmod:foundry",
+    "count": 1
+  }
+}

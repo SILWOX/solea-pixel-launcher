@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "hanging=false,waterlogged=false": {
+      "model": "bmcmod:block/void_lantern"
+    },
+    "hanging=false,waterlogged=true": {
+      "model": "bmcmod:block/void_lantern"
+    },
+    "hanging=true,waterlogged=false": {
+      "model": "bmcmod:block/void_lantern_hanging"
+    },
+    "hanging=true,waterlogged=true": {
+      "model": "bmcmod:block/void_lantern_hanging"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:hollow_log",
+    "bmcmod:hollow_wood",
+    "bmcmod:stripped_hollow_log",
+    "bmcmod:stripped_hollow_wood",
+    "bmcmod:sunwood_log",
+    "bmcmod:sunwood_wood",
+    "bmcmod:stripped_sunwood_log",
+    "bmcmod:stripped_sunwood_wood"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_banner",
+  "textures": {
+    "particle": "minecraft:block/brown_wool"
+  }
+}

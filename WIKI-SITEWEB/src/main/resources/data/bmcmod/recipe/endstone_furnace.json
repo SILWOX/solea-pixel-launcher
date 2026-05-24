@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EEE",
+    "E E",
+    "PPP"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:end_stone"
+    },
+    "P": {
+      "item": "minecraft:purpur_block"
+    }
+  },
+  "result": {
+    "id": "bmcmod:endstone_furnace",
+    "count": 1
+  }
+}

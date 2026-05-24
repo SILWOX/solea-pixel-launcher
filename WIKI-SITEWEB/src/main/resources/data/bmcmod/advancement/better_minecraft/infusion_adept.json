@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/upgrade_apprentice",
+  "display": {
+    "icon": {
+      "id": "bmcmod:emerald_chestplate"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.infusion_adept.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.infusion_adept.description"
+    },
+    "frame": "task",
+    "x": 3.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_emerald_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:emerald_chestplate"
+          }
+        ]
+      }
+    }
+  }
+}

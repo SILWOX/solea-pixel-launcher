@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "bmcmod:block/hollow/hollow_planks",
+    "side": "bmcmod:block/hollow/hollow_planks",
+    "top": "bmcmod:block/hollow/hollow_planks"
+  }
+}

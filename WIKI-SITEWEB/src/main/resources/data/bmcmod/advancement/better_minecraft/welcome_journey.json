@@ -1,0 +1,22 @@
+{
+  "parent": "bmcmod:better_minecraft/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:written_book"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.welcome_journey.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.welcome_journey.description"
+    },
+    "frame": "task",
+    "x": 0.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "granted_from_login": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

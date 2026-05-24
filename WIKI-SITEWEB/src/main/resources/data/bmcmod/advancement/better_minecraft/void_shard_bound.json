@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/nebrith_seeker",
+  "display": {
+    "icon": { "id": "bmcmod:void_shard" },
+    "title": { "translate": "advancement.bmcmod.void_shard_bound.title" },
+    "description": { "translate": "advancement.bmcmod.void_shard_bound.description" },
+    "frame": "task",
+    "x": 11.5,
+    "y": 3.5
+  },
+  "criteria": {
+    "shard": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:void_shard" }] }
+    }
+  },
+  "rewards": { "experience": 70 }
+}

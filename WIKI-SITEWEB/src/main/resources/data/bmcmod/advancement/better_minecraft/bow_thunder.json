@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/end_arcanist",
+  "display": {
+    "icon": { "id": "bmcmod:lightning_bow" },
+    "title": { "translate": "advancement.bmcmod.bow_thunder.title" },
+    "description": { "translate": "advancement.bmcmod.bow_thunder.description" },
+    "frame": "task",
+    "x": 13.0,
+    "y": -3.5
+  },
+  "criteria": {
+    "bow": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:lightning_bow" }] }
+    }
+  },
+  "rewards": { "experience": 90 }
+}

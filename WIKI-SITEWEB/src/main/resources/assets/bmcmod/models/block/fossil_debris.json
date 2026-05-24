@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "bmcmod:block/end/fossil_debris_top",
+    "side": "bmcmod:block/end/fossil_debris_side"
+  }
+}

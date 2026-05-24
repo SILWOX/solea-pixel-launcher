@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/totem_bearer",
+  "display": {
+    "icon": { "id": "bmcmod:undead_bottle_3" },
+    "title": { "translate": "advancement.bmcmod.bottle_adept.title" },
+    "description": { "translate": "advancement.bmcmod.bottle_adept.description" },
+    "frame": "task",
+    "x": 8.0,
+    "y": 5.0
+  },
+  "criteria": {
+    "has_undead_bottle_3": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:undead_bottle_3" }] }
+    }
+  },
+  "rewards": { "experience": 45 }
+}

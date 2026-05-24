@@ -1,0 +1,23 @@
+{
+  "description": {
+    "translate": "enchantment.bmcmod.excavator"
+  },
+  "supported_items": "#minecraft:pickaxes",
+  "primary_items": "#bmcmod:no_enchanting_table",
+  "weight": 1,
+  "max_level": 1,
+  "min_cost": {
+    "base": 28,
+    "per_level_above_first": 0
+  },
+  "max_cost": {
+    "base": 58,
+    "per_level_above_first": 0
+  },
+  "anvil_cost": 10,
+  "slots": [
+    "mainhand",
+    "offhand"
+  ],
+  "effects": {}
+}

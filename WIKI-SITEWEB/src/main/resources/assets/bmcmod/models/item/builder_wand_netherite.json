@@ -1,0 +1,7 @@
+{
+  "parent": "bmcmod:item/builder_wand_item_base",
+  "textures": {
+    "layer0": "bmcmod:item/misc/builder_wand_netherite",
+    "particle": "bmcmod:item/misc/builder_wand_netherite"
+  }
+}

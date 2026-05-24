@@ -54,13 +54,13 @@ const { Microsoft } = requireMjc('minecraft-java-core') as {
 }
 
 import {
-  installMrpackFromModrinth,
+  installFromModrinth,
   verifyInstanceIntegrity,
   getModpackActionInfo,
+  resolveNeoForgeBuildForInstance,
   type InstallProgress,
   type IntegrityResult
 } from './modrinth.js'
-import { setupSoleaServerIpc, shutdownSoleaServerHost } from './soleaServerHost.js'
 import { isMinecraftRunning, killMinecraftForInstance } from './gameProcess.js'
 import { SKIP_MOD_INTEGRITY_FOR_LAUNCH } from './config.js'
 import {
@@ -301,10 +301,12 @@ async function runModpackInstallForSpec(
   const downloadConcurrency = st.networkSlowDownloads
     ? Math.min(2, Math.max(1, st.downloadThreads))
     : Math.max(1, Math.min(48, st.downloadThreads))
-  await installMrpackFromModrinth({
+  await installFromModrinth({
     projectSlug: spec.projectSlug,
     gameVersion: spec.gameVersion,
     loader: spec.loader,
+    modrinthKind: spec.modrinthKind,
+    loaderBuild: spec.loaderBuild,
     instanceRoot,
     downloadConcurrency,
     onProgress: sendProgress
@@ -1108,7 +1110,6 @@ app.whenReady().then(() => {
     app.setAppUserModelId(app.isPackaged ? 'fr.solea.pixel.launcher' : 'fr.solea.pixel.launcher.dev')
   }
   createWindow()
-  setupSoleaServerIpc(() => mainWindow)
   setupAutoUpdater(mainWindow, loadSettings().updateChannel)
 
   discordPresenceRetryInterval = setInterval(() => {
@@ -1134,7 +1135,6 @@ app.on('before-quit', (event) => {
 
   void (async () => {
     try {
-      shutdownSoleaServerHost()
       await Promise.race([
         shutdownDiscordRpc(),
         new Promise<void>((resolve) => setTimeout(resolve, 3500))
@@ -1968,7 +1968,7 @@ ipcMain.handle('game:launch', async () => {
   }
   let installed: {
     gameVersion: string
-    loaderType?: 'neoforge' | 'forge'
+    loaderType?: 'neoforge' | 'forge' | 'fabric'
     loaderBuild?: string
     neoForgeVersion?: string
   }
@@ -1984,7 +1984,7 @@ ipcMain.handle('game:launch', async () => {
     }
   }
 
-  let loaderType: 'neoforge' | 'forge'
+  let loaderType: 'neoforge' | 'forge' | 'fabric'
   let loaderBuild: string
   if (installed.loaderType && installed.loaderBuild) {
     loaderType = installed.loaderType
@@ -2003,6 +2003,19 @@ ipcMain.handle('game:launch', async () => {
   }
 
   loaderBuild = normalizeForgeLoaderBuild(installed.gameVersion, loaderType, loaderBuild)
+  if (loaderType === 'neoforge') {
+    const synced = await resolveNeoForgeBuildForInstance(root, loaderBuild)
+    if (synced !== loaderBuild) {
+      loaderBuild = synced
+      installed.loaderBuild = synced
+      installed.neoForgeVersion = synced
+      try {
+        writeFileSync(installedPath, JSON.stringify(installed, null, 2), 'utf8')
+      } catch {
+        /* ignore meta write errors */
+      }
+    }
+  }
 
   const game = getGameSettingsForModpack(settings, spec.id)
   const jvmExtra = parseArgsBlock(settings.jvmArgs)

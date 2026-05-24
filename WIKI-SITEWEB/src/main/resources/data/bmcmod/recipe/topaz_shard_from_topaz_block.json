@@ -1,0 +1,14 @@
+{
+    "ingredients":  [
+                        {
+                            "item":  "bmcmod:topaz_block"
+                        }
+                    ],
+    "category":  "building",
+    "result":  {
+                   "count":  4,
+                   "id":  "bmcmod:topaz_shard"
+               },
+    "type":  "minecraft:crafting_shapeless"
+}
+

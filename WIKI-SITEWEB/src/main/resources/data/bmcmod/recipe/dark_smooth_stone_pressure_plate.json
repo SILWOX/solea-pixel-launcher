@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "#": {
+      "item": "bmcmod:dark_smooth_stone"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bmcmod:dark_smooth_stone_pressure_plate"
+  }
+}

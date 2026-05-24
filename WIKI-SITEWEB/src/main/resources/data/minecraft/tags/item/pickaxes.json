@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:copper_pickaxe",
+    "bmcmod:emerald_pickaxe",
+    "bmcmod:enderite_pickaxe",
+    "bmcmod:boreal_pickaxe"
+  ]
+}

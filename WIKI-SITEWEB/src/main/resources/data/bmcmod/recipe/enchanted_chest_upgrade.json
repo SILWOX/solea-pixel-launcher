@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SAS",
+    "SRS",
+    "SSS"
+  ],
+  "key": {
+    "S": { "tag": "minecraft:stone_crafting_materials" },
+    "A": { "item": "minecraft:amethyst_shard" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "id": "bmcmod:enchanted_chest_upgrade",
+    "count": 1
+  }
+}

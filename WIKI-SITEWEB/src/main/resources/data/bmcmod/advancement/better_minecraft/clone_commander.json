@@ -1,0 +1,43 @@
+{
+  "parent": "bmcmod:better_minecraft/totem_bearer",
+  "display": {
+    "icon": {
+      "id": "minecraft:totem_of_undying"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.clone_commander.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.clone_commander.description"
+    },
+    "frame": "task",
+    "x": 8.5,
+    "y": 3.5
+  },
+  "criteria": {
+    "has_undead_totem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:undead_totem"
+          }
+        ]
+      }
+    },
+    "has_quest_log": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:quest_log"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_undead_totem"],
+    ["has_quest_log"]
+  ]
+}

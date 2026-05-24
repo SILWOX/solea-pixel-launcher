@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "bmcmod:block/undead_invasion_captain_wall_banner", "y": 90 },
+    "facing=south": { "model": "bmcmod:block/undead_invasion_captain_wall_banner", "y": 270 },
+    "facing=west": { "model": "bmcmod:block/undead_invasion_captain_wall_banner", "y": 0 },
+    "facing=east": { "model": "bmcmod:block/undead_invasion_captain_wall_banner", "y": 180 }
+  }
+}

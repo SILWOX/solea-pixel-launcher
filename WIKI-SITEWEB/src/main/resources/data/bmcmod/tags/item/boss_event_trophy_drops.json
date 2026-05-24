@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:undead_bottle_1",
+    "bmcmod:undead_bottle_2",
+    "bmcmod:undead_bottle_3",
+    "bmcmod:undead_bottle_4",
+    "bmcmod:undead_bottle_5",
+    "bmcmod:undead_bottle_6",
+    "bmcmod:nebrith_shard",
+    "bmcmod:enderite_scrap",
+    "bmcmod:boreal_fragment"
+  ]
+}

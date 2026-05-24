@@ -1,0 +1,8 @@
+{
+    "textures":  {
+                     "cross":  "bmcmod:block/gems/topaz_cluster"
+                 },
+    "parent":  "minecraft:block/cross",
+    "render_type":  "cutout"
+}
+

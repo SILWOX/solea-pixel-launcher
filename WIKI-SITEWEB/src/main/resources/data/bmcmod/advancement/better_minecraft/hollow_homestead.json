@@ -1,0 +1,36 @@
+{
+  "parent": "bmcmod:better_minecraft/hollow_carpenter",
+  "display": {
+    "icon": { "id": "bmcmod:hollow_barrel" },
+    "title": { "translate": "advancement.bmcmod.hollow_homestead.title" },
+    "description": { "translate": "advancement.bmcmod.hollow_homestead.description" },
+    "frame": "task",
+    "x": 4.0,
+    "y": 2.0
+  },
+  "criteria": {
+    "has_hollow_door": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_door" }] }
+    },
+    "has_hollow_trapdoor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_trapdoor" }] }
+    },
+    "has_hollow_barrel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_barrel" }] }
+    },
+    "has_hollow_bookshelf": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:hollow_bookshelf" }] }
+    }
+  },
+  "requirements": [
+    ["has_hollow_door"],
+    ["has_hollow_trapdoor"],
+    ["has_hollow_barrel"],
+    ["has_hollow_bookshelf"]
+  ],
+  "rewards": { "experience": 45 }
+}

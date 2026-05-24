@@ -95,6 +95,12 @@
     let stepIv = 0
     let pointerForFilaments = null
     let luckyConsumed = false
+    let meteorQuestIv = 0
+    let meteorOrbRaf = 0
+    let meteorBtnEl = null
+    /** @type {{ x:number,y:number,vx:number,vy:number,s:number}[]} */
+    let mistMeteors = []
+    let mistPlayT0 = 0
 
     const PIECES = () =>
       fr()
@@ -275,6 +281,76 @@
       d.resumeVoidMemeScheduler()
     }
 
+    function beginMeteorStarGate() {
+      const stage = d.voidStage
+      function clearMeteorLoop() {
+        if (meteorQuestIv) {
+          window.clearInterval(meteorQuestIv)
+          meteorQuestIv = 0
+        }
+      }
+      function trySpawnMeteor() {
+        if (luckyConsumed || meteorBtnEl) return
+        if (Math.random() > 0.42) return
+        meteorBtnEl = document.createElement('button')
+        meteorBtnEl.type = 'button'
+        meteorBtnEl.className = 'page-error-void-meteor'
+        meteorBtnEl.setAttribute('aria-label', fr() ? 'Météorite' : 'Meteorite')
+        meteorBtnEl.textContent = '☄'
+        const pad = 36
+        meteorBtnEl.style.left = `${pad + Math.random() * Math.max(40, window.innerWidth - pad * 2 - 72)}px`
+        meteorBtnEl.style.top = `${pad + Math.random() * Math.max(40, window.innerHeight * 0.5)}px`
+        stage.appendChild(meteorBtnEl)
+        meteorBtnEl.addEventListener(
+          'click',
+          (ev) => {
+            ev.preventDefault()
+            ev.stopPropagation()
+            clearMeteorLoop()
+            meteorBtnEl?.remove()
+            meteorBtnEl = null
+            d.voidReset.setAttribute('hidden', '')
+            const orb = document.createElement('button')
+            orb.type = 'button'
+            orb.className = 'page-error-void-grand-star'
+            orb.setAttribute('aria-label', fr() ? 'Étoile' : 'Star')
+            orb.innerHTML =
+              '<span class="page-error-void-grand-star__rays" aria-hidden="true"></span>' +
+              '<span class="page-error-void-grand-star__disc" aria-hidden="true"></span>' +
+              '<span class="page-error-void-grand-star__core" aria-hidden="true"></span>'
+            stage.appendChild(orb)
+            let ox = window.innerWidth * 0.48
+            let oy = window.innerHeight * 0.38
+            let ang = Math.random() * Math.PI * 2
+            function orbTick(now) {
+              if (luckyConsumed) return
+              ang += 0.0024
+              ox = window.innerWidth * 0.42 + Math.cos(ang) * Math.min(180, window.innerWidth * 0.18)
+              oy = window.innerHeight * 0.32 + Math.sin(ang * 0.85) * Math.min(120, window.innerHeight * 0.16)
+              orb.style.left = `${ox}px`
+              orb.style.top = `${oy}px`
+              meteorOrbRaf = window.requestAnimationFrame(orbTick)
+            }
+            meteorOrbRaf = window.requestAnimationFrame(orbTick)
+            orb.addEventListener(
+              'click',
+              (e2) => {
+                if (luckyConsumed) return
+                if (meteorOrbRaf) window.cancelAnimationFrame(meteorOrbRaf)
+                meteorOrbRaf = 0
+                orb.remove()
+                onLuckyClick(e2)
+              },
+              { once: true },
+            )
+          },
+          { once: true },
+        )
+      }
+      meteorQuestIv = window.setInterval(trySpawnMeteor, 2200)
+      trySpawnMeteor()
+    }
+
     function showLuckyStar() {
       setSequelActive(true)
       d.setPhase('void_sequel_star')
@@ -298,6 +374,12 @@
       e.stopPropagation()
       if (luckyConsumed) return
       luckyConsumed = true
+      if (meteorQuestIv) {
+        window.clearInterval(meteorQuestIv)
+        meteorQuestIv = 0
+      }
+      meteorBtnEl?.remove()
+      meteorBtnEl = null
       if (luckyTimer) {
         window.clearTimeout(luckyTimer)
         luckyTimer = 0
@@ -325,42 +407,80 @@
         window.setTimeout(() => {
           explosion.classList.remove('page-error-void-explosion--hold')
           explosion.setAttribute('hidden', '')
-          startRebuild()
+          startFakeHomeBypass()
         }, POST_EXPLOSION_BLACK_MS)
       }, EXPLOSION_MS)
     }
 
-    function startRebuild() {
+    function startFakeHomeBypass() {
       d.setPhase('void_sequel_rebuild')
       d.voidStage.classList.add('page-error-void-stage--sequel-rebuild')
-      rebuild.classList.add('page-error-void-rebuild--active')
+      rebuild.classList.add('page-error-void-rebuild--active', 'page-error-void-rebuild--fake')
       rebuild.removeAttribute('hidden')
       rebuild.setAttribute('aria-hidden', 'false')
       piecesEl.replaceChildren()
       rebuildEnd.setAttribute('hidden', '')
       endBtnShown = false
-      const defs = PIECES()
-      const n = defs.length
       rebuildStarted = performance.now()
-      const gap = rebuildTotalMs / Math.max(1, n - 0.4)
-      defs.forEach((def, i) => {
-        const el = document.createElement('div')
-        el.className = `page-error-void-rebuild-piece page-error-void-rebuild-piece--${def.k}`
-        el.textContent = def.t
-        el.style.left = `${10 + Math.random() * 72}%`
-        el.style.top = `${12 + Math.random() * 58}%`
-        el.style.opacity = '0'
-        el.style.transform = 'scale(0.4) rotate(-8deg)'
-        piecesEl.appendChild(el)
+      const errsFr = [
+        'ERR_NULL_POINTER',
+        'SIGNAL_LOST',
+        'STACK_UNDERFLOW',
+        'NO_ROUTE',
+        'KERNEL_PANIC_LITE',
+        'TIMEOUT (∞)',
+      ]
+      const errsEn = [
+        'ERR_NULL_POINTER',
+        'SIGNAL_LOST',
+        'STACK_UNDERFLOW',
+        'NO_ROUTE',
+        'KERNEL_PANIC_LITE',
+        'TIMEOUT (∞)',
+      ]
+      const errs = fr() ? errsFr : errsEn
+      function toast(msg) {
+        const t = document.createElement('div')
+        t.className = 'page-error-fake-toast'
+        t.textContent = msg
+        rebuild.appendChild(t)
         window.setTimeout(() => {
-          el.style.opacity = '1'
-          el.style.transform = 'scale(1) rotate(0deg)'
-        }, 80 + i * gap * (0.85 + Math.random() * 0.3))
-        wireDrag(el)
+          try {
+            t.remove()
+          } catch {
+            /* ignore */
+          }
+        }, 2400)
+      }
+      const shell = document.createElement('div')
+      shell.className = 'page-error-fake-home'
+      shell.innerHTML = `
+        <div class="page-error-fake-home__bar">
+          <span class="page-error-fake-home__logo">SOLEA PIXEL</span>
+          <span class="page-error-fake-home__tag">404</span>
+        </div>
+        <p class="page-error-fake-home__lead">${fr() ? 'Ce n’est pas le vrai site — piège de navigation.' : 'This is not the real site — a navigation trap.'}</p>
+        <nav class="page-error-fake-home__nav" aria-label="fake">
+          <button type="button" class="page-error-fake-fbtn">${fr() ? 'Accueil' : 'Home'}</button>
+          <button type="button" class="page-error-fake-fbtn">${fr() ? 'Télécharger' : 'Download'}</button>
+          <button type="button" class="page-error-fake-fbtn">${fr() ? 'À propos' : 'About'}</button>
+          <button type="button" class="page-error-fake-fbtn">${fr() ? 'Actu' : 'News'}</button>
+          <button type="button" class="page-error-fake-fbtn">${fr() ? 'FAQ' : 'FAQ'}</button>
+        </nav>
+        <p class="page-error-fake-home__hint">${fr() ? 'Trouve le bouton caché pour continuer.' : 'Find the hidden button to continue.'}</p>
+        <button type="button" class="page-error-fake-bypass" id="err-fake-404-bypass">404 Bypass</button>
+      `
+      piecesEl.appendChild(shell)
+      shell.querySelectorAll('.page-error-fake-fbtn').forEach((b) => {
+        b.addEventListener('click', () => toast(errs[Math.floor(Math.random() * errs.length)]))
       })
-      window.setTimeout(() => {
-        if (!endBtnShown) showEndGameBtn()
-      }, Math.min(END_GAME_MS, rebuildTotalMs + 3200))
+      const bypass = shell.querySelector('#err-fake-404-bypass')
+      if (bypass) {
+        bypass.addEventListener('click', () => {
+          toast(fr() ? 'Contournement accepté.' : 'Bypass accepted.')
+          window.setTimeout(() => onRebuildEndClick(), 520)
+        })
+      }
     }
 
     function wireDrag(el) {
@@ -435,11 +555,44 @@
       ctx.fillStyle = `rgba(120, 10, 30, ${0.12 + Math.sin(t) * 0.04})`
       ctx.fillRect(0, 0, w, h)
 
+      const g2 = ctx.createRadialGradient(w * 0.2, h * 0.85, 0, w * 0.5, h * 0.5, h * 0.9)
+      g2.addColorStop(0, 'rgba(80, 20, 60, 0.25)')
+      g2.addColorStop(1, 'transparent')
+      ctx.fillStyle = g2
+      ctx.fillRect(0, 0, w, h)
+
+      for (const m of mistMeteors) {
+        m.x += m.vx * 0.45
+        m.y += m.vy * 0.45
+        if (m.x < -40) m.x = w + 20
+        if (m.x > w + 40) m.x = -20
+        if (m.y < -40) m.y = h + 20
+        if (m.y > h + 40) m.y = -20
+        ctx.save()
+        ctx.translate(m.x, m.y)
+        ctx.rotate(m.s + t * 0.4)
+        ctx.fillStyle = 'rgba(160, 90, 110, 0.35)'
+        ctx.fillRect(-10, -3, 22, 6)
+        ctx.restore()
+      }
+
+      const playAge = mistPlayT0 ? (performance.now() - mistPlayT0) / 1000 : 0
+      const shakeAmp = 2 + playAge * 0.35 + dodgeCount * 0.22
+      ctx.save()
+      ctx.font = 'bold 38px "Press Start 2P", ui-monospace, monospace'
+      ctx.textAlign = 'center'
+      ctx.fillStyle = `rgba(255, 200, 210, ${0.14 + Math.min(0.22, playAge * 0.015)})`
+      const sx = Math.sin(playAge * 11.7 + dodgeCount) * shakeAmp * 0.42
+      const sy = Math.cos(playAge * 9.2 - dodgeCount * 0.3) * shakeAmp * 0.38
+      ctx.fillText('404', w * 0.5 + sx, 52 + sy)
+      ctx.restore()
+
       for (const b of bolts) {
         const u = (performance.now() - b.t0) / b.dur
         if (u >= 1) continue
-        const x = b.x0 + (b.x1 - b.x0) * u
-        const y = b.y0 + (b.y1 - b.y0) * u
+        const cv = b.curve || 0
+        const x = b.x0 + (b.x1 - b.x0) * u + cv * 90 * Math.sin(u * Math.PI)
+        const y = b.y0 + (b.y1 - b.y0) * u - cv * 70 * Math.sin(u * Math.PI)
         ctx.strokeStyle = `rgba(255, 245, 255, ${0.85 * (1 - u)})`
         ctx.lineWidth = 3 + (1 - u) * 4
         ctx.beginPath()
@@ -485,9 +638,19 @@
         x0 = -20
         y0 = Math.random() * h
       }
-      const x1 = mx + (Math.random() - 0.5) * 40
-      const y1 = my + (Math.random() - 0.5) * 40
-      bolts.push({ x0, y0, x1, y1, t0: performance.now(), dur: 380 + Math.random() * 220, scored: false })
+      const spread = 55 + Math.random() * 95
+      const x1 = mx + (Math.random() - 0.5) * spread
+      const y1 = my + (Math.random() - 0.5) * spread
+      bolts.push({
+        x0,
+        y0,
+        x1,
+        y1,
+        t0: performance.now(),
+        dur: 280 + Math.random() * 420,
+        scored: false,
+        curve: (Math.random() - 0.5) * 0.55,
+      })
     }
 
     function stepBolts() {
@@ -538,11 +701,22 @@
       mistHud.textContent = ''
       mistTutorial.removeAttribute('hidden')
       mistTutorial.textContent = fr()
-        ? "Brume rouge : tu es une petite fée rose. Des éclairs foncent sur toi. Esquive au moins 10 éclairs d'affilée pour continuer. Si tu es touché, le compteur repart à zéro."
-        : "Red mist: you're a tiny pink fairy. Lightning strikes at you. Dodge at least 10 bolts in a row to continue. If you're hit, the count resets to zero."
+        ? "Brume rouge : tu es une petite fée rose. Des éclairs courbes et des météorites défilent en fond. Esquive 10 éclairs d’affilée. Si tu es touché, le compteur repart à zéro."
+        : "Red mist: you're a tiny pink fairy. Curved lightning and drifting meteors fill the backdrop. Dodge 10 bolts in a row. If you're hit, the count resets to zero."
       window.setTimeout(() => {
         mistTutorial.setAttribute('hidden', '')
         mistState = 'play'
+        mistPlayT0 = performance.now()
+        mistMeteors = []
+        for (let i = 0; i < 18; i += 1) {
+          mistMeteors.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 2.4,
+            vy: (Math.random() - 0.5) * 2.4,
+            s: Math.random() * Math.PI * 2,
+          })
+        }
         nextBoltAt = performance.now() + 500
         mistHud.textContent = fr() ? `Esquives : 0 / ${DODGES_NEEDED}` : `Dodges: 0 / ${DODGES_NEEDED}`
       }, MIST_TUTORIAL_MS)
@@ -560,7 +734,8 @@
         const now = performance.now()
         if (now >= nextBoltAt) {
           spawnBolt()
-          nextBoltAt = now + 900 + Math.random() * 900
+          const rush = mistPlayT0 && now - mistPlayT0 > 12000 ? 0.75 : 1
+          nextBoltAt = now + (520 + Math.random() * 820) * rush
         }
         stepBolts()
       }, 45)
@@ -633,11 +808,16 @@
 
     function boot() {
       luckyConsumed = false
-      rebuild.classList.remove('page-error-void-rebuild--active')
+      rebuild.classList.remove('page-error-void-rebuild--active', 'page-error-void-rebuild--fake')
       rebuild.setAttribute('hidden', '')
       rebuild.setAttribute('aria-hidden', 'true')
       d.voidStage.classList.remove('page-error-void-stage--sequel-star', 'page-error-void-stage--sequel-rebuild')
-      luckyTimer = window.setTimeout(showLuckyStar, LUCKY_MS_MIN + Math.random() * (LUCKY_MS_MAX - LUCKY_MS_MIN))
+      luckyTimer = 0
+      if (window.__solea404DeferLuckyUntilMeteor) {
+        beginMeteorStarGate()
+      } else {
+        luckyTimer = window.setTimeout(showLuckyStar, LUCKY_MS_MIN + Math.random() * (LUCKY_MS_MAX - LUCKY_MS_MIN))
+      }
       pointerForFilaments = onPointerMove
       window.addEventListener('pointermove', pointerForFilaments, { passive: true })
       luckyBtn.addEventListener('pointerenter', onLuckyEnter)

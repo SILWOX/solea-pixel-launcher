@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/hunt_end_golem",
+  "display": {
+    "icon": { "id": "bmcmod:end_golem_heart" },
+    "title": { "translate": "advancement.bmcmod.hunt_void_heart.title" },
+    "description": { "translate": "advancement.bmcmod.hunt_void_heart.description" },
+    "frame": "task",
+    "x": -2.0,
+    "y": 4.5
+  },
+  "criteria": {
+    "heart": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:end_golem_heart" }] }
+    }
+  },
+  "rewards": { "experience": 120 }
+}

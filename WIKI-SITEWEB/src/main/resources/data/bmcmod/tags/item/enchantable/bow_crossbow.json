@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:bow",
+    "minecraft:crossbow",
+    "bmcmod:lightning_bow",
+    "bmcmod:iron_bow",
+    "bmcmod:gold_bow",
+    "bmcmod:diamond_bow",
+    "bmcmod:emerald_bow"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/backpack_starter",
+  "display": {
+    "icon": { "id": "bmcmod:iron_backpack" },
+    "title": { "translate": "advancement.bmcmod.backpack_iron.title" },
+    "description": { "translate": "advancement.bmcmod.backpack_iron.description" },
+    "frame": "task",
+    "x": 4.0,
+    "y": 1.0
+  },
+  "criteria": {
+    "has_iron_backpack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:iron_backpack" }] }
+    }
+  },
+  "rewards": { "experience": 25 }
+}

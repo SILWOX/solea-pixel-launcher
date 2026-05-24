@@ -1,0 +1,23 @@
+{
+  "parent": "bmcmod:better_minecraft/hollow_beginning",
+  "display": {
+    "icon": { "id": "bmcmod:sunwood_boat" },
+    "title": { "translate": "advancement.bmcmod.sunwood_skiff.title" },
+    "description": { "translate": "advancement.bmcmod.sunwood_skiff.description" },
+    "frame": "task",
+    "x": 4.5,
+    "y": -8.5
+  },
+  "criteria": {
+    "boat": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:sunwood_boat" }] }
+    },
+    "chest_boat": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:sunwood_chest_boat" }] }
+    }
+  },
+  "requirements": [["boat"], ["chest_boat"]],
+  "rewards": { "experience": 35 }
+}

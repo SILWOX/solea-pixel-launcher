@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=down,waterlogged=false": { "model": "bmcmod:block/medium_nebrith_bud", "x": 180 },
+    "facing=up,waterlogged=false": { "model": "bmcmod:block/medium_nebrith_bud" },
+    "facing=north,waterlogged=false": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90 },
+    "facing=south,waterlogged=false": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90, "y": 180 },
+    "facing=west,waterlogged=false": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90, "y": 270 },
+    "facing=east,waterlogged=false": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90, "y": 90 },
+    "facing=down,waterlogged=true": { "model": "bmcmod:block/medium_nebrith_bud", "x": 180 },
+    "facing=up,waterlogged=true": { "model": "bmcmod:block/medium_nebrith_bud" },
+    "facing=north,waterlogged=true": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90 },
+    "facing=south,waterlogged=true": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90, "y": 180 },
+    "facing=west,waterlogged=true": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90, "y": 270 },
+    "facing=east,waterlogged=true": { "model": "bmcmod:block/medium_nebrith_bud", "x": 90, "y": 90 }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "EEE",
+    "EEE"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "E": {
+      "item": "minecraft:end_stone"
+    }
+  },
+  "result": {
+    "id": "bmcmod:upgrade_table",
+    "count": 1
+  }
+}

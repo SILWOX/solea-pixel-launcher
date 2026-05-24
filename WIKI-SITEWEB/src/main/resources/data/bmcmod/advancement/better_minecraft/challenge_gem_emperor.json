@@ -1,0 +1,37 @@
+{
+  "parent": "bmcmod:better_minecraft/nebrith_seeker",
+  "display": {
+    "icon": {
+      "id": "bmcmod:ruby"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.challenge_gem_emperor.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.challenge_gem_emperor.description"
+    },
+    "frame": "challenge",
+    "x": 9.0,
+    "y": 2.0
+  },
+  "criteria": {
+    "ruby": {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": "bmcmod:ruby"}]}},
+    "opal": {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": "bmcmod:opal_shard"}]}},
+    "topaz": {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": "bmcmod:topaz_shard"}]}},
+    "beryl": {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": "bmcmod:beryl_shard"}]}},
+    "nebrith": {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": "bmcmod:nebrith_shard"}]}}
+  },
+  "requirements": [
+    ["ruby"],
+    ["opal"],
+    ["topaz"],
+    ["beryl"],
+    ["nebrith"]
+  ],
+  "rewards": {
+    "experience": 220,
+    "loot": [
+      "bmcmod:advancement_rewards/challenge_gem_emperor"
+    ]
+  }
+}

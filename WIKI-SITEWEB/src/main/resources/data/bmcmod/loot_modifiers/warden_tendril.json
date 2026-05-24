@@ -1,0 +1,9 @@
+{
+  "type": "bmcmod:warden_tendril",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:entities/warden"
+    }
+  ]
+}

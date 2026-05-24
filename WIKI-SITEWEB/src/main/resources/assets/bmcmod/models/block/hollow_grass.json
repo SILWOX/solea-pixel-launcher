@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "particle": "bmcmod:block/hollow/hollow_grass_top",
+    "bottom": "bmcmod:block/hollow/hollow_grass_bottom",
+    "side": "bmcmod:block/hollow/hollow_grass_side",
+    "top": "bmcmod:block/hollow/hollow_grass_top"
+  }
+}

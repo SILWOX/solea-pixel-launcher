@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/infusion_table_mastery",
+  "display": {
+    "icon": {
+      "id": "bmcmod:foundry"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.foundry_mastery.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.foundry_mastery.description"
+    },
+    "frame": "task",
+    "x": 7.0,
+    "y": -1.0
+  },
+  "criteria": {
+    "has_foundry": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:foundry"
+          }
+        ]
+      }
+    }
+  }
+}

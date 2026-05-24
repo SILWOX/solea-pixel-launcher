@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "bmcmod:light_stone"
+  },
+  "result": {
+    "id": "bmcmod:light_smooth_stone"
+  }
+}

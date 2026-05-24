@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/upgrade_table_mastery",
+  "display": {
+    "icon": { "id": "bmcmod:builder_wand_enderite" },
+    "title": { "translate": "advancement.bmcmod.builder_wand_enderite.title" },
+    "description": { "translate": "advancement.bmcmod.builder_wand_enderite.description" },
+    "frame": "task",
+    "x": 8.0,
+    "y": -5.0
+  },
+  "criteria": {
+    "wand": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:builder_wand_enderite" }] }
+    }
+  },
+  "rewards": { "experience": 100 }
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/foundry_awakening",
+  "display": {
+    "icon": {
+      "id": "bmcmod:upgrade_table"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.upgrade_table_mastery.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.upgrade_table_mastery.description"
+    },
+    "frame": "task",
+    "x": 5.0,
+    "y": -1.0
+  },
+  "criteria": {
+    "has_upgrade_table": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:upgrade_table"
+          }
+        ]
+      }
+    }
+  }
+}

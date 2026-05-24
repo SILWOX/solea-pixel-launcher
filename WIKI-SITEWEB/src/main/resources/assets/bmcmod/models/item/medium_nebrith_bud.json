@@ -1,0 +1,11 @@
+{
+  "parent": "bmcmod:item/nebrith_bud",
+  "textures": {
+    "layer0": "bmcmod:block/gems/medium_nebrith_bud"
+  },
+  "display": {
+    "fixed": {
+      "translation": [0, 6, 0]
+    }
+  }
+}

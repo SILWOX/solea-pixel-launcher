@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "bmcmod:ruby", "functions": [{ "function": "minecraft:set_count", "count": 1 }] },
+        { "type": "minecraft:item", "name": "bmcmod:opal_shard", "functions": [{ "function": "minecraft:set_count", "count": 2 }] },
+        { "type": "minecraft:item", "name": "bmcmod:topaz_shard", "functions": [{ "function": "minecraft:set_count", "count": 2 }] },
+        { "type": "minecraft:item", "name": "bmcmod:beryl_shard", "functions": [{ "function": "minecraft:set_count", "count": 2 }] },
+        { "type": "minecraft:item", "name": "bmcmod:nebrith_shard", "functions": [{ "function": "minecraft:set_count", "count": 2 }] }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "bmcmod:block/hollow/hollow_planks",
+    "side": "bmcmod:block/hollow/hollow_bookshelf"
+  }
+}

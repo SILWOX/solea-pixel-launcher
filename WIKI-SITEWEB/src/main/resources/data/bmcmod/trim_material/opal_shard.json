@@ -1,0 +1,10 @@
+{
+    "ingredient":  "bmcmod:opal_shard",
+    "item_model_index":  0.519,
+    "asset_name":  "opal",
+    "description":  {
+                        "translate":  "trim_material.bmcmod.opal",
+                        "color":  "#C4A8E6"
+                    }
+}
+

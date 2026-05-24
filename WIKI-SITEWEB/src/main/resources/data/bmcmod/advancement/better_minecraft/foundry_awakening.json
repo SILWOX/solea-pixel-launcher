@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/infusion_adept",
+  "display": {
+    "icon": {
+      "id": "bmcmod:obsidian_chestplate"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.foundry_awakening.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.foundry_awakening.description"
+    },
+    "frame": "task",
+    "x": 4.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_obsidian_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:obsidian_chestplate"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "bmcmod:light_stone"
+  },
+  "result": {
+    "count": 1,
+    "id": "bmcmod:light_stone_pressure_plate"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "asset_name": "enderite",
+  "description": {
+    "color": "#C6A8FF",
+    "translate": "trim_material.bmcmod.enderite"
+  },
+  "ingredient": "bmcmod:enderite_ingot",
+  "item_model_index": 0.515,
+  "override_armor_materials": {
+    "bmcmod:enderite": "enderite_darker"
+  }
+}

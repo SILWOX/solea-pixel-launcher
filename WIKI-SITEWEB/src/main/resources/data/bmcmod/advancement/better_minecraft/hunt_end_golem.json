@@ -1,0 +1,26 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": { "id": "bmcmod:end_golem_spawn_egg" },
+    "title": { "translate": "advancement.bmcmod.hunt_end_golem.title" },
+    "description": { "translate": "advancement.bmcmod.hunt_end_golem.description" },
+    "frame": "task",
+    "x": -2.0,
+    "y": 3.0
+  },
+  "criteria": {
+    "kill": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "type": "bmcmod:end_golem" }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": { "experience": 220 }
+}

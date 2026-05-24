@@ -1,0 +1,43 @@
+{
+  "feature": "bmcmod:hollow_garden_moss_carpet_block",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 18
+    },
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 2
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING_NO_LEAVES"
+    },
+    {
+      "type": "minecraft:random_offset",
+      "xz_spread": 0,
+      "y_spread": 1
+    },
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:matching_blocks",
+        "blocks": ["minecraft:air"]
+      }
+    },
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:matching_blocks",
+        "offset": [0, -1, 0],
+        "blocks": ["bmcmod:hollow_grass"]
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "barrel",
+  "key": {
+    "#": {
+      "item": "bmcmod:hollow_planks"
+    },
+    "S": {
+      "item": "bmcmod:hollow_slab"
+    }
+  },
+  "pattern": [
+    "#S#",
+    "# #",
+    "#S#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bmcmod:hollow_barrel"
+  }
+}

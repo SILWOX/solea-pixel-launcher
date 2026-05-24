@@ -75,7 +75,7 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 90% 55% at 12% -8%, color-mix(in srgb, var(--accent-orange, #ff6a1a) 16%, transparent) 0%, transparent 52%),
+    radial-gradient(ellipse 90% 55% at 12% -8%, color-mix(in srgb, var(--accent-orange, #ffd54a) 16%, transparent) 0%, transparent 52%),
     radial-gradient(ellipse 70% 45% at 88% 100%, color-mix(in srgb, var(--accent-orange) 8%, transparent) 0%, transparent 45%),
     linear-gradient(168deg, #0c0b10 0%, var(--bg-void, #050505) 42%, #040306 100%);
 }
@@ -105,7 +105,7 @@
 }
 
 .debug-titlebar-product {
-  color: color-mix(in srgb, var(--accent-orange, #ff6a1a) 55%, rgba(255, 255, 255, 0.75)) !important;
+  color: color-mix(in srgb, var(--accent-orange, #ffd54a) 55%, rgba(255, 255, 255, 0.75)) !important;
   text-shadow: 0 0 22px color-mix(in srgb, var(--accent-orange) 20%, transparent);
 }
 
@@ -472,7 +472,7 @@
 .debug-check input {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--accent-orange, #ff6a1a);
+  accent-color: var(--accent-orange, #ffd54a);
   cursor: pointer;
 }
 

@@ -1,0 +1,57 @@
+{
+    "variants":  {
+                     "facing=north,waterlogged=true":  {
+                                                           "model": "bmcmod:block/large_opal_bud",
+                                                           "x":  90
+                                                       },
+                     "facing=north,waterlogged=false":  {
+                                                            "model": "bmcmod:block/large_opal_bud",
+                                                            "x":  90
+                                                        },
+                     "facing=south,waterlogged=true":  {
+                                                           "y":  180,
+                                                           "model": "bmcmod:block/large_opal_bud",
+                                                           "x":  90
+                                                       },
+                     "facing=south,waterlogged=false":  {
+                                                            "y":  180,
+                                                            "model": "bmcmod:block/large_opal_bud",
+                                                            "x":  90
+                                                        },
+                     "facing=west,waterlogged=false":  {
+                                                           "y":  270,
+                                                           "model": "bmcmod:block/large_opal_bud",
+                                                           "x":  90
+                                                       },
+                     "facing=down,waterlogged=true":  {
+                                                          "model": "bmcmod:block/large_opal_bud",
+                                                          "x":  180
+                                                      },
+                     "facing=up,waterlogged=true":  {
+                                                        "model": "bmcmod:block/large_opal_bud"
+                                                    },
+                     "facing=up,waterlogged=false":  {
+                                                         "model": "bmcmod:block/large_opal_bud"
+                                                     },
+                     "facing=east,waterlogged=false":  {
+                                                           "y":  90,
+                                                           "model": "bmcmod:block/large_opal_bud",
+                                                           "x":  90
+                                                       },
+                     "facing=east,waterlogged=true":  {
+                                                          "y":  90,
+                                                          "model": "bmcmod:block/large_opal_bud",
+                                                          "x":  90
+                                                      },
+                     "facing=down,waterlogged=false":  {
+                                                           "model": "bmcmod:block/large_opal_bud",
+                                                           "x":  180
+                                                       },
+                     "facing=west,waterlogged=true":  {
+                                                          "y":  270,
+                                                          "model": "bmcmod:block/large_opal_bud",
+                                                          "x":  90
+                                                      }
+                 }
+}
+

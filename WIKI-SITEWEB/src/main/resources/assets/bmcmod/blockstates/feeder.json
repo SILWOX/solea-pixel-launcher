@@ -1,0 +1,24 @@
+{
+  "variants": {
+    "facing=north,contents=empty": { "model": "bmcmod:block/feeder_empty" },
+    "facing=south,contents=empty": { "model": "bmcmod:block/feeder_empty", "y": 180 },
+    "facing=west,contents=empty": { "model": "bmcmod:block/feeder_empty", "y": 270 },
+    "facing=east,contents=empty": { "model": "bmcmod:block/feeder_empty", "y": 90 },
+    "facing=north,contents=seeds": { "model": "bmcmod:block/feeder_seeds" },
+    "facing=south,contents=seeds": { "model": "bmcmod:block/feeder_seeds", "y": 180 },
+    "facing=west,contents=seeds": { "model": "bmcmod:block/feeder_seeds", "y": 270 },
+    "facing=east,contents=seeds": { "model": "bmcmod:block/feeder_seeds", "y": 90 },
+    "facing=north,contents=wheat": { "model": "bmcmod:block/feeder_wheat" },
+    "facing=south,contents=wheat": { "model": "bmcmod:block/feeder_wheat", "y": 180 },
+    "facing=west,contents=wheat": { "model": "bmcmod:block/feeder_wheat", "y": 270 },
+    "facing=east,contents=wheat": { "model": "bmcmod:block/feeder_wheat", "y": 90 },
+    "facing=north,contents=potato": { "model": "bmcmod:block/feeder_potato" },
+    "facing=south,contents=potato": { "model": "bmcmod:block/feeder_potato", "y": 180 },
+    "facing=west,contents=potato": { "model": "bmcmod:block/feeder_potato", "y": 270 },
+    "facing=east,contents=potato": { "model": "bmcmod:block/feeder_potato", "y": 90 },
+    "facing=north,contents=carrot": { "model": "bmcmod:block/feeder_carrot" },
+    "facing=south,contents=carrot": { "model": "bmcmod:block/feeder_carrot", "y": 180 },
+    "facing=west,contents=carrot": { "model": "bmcmod:block/feeder_carrot", "y": 270 },
+    "facing=east,contents=carrot": { "model": "bmcmod:block/feeder_carrot", "y": 90 }
+  }
+}

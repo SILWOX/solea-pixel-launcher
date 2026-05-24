@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/backpack_diamond",
+  "display": {
+    "icon": { "id": "bmcmod:emerald_backpack" },
+    "title": { "translate": "advancement.bmcmod.backpack_emerald.title" },
+    "description": { "translate": "advancement.bmcmod.backpack_emerald.description" },
+    "frame": "task",
+    "x": 6.0,
+    "y": 1.0
+  },
+  "criteria": {
+    "has_emerald_backpack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:emerald_backpack" }] }
+    }
+  },
+  "rewards": { "experience": 60, "loot": ["bmcmod:advancement_rewards/challenge_shield_wall"] }
+}

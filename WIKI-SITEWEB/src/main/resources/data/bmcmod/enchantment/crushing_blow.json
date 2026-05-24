@@ -1,0 +1,11 @@
+{
+  "description": {"translate": "enchantment.bmcmod.crushing_blow"},
+  "supported_items": "#minecraft:axes",
+  "weight": 4,
+  "max_level": 3,
+  "min_cost": {"base": 14, "per_level_above_first": 9},
+  "max_cost": {"base": 55, "per_level_above_first": 9},
+  "anvil_cost": 5,
+  "slots": ["hand"],
+  "effects": {}
+}

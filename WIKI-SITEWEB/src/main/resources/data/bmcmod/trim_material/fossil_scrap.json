@@ -1,0 +1,9 @@
+{
+  "asset_name": "fossil_scrap",
+  "description": {
+    "color": "#1A1816",
+    "translate": "trim_material.bmcmod.fossil_scrap"
+  },
+  "ingredient": "bmcmod:fossil_scrap",
+  "item_model_index": 0.517
+}

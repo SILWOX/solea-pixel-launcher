@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:blink",
+    "bmcmod:endling",
+    "bmcmod:end_golem",
+    "bmcmod:mimic_chest",
+    "bmcmod:radiant_slime",
+    "bmcmod:undead_illager",
+    "bmcmod:vlinx",
+    "bmcmod:bounty_hunter"
+  ]
+}

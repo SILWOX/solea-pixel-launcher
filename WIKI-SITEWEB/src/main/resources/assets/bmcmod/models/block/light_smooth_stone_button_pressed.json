@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button_pressed",
+  "textures": {
+    "texture": "bmcmod:block/stone/light_smooth_stone"
+  }
+}

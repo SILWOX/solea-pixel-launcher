@@ -1,0 +1,18 @@
+{
+    "key":  {
+                "#":  {
+                          "item":  "bmcmod:opal_shard"
+                      }
+            },
+    "category":  "building",
+    "pattern":  [
+                    "##",
+                    "##"
+                ],
+    "result":  {
+                   "count":  1,
+                   "id":  "bmcmod:opal_block"
+               },
+    "type":  "minecraft:crafting_shaped"
+}
+

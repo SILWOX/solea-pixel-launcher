@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/door_top_left_open",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "bottom": "bmcmod:block/hollow/hollow_door_bottom",
+    "top": "bmcmod:block/hollow/hollow_door_top"
+  }
+}

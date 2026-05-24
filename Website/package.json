@@ -3,7 +3,7 @@
   "private": true,
   "description": "Site vitrine statique (Netlify). Projet séparé du launcher Electron — même dépôt GitHub (dossier Website/).",
   "scripts": {
-    "dev": "npx --yes serve@14 . -l 5174",
+    "dev": "npx --yes http-server@14.1.1 . -p 5174 -c-1",
     "serve": "npm run dev"
   }
 }

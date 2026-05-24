@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "minecraft:netherite_upgrade_smithing_template" },
+  "base": { "item": "bmcmod:diamond_scythe" },
+  "addition": { "item": "minecraft:netherite_ingot" },
+  "result": { "id": "bmcmod:netherite_scythe", "count": 1 }
+}

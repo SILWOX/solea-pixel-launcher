@@ -44,7 +44,7 @@ export const launcherSettingsStoredSchema = z
     uiFontScale: z.enum(['s', 'm', 'l']).optional(),
     uiReduceMotion: z.boolean().optional(),
     uiCompact: z.boolean().optional(),
-    uiHomeCardVariant: z.enum(['studio', 'classic']).optional(),
+    uiHomeCardVariant: z.enum(['studio', 'classic', 'beta']).optional(),
     uiSettingsShell: z.enum(['aether2', 'legacy']).optional(),
     uiSounds: z.boolean().optional(),
     uiSoundVolume: z.coerce.number().min(0).max(1).optional(),

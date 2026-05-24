@@ -9,6 +9,8 @@ import mt2Wall from './assets/modpacks/mythic-trials-2/wallpaper.png?url'
 import mt2Icon from './assets/modpacks/mythic-trials-2/icon.png?url'
 import aeWall from './assets/modpacks/aeloria/wallpaper.png?url'
 import aeIcon from './assets/modpacks/aeloria/icon.png?url'
+import soWall from './assets/modpacks/solea-optimised/wallpaper.png?url'
+import soIcon from './assets/modpacks/solea-optimised/icon.png?url'
 
 export type ModpackIdUi =
   | 'palamod-recreated'
@@ -16,6 +18,7 @@ export type ModpackIdUi =
   | 'mythic-trials-1'
   | 'mythic-trials-2'
   | 'aeloria'
+  | 'solea-optimised'
 
 export const MODPACK_THEME: Record<
   ModpackIdUi,
@@ -49,6 +52,11 @@ export const MODPACK_THEME: Record<
     wallpaper: aeWall,
     sidebarIcon: aeIcon,
     themeClass: 'theme-aeloria'
+  },
+  'solea-optimised': {
+    wallpaper: soWall,
+    sidebarIcon: soIcon,
+    themeClass: 'theme-solea-optimised'
   }
 }
 
@@ -58,7 +66,8 @@ export function isModpackId(s: string): s is ModpackIdUi {
     s === 'wither-storm' ||
     s === 'mythic-trials-1' ||
     s === 'mythic-trials-2' ||
-    s === 'aeloria'
+    s === 'aeloria' ||
+    s === 'solea-optimised'
   )
 }
 
@@ -68,6 +77,6 @@ export const MODPACK_HOME_LEAD_KEY: Record<ModpackIdUi, string> = {
   'wither-storm': 'home.lead.wither-storm',
   'mythic-trials-1': 'home.lead.mythic-trials-1',
   'mythic-trials-2': 'home.lead.mythic-trials-2',
-  aeloria: 'home.lead.aeloria'
+  aeloria: 'home.lead.aeloria',
+  'solea-optimised': 'home.lead.solea-optimised'
 }
-

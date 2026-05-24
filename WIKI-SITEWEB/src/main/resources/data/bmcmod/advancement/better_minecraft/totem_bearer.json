@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/soul_spark",
+  "display": {
+    "icon": {
+      "id": "bmcmod:undead_totem"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.totem_bearer.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.totem_bearer.description"
+    },
+    "frame": "task",
+    "x": 6.0,
+    "y": 3.5
+  },
+  "criteria": {
+    "has_totem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:undead_totem"
+          }
+        ]
+      }
+    }
+  }
+}

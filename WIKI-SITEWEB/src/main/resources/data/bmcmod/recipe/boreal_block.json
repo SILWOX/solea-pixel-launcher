@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "boreal_block",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": { "item": "bmcmod:boreal_ingot" }
+  },
+  "result": {
+    "id": "bmcmod:boreal_block",
+    "count": 1
+  }
+}

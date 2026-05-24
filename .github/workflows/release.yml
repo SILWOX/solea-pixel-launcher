@@ -1,18 +1,34 @@
-# Publie une release GitHub (Windows NSIS + portable + auto-update, macOS DMG arm64/x64)
-# quand tu pousses un tag v*. Les deux jobs peuvent tourner en parallèle ; electron-builder
-# attache les assets à la même release.
+# Publie une release GitHub (Windows NSIS + portable + auto-update, macOS DMG arm64/x64).
+# - Push tag v* : Windows + macOS en parallèle.
+# - workflow_dispatch : régénérer une plateforme (ex. DMG manquants) sur un tag déjà poussé.
 name: Release
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag Git (ex. v26.3.3) — la référence doit exister sur le dépôt'
+        required: true
+        type: string
+      platform:
+        description: 'Quels builds lancer'
+        required: true
+        type: choice
+        options:
+          - both
+          - windows-only
+          - macos-only
+        default: both
 
 permissions:
   contents: write
 
 jobs:
   release-windows:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'both' || inputs.platform == 'windows-only'))
     runs-on: windows-latest
     timeout-minutes: 45
     defaults:
@@ -21,6 +37,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -38,6 +56,7 @@ jobs:
         run: npm run predist && npm run build && npx electron-builder --win --publish always
 
   release-macos:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'both' || inputs.platform == 'macos-only'))
     runs-on: macos-latest
     timeout-minutes: 45
     defaults:
@@ -46,6 +65,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v4

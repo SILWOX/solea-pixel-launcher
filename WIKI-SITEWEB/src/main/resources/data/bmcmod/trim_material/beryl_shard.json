@@ -1,0 +1,10 @@
+{
+    "ingredient":  "bmcmod:beryl_shard",
+    "item_model_index":  0.521,
+    "asset_name":  "beryl",
+    "description":  {
+                        "translate":  "trim_material.bmcmod.beryl",
+                        "color":  "#FCDD52"
+                    }
+}
+

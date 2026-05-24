@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/storm_seer",
+  "display": {
+    "icon": { "id": "bmcmod:end_storm_bottle_4" },
+    "title": { "translate": "advancement.bmcmod.storm_cataclysm.title" },
+    "description": { "translate": "advancement.bmcmod.storm_cataclysm.description" },
+    "frame": "task",
+    "x": 7.0,
+    "y": 3.0
+  },
+  "criteria": {
+    "bottle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:end_storm_bottle_4" }] }
+    }
+  },
+  "rewards": { "experience": 75 }
+}

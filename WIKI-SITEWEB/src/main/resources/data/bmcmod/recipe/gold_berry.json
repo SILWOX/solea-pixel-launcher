@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "bmcmod:purple_berry" },
+    { "item": "minecraft:gold_nugget" },
+    { "item": "minecraft:gold_nugget" },
+    { "item": "minecraft:gold_nugget" },
+    { "item": "minecraft:gold_nugget" },
+    { "item": "minecraft:gold_nugget" },
+    { "item": "minecraft:gold_nugget" },
+    { "item": "minecraft:gold_nugget" },
+    { "item": "minecraft:gold_nugget" }
+  ],
+  "result": {
+    "id": "bmcmod:gold_berry",
+    "count": 1
+  }
+}

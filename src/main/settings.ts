@@ -43,7 +43,7 @@ export type SkinViewerAnimation =
   | 'crouch'
   | 'hit'
 export type UpdateChannel = 'stable' | 'beta'
-export type UiHomeCardVariant = 'studio' | 'classic'
+export type UiHomeCardVariant = 'studio' | 'classic' | 'beta'
 export type UiSettingsShellVariant = 'aether2' | 'legacy'
 
 export interface LauncherSettings {
@@ -371,7 +371,11 @@ export function saveSettings(s: LauncherSettings): { ok: true } | { ok: false; e
   if (typeof next.uiReduceMotion !== 'boolean') next.uiReduceMotion = DEFAULT_SETTINGS.uiReduceMotion
   if (typeof next.uiCompact !== 'boolean') next.uiCompact = DEFAULT_SETTINGS.uiCompact
   if (typeof next.uiChromeGlass !== 'boolean') next.uiChromeGlass = DEFAULT_SETTINGS.uiChromeGlass
-  if (next.uiHomeCardVariant !== 'studio' && next.uiHomeCardVariant !== 'classic') {
+  if (
+    next.uiHomeCardVariant !== 'studio' &&
+    next.uiHomeCardVariant !== 'classic' &&
+    next.uiHomeCardVariant !== 'beta'
+  ) {
     next.uiHomeCardVariant = DEFAULT_SETTINGS.uiHomeCardVariant
   }
   if (next.uiSettingsShell !== 'aether2' && next.uiSettingsShell !== 'legacy') {

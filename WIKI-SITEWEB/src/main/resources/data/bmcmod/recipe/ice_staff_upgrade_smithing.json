@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bmcmod:staff_upgrade_smithing_template" },
+  "base": { "item": "bmcmod:ice_staff" },
+  "addition": { "item": "bmcmod:ruby" },
+  "result": {
+    "id": "bmcmod:ice_staff",
+    "count": 1,
+    "components": {
+      "minecraft:max_damage": 620,
+      "minecraft:damage": 0
+    }
+  }
+}

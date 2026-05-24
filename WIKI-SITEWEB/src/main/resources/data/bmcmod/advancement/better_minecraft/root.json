@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "bmcmod:crystal"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.root.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.root.description"
+    },
+    "background": "bmcmod:textures/block/gems/topaz_block.png",
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

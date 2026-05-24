@@ -65,7 +65,6 @@ const LAUNCHER_KEYS: (keyof LauncherSettingsUI)[] = [
   'uiShortcutGoNews',
   'uiShortcutGoAccount',
   'nativeNotifications',
-  'experimentalServerSystemEnabled',
   'diagnosticLaunch',
   'networkSlowDownloads'
 ]
@@ -107,7 +106,6 @@ const LAUNCHER_FIELD_LABEL_KEY: Partial<Record<keyof LauncherSettingsUI, string>
   uiShortcutGoNews: 'settings.shortcutGoNews',
   uiShortcutGoAccount: 'settings.shortcutGoAccount',
   nativeNotifications: 'settings.nativeNotifications',
-  experimentalServerSystemEnabled: 'settings.experimentalServerToggle',
   diagnosticLaunch: 'settings.unsaved.label.diagnosticLaunch',
   networkSlowDownloads: 'settings.networkSlowDownloads'
 }

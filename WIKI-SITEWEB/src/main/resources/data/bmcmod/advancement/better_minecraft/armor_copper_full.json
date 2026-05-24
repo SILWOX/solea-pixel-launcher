@@ -1,0 +1,31 @@
+{
+  "parent": "bmcmod:better_minecraft/upgrade_apprentice",
+  "display": {
+    "icon": { "id": "bmcmod:copper_chestplate" },
+    "title": { "translate": "advancement.bmcmod.armor_copper_full.title" },
+    "description": { "translate": "advancement.bmcmod.armor_copper_full.description" },
+    "frame": "task",
+    "x": 5.0,
+    "y": -4.0
+  },
+  "criteria": {
+    "helm": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:copper_helmet" }] }
+    },
+    "chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:copper_chestplate" }] }
+    },
+    "legs": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:copper_leggings" }] }
+    },
+    "boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:copper_boots" }] }
+    }
+  },
+  "requirements": [["helm"], ["chest"], ["legs"], ["boots"]],
+  "rewards": { "experience": 55 }
+}

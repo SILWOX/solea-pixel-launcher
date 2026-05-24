@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/gem_collector",
+  "display": {
+    "icon": { "id": "bmcmod:forgotten_debris" },
+    "title": { "translate": "advancement.bmcmod.forgotten_scrap.title" },
+    "description": { "translate": "advancement.bmcmod.forgotten_scrap.description" },
+    "frame": "task",
+    "x": 5.5,
+    "y": 4.0
+  },
+  "criteria": {
+    "scrap": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:forgotten_debris" }] }
+    }
+  },
+  "rewards": { "experience": 45 }
+}

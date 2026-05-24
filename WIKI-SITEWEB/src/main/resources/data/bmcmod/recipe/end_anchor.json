@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "GGG",
+    "PPP"
+  ],
+  "key": {
+    "P": { "item": "minecraft:purpur_block" },
+    "G": { "item": "minecraft:glowstone" }
+  },
+  "result": {
+    "id": "bmcmod:end_anchor",
+    "count": 1
+  }
+}

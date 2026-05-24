@@ -1,0 +1,42 @@
+{
+  "parent": "bmcmod:better_minecraft/dragon_arcanist",
+  "display": {
+    "icon": {
+      "id": "bmcmod:dragon_staff"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.challenge_relic_trinity.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.challenge_relic_trinity.description"
+    },
+    "frame": "challenge",
+    "x": 11.0,
+    "y": -2.5
+  },
+  "criteria": {
+    "dragon_staff": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:dragon_staff"}]}
+    },
+    "wither_staff": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:wither_staff"}]}
+    },
+    "end_staff": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "bmcmod:end_staff"}]}
+    }
+  },
+  "requirements": [
+    ["dragon_staff"],
+    ["wither_staff"],
+    ["end_staff"]
+  ],
+  "rewards": {
+    "experience": 320,
+    "loot": [
+      "bmcmod:advancement_rewards/challenge_relic_trinity"
+    ]
+  }
+}

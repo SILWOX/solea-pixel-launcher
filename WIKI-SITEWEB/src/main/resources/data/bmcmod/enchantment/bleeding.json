@@ -1,0 +1,11 @@
+{
+  "description": {"translate": "enchantment.bmcmod.bleeding"},
+  "supported_items": "#bmcmod:enchantable/melee_weapon",
+  "weight": 1,
+  "max_level": 3,
+  "min_cost": {"base": 18, "per_level_above_first": 10},
+  "max_cost": {"base": 50, "per_level_above_first": 10},
+  "anvil_cost": 6,
+  "slots": ["hand"],
+  "effects": {}
+}

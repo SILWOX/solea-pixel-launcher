@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bmcmod:enderite_upgrade_smithing_template" },
+  "base": { "item": "bmcmod:netherite_scythe" },
+  "addition": { "item": "bmcmod:enderite_ingot" },
+  "result": { "id": "bmcmod:enderite_scythe", "count": 1 }
+}

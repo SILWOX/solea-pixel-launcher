@@ -1,5 +1,5 @@
 /**
- * Easter egg 404 : 404 doré → modale Rick Roll → (après fermeture) fusée → compte à rebours → mode glitch / fissures → trou noir → reset.
+ * Easter egg 404 : 404 doré (10 clics rapides sur le fond) → modale Rick Roll → …
  */
 ;(function () {
   const btn = document.getElementById('err-golden-404')
@@ -16,8 +16,8 @@
 
   const RICK = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
   const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const SPAWN_MIN_MS = 5000
-  const SPAWN_MAX_MS = 10000
+  const TAP_REQUIRED = 10
+  const TAP_MAX_GAP_MS = 520
   const PHASE2_MIN_MS = 10000
   const PHASE2_MAX_MS = 15000
   const ROCKET_CATCH_R = 26
@@ -29,6 +29,11 @@
   const ROCKET_HOMING_NEAR = 0.072
 
   const VOID_SEQUENCE_MS = 15000
+
+  function testChapter() {
+    const n = Number(window.__solea404Chapter)
+    return Number.isFinite(n) ? n : 0
+  }
   const MEME_SPAWN_MIN_MS = 3200
   const MEME_SPAWN_MAX_MS = 7600
   const MEME_FIRST_MS_MIN = 1200
@@ -96,6 +101,78 @@
     'CI is green on my branch',
     'repro steps: be lucky',
   ]
+
+  let streakHideTimer = 0
+  let tapStreak = 0
+  let lastTapAt = 0
+  const tapStreakEl = document.getElementById('page-error-tap-streak')
+  const tapDots = tapStreakEl ? Array.from(tapStreakEl.querySelectorAll('.page-error__tap-streak-dot')) : []
+
+  function isBackgroundTap(target) {
+    if (!(target instanceof Element)) return false
+    if (
+      target.closest(
+        'a, button, .page-error__card, dialog, .lang-switch, .page-error-golden-404, .page-error__top, .skip-link'
+      )
+    ) {
+      return false
+    }
+    return !!target.closest(
+      '.page-error__main, .page-error__stage, .page-error__ghost, .page-error-fx, .ambient'
+    )
+  }
+
+  function updateTapStreakUI(count) {
+    if (!tapStreakEl || !tapDots.length) return
+    tapStreakEl.classList.toggle('is-active', count > 0)
+    tapStreakEl.setAttribute('aria-hidden', count > 0 ? 'false' : 'true')
+    tapDots.forEach((dot, i) => {
+      dot.classList.toggle('is-lit', i < count)
+    })
+    window.clearTimeout(streakHideTimer)
+    if (count > 0) {
+      streakHideTimer = window.setTimeout(() => {
+        tapStreak = 0
+        updateTapStreakUI(0)
+      }, TAP_MAX_GAP_MS + 180)
+    }
+  }
+
+  function spawnTapRipple(x, y) {
+    const ripple = document.createElement('span')
+    ripple.className = 'page-error__tap-ripple'
+    ripple.style.left = `${x}px`
+    ripple.style.top = `${y}px`
+    document.body.appendChild(ripple)
+    ripple.addEventListener('animationend', () => ripple.remove(), { once: true })
+  }
+
+  function onBackgroundTap(e) {
+    if (spawned || caught || mqReduce.matches) return
+    if (!isBackgroundTap(e.target)) return
+
+    const now = Date.now()
+    if (tapStreak === 0 || now - lastTapAt > TAP_MAX_GAP_MS) {
+      tapStreak = 1
+    } else {
+      tapStreak += 1
+    }
+    lastTapAt = now
+    updateTapStreakUI(tapStreak)
+    if (typeof e.clientX === 'number' && typeof e.clientY === 'number') {
+      spawnTapRipple(e.clientX, e.clientY)
+    }
+
+    if (tapStreak >= TAP_REQUIRED) {
+      tapStreak = 0
+      updateTapStreakUI(0)
+      spawn()
+    }
+  }
+
+  function initTapUnlock() {
+    document.addEventListener('click', onBackgroundTap)
+  }
 
   let voidMemeTimer = null
   let voidMemeStopped = true
@@ -177,8 +254,8 @@
     mx = e.clientX
     my = e.clientY
     if (glitchCursor && window.__solea404Phase === 'glitch') {
-      glitchCursor.style.left = `${e.clientX - 14}px`
-      glitchCursor.style.top = `${e.clientY - 14}px`
+      glitchCursor.style.left = `${e.clientX - 22}px`
+      glitchCursor.style.top = `${e.clientY - 22}px`
     }
   }
 
@@ -346,19 +423,31 @@
 
   function spawnCrackVisual(clientX, clientY) {
     const crack = document.createElement('div')
-    crack.className = 'page-error-crack'
+    const variant = Math.floor(Math.random() * 4)
+    crack.className = 'page-error-crack page-error-crack--persistent'
     crack.style.left = `${clientX}px`
     crack.style.top = `${clientY}px`
-    crack.style.setProperty('--crack-rot', `${(Math.random() - 0.5) * 52}deg`)
+    crack.style.setProperty('--crack-rot', `${(Math.random() - 0.5) * 70}deg`)
+    crack.style.setProperty('--crack-scale', `${0.92 + Math.random() * 0.28}`)
+    const j4 =
+      variant >= 2
+        ? '<span class="page-error-crack__jag page-error-crack__jag--4" aria-hidden="true"></span>'
+        : ''
+    const fork =
+      variant === 1 || variant === 3
+        ? '<span class="page-error-crack__fork" aria-hidden="true"></span>'
+        : ''
     crack.innerHTML =
       '<span class="page-error-crack__glow" aria-hidden="true"></span>' +
       '<span class="page-error-crack__core" aria-hidden="true"></span>' +
       '<span class="page-error-crack__jag page-error-crack__jag--1" aria-hidden="true"></span>' +
       '<span class="page-error-crack__jag page-error-crack__jag--2" aria-hidden="true"></span>' +
       '<span class="page-error-crack__jag page-error-crack__jag--3" aria-hidden="true"></span>' +
-      '<span class="page-error-crack__ring" aria-hidden="true"></span>'
+      j4 +
+      fork +
+      '<span class="page-error-crack__ring" aria-hidden="true"></span>' +
+      '<span class="page-error-crack__ember" aria-hidden="true"></span>'
     document.body.appendChild(crack)
-    window.setTimeout(() => crack.remove(), 4800)
   }
 
   function onGlitchPointerDown(e) {
@@ -383,10 +472,19 @@
     glitchCursor = document.createElement('div')
     glitchCursor.className = 'page-error-glitch-cursor'
     glitchCursor.setAttribute('aria-hidden', 'true')
+    glitchCursor.innerHTML =
+      '<span class="page-error-glitch-cursor__ring" aria-hidden="true"></span>' +
+      '<span class="page-error-glitch-cursor__chroma page-error-glitch-cursor__chroma--r" aria-hidden="true"></span>' +
+      '<span class="page-error-glitch-cursor__chroma page-error-glitch-cursor__chroma--c" aria-hidden="true"></span>' +
+      '<span class="page-error-glitch-cursor__chroma page-error-glitch-cursor__chroma--b" aria-hidden="true"></span>' +
+      '<span class="page-error-glitch-cursor__core" aria-hidden="true"></span>'
     document.body.appendChild(glitchCursor)
-    glitchCursor.style.left = `${mx - 14}px`
-    glitchCursor.style.top = `${my - 14}px`
+    glitchCursor.style.left = `${mx - 22}px`
+    glitchCursor.style.top = `${my - 22}px`
 
+    if (window.Solea404Particles && typeof window.Solea404Particles.resetVortexState === 'function') {
+      window.Solea404Particles.resetVortexState()
+    }
     if (window.Solea404Particles && typeof window.Solea404Particles.setGlitchSuction === 'function') {
       window.Solea404Particles.setGlitchSuction(true)
     }
@@ -435,13 +533,15 @@
         const px = (-ty / len) * 72
         const py = (tx / len) * 72
         const rz = 0.82 + Math.random() * 0.36
+        const wobble = (Math.random() - 0.5) * 0.4
         el.style.setProperty('--void-tx', `${tx}px`)
         el.style.setProperty('--void-ty', `${ty}px`)
         el.style.setProperty('--void-px', `${px}px`)
         el.style.setProperty('--void-py', `${py}px`)
         el.style.setProperty('--void-rz', String(rz))
+        el.style.setProperty('--void-wobble', String(wobble))
         el.style.setProperty('--void-delay', `${i * 0.12}s`)
-        el.style.setProperty('--void-dur', `${13.2 + Math.random() * 1.6}s`)
+        el.style.setProperty('--void-dur', `${11.5 + Math.random() * 3.2}s`)
         el.style.zIndex = String(50 + i)
         el.classList.add('page-error-cinema-suck')
         i += 1
@@ -546,9 +646,13 @@
 
   function revealVoidEnd() {
     setPhase('collapsed')
+    document.body.classList.remove('page-error--void-distort')
     if (window.Solea404Particles && typeof window.Solea404Particles.setVoidPull === 'function') {
       window.Solea404Particles.setVoidPull(false)
     }
+    const m = /^#chapter(\d+)$/i.exec(location.hash || '')
+    const chLive = m ? Math.min(9, parseInt(m[1], 10)) : testChapter()
+    window.__solea404DeferLuckyUntilMeteor = chLive < 4
     populateVoidStars()
     voidStars.removeAttribute('hidden')
     voidStage.classList.add('page-error-void-stage--revealed')
@@ -592,11 +696,15 @@
     voidStage.classList.add('page-error-void-stage--active')
     document.body.classList.add('page-error--void-collapse')
     voidHole.classList.add('page-error-void-hole--pull')
+    voidHole.classList.add(`page-error-void-hole--v${Math.floor(Math.random() * 4)}`)
+    document.body.classList.add('page-error--void-distort')
     wireCinemaVoidSuck()
 
+    const ch = testChapter()
+    const voidMs = ch >= 4 ? 260 : ch >= 3 ? 420 : VOID_SEQUENCE_MS
     window.setTimeout(() => {
       revealVoidEnd()
-    }, VOID_SEQUENCE_MS)
+    }, voidMs)
   }
 
   function victory() {
@@ -655,8 +763,37 @@
 
   function boot() {
     if (mqReduce.matches) return
-    const delay = SPAWN_MIN_MS + Math.random() * (SPAWN_MAX_MS - SPAWN_MIN_MS)
-    window.setTimeout(spawn, delay)
+    const ch = testChapter()
+    if (ch === 1) {
+      caught = true
+      spawned = true
+      stopLoop()
+      btn.setAttribute('hidden', '')
+      btn.setAttribute('aria-hidden', 'true')
+      if (window.Solea404Particles && typeof window.Solea404Particles.resetVortexState === 'function') {
+        window.Solea404Particles.resetVortexState()
+      }
+      enterGlitchMode()
+      return
+    }
+    if (ch === 2 || ch === 3) {
+      caught = true
+      spawned = true
+      stopLoop()
+      btn.setAttribute('hidden', '')
+      btn.setAttribute('aria-hidden', 'true')
+      if (window.Solea404Particles && typeof window.Solea404Particles.resetVortexState === 'function') {
+        window.Solea404Particles.resetVortexState()
+      }
+      enterGlitchMode()
+      window.setTimeout(() => {
+        if (window.Solea404Particles && typeof window.Solea404Particles.forceAbsorb === 'function') {
+          window.Solea404Particles.forceAbsorb()
+        }
+      }, 220)
+      return
+    }
+    initTapUnlock()
   }
 
   if (document.readyState === 'loading') {

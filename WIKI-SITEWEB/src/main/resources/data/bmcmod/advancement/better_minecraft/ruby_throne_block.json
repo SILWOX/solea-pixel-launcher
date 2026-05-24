@@ -1,0 +1,18 @@
+{
+  "parent": "bmcmod:better_minecraft/gem_collector",
+  "display": {
+    "icon": { "id": "bmcmod:ruby_block" },
+    "title": { "translate": "advancement.bmcmod.ruby_throne_block.title" },
+    "description": { "translate": "advancement.bmcmod.ruby_throne_block.description" },
+    "frame": "task",
+    "x": 4.0,
+    "y": 4.5
+  },
+  "criteria": {
+    "block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:ruby_block" }] }
+    }
+  },
+  "rewards": { "experience": 65 }
+}

@@ -1,0 +1,18 @@
+{
+    "key":  {
+                "#":  {
+                          "item":  "bmcmod:topaz_shard"
+                      }
+            },
+    "category":  "building",
+    "pattern":  [
+                    "##",
+                    "##"
+                ],
+    "result":  {
+                   "count":  1,
+                   "id":  "bmcmod:topaz_block"
+               },
+    "type":  "minecraft:crafting_shaped"
+}
+

@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "bmcmod:ore_ruby",
+    "bmcmod:ore_deepslate_ruby"
+  ],
+  "step": "underground_ores"
+}

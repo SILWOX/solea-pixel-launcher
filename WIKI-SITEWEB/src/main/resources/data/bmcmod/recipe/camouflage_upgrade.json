@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "VLV",
+    "LPL",
+    "MSM"
+  ],
+  "key": {
+    "V": {
+      "item": "minecraft:vine"
+    },
+    "L": {
+      "item": "minecraft:jungle_leaves"
+    },
+    "P": {
+      "item": "bmcmod:upgrade_plate"
+    },
+    "M": {
+      "item": "minecraft:moss_carpet"
+    },
+    "S": {
+      "tag": "bmcmod:foundry_shards"
+    }
+  },
+  "result": {
+    "id": "bmcmod:camouflage_upgrade",
+    "count": 1
+  }
+}

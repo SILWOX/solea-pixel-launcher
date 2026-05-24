@@ -1,0 +1,31 @@
+{
+  "parent": "bmcmod:better_minecraft/upgrade_table_mastery",
+  "display": {
+    "icon": { "id": "bmcmod:critical_upgrade" },
+    "title": { "translate": "advancement.bmcmod.upgrade_overdrive.title" },
+    "description": { "translate": "advancement.bmcmod.upgrade_overdrive.description" },
+    "frame": "task",
+    "x": 6.0,
+    "y": -1.8
+  },
+  "criteria": {
+    "has_speed_upgrade": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:speed_upgrade" }] }
+    },
+    "has_health_upgrade": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:health_upgrade" }] }
+    },
+    "has_critical_upgrade": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "bmcmod:critical_upgrade" }] }
+    }
+  },
+  "requirements": [
+    ["has_speed_upgrade"],
+    ["has_health_upgrade"],
+    ["has_critical_upgrade"]
+  ],
+  "rewards": { "experience": 95 }
+}

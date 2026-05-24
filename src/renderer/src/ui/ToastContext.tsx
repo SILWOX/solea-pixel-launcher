@@ -87,7 +87,7 @@ function ToastChrome({ item, onDismiss }: { item: ToastItem; onDismiss: () => vo
 
   return (
     <div
-      className={`toast-item toast-item-${item.kind}${item.action ? ' toast-item--with-action' : ''}`}
+      className={`toast-item toast-item-${item.kind}${item.action ? ' toast-item--with-action' : ''} v3-surface`}
       role={item.kind === 'error' ? 'alert' : 'status'}
     >
       <div className="toast-item-accent" aria-hidden />
@@ -100,7 +100,7 @@ function ToastChrome({ item, onDismiss }: { item: ToastItem; onDismiss: () => vo
             <span className="toast-item-kind font-mc">{kindLabel}</span>
             <button
               type="button"
-              className="toast-item-dismiss"
+              className="toast-item-dismiss v3-btn"
               aria-label={t('toast.dismiss')}
               onClick={onDismiss}
             >
@@ -119,7 +119,7 @@ function ToastChrome({ item, onDismiss }: { item: ToastItem; onDismiss: () => vo
           {item.action ? (
             <button
               type="button"
-              className="toast-item-action"
+              className="toast-item-action v3-btn"
               onClick={() => {
                 item.action?.onClick()
                 onDismiss()

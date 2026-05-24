@@ -1,0 +1,11 @@
+{
+  "description": { "translate": "enchantment.bmcmod.shield_charge" },
+  "supported_items": "#bmcmod:shield_enchantable",
+  "weight": 5,
+  "max_level": 3,
+  "min_cost": { "base": 12, "per_level_above_first": 10 },
+  "max_cost": { "base": 35, "per_level_above_first": 15 },
+  "anvil_cost": 4,
+  "slots": ["hand"],
+  "effects": {}
+}

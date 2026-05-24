@@ -1,0 +1,18 @@
+{
+    "key":  {
+                "#":  {
+                          "item":  "bmcmod:beryl_shard"
+                      }
+            },
+    "category":  "building",
+    "pattern":  [
+                    "##",
+                    "##"
+                ],
+    "result":  {
+                   "count":  1,
+                   "id":  "bmcmod:beryl_block"
+               },
+    "type":  "minecraft:crafting_shaped"
+}
+

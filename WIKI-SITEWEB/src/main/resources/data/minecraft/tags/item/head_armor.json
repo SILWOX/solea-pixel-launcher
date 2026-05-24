@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:armorer_goggles",
+    "bmcmod:butcher_headband",
+    "bmcmod:cartographer_monocle",
+    "bmcmod:copper_helmet",
+    "bmcmod:emerald_helmet",
+    "bmcmod:enderite_helmet",
+    "bmcmod:boreal_helmet",
+    "bmcmod:farmer_hat",
+    "bmcmod:fisherman_hat",
+    "bmcmod:librarian_hat",
+    "bmcmod:obsidian_helmet",
+    "bmcmod:shepherd_hat",
+    "bmcmod:shulker_helmet",
+    "bmcmod:weaponsmith_eyepatch",
+    "bmcmod:witch_hat",
+    "bmcmod:undead_crown"
+  ]
+}

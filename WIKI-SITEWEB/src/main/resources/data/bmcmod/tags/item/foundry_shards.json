@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:nebrith_shard",
+    "bmcmod:topaz_shard",
+    "bmcmod:beryl_shard",
+    "bmcmod:opal_shard"
+  ]
+}

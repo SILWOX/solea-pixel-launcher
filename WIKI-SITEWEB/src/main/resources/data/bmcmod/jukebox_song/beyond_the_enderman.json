@@ -1,0 +1,8 @@
+{
+  "sound_event": "bmcmod:music_disc.beyond_the_enderman",
+  "description": {
+    "translate": "item.bmcmod.music_disc_beyond_the_enderman.desc"
+  },
+  "length_in_seconds": 240.0,
+  "comparator_output": 8
+}

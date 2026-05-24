@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bmcmod:light_stone_button",
+    "bmcmod:light_smooth_stone_button",
+    "bmcmod:dark_stone_button",
+    "bmcmod:dark_smooth_stone_button"
+  ]
+}

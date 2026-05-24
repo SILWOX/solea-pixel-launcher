@@ -1,0 +1,8 @@
+{
+    "textures":  {
+                     "cross":  "bmcmod:block/gems/small_topaz_bud"
+                 },
+    "parent":  "minecraft:block/cross",
+    "render_type":  "cutout"
+}
+

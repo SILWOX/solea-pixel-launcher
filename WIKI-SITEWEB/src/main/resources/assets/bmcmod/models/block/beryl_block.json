@@ -1,0 +1,7 @@
+{
+    "textures":  {
+                     "all":  "bmcmod:block/gems/beryl_block"
+                 },
+    "parent":  "minecraft:block/cube_all"
+}
+

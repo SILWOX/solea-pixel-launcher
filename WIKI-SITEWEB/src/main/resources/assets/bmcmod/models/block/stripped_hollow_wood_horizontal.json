@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "bmcmod:block/hollow/stripped_hollow_log",
+    "side": "bmcmod:block/hollow/stripped_hollow_log"
+  }
+}

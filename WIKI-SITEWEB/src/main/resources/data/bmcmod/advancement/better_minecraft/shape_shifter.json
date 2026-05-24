@@ -1,0 +1,29 @@
+{
+  "parent": "bmcmod:better_minecraft/clone_commander",
+  "display": {
+    "icon": {
+      "id": "bmcmod:morph_crystal"
+    },
+    "title": {
+      "translate": "advancement.bmcmod.shape_shifter.title"
+    },
+    "description": {
+      "translate": "advancement.bmcmod.shape_shifter.description"
+    },
+    "frame": "task",
+    "x": 9.0,
+    "y": 0.0
+  },
+  "criteria": {
+    "has_morph_crystal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bmcmod:morph_crystal"
+          }
+        ]
+      }
+    }
+  }
+}
