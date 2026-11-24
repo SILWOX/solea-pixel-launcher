@@ -13,11 +13,20 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
-    version: '26.4.1',
+    version: '26.4.2',
     date: '2026-05-24',
     fixed: [
-      '**Better MC:** Modrinth install uses the mod `.jar` path instead of treating it as an `.mrpack` (fixes missing `modrinth.index.json`).'
+      '**Better MC:** installs the full Modrinth modpack **bmcpack** (`.mrpack`, ~100 mods) instead of the standalone **bmcmod** `.jar`.',
+      '**SOLEA OPTIMISED:** reads `fabric-loader` from `modrinth.index.json` (Fabric **1.21.11**).'
     ],
+    changed: [
+      '**NeoForge:** version resolved from modpack index, installed mod requirements, and the latest compatible **21.1.x** release on Maven (no more pinned **21.1.217**).',
+      '**Release branding:** footer and Home & news badge show **26.4.2 | Release** (package **26.4.2**).'
+    ]
+  },
+  {
+    version: '26.4.1',
+    date: '2026-05-24',
     added: [
       'SOLEA OPTIMISED modpack (modrinth.com/modpack/solea-optimised, Fabric 1.21.11) — optimization + visual upgrades, shader support, vanilla-friendly (~100 mods, 4 GB RAM), green UI theme and custom assets.'
     ],

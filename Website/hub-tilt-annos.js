@@ -3,6 +3,8 @@
  */
 ;(function () {
   const POOL_SIZE = 10
+  /** Index 7 = « serveur local » — fonctionnalité retirée du launcher. */
+  const EXCLUDED_POOL_IDS = new Set([7])
   const PALETTES = ['accent', 'blue', 'violet', 'green', 'gold']
   const FLOAT_CLASSES = ['tilt-anno--float-a', 'tilt-anno--float-b', 'tilt-anno--float-c']
   /** Marge minimale entre deux cartes (px, coordonnées viewport) */
@@ -33,7 +35,8 @@
   }
 
   function pickUnique(n, max) {
-    return shuffle([...Array(max).keys()]).slice(0, n)
+    const ids = [...Array(max).keys()].filter((id) => !EXCLUDED_POOL_IDS.has(id))
+    return shuffle(ids).slice(0, n)
   }
 
   function applyPosition(el, spec) {

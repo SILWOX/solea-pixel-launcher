@@ -10,8 +10,6 @@
       'meta.description':
         'WELCOME: install our launcher here and discover the features offered by the launcher.',
       'nav.home': 'Home',
-      'nav.bmc': 'Better MC',
-      'nav.bmcAria': 'Better Minecraft mod — teaser page',
       'nav.news': 'News',
       'nav.about': 'About',
       'nav.downloads': 'Downloads',
@@ -71,8 +69,10 @@
       'hub.h1b': 'SOLEA packs',
       'hub.typePrefix': 'The SOLEA PIXEL universe:',
       'hub.lead':
-        'Discover our new launcher, optimized for all Minecraft use. You will find SOLEA PIXEL modpacks, access to vanilla Minecraft, and various other options available.',
+        'Discover our new launcher, tuned for Minecraft and the Solea ecosystem. Install SOLEA PIXEL modpacks from Modrinth, stay updated, and jump in with a clean, fast workflow.',
       'hub.btnDl': 'Download',
+      'nav.menuOpen': 'Open menu',
+      'nav.menuClose': 'Close menu',
       'hub.btnDiscover': 'Discover',
       'hub.versionLoading': 'Loading latest installer…',
       'hub.versionSlow': 'GitHub is slow — still fetching the latest installer…',
@@ -138,15 +138,15 @@
       'about.c3t': 'Support that listens',
       'about.c3b':
         'Stuck on install, crash, or modpack? We offer several ways to reach us — Discord is the fastest, and we read every report.',
-      'about.c4t': 'NeoForge & updates',
+      'about.c4t': 'SOLEA PIXEL STUDIO',
       'about.c4b':
-        'Built around NeoForge 1.21.1 with clear update paths: the launcher and this site stay aligned on the same official installers.',
+        'Made by the **SOLEA PIXEL STUDIO** team. Thank you for installing Solea Pixel and supporting the project.',
       'about.c5t': 'Designed for everyone',
       'about.c5b':
         'Whether you play premium or offline, solo or with friends, the UI stays readable and the options stay where you expect them.',
       'about.c6t': 'Why Solea Pixel instead of the default launcher?',
       'about.c6b':
-        'The official launcher is great for vanilla Minecraft. Solea Pixel focuses on **our NeoForge modpacks**, Modrinth installs, news in one place, optional offline play, and a **local server** workflow — without replacing Mojang tools, just offering a smoother path for Solea players.',
+        'The official launcher is great for vanilla Minecraft. Solea Pixel focuses on **our NeoForge modpacks**, Modrinth installs, news in one place, and optional offline play — without replacing Mojang tools, just offering a smoother path for Solea players.',
       'about.smartscreenTitle': 'Installation: “Windows protected your PC” (SmartScreen)',
       'about.smartscreenIntro':
         'When you run the installer, Windows may show a blue SmartScreen screen — that is common for a new app that has not yet built enough reputation with Microsoft.',
@@ -337,107 +337,6 @@
       'content.backHome': '← Home',
       'content.sitemap': 'Site map & links',
       'content.footerLicense': 'SPL license',
-      'betterminecraft.pageTitle': 'Better Minecraft (BMC) — SOLEA PIXEL',
-      'betterminecraft.metaDescription':
-        'Better Minecraft (BMC) for NeoForge 1.21.1: vanilla+ survival expansion — gear, infusion, biomes, goals. Long-form teaser by SOLEA PIXEL; downloads on Modrinth.',
-      'betterminecraft.heroBadge': 'NeoForge · Minecraft Java 1.21.1 · Modrinth',
-      'betterminecraft.heroTitle': 'Better Minecraft',
-      'betterminecraft.heroSubtitle': '[ BMC MOD ]',
-      'betterminecraft.heroLead':
-        'Vanilla+ survival you can read at a glance: new goals, crafted pacing, and atmosphere that still feels like Minecraft.',
-      'betterminecraft.introTitle': 'What is Better Minecraft?',
-      'betterminecraft.introLead':
-        'Better Minecraft (**BMC**) is a **NeoForge** mod for **Java 1.21.1** that stretches survival with handcrafted content — not random clutter, not a tech-tree simulator.',
-      'betterminecraft.introP1':
-        'We design around one question: **would this feel at home in a Mojang changelog?** That means readable progression, readable UI clutter (we play with **JEI** / **Jade** in mind), and features that reward planning — new tiers, new reasons to explore, and small loops that sit beside vanilla instead of replacing it.',
-      'betterminecraft.introP2':
-        'You will find **gear lines** (including enderite & emerald direction), **infusion-style crafting hooks**, **enchantments & systems** that extend the mid/late game, and **world flavour** that pushes the End & Overworld forward over time. Exact recipes and numbers evolve with the overhaul — the Modrinth changelog stays the source of truth.',
-      'betterminecraft.introP3':
-        'BMC is meant for **modpack authors** who want “more Minecraft” without teaching players a second game, and for **solo worlds** where you want fresh milestones after the dragon without installing twenty unrelated mods.',
-      'betterminecraft.pillarsTitle': 'Three big selling points',
-      'betterminecraft.pillar1Title': 'Modpack-friendly',
-      'betterminecraft.pillar1Body':
-        'Built to **slot into packs** you already play: plays nice with staples like **JEI** and **Jade**, and does not fight the rest of your mod list for attention.',
-      'betterminecraft.pillar2Title': 'Vanilla-like',
-      'betterminecraft.pillar2Body':
-        'Adds goals, gear, and world flavour that still **feel like Minecraft** — closer to a chunky vanilla update than a whole new game.',
-      'betterminecraft.pillar3Title': 'Not too complex',
-      'betterminecraft.pillar3Body':
-        'No homework wall: **readable progression**, systems you can explain in one breath, and fewer “learn my entire tech tree first” moments.',
-      'betterminecraft.detailsTitle': 'Concrete directions (overview)',
-      'betterminecraft.detailsHtml':
-        '<ul class="bmc-detail-list"><li><strong>Gear &amp; materials</strong> — new lines to plan around (enderite &amp; emerald are headline examples), with room for polish as the 1.21.1 rewrite lands.</li><li><strong>Infusion &amp; crafting goals</strong> — extra reasons to farm, explore, and revisit the world between two bases.</li><li><strong>Enchantments &amp; small mechanics</strong> — hooks that stretch combat and preparation without replacing core balance wholesale.</li><li><strong>Biomes &amp; ambience</strong> — End &amp; Overworld treated as first-class spaces; specifics shift version to version — follow the changelog.</li><li><strong>Documentation</strong> — release notes on Modrinth; deeper wiki pages appear as the overhaul stabilises.</li></ul>',
-      'betterminecraft.fitTitle': 'Who should install it?',
-      'betterminecraft.fitP1':
-        'Perfect if you want **more checklist after diamond** — new stations to build, new routes to optimise, new excuses to wander the map — while keeping the “Minecraft brain” you already have.',
-      'betterminecraft.fitP2':
-        'Less ideal if you are looking for **factory automation**, **magic tech trees**, or **dimension packs** that ignore the base game. BMC hugs vanilla; it does not replace it.',
-      'betterminecraft.featuresTitle': 'Feature spotlight',
-      'betterminecraft.feat1Title': 'Gear that paces you',
-      'betterminecraft.feat1Body':
-        'Enderite & emerald style lines give you **long-term projects** without invalidating iron or diamond overnight. Stats and recipes are tuned during the NeoForge migration — check Modrinth for the latest numbers.',
-      'betterminecraft.feat2Title': 'Infusion & crafting identity',
-      'betterminecraft.feat2Body':
-        'Infusion-style workflows tie late-game materials to **meaningful choices** — what to charge first, what to farm next — instead of a single OP craft.',
-      'betterminecraft.feat3Title': 'Worlds that grow with you',
-      'betterminecraft.feat3Body':
-        'End & Overworld content is built to **reward return trips**: new sights, new reasons to bring shulker boxes, and ambience that reads “expansion pack” rather than “random biome mod”.',
-      'betterminecraft.feat4Title': 'Systems, not noise',
-      'betterminecraft.feat4Body':
-        'Enchantments and light-touch mechanics extend survival loops — **sidegrades, trade-offs, preparation** — instead of stacking unrelated gimmicks.',
-      'betterminecraft.feat5Title': 'Vanilla+ promise',
-      'betterminecraft.feat5Body':
-        'If a feature cannot be explained to a returning player in one sentence, it probably does not belong here. BMC is the “**wider sandbox**” lane: more goals, same vocabulary.',
-      'betterminecraft.compatTitle': 'Compatibility',
-      'betterminecraft.compatBody': 'Minecraft **Java 1.21.1** · **NeoForge** · runs on **client & dedicated server**.',
-      'betterminecraft.compatNote':
-        'Mod loaders change fast — always match the **NeoForge** version range listed on the Modrinth file you download. When in doubt, ask on Discord with your latest log.',
-      'betterminecraft.linksTitle': 'Official links',
-      'betterminecraft.linkProject': 'Modrinth — project page',
-      'betterminecraft.linkChangelog': 'Changelog & files',
-      'betterminecraft.linkOrgShort': 'SOLEA PIXEL org',
-      'betterminecraft.linkDiscord': 'Community Discord',
-      'betterminecraft.ctaModrinth': 'Open on Modrinth',
-      'betterminecraft.ctaOrg': 'SOLEA PIXEL on Modrinth',
-      'betterminecraft.footerNote': 'Art & branding belong to their respective owners. Not an official Minecraft service.',
-      'betterminecraft.backHome': '← Back to home',
-      'betterminecraft.showcaseTitle': 'Textures & gear (preview)',
-      'betterminecraft.showcaseHint': 'Hover a card (or focus it) to read the blurb — on touch devices the text stays visible.',
-      'betterminecraft.showcaseArmorFloatNote':
-        '**Emerald** (left edge) and **enderite** (right edge) spin in **3D** like in-game — soft background preview (handy for a wiki layout too).',
-      'betterminecraft.showcase1Name': 'Nebrith block',
-      'betterminecraft.showcase1Desc':
-        'Found in **End geodes**: a distinctive material and a great-looking decorative block.',
-      'betterminecraft.showcase2Name': 'Ruby ore',
-      'betterminecraft.showcase2Desc':
-        'Rubies are rare gems mainly used for **special trades** with the **Cured Witch**.',
-      'betterminecraft.showcase3Name': 'Enderite block',
-      'betterminecraft.showcase3Desc':
-        'Even rarer than Netherite: crafted from **nine enderite ingots** and genuinely hard to obtain.',
-      'betterminecraft.showcase4Name': 'Dragon staff',
-      'betterminecraft.showcase4Desc':
-        'A magic staff that channels the **Ender Dragon’s** power as its energy source.',
-      'betterminecraft.showcase5Name': 'Echo staff',
-      'betterminecraft.showcase5Desc':
-        'The **Warden** is no longer the only keeper of that power — the Echo staff wields it too.',
-      'betterminecraft.showcase6Name': 'Enderite sword',
-      'betterminecraft.showcase6Desc':
-        'Stronger and tougher than Netherite — a new emblem for your adventure.',
-      'betterminecraft.showcase7Name': 'Lightning bow',
-      'betterminecraft.showcase7Desc':
-        'True to its name: **tighter shots**, **longer range**, and a **powerful lightning strike** on impact. Do not stand in the way.',
-      'betterminecraft.showcase8Name': 'Liquid experience',
-      'betterminecraft.showcase8Desc':
-        'Liquid XP found in the End — **not quite** what you might expect.',
-      'betterminecraft.showcase9Name': 'Emerald armor',
-      'betterminecraft.showcase9Desc':
-        'No stronger than diamond, but the **full set** has an edge — equip it all and **visit the villagers**.',
-      'betterminecraft.showcase10Name': 'Enderite armor',
-      'betterminecraft.showcase10Desc':
-        'Dark **purple** and true to its name — tougher than older armor that is starting to feel dated.',
-      'betterminecraft.showcase11Name': 'Soul crystal',
-      'betterminecraft.showcase11Desc':
-        'Whatever you think, you are wrong! **Trap souls** in the crystal and use them at the **Infusion Table** — pure sorcery.',
       'bmcwiki.pageTitle': 'Better Minecraft Wiki (draft) — SOLEA PIXEL',
       'bmcwiki.metaDescription':
         'Draft BMC wiki: category tree only — **not indexed** and **not intended** for the next public site update until you enable it.',
@@ -690,8 +589,6 @@
       'meta.description':
         'BIENVENUE : installez ici notre launcher et découvrez les fonctionnalités proposées par le launcher.',
       'nav.home': 'Accueil',
-      'nav.bmc': 'Better MC',
-      'nav.bmcAria': 'Mod Better Minecraft — page teaser',
       'nav.news': 'Actu',
       'nav.about': 'À propos',
       'nav.downloads': 'Téléchargements',
@@ -751,8 +648,10 @@
       'hub.h1b': 'PACK SOLEA',
       'hub.typePrefix': "L'univers SOLEA PIXEL :",
       'hub.lead':
-        'Découvrez notre nouveau launcher optimisé pour toute utilisation Minecraft. Vous retrouverez les modpack SOLEA PIXEL, un accès à Minecraft vanilla et diverses autres options disponibles.',
+        'Découvrez notre nouveau launcher, pensé pour Minecraft et l’écosystème Solea. Installez les modpacks SOLEA PIXEL via Modrinth, restez à jour, et lancez-vous avec une expérience claire et rapide.',
       'hub.btnDl': 'Télécharger',
+      'nav.menuOpen': 'Ouvrir le menu',
+      'nav.menuClose': 'Fermer le menu',
       'hub.btnDiscover': 'Découvrir',
       'hub.versionLoading': 'Chargement de la dernière version…',
       'hub.versionSlow': 'GitHub est lent — on récupère encore la dernière version…',
@@ -819,15 +718,15 @@
       'about.c3t': "Support à l'écoute",
       'about.c3b':
         'Un souci d’installation, de crash ou de modpack ? Nous proposons plusieurs moyens de nous joindre — Discord est le plus rapide, et nous lisons chaque signalement.',
-      'about.c4t': 'NeoForge & mises à jour',
+      'about.c4t': 'SOLEA PIXEL STUDIO',
       'about.c4b':
-        'Pensé autour de NeoForge 1.21.1 avec des mises à jour claires : le launcher et ce site restent alignés sur les mêmes installateurs officiels.',
+        'Réalisé par l’équipe **SOLEA PIXEL STUDIO**. Merci pour ton installation et ton soutien au projet.',
       'about.c5t': 'Pensé pour tous',
       'about.c5b':
         'Que tu joues en premium ou en crack, solo ou entre amis, l’interface reste lisible et les options là où tu les attends.',
       'about.c6t': 'Pourquoi Solea Pixel plutôt que le launcher par défaut ?',
       'about.c6b':
-        'Le launcher officiel est idéal pour du Minecraft vanilla. Solea Pixel est pensé pour **nos modpacks NeoForge**, les installs Modrinth, les actus au même endroit, le jeu hors ligne optionnel et un flux **Mon serveur** — sans remplacer les outils Mojang, juste un parcours plus fluide pour les joueurs Solea.',
+        'Le launcher officiel est idéal pour du Minecraft vanilla. Solea Pixel est pensé pour **nos modpacks NeoForge**, les installs Modrinth, les actus au même endroit et le jeu hors ligne optionnel — sans remplacer les outils Mojang, juste un parcours plus fluide pour les joueurs Solea.',
       'about.smartscreenTitle': 'Installation : « Windows a protégé votre ordinateur » (SmartScreen)',
       'about.smartscreenIntro':
         'Au lancement de l’installateur, Windows peut afficher l’écran bleu SmartScreen — c’est fréquent pour une application récente qui n’a pas encore assez de « réputation » aux yeux du filtre.',
@@ -991,109 +890,6 @@
       'content.backHome': '← Accueil',
       'content.sitemap': 'Plan du site & liens',
       'content.footerLicense': 'Licence SPL',
-      'betterminecraft.pageTitle': 'Better Minecraft (BMC) — SOLEA PIXEL',
-      'betterminecraft.metaDescription':
-        'Better Minecraft (BMC) pour NeoForge 1.21.1 : extension survie vanilla+, équipements, infusion, biomes, objectifs. Teaser détaillé SOLEA PIXEL ; téléchargements sur Modrinth.',
-      'betterminecraft.heroBadge': 'NeoForge · Minecraft Java 1.21.1 · Modrinth',
-      'betterminecraft.heroTitle': 'Better Minecraft',
-      'betterminecraft.heroSubtitle': '[ BMC MOD ]',
-      'betterminecraft.heroLead':
-        'Survie **vanilla+** lisible d’un coup d’œil : nouveaux objectifs, rythme maîtrisé, ambiance toujours Minecraft.',
-      'betterminecraft.introTitle': "C'est quoi Better Minecraft ?",
-      'betterminecraft.introLead':
-        'Better Minecraft (**BMC**) est un mod **NeoForge** pour **Java 1.21.1** qui allonge le survie avec du contenu pensé — pas du bruit aléatoire, ni une usine à machines.',
-      'betterminecraft.introP1':
-        'On part d’une question : **est-ce que ça pourrait tenir dans un changelog Mojang ?** Progression lisible, interface familière (on pense **JEI** / **Jade**), et des mécaniques qui récompensent l’anticipation — nouveaux paliers, nouvelles raisons d’explorer, petites boucles **à côté** du vanilla plutôt qu’à la place.',
-      'betterminecraft.introP2':
-        'Tu y trouveras des **lignes d’équipement** (dont enderite & émeraude comme fils conducteurs), des **boucles d’infusion / d’artisanat**, des **enchantements & systèmes** pour le milieu / fin de jeu, et du **relief monde** (End & Overworld) qui avance au fil des versions. Chiffres et recettes bougent avec la refonte : le **changelog Modrinth** reste la référence.',
-      'betterminecraft.introP3':
-        'C’est pensé pour les **auteurs de modpacks** qui veulent « plus de Minecraft » sans réécrire la courbe d’apprentissage, et pour les **mondes solo** où tu veux de nouveaux jalons après le dragon sans empiler vingt mods sans lien.',
-      'betterminecraft.pillarsTitle': 'Trois gros points du mod',
-      'betterminecraft.pillar1Title': 'Compatible modpack',
-      'betterminecraft.pillar1Body':
-        'Pensé pour **s’insérer dans tes packs** : bon voisin avec **JEI**, **Jade** et le reste de la liste, sans voler la vedette aux autres mods.',
-      'betterminecraft.pillar2Title': 'Proche du vanilla',
-      'betterminecraft.pillar2Body':
-        'Du contenu qui reste dans l’**esprit Minecraft** — objectifs, équipements, monde : plutôt une **grosse couche vanilla** qu’un jeu à part.',
-      'betterminecraft.pillar3Title': 'Pas trop complexe',
-      'betterminecraft.pillar3Body':
-        'Pas de mur de devoirs : **progression lisible**, des systèmes qu’on peut résumer vite, sans « apprends tout mon arbre tech avant de t’amuser ».',
-      'betterminecraft.detailsTitle': 'Axes concrets (vue d’ensemble)',
-      'betterminecraft.detailsHtml':
-        '<ul class="bmc-detail-list"><li><strong>Équipement &amp; matériaux</strong> — nouvelles lignes à planifier (enderite &amp; émeraude en tête d’affiche), affinées pendant la migration 1.21.1.</li><li><strong>Infusion &amp; objectifs d’artisanat</strong> — plus de raisons de farmer, d’explorer et de relier le monde entre deux bases.</li><li><strong>Enchantements &amp; petites mécaniques</strong> — des leviers qui allongent combat &amp; préparation sans remplacer l’équilibre de base.</li><li><strong>Biomes &amp; ambiance</strong> — End &amp; Overworld comme espaces de premier plan ; le détail évolue — suis le changelog.</li><li><strong>Documentation</strong> — notes de version sur Modrinth ; pages wiki plus poussées au fur et à mesure que la refonte se stabilise.</li></ul>',
-      'betterminecraft.fitTitle': 'Pour qui ?',
-      'betterminecraft.fitP1':
-        'Idéal si tu veux **plus de cases à cocher après le diamant** — nouvelles stations, nouvelles routes d’optimisation, nouvelles excuses pour arpenter la carte — en gardant le « cerveau Minecraft » que tu as déjà.',
-      'betterminecraft.fitP2':
-        'Moins adapté si tu cherches **l’automatisation usine**, les **arbres de magie tech** ou les **dimensions** qui ignorent le jeu de base. BMC reste collé au vanilla ; il ne le remplace pas.',
-      'betterminecraft.featuresTitle': 'Zoom sur les blocs',
-      'betterminecraft.feat1Title': 'Équipement qui te cadence',
-      'betterminecraft.feat1Body':
-        'Les lignes type enderite &amp; émeraude donnent des **projets long terme** sans rendre le fer ou le diamant ridicules du jour au lendemain. Stats et recettes suivent la migration NeoForge — voir Modrinth pour les valeurs à jour.',
-      'betterminecraft.feat2Title': 'Infusion & identité craft',
-      'betterminecraft.feat2Body':
-        'Les workflows type infusion lient les matériaux de fin de partie à des **choix** — quoi charger en premier, quoi farmer ensuite — plutôt qu’à une recette OP unique.',
-      'betterminecraft.feat3Title': 'Des mondes qui te rappellent',
-      'betterminecraft.feat3Body':
-        'Le contenu End & Overworld vise des **retours sur zone** : nouvelles raisons de remplir des shulkers, une ambiance « extension » plutôt que « biome random ».',
-      'betterminecraft.feat4Title': 'Des systèmes, pas du bruit',
-      'betterminecraft.feat4Body':
-        'Enchantements et mécaniques légères allongent les boucles — **compromis**, **sidegrades** et **préparation** — au lieu d’empiler des gadgets sans lien.',
-      'betterminecraft.feat5Title': 'Promesse vanilla+',
-      'betterminecraft.feat5Body':
-        'Si une feature ne s’explique pas en une phrase à un joueur qui revient, elle n’a probablement pas sa place ici. BMC, c’est le couloir **bac à sable plus large** : plus d’objectifs, le même vocabulaire.',
-      'betterminecraft.compatTitle': 'Compatibilité',
-      'betterminecraft.compatBody': 'Minecraft **Java 1.21.1** · **NeoForge** · **client & serveur dédié**.',
-      'betterminecraft.compatNote':
-        'Les loaders bougent vite — aligne toujours la **version de NeoForge** avec la plage indiquée sur le fichier Modrinth que tu télécharges. En cas de doute, demande sur Discord avec ton dernier log.',
-      'betterminecraft.linksTitle': 'Liens officiels',
-      'betterminecraft.linkProject': 'Modrinth — page projet',
-      'betterminecraft.linkChangelog': 'Changelog & fichiers',
-      'betterminecraft.linkOrgShort': 'Org SOLEA PIXEL',
-      'betterminecraft.linkDiscord': 'Discord communauté',
-      'betterminecraft.ctaModrinth': 'Voir sur Modrinth',
-      'betterminecraft.ctaOrg': 'SOLEA PIXEL sur Modrinth',
-      'betterminecraft.footerNote':
-        'Visuels & marques appartiennent à leurs détenteurs. Service Minecraft non officiel.',
-      'betterminecraft.backHome': '← Retour à l’accueil',
-      'betterminecraft.showcaseTitle': 'Textures & équipements (aperçu)',
-      'betterminecraft.showcaseHint':
-        'Survole une carte (ou mets-y le focus) pour lire le texte — sur écran tactile, la description reste affichée.',
-      'betterminecraft.showcaseArmorFloatNote':
-        '**Émeraude** (bord gauche) et **enderite** (bord droit) tournent en **3D** comme en jeu — aperçu discret sur le fond (réutilisable pour ton wiki).',
-      'betterminecraft.showcase1Name': 'Bloc de Nebrith',
-      'betterminecraft.showcase1Desc':
-        'Trouvable dans les **géodes de l’End** : une matière distinctive et une **belle décoration**.',
-      'betterminecraft.showcase2Name': 'Minerai de rubis',
-      'betterminecraft.showcase2Desc':
-        'Le rubis est une gemme rare, pensée surtout pour des **échanges spéciaux** avec le **villageois sorcier guéri**.',
-      'betterminecraft.showcase3Name': 'Bloc d’enderite',
-      'betterminecraft.showcase3Desc':
-        'Plus rare que la Netherite : se craft avec **neuf lingots d’enderite** et reste **très difficile** à obtenir.',
-      'betterminecraft.showcase4Name': 'Bâton du dragon',
-      'betterminecraft.showcase4Desc':
-        'Bâton de magie qui canalise la **puissance du dragon** comme source d’énergie.',
-      'betterminecraft.showcase5Name': 'Bâton d’écho',
-      'betterminecraft.showcase5Desc':
-        'Le **Warden** n’est plus le seul détenteur de ce pouvoir — le **bâton d’écho** s’en sert aussi.',
-      'betterminecraft.showcase6Name': 'Épée en enderite',
-      'betterminecraft.showcase6Desc':
-        'Plus tranchante et plus résistante que la Netherite — le **nouvel emblème** de ton aventure.',
-      'betterminecraft.showcase7Name': 'Arc foudre',
-      'betterminecraft.showcase7Desc':
-        'Comme son nom l’indique : **tir plus précis**, **portée accrue**, et un **éclair puissant** à l’impact. Ne reste pas sur la trajectoire !',
-      'betterminecraft.showcase8Name': 'Expérience liquide',
-      'betterminecraft.showcase8Desc':
-        'De l’XP sous forme liquide dans l’End — **ce n’est pas tout à fait** ce que tu imagines.',
-      'betterminecraft.showcase9Name': 'Armure en émeraude',
-      'betterminecraft.showcase9Desc':
-        'Pas plus forte que le diamant, mais le **set complet** a son atout : équipe-toi entièrement et **va voir les villageois**.',
-      'betterminecraft.showcase10Name': 'Armure en enderite',
-      'betterminecraft.showcase10Desc':
-        '**Violet sombre** et fidèle à son nom — plus résistante que l’ancienne armure qui commence à faire vieux jeu.',
-      'betterminecraft.showcase11Name': 'Cristal',
-      'betterminecraft.showcase11Desc':
-        'Quoi que tu croies, tu te trompes ! **Capture des âmes** dans le cristal et utilise-les à la **table d’infusion** — de la sorcellerie.',
       'bmcwiki.pageTitle': 'Wiki Better Minecraft (brouillon) — SOLEA PIXEL',
       'bmcwiki.metaDescription':
         'Wiki BMC brouillon : **enderite**, **nebrith**, **table d’infusion**, bâtons, etc. — **non indexé** tant que tu ne publies pas.',
@@ -1408,11 +1204,7 @@
           ? t('page404.metaDescription')
           : profile === 'contentHub'
             ? t('content.metaDescription')
-            : profile === 'betterminecraft'
-              ? t('betterminecraft.metaDescription')
-              : profile === 'betterminecraft-wiki'
-                ? t('bmcwiki.metaDescription')
-                : t('meta.description')
+            : t('meta.description')
     const shareTitle =
       profile === 'license'
         ? t('license.pageTitle')
@@ -1420,11 +1212,7 @@
           ? t('page404.docTitle')
           : profile === 'contentHub'
             ? t('content.pageTitle')
-            : profile === 'betterminecraft'
-              ? t('betterminecraft.pageTitle')
-              : profile === 'betterminecraft-wiki'
-                ? t('bmcwiki.pageTitle')
-                : t('page.title')
+            : t('page.title')
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', desc)
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', desc)

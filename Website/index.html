@@ -59,34 +59,27 @@
               {
                 "@type": "ListItem",
                 "position": 2,
-                "name": "Better Minecraft (BMC)",
-                "description": "Teaser du mod Better Minecraft — objectifs vanilla+, page dédiée et lien Modrinth.",
-                "item": "https://soleapixel.com/betterminecraft/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
                 "name": "À propos",
                 "description": "Le projet Solea Pixel, Modrinth, communauté et aide SmartScreen.",
                 "item": "https://soleapixel.com/#features"
               },
               {
                 "@type": "ListItem",
-                "position": 4,
+                "position": 3,
                 "name": "FAQ",
                 "description": "Questions fréquentes sur le launcher, le serveur local et les téléchargements.",
                 "item": "https://soleapixel.com/#faq"
               },
               {
                 "@type": "ListItem",
-                "position": 5,
+                "position": 4,
                 "name": "Plan du site & contenu",
                 "description": "Hub de navigation : liens structurés vers l’accueil, la licence SPL et les futures pages contenu.",
                 "item": "https://soleapixel.com/content/"
               },
               {
                 "@type": "ListItem",
-                "position": 6,
+                "position": 5,
                 "name": "Licence SPL",
                 "description": "Solea Pixel License v1.0 — cadre légal pour le launcher, les modpacks et les contenus associés.",
                 "item": "https://soleapixel.com/license/"
@@ -104,8 +97,9 @@
     />
     <link rel="preconnect" href="https://api.github.com" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles-renewal.css" />
   </head>
-  <body>
+  <body class="site-renewal">
     <a class="skip-link" href="#contenu-principal" data-i18n="nav.skip">Skip to content</a>
     <div class="ambient" aria-hidden="true">
       <div class="ambient__base"></div>
@@ -140,18 +134,22 @@
             <span class="nav-brand__pixel">PIXEL</span>
           </span>
         </a>
-        <div class="nav__center">
-          <nav class="nav-links nav-dock" aria-label="Navigation">
-            <a
-              href="/betterminecraft/"
-              class="nav-link--bmc"
-              data-i18n="nav.bmc"
-              data-i18n-aria="nav.bmcAria"
-              >Better MC</a
-            >
+        <button
+          type="button"
+          class="nav-burger"
+          id="nav-burger"
+          aria-controls="site-nav-dock"
+          aria-expanded="false"
+          data-i18n-aria="nav.menuOpen"
+        >
+          <span class="nav-burger__bars" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+        <div class="nav__center" id="site-nav-panel">
+          <nav class="nav-links nav-dock" id="site-nav-dock" aria-label="Navigation">
             <a href="#hub" class="is-active" data-i18n="nav.home">Home</a>
             <a href="#features" data-i18n="nav.about">About</a>
-            <a href="#news" data-i18n="nav.news">News</a>
             <a href="#downloads" data-i18n="nav.downloads">Downloads</a>
             <a href="#faq" data-i18n="nav.faq">FAQ</a>
             <a href="/content/" class="nav-link--content" data-i18n="nav.content">Content</a>
@@ -248,6 +246,17 @@
       <main class="snap-root" id="contenu-principal" role="main" tabindex="-1">
         <section class="site-section site-section--hub" id="hub">
           <div class="site-section__inner site-section__inner--hub">
+            <div class="hub-wordmark" aria-hidden="true">
+              <img
+                class="hub-wordmark__img"
+                src="assets/solea-pixel-wordmark.png"
+                width="960"
+                height="160"
+                alt=""
+                decoding="async"
+                fetchpriority="high"
+              />
+            </div>
             <div class="hub-shell">
               <div class="hub__grid">
                 <div class="glass-surface glass-surface--hub">
@@ -441,20 +450,6 @@
                 </div>
                 </div>
               </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="site-section site-section--news" id="news" aria-labelledby="news-heading">
-          <div class="site-section__inner site-section__inner--wide">
-            <header class="section-head section-head--news">
-              <span class="section-head__tag" data-i18n="news.tag">News</span>
-              <div class="section-head__line" aria-hidden="true"></div>
-              <h2 class="section-head__title" id="news-heading" data-i18n="news.title">News</h2>
-            </header>
-            <div class="live-news-feed" id="site-live-news" aria-label="Live news">
-              <div class="live-news-feed__grid" id="site-live-news-grid"></div>
-              <p class="live-news-feed__status" id="site-live-news-status" hidden></p>
             </div>
           </div>
         </section>

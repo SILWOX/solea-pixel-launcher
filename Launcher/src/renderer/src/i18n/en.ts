@@ -573,7 +573,7 @@ export const EN: Record<string, string> = {
   'home.lead.mythic-trials-2':
     'Always more difficult, always more challenges — conquering space is your new big challenge. Face the void, survive beyond Earth, before radiation ends it all.',
   'home.lead.aeloria':
-    'Better MC is a vanilla-like expansion modpack: Enderite, emerald gear, infusion, biomes, mobs, and new progression goals while keeping the core Minecraft feel.',
+    'Better MC [ PACK ] (NeoForge 1.21.1) — full Solea Pixel modpack (~100 mods): BMC mod, bosses, shaders, Aeloria-style adventure. Vanilla+ feel, 6 GB RAM minimum. modrinth.com/modpack/bmcpack',
   'home.lead.solea-optimised':
     'SOLEA OPTIMISED (Fabric 1.21.11) — Solea Pixel’s optimization pack: performance mods plus visual upgrades and shader support. Relive vanilla adventures in vivid colors without custom gameplay mods. Lightweight (~100 mods), 4 GB RAM minimum. Official project: modrinth.com/modpack/solea-optimised',
   'home.playLaunching': 'Launching…',

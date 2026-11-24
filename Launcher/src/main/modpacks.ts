@@ -18,7 +18,7 @@ export interface ModpackSpec {
   gameVersion: string
   /** Loader Modrinth + minecraft-java-core */
   loader: ModpackLoader
-  /** modpack = .mrpack ; mod = .jar unique (Better MC sur Modrinth). */
+  /** modpack = .mrpack ; mod = .jar unique (cas exceptionnels). */
   modrinthKind?: ModrinthInstallKind
   /** Build loader de repli si absent du pack / du .jar (Fabric, Forge). NeoForge : détecté auto. */
   loaderBuild?: string
@@ -77,10 +77,9 @@ export const MODPACKS: ModpackSpec[] = [
   {
     id: 'aeloria',
     displayName: 'Better MC',
-    projectSlug: 'bmcmod',
+    projectSlug: 'bmcpack',
     gameVersion: '1.21.1',
     loader: 'neoforge',
-    modrinthKind: 'mod',
     recommendedJava: '21',
     discordLargeImageKey: 'solea_pack_aeloria',
     discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
@@ -100,7 +99,6 @@ export const MODPACKS: ModpackSpec[] = [
 
 /** Page Modrinth du modpack (slug projet). */
 export function modrinthModpackPageUrl(spec: ModpackSpec): string {
-  if (spec.id === 'aeloria') return `https://modrinth.com/mod/${spec.projectSlug}`
   return `https://modrinth.com/modpack/${spec.projectSlug}`
 }
 

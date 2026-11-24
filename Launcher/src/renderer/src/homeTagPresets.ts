@@ -40,7 +40,7 @@ export function homeTagsForModpack(modpackId: string): HomeTagPresetId[] {
   } else if (modpackId === 'mythic-trials-1' || modpackId === 'mythic-trials-2') {
     tags.push('huge')
   } else if (modpackId === 'aeloria') {
-    tags.push('news', 'medium')
+    tags.push('news', 'huge')
   } else if (modpackId === 'solea-optimised') {
     tags.push('featured', 'vanilla', 'small')
   }

@@ -15,13 +15,13 @@ const CONFIG = {
 let activeSectionId = 'hub'
 
 const TYPEWRITER_WORDS = [
-  'MYTHIC TRIALS',
-  'PALAMOD RECREATED',
+  'Launcher Official',
+  'Mythic Trials',
+  'Palamod Recreated',
+  'Better Mc MOD',
   'SOLEA OPTIMISED',
-  'THE END OF WITHER STORM',
-  'LAUNCHER OPTIMISÉ',
-  'AELORIA',
-  'SERVEUR 100% FREE',
+  'More to discover',
+  'SOLEA PIXEL STUDIO',
 ]
 
 let cachedReleaseVersion = ''
@@ -645,6 +645,64 @@ function initSnapPage() {
   })
 }
 
+function initMobileNav() {
+  const burger = document.getElementById('nav-burger')
+  const panel = document.getElementById('site-nav-panel')
+  const dock = document.getElementById('site-nav-dock')
+  if (!burger || !panel || !dock) return
+
+  const labelKey = () =>
+    document.documentElement.hasAttribute('data-nav-open') ? 'nav.menuClose' : 'nav.menuOpen'
+
+  const syncAria = () => {
+    const open = document.documentElement.hasAttribute('data-nav-open')
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false')
+    const t = window.SoleaI18n?.t
+    const key = labelKey()
+    if (typeof t === 'function') burger.setAttribute('aria-label', t(key))
+    else burger.setAttribute('data-i18n-aria', key)
+  }
+
+  const close = () => {
+    document.documentElement.removeAttribute('data-nav-open')
+    syncAria()
+  }
+
+  const toggle = () => {
+    if (document.documentElement.hasAttribute('data-nav-open')) close()
+    else {
+      document.documentElement.setAttribute('data-nav-open', '')
+      syncAria()
+    }
+  }
+
+  burger.addEventListener('click', (e) => {
+    e.stopPropagation()
+    toggle()
+  })
+
+  dock.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => close())
+  })
+
+  document.addEventListener('click', (e) => {
+    if (!document.documentElement.hasAttribute('data-nav-open')) return
+    if (panel.contains(e.target) || burger.contains(e.target)) return
+    close()
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close()
+  })
+
+  window.addEventListener('resize', () => {
+    if (window.matchMedia('(min-width: 901px)').matches) close()
+  })
+
+  window.addEventListener('solea-lang-change', () => syncAria())
+  syncAria()
+}
+
 function initTypewriter() {
   const el = document.getElementById('typewriter-target')
   if (!el) return
@@ -743,11 +801,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqAriaExpanded()
   initSectionInview('hub', 'hub--inview')
   initSectionInview('features', 'features--inview')
-  initSectionInview('news', 'news--inview')
   initSectionInview('downloads', 'downloads--inview')
   initSectionInview('faq', 'faq--inview')
-  initSiteLiveNews()
   initTypewriter()
+  initMobileNav()
 
   window.addEventListener('solea-lang-change', () => {
     applyHubVersionLine()

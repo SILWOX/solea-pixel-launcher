@@ -26,7 +26,6 @@ import homeMinecraftWallpaperUrl from './assets/branding/home-minecraft-wallpape
 import bootSplashUrl from './assets/branding/boot-splash.png?url'
 import loginWallpaperUrl from './assets/branding/login-wallpaper.png?url'
 import soleaLoginLogoUrl from './assets/branding/solea-pixel-login-logo.png?url'
-import vanillaGrassIconUrl from './assets/branding/vanilla-grass-icon.png?url'
 import './App.css'
 import './liquidGlass.css'
 import './settingsAether2.css'
@@ -87,10 +86,6 @@ import {
 
 const ScreenshotsViewLazy = lazy(() =>
   import('./ScreenshotsView').then((m) => ({ default: m.ScreenshotsView }))
-)
-
-const VanillaMinecraftViewLazy = lazy(() =>
-  import('./VanillaMinecraftView').then((m) => ({ default: m.VanillaMinecraftView }))
 )
 
 type ThemeRow = { kind: 'group'; labelKey: string } | { kind: 'opt'; value: UiTheme; labelKey: string }
@@ -885,14 +880,6 @@ function applyLauncherTabDefaults(s: LauncherSettingsUI): LauncherSettingsUI {
   return normalizeLauncherSettingsUi({ ...s, ...pickLauncherTabDefaultPatch() })
 }
 
-function applyVanillaTabDefaults(s: LauncherSettingsUI): LauncherSettingsUI {
-  const d = emptyPackProfile()
-  return {
-    ...s,
-    vanillaGameProfile: { ...d }
-  }
-}
-
 function applyModpackTabDefaults(s: LauncherSettingsUI, packId: ModpackIdUi): LauncherSettingsUI {
   const nextPath = { ...s.modpackInstanceParentPath }
   delete nextPath[packId]
@@ -906,7 +893,7 @@ function applyModpackTabDefaults(s: LauncherSettingsUI, packId: ModpackIdUi): La
   }
 }
 
-type SettingsResetConfirmKind = 'launcher-tab' | 'vanilla-tab' | 'all' | ModpackIdUi
+type SettingsResetConfirmKind = 'launcher-tab' | 'all' | ModpackIdUi
 
 function IconHome({ className }: { className?: string } = {}) {
   return (
@@ -1733,12 +1720,8 @@ export function App() {
   const [testMode, setTestMode] = useState(false)
   const [modpackName, setModpackName] = useState('Palamod Recreated')
   /** Par défaut : onglet Accueil (actus). Les modpacks restent sur `home`. */
-  const [view, setView] = useState<
-    'home' | 'news' | 'settings' | 'account' | 'screenshots' | 'vanilla-minecraft'
-  >(
-    'news'
-  )
-  const [settingsTab, setSettingsTab] = useState<'launcher' | 'vanilla' | ModpackIdUi>('launcher')
+  const [view, setView] = useState<'home' | 'news' | 'settings' | 'account' | 'screenshots'>('news')
+  const [settingsTab, setSettingsTab] = useState<'launcher' | ModpackIdUi>('launcher')
   const [shortcutCapture, setShortcutCapture] = useState<null | 'open' | 'news' | 'account'>(null)
   /** Onglet modpack dont le panneau lourd (RAM, etc.) est monté — retardé pour éviter le freeze au clic. */
   const [modpackSettingsReadyId, setModpackSettingsReadyId] = useState<ModpackIdUi | null>(null)
@@ -1758,10 +1741,6 @@ export function App() {
   /** Dernière issue du refresh MS sur l’accueil — évite de spammer les toasts si la session reste invalide. */
   const sessionRefreshPrevOkRef = useRef<boolean | null>(null)
   const [phase, setPhase] = useState<'idle' | 'installing' | 'uninstalling' | 'busy'>('idle')
-  /** Sous-type de la barre globale quand `source === 'vanilla'` (titre Installation vs Lancement). */
-  const [vanillaGlobalProgressKind, setVanillaGlobalProgressKind] = useState<'install' | 'launch' | null>(null)
-  /** Install / lancement Minecraft vanilla en cours — évite un clic rail modpack → `home` pendant l’IPC. */
-  const [vanillaShellBlockingNav, setVanillaShellBlockingNav] = useState(false)
   const [installLine, setInstallLine] = useState('')
   const [installPct, setInstallPct] = useState(0)
   const [installIndeterminate, setInstallIndeterminate] = useState(false)
@@ -1814,15 +1793,6 @@ export function App() {
   const [memoryClearOpen, setMemoryClearOpen] = useState(false)
   const [settingsResetConfirm, setSettingsResetConfirm] = useState<SettingsResetConfirmKind | null>(null)
   const settingsResetModalRef = useRef<HTMLDivElement>(null)
-  const [vanillaClientVersions, setVanillaClientVersions] = useState<{ folder: string; vid: string }[]>([])
-  const [vanillaClientVersBusy, setVanillaClientVersBusy] = useState(false)
-  const [vanillaUninstallBusyId, setVanillaUninstallBusyId] = useState<string | null>(null)
-  /** Confirmation thémée (remplace window.confirm) avant suppression du cache client vanilla. */
-  const [vanillaUninstallConfirmTarget, setVanillaUninstallConfirmTarget] = useState<{
-    folder: string
-    vid: string
-  } | null>(null)
-  const vanillaUninstallModalRef = useRef<HTMLDivElement>(null)
   const [launcherVersion, setLauncherVersion] = useState('')
   const [launcherMeta, setLauncherMeta] = useState<{
     knownVersion?: string
@@ -1913,8 +1883,7 @@ export function App() {
                 news: t('shell.news'),
                 settings: t('shell.settings'),
                 account: t('shell.account'),
-                screenshots: t('shell.screenshots'),
-                'vanilla-minecraft': t('shell.vanillaMinecraft')
+                screenshots: t('shell.screenshots')
               } as const
             )[view]
     void window.solea.setDiscordLauncherScreenLabel(label)
@@ -1978,16 +1947,11 @@ export function App() {
 
   const chromeWallpaperUrl = useMemo(() => {
     if (view === 'settings') return LOGIN_WALLPAPER
-    if (
-      view === 'news' ||
-      view === 'screenshots' ||
-      (view === 'vanilla-minecraft' && uiGlassBackdrop)
-    )
-      return NEWS_WALLPAPER
+    if (view === 'news' || view === 'screenshots') return NEWS_WALLPAPER
     if (view === 'home' && isModpackId(activeModpackId)) return MODPACK_THEME[activeModpackId].wallpaper
     if (isModpackId(activeModpackId)) return MODPACK_THEME[activeModpackId].wallpaper
     return NEWS_WALLPAPER
-  }, [view, activeModpackId, uiGlassBackdrop])
+  }, [view, activeModpackId])
 
   const flushSkinAnimationRef = useRef<(v: SkinViewerAnimation) => void>(() => {})
 
@@ -2382,10 +2346,6 @@ export function App() {
   }
 
   const selectModpack = (id: ModpackIdUi) => {
-    if (vanillaShellBlockingNav) {
-      pushToast(t('shell.blockSelectPackDuringVanilla'), 'info', 4200)
-      return
-    }
     tryLeaveSettings(() => runSelectModpack(id))
   }
 
@@ -2432,28 +2392,6 @@ export function App() {
       cancelAnimationFrame(id1)
       cancelAnimationFrame(modpackPanelRaf2Ref.current)
       modpackPanelRaf2Ref.current = 0
-    }
-  }, [view, settingsTab])
-
-  useEffect(() => {
-    if (view !== 'settings' || settingsTab !== 'vanilla') {
-      setVanillaClientVersions([])
-      return
-    }
-    let cancelled = false
-    setVanillaClientVersBusy(true)
-    void window.solea.vanillaListAllInstallFolders().then((r) => {
-      if (cancelled || !r?.ok) return
-      const rows: { folder: string; vid: string }[] = []
-      for (const e of r.entries) {
-        for (const vid of e.versions) rows.push({ folder: e.folder, vid })
-      }
-      setVanillaClientVersions(rows)
-    }).finally(() => {
-      if (!cancelled) setVanillaClientVersBusy(false)
-    })
-    return () => {
-      cancelled = true
     }
   }, [view, settingsTab])
 
@@ -2582,18 +2520,7 @@ export function App() {
   useEffect(() => {
     const off = window.solea.onInstallProgress((p) => {
       if (fakeInstallActiveRef.current) return
-      if (p.source === 'vanilla' && p.vanillaDone) {
-        setVanillaGlobalProgressKind(null)
-        setPhase('idle')
-        setInstallLine('')
-        setInstallPct(0)
-        setInstallIndeterminate(false)
-        return
-      }
-      if (p.source === 'vanilla') {
-        setPhase((ph) => (ph === 'uninstalling' ? ph : 'installing'))
-        setVanillaGlobalProgressKind(p.task === 'launch' ? 'launch' : 'install')
-      }
+      if (p.source === 'vanilla') return
       const isUninstall = p.task === 'uninstall' || p.phase === 'uninstall'
       if (p.detail === '__scan__') {
         setInstallLine(isUninstall ? t('uninstall.scanning') : t('install.prepare'))
@@ -2789,37 +2716,6 @@ export function App() {
 
   const patchPackRamFromSliderGb = (packId: ModpackIdUi, gb: number) => {
     patchPackProfile(packId, allocGbToMinMaxStrings(gb))
-  }
-
-  const patchVanillaProfile = (patch: Partial<ModpackGameProfileUI>) => {
-    setSettings((s) => ({
-      ...s,
-      vanillaGameProfile: { ...(s.vanillaGameProfile ?? emptyPackProfile()), ...patch }
-    }))
-  }
-
-  const patchVanillaRamFromSliderGb = (gb: number) => {
-    patchVanillaProfile(allocGbToMinMaxStrings(gb))
-  }
-
-  const setVanillaNum = (
-    key: 'screenWidth' | 'screenHeight',
-    value: string,
-    allowNull: boolean
-  ) => {
-    setSettings((s) => {
-      const cur = s.vanillaGameProfile ?? emptyPackProfile()
-      let nextVal: number | null = cur[key]
-      if (allowNull && value === '') nextVal = null
-      else {
-        const n = parseInt(value, 10)
-        if (!Number.isNaN(n)) nextVal = n
-      }
-      return {
-        ...s,
-        vanillaGameProfile: { ...cur, [key]: nextVal }
-      }
-    })
   }
 
   const switchActiveAccount = async (uuid: string, options?: { refreshSkinKey?: boolean }) => {
@@ -3426,8 +3322,6 @@ export function App() {
   const openSettingsResetTabConfirm = () => {
     if (settingsTab === 'launcher') {
       setSettingsResetConfirm('launcher-tab')
-    } else if (settingsTab === 'vanilla') {
-      setSettingsResetConfirm('vanilla-tab')
     } else if (isModpackId(settingsTab)) {
       setSettingsResetConfirm(settingsTab)
     }
@@ -3443,11 +3337,6 @@ export function App() {
     }
     if (kind === 'launcher-tab') {
       setSettings((s) => applyLauncherTabDefaults(s))
-      pushToast(t('settings.resetTabToast'), 'info')
-      return
-    }
-    if (kind === 'vanilla-tab') {
-      setSettings((s) => applyVanillaTabDefaults(s))
       pushToast(t('settings.resetTabToast'), 'info')
       return
     }
@@ -3506,10 +3395,6 @@ export function App() {
 
   useFocusTrap(settingsResetConfirm !== null, settingsResetModalRef, {
     onEscape: () => setSettingsResetConfirm(null)
-  })
-
-  useFocusTrap(vanillaUninstallConfirmTarget !== null, vanillaUninstallModalRef, {
-    onEscape: () => setVanillaUninstallConfirmTarget(null)
   })
 
   const homePackReadyA11y =
@@ -3644,26 +3529,6 @@ export function App() {
             </button>
           </ShellSidebarTip>
         </div>
-        <div className="sb-rail-vanilla" aria-label={t('shell.vanillaMinecraftAria')}>
-          <ShellSidebarTip label={t('shell.vanillaMinecraft')}>
-            <button
-              type="button"
-              className={`sb-btn sb-btn-vanilla ${view === 'vanilla-minecraft' ? 'active' : ''}`}
-              aria-label={t('shell.vanillaMinecraft')}
-              onClick={() => tryLeaveSettings(() => setView('vanilla-minecraft'))}
-            >
-              <img
-                src={vanillaGrassIconUrl}
-                alt=""
-                className="sb-btn-vanilla__ico"
-                width={22}
-                height={22}
-                draggable={false}
-              />
-            </button>
-          </ShellSidebarTip>
-          <div className="sb-rail-vanilla__rule" aria-hidden />
-        </div>
         <div className="sb-rail-section sb-rail-section--middle" role="navigation" aria-label={t('shell.navPacks')}>
           {modpacksList.map((m) => {
             if (!isModpackId(m.id)) return null
@@ -3722,14 +3587,8 @@ export function App() {
 
       <div
         className={`shell-main ${
-          view === 'settings' || view === 'account' || view === 'vanilla-minecraft'
-            ? 'settings-mode'
-            : ''
-        } ${
-          view === 'news' || view === 'screenshots' || view === 'vanilla-minecraft'
-            ? 'shell-main-news'
-            : ''
-        } ${
+          view === 'settings' || view === 'account' ? 'settings-mode' : ''
+        } ${view === 'news' || view === 'screenshots' ? 'shell-main-news' : ''} ${
           view === 'home' && isModpackId(activeModpackId) ? MODPACK_THEME[activeModpackId].themeClass : ''
         } ${packSwitching && view === 'home' ? 'pack-switching' : ''}`}
       >
@@ -3741,9 +3600,7 @@ export function App() {
             aria-hidden
           />
         )}
-        {(view === 'news' ||
-          view === 'screenshots' ||
-          (view === 'vanilla-minecraft' && uiGlassBackdrop)) && (
+        {(view === 'news' || view === 'screenshots') && (
           <div
             className="shell-main-wallpaper"
             style={{ backgroundImage: `url(${NEWS_WALLPAPER})` }}
@@ -4393,19 +4250,6 @@ export function App() {
           </>
         )}
 
-        {view === 'vanilla-minecraft' && (
-          <>
-            <Suspense
-              fallback={
-                <div className="screenshots-view screenshots-lazy-fallback">{t('vanillaMc.lazyLoading')}</div>
-              }
-            >
-              <VanillaMinecraftViewLazy onVanillaBusyChange={setVanillaShellBlockingNav} />
-            </Suspense>
-            <footer className="shell-footer">{t('home.footer', { name: shellFooterLegalName })}</footer>
-          </>
-        )}
-
         {view === 'settings' && (
           <div className="settings-layout" style={{ flex: 1, minHeight: 0 }}>
             <nav className="settings-nav" aria-label={t('settings.title')}>
@@ -4428,14 +4272,6 @@ export function App() {
                   onClick={() => setSettingsTab('launcher')}
                 >
                   <IconHome className="settings-nav-launcher-icon" /> {t('settings.navLauncher')}
-                </button>
-                <button
-                  type="button"
-                  className={`nav-item nav-item-pack ${settingsTab === 'vanilla' ? 'on' : ''}`}
-                  onClick={() => setSettingsTab('vanilla')}
-                >
-                  <img src={vanillaGrassIconUrl} alt="" className="nav-pack-thumb" />
-                  <span className="nav-pack-label">{t('settings.navVanilla')}</span>
                 </button>
                 {modpacksList.some((m) => isModpackId(m.id)) ? (
                   <>
@@ -4486,8 +4322,6 @@ export function App() {
                     <div className="settings-page-header-icon-wrap">
                       {settingsTab === 'launcher' ? (
                         <IconHome className="settings-header-ico-svg" aria-hidden />
-                      ) : settingsTab === 'vanilla' ? (
-                        <img src={vanillaGrassIconUrl} alt="" className="settings-header-ico" />
                       ) : (
                         <img
                           src={
@@ -4506,23 +4340,19 @@ export function App() {
                           section:
                             settingsTab === 'launcher'
                               ? t('settings.navLauncher')
-                              : settingsTab === 'vanilla'
-                                ? t('settings.navVanilla')
-                                : isModpackId(settingsTab)
-                                    ? modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
-                                    : t('settings.navLauncher')
+                              : isModpackId(settingsTab)
+                                ? modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
+                                : t('settings.navLauncher')
                         })}
                       </p>
                       <h2 className="settings-page-title">
                         {settingsTab === 'launcher'
                           ? t('settings.headerLauncher')
-                          : settingsTab === 'vanilla'
-                            ? t('settings.headerVanilla')
-                            : isModpackId(settingsTab)
-                                ? t('settings.headerGame', {
-                                    name: modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
-                                  })
-                                : t('settings.headerLauncher')}
+                          : isModpackId(settingsTab)
+                            ? t('settings.headerGame', {
+                                name: modpacksList.find((x) => x.id === settingsTab)?.displayName ?? settingsTab
+                              })
+                            : t('settings.headerLauncher')}
                       </h2>
                     </div>
                   </header>
@@ -5073,191 +4903,6 @@ export function App() {
                   </details>
                 </>
               )}
-
-              {settingsTab === 'vanilla' ? (
-                <>
-                  <p className="modpack-resolution-lead">{t('settings.vanillaLead')}</p>
-                  <details className="set-card" open title={t('settings.ramAllocTooltip')}>
-                    <summary>
-                      <div className="settings-summary-with-help">
-                        <div>
-                          {t('settings.ram')}
-                          <div className="sub">{t('settings.vanillaRamSub')}</div>
-                        </div>
-                        <SettingsGlossaryTrigger
-                          gkey="ram"
-                          openKey={settingsGlossaryKey}
-                          setOpenKey={setSettingsGlossaryKey}
-                          t={t}
-                          discordUrl={DISCORD_INVITE_URL}
-                        />
-                      </div>
-                    </summary>
-                    <div className="inner memory-ram-settings-inner" title={t('settings.ramAllocTooltip')}>
-                      <MemoryRamSlider
-                        allocGb={ramStringToGb(
-                          settings.vanillaGameProfile?.memoryMax ?? settings.memoryMax
-                        )}
-                        totalGiB={memoryStats?.totalGiB ?? 16}
-                        onChangeAllocGb={(gb) => patchVanillaRamFromSliderGb(gb)}
-                      />
-                    </div>
-                  </details>
-
-                  <details className="set-card set-card--resolution" open>
-                    <summary>
-                      <div className="settings-summary-with-help">
-                        <div>
-                          {t('settings.resolution')}
-                          <div className="sub">{t('settings.vanillaResolutionSub')}</div>
-                        </div>
-                        <SettingsGlossaryTrigger
-                          gkey="resolution"
-                          openKey={settingsGlossaryKey}
-                          setOpenKey={setSettingsGlossaryKey}
-                          t={t}
-                          discordUrl={DISCORD_INVITE_URL}
-                        />
-                      </div>
-                    </summary>
-                    <div className="inner modpack-resolution-panel">
-                      <div className="resolution-preset-block">
-                        <span className="resolution-preset-label">{t('settings.resolutionPresetsLabel')}</span>
-                        <div className="resolution-preset-buttons">
-                          <button
-                            type="button"
-                            className="btn-muted resolution-preset-btn"
-                            onClick={() =>
-                              patchVanillaProfile({
-                                screenWidth: 800,
-                                screenHeight: 600
-                              })
-                            }
-                          >
-                            {t('settings.resolutionPreset800')}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-muted resolution-preset-btn"
-                            onClick={() =>
-                              patchVanillaProfile({
-                                screenWidth: 1280,
-                                screenHeight: 720
-                              })
-                            }
-                          >
-                            {t('settings.resolutionPreset720')}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-muted resolution-preset-btn"
-                            onClick={() =>
-                              patchVanillaProfile({
-                                screenWidth: 1920,
-                                screenHeight: 1080
-                              })
-                            }
-                          >
-                            {t('settings.resolutionPreset1080')}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="field-grid modpack-resolution-inputs">
-                        <label>
-                          {t('settings.width')}
-                          <input
-                            type="number"
-                            value={settings.vanillaGameProfile?.screenWidth ?? ''}
-                            onChange={(e) => setVanillaNum('screenWidth', e.target.value, true)}
-                            placeholder="800"
-                            min={640}
-                            max={7680}
-                          />
-                        </label>
-                        <label>
-                          {t('settings.height')}
-                          <input
-                            type="number"
-                            value={settings.vanillaGameProfile?.screenHeight ?? ''}
-                            onChange={(e) => setVanillaNum('screenHeight', e.target.value, true)}
-                            placeholder="600"
-                            min={480}
-                            max={4320}
-                          />
-                        </label>
-                        <div className="full settings-toggle-stack modpack-resolution-fullscreen">
-                          <SettingsToggle
-                            checked={settings.vanillaGameProfile?.fullscreen ?? false}
-                            onChange={(next) => patchVanillaProfile({ fullscreen: next })}
-                            label={t('settings.fullscreen')}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </details>
-
-                  <details className="set-card">
-                    <summary>
-                      <div>
-                        {t('settings.gameArgs')}
-                        <div className="sub">{t('settings.vanillaGameArgsSub')}</div>
-                      </div>
-                    </summary>
-                    <div className="inner">
-                      <textarea
-                        rows={3}
-                        value={settings.vanillaGameProfile?.gameArgs ?? ''}
-                        onChange={(e) => patchVanillaProfile({ gameArgs: e.target.value })}
-                        spellCheck={false}
-                      />
-                    </div>
-                  </details>
-
-                  <details className="set-card" open>
-                    <summary>
-                      <div>
-                        {t('settings.vanillaInstalledTitle')}
-                        <div className="sub">{t('settings.vanillaInstalledSub')}</div>
-                      </div>
-                    </summary>
-                    <div className="inner">
-                      <p className="settings-vanilla-versions-hint">{t('settings.vanillaInstalledProfileHint')}</p>
-                      {vanillaClientVersBusy ? (
-                        <p className="cache-loading">{t('settings.vanillaVersionsLoading')}</p>
-                      ) : vanillaClientVersions.length === 0 ? (
-                        <p className="settings-vanilla-versions-empty">{t('settings.vanillaVersionsEmpty')}</p>
-                      ) : (
-                        <ul className="settings-vanilla-version-list">
-                          {vanillaClientVersions.map((row) => {
-                            const busyKey = `${row.folder}\t${row.vid}`
-                            return (
-                              <li key={busyKey} className="settings-vanilla-version-row">
-                                <span className="settings-vanilla-version-id">
-                                  <span className="settings-vanilla-version-folder">{row.folder}</span>
-                                  <span className="settings-vanilla-version-sep" aria-hidden>
-                                    {' · '}
-                                  </span>
-                                  <span className="settings-vanilla-version-patch">{row.vid}</span>
-                                </span>
-                                <button
-                                  type="button"
-                                  className="btn-danger-outline"
-                                  disabled={vanillaUninstallBusyId !== null}
-                                  onClick={() => setVanillaUninstallConfirmTarget({ folder: row.folder, vid: row.vid })}
-                                >
-                                  {vanillaUninstallBusyId === busyKey
-                                    ? t('settings.vanillaUninstalling')
-                                    : t('settings.vanillaUninstall')}
-                                </button>
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      )}
-                    </div>
-                  </details>
-                </>
-              ) : null}
 
               {isModpackId(settingsTab) && modpackSettingsReadyId !== settingsTab ? (
                 <div
@@ -6214,71 +5859,6 @@ export function App() {
             }}
           />
         ) : null}
-        {vanillaUninstallConfirmTarget ? (
-          <div
-            className="pack-confirm-backdrop"
-            role="presentation"
-            onClick={() => setVanillaUninstallConfirmTarget(null)}
-          >
-            <div
-              ref={vanillaUninstallModalRef}
-              className="pack-confirm-modal pack-confirm-modal--uninstall solea-modal-surface"
-              role="alertdialog"
-              aria-modal="true"
-              aria-labelledby="vanilla-uninstall-confirm-title"
-              aria-describedby="vanilla-uninstall-confirm-desc"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <p className="pack-confirm-eyebrow">{t('settings.vanillaUninstallModalEyebrow')}</p>
-              <h2 id="vanilla-uninstall-confirm-title" className="pack-confirm-title">
-                {t('settings.vanillaUninstallModalTitle', {
-                  folder: vanillaUninstallConfirmTarget.folder,
-                  v: vanillaUninstallConfirmTarget.vid
-                })}
-              </h2>
-              <p id="vanilla-uninstall-confirm-desc" className="pack-confirm-body">
-                {t('settings.vanillaUninstallConfirm', {
-                  folder: vanillaUninstallConfirmTarget.folder,
-                  v: vanillaUninstallConfirmTarget.vid
-                })}
-              </p>
-              <div className="pack-confirm-actions">
-                <button
-                  type="button"
-                  className="btn-muted pack-confirm-btn-cancel"
-                  onClick={() => setVanillaUninstallConfirmTarget(null)}
-                >
-                  {t('confirm.packCancel')}
-                </button>
-                <button
-                  type="button"
-                  className="btn-save pack-confirm-btn-danger"
-                  onClick={() => {
-                    const tgt = vanillaUninstallConfirmTarget
-                    setVanillaUninstallConfirmTarget(null)
-                    if (!tgt) return
-                    const busyKey = `${tgt.folder}\t${tgt.vid}`
-                    void (async () => {
-                      setVanillaUninstallBusyId(busyKey)
-                      const r = await window.solea.vanillaUninstallClientVersion(tgt.folder, tgt.vid)
-                      setVanillaUninstallBusyId(null)
-                      if (!r.ok) {
-                        pushToast(r.error, 'error')
-                        return
-                      }
-                      pushToast(t('settings.vanillaUninstallOk', { v: tgt.vid }), 'success')
-                      setVanillaClientVersions((prev) =>
-                        prev.filter((x) => !(x.folder === tgt.folder && x.vid === tgt.vid))
-                      )
-                    })()
-                  }}
-                >
-                  {t('settings.vanillaUninstall')}
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : null}
         {cacheClearConfirm ? (
           <CacheClearConfirmModal
             open
@@ -6318,13 +5898,11 @@ export function App() {
                   ? t('settings.resetAllBody')
                   : settingsResetConfirm === 'launcher-tab'
                     ? t('settings.resetTabBodyLauncher')
-                    : settingsResetConfirm === 'vanilla-tab'
-                      ? t('settings.resetTabBodyVanilla')
-                      : t('settings.resetTabBodyModpack', {
-                          name:
-                            modpacksList.find((x) => x.id === settingsResetConfirm)?.displayName ??
-                            settingsResetConfirm
-                        })}
+                    : t('settings.resetTabBodyModpack', {
+                        name:
+                          modpacksList.find((x) => x.id === settingsResetConfirm)?.displayName ??
+                          settingsResetConfirm
+                      })}
               </p>
               <div className="pack-confirm-actions">
                 <button
@@ -6353,9 +5931,7 @@ export function App() {
               <p className="solea-global-progress-title font-mc">
                 {phase === 'uninstalling'
                   ? t('globalProgress.uninstalling')
-                  : vanillaGlobalProgressKind === 'launch'
-                    ? t('globalProgress.vanillaLaunching')
-                    : t('globalProgress.installing')}
+                  : t('globalProgress.installing')}
               </p>
               <div
                 className={`solea-global-progress-track${

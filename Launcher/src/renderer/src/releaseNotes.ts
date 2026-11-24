@@ -1,10 +1,16 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.4.2': {
+    en:
+      'Patch **26.4.2 | Release** (package **26.4.2**): **Better MC** now installs the full Modrinth pack **bmcpack** (~100 mods), not the standalone mod. **SOLEA OPTIMISED** Fabric install fixed (`fabric-loader`). NeoForge version auto-detected from pack/mods + latest compatible Maven release.',
+    fr:
+      'Correctif **26.4.2 | Release** (paquet **26.4.2**) : **Better MC** installe le modpack complet **bmcpack** sur Modrinth (~100 mods), plus le mod seul. Install **SOLEA OPTIMISED** corrigée (`fabric-loader`). NeoForge détecté depuis le pack/les mods + dernière release Maven compatible.',
+  },
   '26.4.1': {
     en:
-      'Patch **26.4.1 | Release** (package **26.4.1**): **Better MC** installs correctly from Modrinth (mod `.jar` + NeoForge, no missing `modrinth.index.json`). New modpack **SOLEA OPTIMISED** (Fabric **1.21.11**) — optimization, shaders, vanilla-friendly (~100 mods, 4 GB RAM). modrinth.com/modpack/solea-optimised',
+      'Patch **26.4.1 | Release** (package **26.4.1**): **SOLEA OPTIMISED** modpack (Fabric **1.21.11**). Various Modrinth install fixes.',
     fr:
-      'Correctif **26.4.1 | Release** (paquet **26.4.1**) : **Better MC** s’installe correctement depuis Modrinth (mod `.jar` + NeoForge, plus d’erreur `modrinth.index.json`). Nouveau modpack **SOLEA OPTIMISED** (Fabric **1.21.11**) — optimisation, shaders, vanilla-friendly (~100 mods, 4 Go RAM). modrinth.com/modpack/solea-optimised'
+      'Correctif **26.4.1 | Release** (paquet **26.4.1**) : modpack **SOLEA OPTIMISED** (Fabric **1.21.11**). Correctifs d’installation Modrinth.',
   },
   '26.4.0': {
     en:

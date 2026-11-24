@@ -139,28 +139,6 @@ export function buildUnsavedSettingsSections(
     })
   }
 
-  const vb = baseline.vanillaGameProfile
-  const vc = current.vanillaGameProfile
-  if (vb && vc) {
-    const vItems: string[] = []
-    if (vb.memoryMin !== vc.memoryMin || vb.memoryMax !== vc.memoryMax) vItems.push(t('settings.ram'))
-    if (
-      vb.screenWidth !== vc.screenWidth ||
-      vb.screenHeight !== vc.screenHeight ||
-      vb.fullscreen !== vc.fullscreen
-    ) {
-      vItems.push(t('settings.resolution'))
-    }
-    if (vb.gameArgs !== vc.gameArgs) vItems.push(t('settings.gameArgs'))
-    if (vItems.length) {
-      sections.push({
-        id: 'vanilla',
-        title: t('settings.unsaved.sectionVanilla'),
-        items: vItems.sort((a, b) => a.localeCompare(b))
-      })
-    }
-  }
-
   const packIds = new Set([
     ...Object.keys(baseline.modpackProfiles),
     ...Object.keys(current.modpackProfiles)

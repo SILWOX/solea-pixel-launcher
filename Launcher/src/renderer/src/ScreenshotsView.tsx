@@ -1,16 +1,11 @@
 /** AETHER UI — v2 | Captures d’écran — Solea Pixel Launcher (proprietary interface layer). */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { isModpackId } from './modpackTheme'
-import { SOLEA_VANILLA_SCREENSHOTS_PACK_ID } from '../../soleaVanillaScreenshotsId'
 import { useI18n } from './i18n/I18nContext'
 import { LauncherSelect, type LauncherSelectEntry } from './ui/LauncherSelect'
 import { useToast } from './ui/ToastContext'
 
 type ShotItem = { fileName: string; thumbDataUrl: string }
-
-function isScreenshotsPackId(id: string): boolean {
-  return id === SOLEA_VANILLA_SCREENSHOTS_PACK_ID || isModpackId(id)
-}
 
 export function ScreenshotsView({
   modpacksList,
@@ -23,7 +18,9 @@ export function ScreenshotsView({
   const { pushToast } = useToast()
   const modpackOptions = modpacksList.filter((m) => isModpackId(m.id))
   const [packId, setPackId] = useState<string>(() =>
-    isModpackId(initialModpackId) ? initialModpackId : SOLEA_VANILLA_SCREENSHOTS_PACK_ID
+    isModpackId(initialModpackId)
+      ? initialModpackId
+      : modpackOptions[0]?.id ?? ''
   )
   const [items, setItems] = useState<ShotItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -37,17 +34,8 @@ export function ScreenshotsView({
   const loadedImgRef = useRef<HTMLImageElement | null>(null)
 
   const packSelectEntries = useMemo((): LauncherSelectEntry[] => {
-    const vanilla: LauncherSelectEntry = {
-      value: SOLEA_VANILLA_SCREENSHOTS_PACK_ID,
-      label: t('screenshots.vanillaInstanceName')
-    }
-    if (modpackOptions.length === 0) return [vanilla]
-    return [
-      vanilla,
-      { type: 'group', label: t('screenshots.instanceGroupModpacks') },
-      ...modpackOptions.map((m) => ({ value: m.id, label: m.displayName }))
-    ]
-  }, [t, modpackOptions])
+    return modpackOptions.map((m) => ({ value: m.id, label: m.displayName }))
+  }, [modpackOptions])
 
   const currentPackLabel = useMemo(() => {
     for (const e of packSelectEntries) {
@@ -62,7 +50,7 @@ export function ScreenshotsView({
   }, [items, preview])
 
   const refreshList = useCallback(async () => {
-    if (!isScreenshotsPackId(packId)) {
+    if (!isModpackId(packId)) {
       setItems([])
       return
     }
@@ -85,7 +73,7 @@ export function ScreenshotsView({
   }, [initialModpackId])
 
   const loadFull = async (fileName: string) => {
-    if (!isScreenshotsPackId(packId)) return
+    if (!isModpackId(packId)) return
     setFullLoading(true)
     setFullUrl(null)
     const r = await window.solea.getModpackScreenshotFull(packId, fileName)
@@ -210,7 +198,7 @@ export function ScreenshotsView({
   }
 
   const openShotsFolder = () => {
-    if (!isScreenshotsPackId(packId)) return
+    if (!isModpackId(packId)) return
     void window.solea.openScreenshotsFolder(packId).then((r) => {
       if (!r.ok) pushToast(r.error, 'error')
     })
@@ -279,7 +267,7 @@ export function ScreenshotsView({
                 <button
                   type="button"
                   className="btn-save screenshots-toolbar-btn screenshots-toolbar-btn--primary"
-                  disabled={!isScreenshotsPackId(packId)}
+                  disabled={!isModpackId(packId)}
                   onClick={openShotsFolder}
                 >
                   {t('screenshots.openFolder')}
@@ -337,7 +325,7 @@ export function ScreenshotsView({
                 <button
                   type="button"
                   className="btn-save screenshots-toolbar-btn screenshots-toolbar-btn--primary"
-                  disabled={!isScreenshotsPackId(packId)}
+                  disabled={!isModpackId(packId)}
                   onClick={openShotsFolder}
                 >
                   {t('screenshots.openFolder')}
