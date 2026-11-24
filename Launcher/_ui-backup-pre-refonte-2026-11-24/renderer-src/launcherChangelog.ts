@@ -1,0 +1,175 @@
+/**
+ * Release notes shown under Home & news. Newest version first.
+ * On each release: prepend an entry and list `added` / `changed` / `removed` / `fixed` as needed.
+ */
+export type LauncherChangelogEntry = {
+  version: string
+  date?: string
+  added?: string[]
+  changed?: string[]
+  removed?: string[]
+  fixed?: string[]
+}
+
+export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
+  {
+    version: '26.4.2',
+    date: '2026-05-24',
+    fixed: [
+      '**Better MC:** installs the full Modrinth modpack **bmcpack** (`.mrpack`, ~100 mods) instead of the standalone **bmcmod** `.jar`.',
+      '**SOLEA OPTIMISED:** reads `fabric-loader` from `modrinth.index.json` (Fabric **1.21.11**).'
+    ],
+    changed: [
+      '**NeoForge:** version resolved from modpack index, installed mod requirements, and the latest compatible **21.1.x** release on Maven (no more pinned **21.1.217**).',
+      '**Release branding:** footer and Home & news badge show **26.4.2 | Release** (package **26.4.2**).'
+    ]
+  },
+  {
+    version: '26.4.1',
+    date: '2026-05-24',
+    added: [
+      'SOLEA OPTIMISED modpack (modrinth.com/modpack/solea-optimised, Fabric 1.21.11) — optimization + visual upgrades, shader support, vanilla-friendly (~100 mods, 4 GB RAM), green UI theme and custom assets.'
+    ],
+    changed: [
+      '**Release branding:** footer and Home & news badge show **26.4.1 | Release** (package **26.4.1**).'
+    ]
+  },
+  {
+    version: '26.4',
+    date: '2026-05-24',
+    changed: [
+      '**AETHER UI v3:** neutral dark backgrounds (no warm yellow tint on settings and studio theme); **bee gold** accent restored on primary buttons (**Save**, **Play** on hub) and kept on toggles, sliders, section accents, and nav highlights.',
+      '**Modpack themes:** sidebar pills and **Play** buttons keep each pack’s brand color (Palamod, Better MC / Aeloria, Wither Storm, Mythic Trials).',
+      '**Release branding:** footer and Home & news badge show **26.4 | Release** (package **26.4.0**).'
+    ]
+  },
+  {
+    version: '26.3.3',
+    date: '2026-03-30',
+    changed: [
+      '**Settings → Launcher:** **Experimental (BETA)** is a collapsible section **below Keyboard shortcuts** (same tab). It contains only **My servers (experimental)** and **Launcher interface (home & settings — AETHER v2.0 vs Legacy)**.',
+      '**Settings → Launcher:** **Notifications**, **Discord Rich Presence**, **update channel**, and **Audio** are back in the main **Appearance & language** flow — they are no longer isolated under a separate sidebar “Experimental” entry.',
+      '**Release branding:** footer and Home & news badge show **26.3.3 | Release** (package **26.3.3**).'
+    ],
+    added: [
+      '**macOS distribution:** DMG artifacts (`Solea-Pixel-<version>-mac-arm64.dmg` / `-mac-x64.dmg`) are built for GitHub releases; the storefront download block resolves the **arm64** DMG from the **latest** release API when present.'
+    ]
+  },
+  {
+    version: '26.3.2',
+    date: '2026-03-30',
+    fixed: [
+      '**Vanilla Minecraft — Java for calendar-era releases (e.g. 26.1.x):** the JVM passed to `minecraft-java-core` now follows Mojang’s **`javaVersion.majorVersion`** (reads the installed client JSON under `.minecraft/versions/…`, following **`inheritsFrom`** when needed), then the online manifest, then a small heuristic — instead of always defaulting to Java **21** whenever the version id does not start with `1.`.',
+      '**Legacy launcher UI (AETHER v1.0):** the main **left shell sidebar** (Home, modpacks, etc.) is no longer hidden on the **Settings** tab; titlebar safe-area alignment restored.'
+    ],
+    added: [
+      '**Legacy v1 sidebar skin (`sidebarClassicV1.css`):** flatter rail, thin horizontal section dividers, **46×46** squircle tiles with a clearer orange active border — closer to the **26.1** look.'
+    ],
+    changed: [
+      '**Release branding:** footer and Home & news badge show **26.3.2 | Release** (package **26.3.2**).'
+    ]
+  },
+  {
+    version: '26.3.1',
+    date: '2026-03-30',
+    added: [
+      '**Settings → More:** **License** opens **https://soleapixel.com/license** in the default browser (below Credits).'
+    ],
+    changed: [
+      '**Home & news (v2):** removed leftover bright rim effects (stacked inset shadows / borders) and reset the changelog panel shadow so the center column no longer picks up a harsh top highlight.',
+      '**Home & news layout:** wider hub rail on large displays; side columns are width-capped so **Release notes** absorbs extra horizontal space instead of leaving a tiny island of UI on ultra-wide windows.',
+      '**Public site:** hero screenshot (`hub-launcher.png`) updated to match the current **Home & news** screen.'
+    ]
+  },
+  {
+    version: '26.3',
+    date: '2026-03-30',
+    added: [
+      '**My Server — local hosting:** create dedicated servers from your **Solea Pixel modpacks** (Modrinth `.mrpack`), stored under `userData/solea-server` with one folder per server.',
+      '**Install pipeline:** download the pack, run the **NeoForge / Forge** server installer when needed, accept **EULA**, and surface install progress and errors in the UI.',
+      '**Server console:** start / stop, live log buffer, commands sent to the running JVM; respects the Java path from launcher settings (uses `java.exe` when `javaw.exe` is configured).',
+      '**World & `server.properties`:** edit key fields with validation, optional world folder reset, and extra JVM lines via `solea-jvm-extra.txt` merged at launch.',
+      '**Profiles:** per-server RAM, port, name, description, optional **cover image** (with size guard), and **modpack change** guarded by a confirmation modal.',
+      '**IPC & preload:** list/create/delete servers, cover data URLs, and host actions exposed to the renderer in a typed way.'
+    ],
+    changed: [
+      '**Release branding:** footer and Home & news badge now show **26.3 | Release** (package **26.3.0**); “What’s new” text updated for this build.'
+    ]
+  },
+  {
+    version: '26.2',
+    date: '2026-03-30',
+    added: [
+      '**Home & news — AETHER UI:** full-page scroll shell with the themed AETHER scrollbar, a centered content rail, hero eyebrow, and a **spotlight** card for the latest release so patch notes read clearly before history.',
+      '**Screenshots — AETHER UI:** page-level scroll (same scrollbar treatment), sharper glass cards with a top accent strip, and spacing/typography aligned with Settings and Account.',
+      '**Release history column** now lists earlier versions only; the newest build is always shown in the spotlight above the three-column hub.'
+    ],
+    changed: [
+      'Tighter visual hierarchy on Home & news: spotlight uses full-width emphasis; profile, follow/report, and history panels stay consistent with the rest of the launcher chrome.',
+      'Changelog panel copy and layout tuned so “Release notes” + semver pill still anchor the middle column while older entries scroll independently.'
+    ]
+  },
+  {
+    version: '26.1.4',
+    date: '2026-03-30',
+    added: [
+      'Signalement depuis l’accueil : carte **REPORT** (titre + court texte d’intro) sous « Follow us », bouton d’action orange pour ouvrir le formulaire.',
+      'Modal de signalement : segment **Launcher** / **Instance (modpack)** avec rappel contextuel ; au changement de portée, la catégorie repasse sur la première entrée de la liste.',
+      'Catégories **instance** : lancement / crash, installation / mise à jour, compte en jeu, vérification des fichiers / intégrité, mods / crash en jeu, autre.',
+      'Catégories **launcher** : interface / affichage, connexion Microsoft / compte launcher, mises à jour du launcher, téléchargements / cache, gels / lenteur, autre.',
+      'Sélecteur d’instance et liste des catégories via le même composant que le reste du launcher (**LauncherSelect**), styles dédiés dans la modal (clair / sombre, focus visible).',
+      'Panneau d’aide repliable (bouton **?**) expliquant copie / envoi ; bouton **Rejoindre Discord** ; zone de détails libre ; case à cocher mise en avant (orange) pour joindre version launcher, modpack (si instance) et OS.',
+      'Actions **Copier le rapport** (Markdown dans le presse-papiers), **Envoyer à l’équipe** (si configuré), **Fermer** ; piège à focus dans la modal et **Échap** pour fermer.',
+      'Envoi vers Discord : **SOLEA_REPORT_WEBHOOK_URL** (environnement) ou fichier **solea-report-webhook.url** dans userData (première ligne = URL) ; documentation **docs/REPORTING.md** ; entrée **.gitignore** pour ne pas versionner le fichier secret.'
+    ],
+    changed: [
+      'Accueil & actus : bloc « Follow us » un peu plus compact ; en-tête hero recentré (le signalement n’est plus dans le bandeau du hero).',
+      'Interface du signalement : libellés et aide rédigés sans jargon « webhook » ; le toast si l’envoi n’est pas configuré renvoie vers la doc (variable ou fichier local).'
+    ],
+    fixed: [
+      'Côté process principal : seules les URL de webhooks **discord.com** / **canary.discord.com** sont acceptées ; fichier ou variable ignorés si vide ou invalide (évite les requêtes vers une mauvaise cible).',
+      'Corps du message tronqué (~1900 caractères) avant envoi pour rester dans les limites Discord.',
+      'Erreurs réseau ou HTTP renvoyées au renderer avec extrait de réponse pour le toast d’échec ; contenu vide refusé proprement.',
+      'Échec de copie presse-papiers : toast d’erreur dédié au lieu d’un silence.'
+    ]
+  },
+  {
+    version: '26.1.3',
+    date: '2026-03-31',
+    added: [
+      'Discord Rich Presence : boutons « Installer le launcher » (releases GitHub) et « Rejoindre Discord » (invitation Solea Pixel).',
+      'Paramètres : section **Audio** dédiée (séparée d’Apparence & langue) pour les sons d’interface, le volume et les options fin d’install / lancement.',
+      'Réglages modpack : repères RAM rapides en boutons (6G / 8G / 12G) sous le curseur.',
+      'Raccourcis clavier personnalisables (Paramètres → Raccourcis) pour ouvrir les paramètres, Accueil & actus et le compte.',
+      'Fenêtre debug (5 clics sur Paramètres) : actualisation auto configurable, copie de l’instantané JSON, ouverture des dossiers userData / instance, lien vers la console de lancement, défilement propre et tableau des processus optionnel.'
+    ],
+    changed: [
+      'Accueil : Jouer, Vérifier les fichiers et sélecteur de compte alignés sur une seule ligne ; compte poussé à droite quand il y a de la place.',
+      'Accueil & actus : boutons réseaux sociaux moins « pilule », un peu plus grands (coins 12px, texte et icônes).',
+      'Écran de démarrage : logo et barre de progression plus visibles ; libellé « Chargement » avec points animés (comme au lancement du jeu), sauf si « Réduire les animations » est actif.',
+      'Paramètres : curseur de volume repensé (piste remplie, repères 0–100 %, bloc dédié).',
+      'Paramètres modpack : curseur RAM plus lisible (min / RAM PC en haut, valeur allouée au centre, piste plus épaisse et pouce plus visible).',
+      'Apparence : chrome givré allégé ; écran Paramètres utilise le même fond type wallpaper que l’accueil ; texte de la barre latérale des paramètres lisible sur le verre.',
+      'Discord Rich Presence : activation par défaut, client ID et présence stabilisés (type d’activité, enregistrement du schéma, nouvelles tentatives si Discord s’ouvre après le launcher).',
+      'Aperçu skin / cape : fond de prévisualisation fixe (#141416) — le réglage de couleur de fond a été retiré pour simplifier.',
+      'Ouverture de liens externes : `github.com` autorisé (cohérent avec les boutons Discord et liens officiels).'
+    ],
+    fixed: [
+      'Debug : boucle FPS sans fuite de `requestAnimationFrame` à l’arrêt.',
+      'Rich Presence : repli automatique si Discord refuse les boutons ou les images (nouvelle tentative sans boutons, puis sans image).'
+    ],
+    removed: [
+      'Option « fond de l’aperçu skin » dans les paramètres d’apparence.'
+    ]
+  },
+  {
+    version: '26.1.2',
+    date: '2026-03-30',
+    changed: [
+      'Home & news now shows built-in release notes instead of downloading an external JSON news feed.'
+    ],
+    removed: [
+      'Remote news feed URL and network fetch for announcements.'
+    ]
+  }
+]

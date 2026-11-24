@@ -1,0 +1,209 @@
+/* AETHER UI v3 — pile de notifications (max 4, repli / dépli au survol) */
+
+.toast-stack {
+  --toast-slot-h: 4.35rem;
+  --toast-stack-peek: 11px;
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  width: min(380px, calc(100vw - 1.75rem));
+  pointer-events: none;
+}
+
+.toast-stack--has-items {
+  pointer-events: auto;
+}
+
+.toast-stack--stacked:not(.toast-stack--expanded) {
+  display: block;
+  min-height: var(--toast-slot-h);
+  height: calc(
+    var(--toast-slot-h) + (min(var(--toast-stack-count, 1), 4) - 1) * var(--toast-stack-peek)
+  );
+}
+
+.toast-stack--stacked.toast-stack--expanded,
+.toast-stack:not(.toast-stack--stacked) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+  height: auto;
+  min-height: 0;
+}
+
+.toast-stack-slot {
+  width: 100%;
+  flex-shrink: 0;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease,
+    filter 0.28s ease;
+}
+
+.toast-stack--stacked:not(.toast-stack--expanded) .toast-stack-slot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: translateY(calc(var(--toast-from-top, 0) * -1 * var(--toast-stack-peek)))
+    scale(calc(1 - var(--toast-from-top, 0) * 0.04));
+  transform-origin: bottom right;
+  z-index: calc(20 + var(--toast-stack-index, 0));
+  opacity: calc(1 - var(--toast-from-top, 0) * 0.14);
+  filter: brightness(calc(1 - var(--toast-from-top, 0) * 0.06));
+}
+
+.toast-stack--stacked:not(.toast-stack--expanded) .toast-stack-slot:not(.toast-stack-slot--front) {
+  pointer-events: none;
+}
+
+.toast-stack--stacked.toast-stack--expanded .toast-stack-slot {
+  position: relative;
+  transform: none;
+  opacity: 1;
+  filter: none;
+  pointer-events: auto;
+}
+
+.toast-stack-count {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.2rem;
+  z-index: 80;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-detail);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #1a1008;
+  background: linear-gradient(
+    155deg,
+    var(--accent-bee-bright, #ffe082) 0%,
+    var(--accent-bee, #ffd54a) 55%,
+    var(--accent-bee-deep, #ffb300) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--accent-bee, #ffd54a) 45%, transparent),
+    0 0 0 2px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.toast-stack--expanded .toast-stack-count {
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Pastilles — verre sombre + accent or (v3) */
+html[data-ui-v3='1'] .toast-item {
+  border-radius: var(--v3-radius-md, 14px);
+  border: 1px solid var(--v3-border-soft, rgba(255, 255, 255, 0.12));
+  background: linear-gradient(
+    158deg,
+    rgba(12, 10, 8, 0.94) 0%,
+    rgba(6, 5, 8, 0.88) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 16px 40px rgba(0, 0, 0, 0.48),
+    0 4px 12px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+}
+
+html[data-ui-v3='1'] .toast-stack--stacked:not(.toast-stack--expanded) .toast-stack-slot--front .toast-item {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-bee, #ffd54a) 22%, transparent) inset,
+    0 20px 48px rgba(0, 0, 0, 0.5),
+    0 0 28px color-mix(in srgb, var(--accent-bee, #ffd54a) 18%, transparent);
+}
+
+html[data-ui-v3='1'] .toast-item-accent {
+  width: 5px;
+  border-radius: var(--v3-radius-md, 14px) 0 0 var(--v3-radius-md, 14px);
+}
+
+html[data-ui-v3='1'] .toast-item-info .toast-item-accent,
+html[data-ui-v3='1'] .toast-item-success .toast-item-accent {
+  background: linear-gradient(
+    180deg,
+    var(--accent-bee-bright, #ffe082) 0%,
+    var(--accent-bee, #ffd54a) 45%,
+    var(--accent-bee-deep, #ffb300) 100%
+  );
+  box-shadow: 2px 0 16px color-mix(in srgb, var(--accent-bee, #ffd54a) 35%, transparent);
+}
+
+html[data-ui-v3='1'] .toast-item-error .toast-item-accent {
+  background: linear-gradient(180deg, #fb7185 0%, #b91c1c 100%);
+  box-shadow: 2px 0 12px rgba(248, 113, 113, 0.28);
+}
+
+html[data-ui-v3='1'] .toast-item-icon-wrap--info {
+  background: color-mix(in srgb, var(--accent-bee, #ffd54a) 18%, rgba(0, 0, 0, 0.35));
+  color: var(--accent-bee-bright, #ffe082);
+  border: 1px solid color-mix(in srgb, var(--accent-bee, #ffd54a) 38%, transparent);
+}
+
+html[data-ui-v3='1'] .toast-item-icon-wrap--success {
+  background: color-mix(in srgb, #4ade80 22%, rgba(0, 0, 0, 0.4));
+  color: #bbf7d0;
+  border: 1px solid color-mix(in srgb, #4ade80 35%, var(--accent-bee, #ffd54a) 15%);
+}
+
+html[data-ui-v3='1'] .toast-item-success {
+  background: linear-gradient(
+    158deg,
+    color-mix(in srgb, #0f2418 55%, rgba(12, 10, 8, 0.94)) 0%,
+    rgba(6, 5, 8, 0.9) 100%
+  );
+  border-color: color-mix(in srgb, #4ade80 28%, var(--v3-border-soft));
+}
+
+html[data-ui-v3='1'] .toast-item-success .toast-item-kind {
+  color: color-mix(in srgb, #86efac 75%, var(--accent-bee-bright, #ffe082));
+}
+
+html[data-ui-v3='1'] .toast-item-info .toast-item-action {
+  background: linear-gradient(
+    152deg,
+    var(--accent-bee-bright, #ffe082) 0%,
+    var(--accent-bee-deep, #ffb300) 100%
+  );
+  color: #1a1008;
+  border-color: color-mix(in srgb, var(--accent-bee, #ffd54a) 50%, rgba(255, 255, 255, 0.3));
+}
+
+html[data-ui-v3='1'] .toast-item-dismiss {
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+html[data-ui-v3='1'] .toast-item-dismiss:hover {
+  background: color-mix(in srgb, var(--accent-bee, #ffd54a) 14%, rgba(255, 255, 255, 0.06));
+  border-color: color-mix(in srgb, var(--accent-bee, #ffd54a) 25%, transparent);
+  color: var(--accent-bee-bright, #ffe082);
+}
+
+/* Évite le conflit avec v3-rise-in global (pile + transform) */
+html[data-ui-v3='1'] .toast-stack--stacked:not(.toast-stack--expanded) .toast-item {
+  animation: solea-toast-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html[data-ui-v3='1'] .toast-stack--stacked .toast-item {
+  animation: none;
+}
+
+html[data-ui-v3='1'] .toast-stack--expanded .toast-item {
+  animation: solea-toast-in 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html[data-reduce-motion='1'] .toast-stack-slot {
+  transition: none !important;
+}

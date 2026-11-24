@@ -1,0 +1,111 @@
+/* AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
+
+.already-running-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg-void, #050505);
+  color: var(--text);
+}
+
+.already-running-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% -15%, color-mix(in srgb, var(--accent-orange) 18%, transparent), transparent 50%),
+    linear-gradient(168deg, #0c0b10 0%, var(--bg-void) 100%);
+}
+
+.already-running-titlebar {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-card) 35%, rgba(30, 26, 44, 0.97)) 0%,
+    color-mix(in srgb, var(--bg-void) 50%, rgba(14, 12, 24, 0.98)) 50%,
+    color-mix(in srgb, var(--bg-void) 85%, #05050a) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.07);
+  -webkit-backdrop-filter: blur(20px) saturate(1.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset;
+}
+
+.already-running-titlebar-text {
+  color: color-mix(in srgb, var(--accent-orange) 50%, rgba(255, 255, 255, 0.75)) !important;
+}
+
+.already-running-body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1rem 1.5rem;
+}
+
+.already-running-card {
+  width: 100%;
+  max-width: 26rem;
+  padding: 1.35rem 1.4rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-card) 94%, var(--accent-orange) 6%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 20px 48px rgba(0, 0, 0, 0.45);
+}
+
+.already-running-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-orange) 70%, var(--text-muted));
+}
+
+.already-running-heading {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.already-running-lead {
+  margin: 0 0 0.85rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.already-running-bullets {
+  margin: 0 0 1.1rem;
+  padding-left: 1.15rem;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--text) 88%, var(--text-muted));
+}
+
+.already-running-bullets li {
+  margin-bottom: 0.35rem;
+}
+
+.already-running-ok {
+  width: 100%;
+  justify-content: center;
+}
+
+[data-theme='light'] .already-running-card {
+  background: linear-gradient(155deg, #fafafa 0%, #f2f2f6 100%);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+}

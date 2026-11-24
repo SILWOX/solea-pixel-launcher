@@ -1,0 +1,590 @@
+/**
+ * AETHER v2.0 — carte d’accueil modpack + pastilles sidebar (Launcher UI Default).
+ * Legacy v1.0 : App.css seul (Réglages → Launcher UI Legacy).
+ * Persisté : uiHomeCardVariant. Sélecteur : .shell[data-home-card="studio"].
+ */
+
+/* ——— Carte accueil : flux « showcase » (vertical, halo, dock intégré — sans grille titre|texte) ——— */
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 0.2rem;
+}
+
+/* Halo haut : lumière nette + masque (évite le « fog » qui descend sur la carte) */
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-hero-glow {
+  position: absolute;
+  inset: -6% -4% auto -4%;
+  height: 38%;
+  max-height: 132px;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 58% 52% at 50% 0%,
+    color-mix(in srgb, var(--accent-orange) 14%, rgba(255, 255, 255, 0.08)) 0%,
+    transparent 58%
+  );
+  opacity: 0.48;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 78%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 78%);
+}
+
+/* Bloc infos (tags + titre + description) — même famille que le dock Play ; contour selon l’accent modpack */
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1.08rem 1.18rem 1.15rem;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--accent-orange) 44%, rgba(255, 255, 255, 0.14));
+  background:
+    radial-gradient(92% 90% at 50% 0%, rgba(255, 255, 255, 0.055) 0%, transparent 52%),
+    linear-gradient(168deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.18) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 0 0 1px color-mix(in srgb, var(--accent-orange) 18%, transparent),
+    0 14px 44px rgba(0, 0, 0, 0.3);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap .home-studio-accent {
+  margin: 0 auto 0.72rem;
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap .home-studio-tags-row {
+  margin-bottom: 0.52rem;
+}
+
+/* Dans ce bloc : description = bandeau à barre d’accent, sans seconde carte pleine */
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap .home-studio-lead-wrap {
+  margin-top: 0.2rem;
+  padding: 0.65rem 0.2rem 0.05rem 1.05rem;
+  border-radius: 0;
+  border: none;
+  border-left: 3px solid color-mix(in srgb, var(--accent-orange) 70%, rgba(255, 255, 255, 0.35));
+  background: transparent;
+  box-shadow: none;
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-accent {
+  position: relative;
+  z-index: 1;
+  height: 2px;
+  width: min(220px, 72%);
+  margin: 0 auto 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent-orange) 55%, white) 42%,
+    color-mix(in srgb, var(--accent-orange) 28%, transparent) 100%
+  );
+  box-shadow:
+    0 0 10px color-mix(in srgb, var(--accent-orange) 18%, transparent),
+    0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-tags-row {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.65rem;
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-tags-row .home-hero-tags {
+  justify-content: flex-start;
+  margin-bottom: 0 !important;
+  gap: 0.45rem;
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-eyebrow {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 0.55rem;
+  font-family: var(--font-detail);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-title {
+  margin: 0;
+  letter-spacing: 0.06em;
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-title .home-title-line {
+  font-size: clamp(1.45rem, 2.8vw + 1.35vh + 0.2rem, 3rem);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-title.home-title-stacked--single .home-title-line {
+  font-size: clamp(1.3rem, 2.5vw + 1.2vh + 0.15rem, 2.85rem);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-lead-wrap {
+  margin-top: 0.15rem;
+  padding: 1rem 1.1rem 1.05rem 1.15rem;
+  border-radius: 4px 16px 16px 4px;
+  border-left: 3px solid color-mix(in srgb, var(--accent-orange) 70%, rgba(255, 255, 255, 0.35));
+  background: linear-gradient(
+    98deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.012) 38%,
+    transparent 88%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-studio-lead {
+  margin: 0;
+  max-width: 38rem;
+  font-size: clamp(0.86rem, 0.28vw + 0.78rem, 1rem);
+  line-height: 1.62;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* Dock actions : bloc fusionné (plus de simple trait horizontal) */
+.shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap {
+  display: block;
+  position: relative;
+  z-index: 1;
+  margin-top: 1.45rem;
+  padding: 1.15rem 1.05rem 1.05rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(90% 95% at 50% 0%, rgba(255, 255, 255, 0.06) 0%, transparent 48%),
+    linear-gradient(168deg, rgba(0, 0, 0, 0.34) 0%, rgba(0, 0, 0, 0.12) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.22);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap .home-action-deck--studio {
+  margin-top: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap .home-action-deck--studio::before {
+  display: none;
+}
+
+/* Barre de progression — alignée visuellement avec le dock v2 */
+.shell[data-home-card='studio'] .home-panel--studio .progress-block--home {
+  margin-top: 1.1rem;
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+/* Halos par thème modpack */
+.shell[data-home-card='studio'] .shell-main.theme-wither-storm .home-panel--studio .home-studio-hero-glow {
+  background: radial-gradient(
+    ellipse 58% 52% at 50% 0%,
+    rgba(216, 180, 254, 0.13) 0%,
+    transparent 58%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-1 .home-panel--studio .home-studio-hero-glow {
+  background: radial-gradient(
+    ellipse 58% 52% at 50% 0%,
+    rgba(125, 211, 252, 0.14) 0%,
+    transparent 58%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-1 .home-panel--studio .home-studio-accent {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(125, 211, 252, 0.65) 45%,
+    rgba(56, 189, 248, 0.22) 100%
+  );
+  box-shadow:
+    0 0 14px rgba(56, 189, 248, 0.2),
+    0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-1 .home-panel--studio .home-studio-lead-wrap {
+  border-left-color: rgba(125, 211, 252, 0.85);
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-2 .home-panel--studio .home-studio-hero-glow {
+  background: radial-gradient(
+    ellipse 58% 52% at 50% 0%,
+    rgba(167, 139, 250, 0.13) 0%,
+    transparent 58%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-2 .home-panel--studio .home-studio-accent {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(167, 139, 250, 0.58) 45%,
+    rgba(124, 108, 255, 0.26) 100%
+  );
+  box-shadow:
+    0 0 14px rgba(124, 108, 255, 0.2),
+    0 0 2px rgba(255, 255, 255, 0.18);
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-2 .home-panel--studio .home-studio-lead-wrap {
+  border-left-color: rgba(167, 139, 250, 0.88);
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-wither-storm .home-panel--studio .home-studio-accent {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(216, 180, 254, 0.62) 45%,
+    rgba(168, 85, 247, 0.24) 100%
+  );
+  box-shadow:
+    0 0 14px rgba(168, 85, 247, 0.2),
+    0 0 2px rgba(255, 255, 255, 0.18);
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-wither-storm .home-panel--studio .home-studio-lead-wrap {
+  border-left-color: rgba(216, 180, 254, 0.75);
+}
+
+/* ——— Sidebar Studio : pastilles modpack alignées sur App.css (pas de seconde « skin »). ——— */
+.shell[data-home-card='studio'] .sb-btn-pack img.sb-pack-icon {
+  border-radius: 11px;
+  width: 40px;
+  height: 40px;
+}
+
+[data-theme='light'] .shell[data-home-card='studio'] .sb-btn-pack {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(245, 245, 248, 0.88) 100%
+  );
+  border-color: rgba(0, 0, 0, 0.09);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack,
+html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack:hover:not(.active),
+html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack.active,
+html[data-reduce-motion='1'] .shell[data-home-card='studio'] .sb-btn-pack.active:hover {
+  transform: none;
+}
+
+/* ——— Carte héros accueil (cible uniquement la refonte Studio) ——— */
+.shell[data-home-card='studio'] .home-panel.home-panel--studio {
+  max-width: min(680px, calc(100vw - 72px - 3.5rem));
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: linear-gradient(
+    152deg,
+    rgba(28, 30, 46, 0.82) 0%,
+    rgba(14, 16, 28, 0.86) 48%,
+    rgba(18, 20, 36, 0.9) 100%
+  );
+  backdrop-filter: blur(28px) saturate(1.14);
+  -webkit-backdrop-filter: blur(28px) saturate(1.14);
+  box-shadow:
+    0 36px 110px rgba(0, 0, 0, 0.52),
+    0 0 0 1px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 34px color-mix(in srgb, var(--accent-orange) 4.5%, transparent);
+}
+
+/* Voile interne : léger lift clair en tête (plus de « soupe » orange diffuse) */
+.shell[data-home-card='studio'] .home-panel.home-panel--studio::before {
+  background: linear-gradient(
+    195deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.014) 28%,
+    transparent 46%
+  );
+}
+
+.shell[data-home-card='studio'] .home-panel.home-panel--studio::after {
+  border-radius: 31px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.shell[data-home-card='studio'] .home-panel--studio .home-panel-inner {
+  padding: 1.55rem 1.85rem 1.45rem;
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .shell[data-home-card='studio'] .home-panel--studio .home-studio-title .home-title-line {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(255, 255, 255, 0.88) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
+  }
+}
+
+/* Thèmes modpack (héros) */
+.shell[data-home-card='studio'] .shell-main.theme-wither-storm .home-panel.home-panel--studio {
+  background: linear-gradient(
+    145deg,
+    rgba(36, 22, 52, 0.82) 0%,
+    rgba(14, 10, 28, 0.86) 100%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-wither-storm .home-panel.home-panel--studio::before {
+  background: linear-gradient(
+    195deg,
+    rgba(216, 180, 254, 0.055) 0%,
+    rgba(255, 255, 255, 0.02) 26%,
+    transparent 46%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-1 .home-panel.home-panel--studio {
+  background: linear-gradient(
+    145deg,
+    rgba(14, 28, 48, 0.84) 0%,
+    rgba(8, 16, 32, 0.88) 100%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-1 .home-panel.home-panel--studio::before {
+  background: linear-gradient(
+    195deg,
+    rgba(125, 211, 252, 0.06) 0%,
+    rgba(255, 255, 255, 0.024) 26%,
+    transparent 46%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-2 .home-panel.home-panel--studio {
+  background: linear-gradient(
+    145deg,
+    rgba(28, 22, 52, 0.84) 0%,
+    rgba(12, 14, 36, 0.88) 100%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-mythic-trials-2 .home-panel.home-panel--studio::before {
+  background: linear-gradient(
+    195deg,
+    rgba(167, 139, 250, 0.055) 0%,
+    rgba(255, 255, 255, 0.02) 26%,
+    transparent 46%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-aeloria .home-panel.home-panel--studio {
+  background: linear-gradient(
+    145deg,
+    rgba(10, 42, 40, 0.84) 0%,
+    rgba(8, 22, 28, 0.88) 100%
+  );
+}
+
+.shell[data-home-card='studio'] .shell-main.theme-aeloria .home-panel.home-panel--studio::before {
+  background: linear-gradient(
+    195deg,
+    rgba(45, 212, 191, 0.06) 0%,
+    rgba(255, 255, 255, 0.024) 26%,
+    transparent 46%
+  );
+}
+
+/* Chrome givré + Studio */
+[data-chrome-glass='1'] .shell[data-home-card='studio'] .home-panel.home-panel--studio {
+  background: linear-gradient(
+    155deg,
+    rgba(18, 20, 32, 0.52) 0%,
+    rgba(8, 10, 18, 0.44) 100%
+  );
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+[data-chrome-glass='1'] .shell[data-home-card='studio'] .shell-main.theme-wither-storm .home-panel.home-panel--studio {
+  background: linear-gradient(
+    155deg,
+    rgba(28, 14, 40, 0.52) 0%,
+    rgba(12, 8, 24, 0.44) 100%
+  );
+}
+
+[data-chrome-glass='1'] .shell[data-home-card='studio'] .shell-main.theme-mythic-trials-1 .home-panel.home-panel--studio {
+  background: linear-gradient(
+    155deg,
+    rgba(10, 22, 40, 0.54) 0%,
+    rgba(6, 14, 28, 0.42) 100%
+  );
+}
+
+[data-chrome-glass='1'] .shell[data-home-card='studio'] .shell-main.theme-mythic-trials-2 .home-panel.home-panel--studio {
+  background: linear-gradient(
+    155deg,
+    rgba(22, 14, 40, 0.52) 0%,
+    rgba(12, 10, 32, 0.4) 100%
+  );
+}
+
+[data-chrome-glass='1'] .shell[data-home-card='studio'] .shell-main.theme-aeloria .home-panel.home-panel--studio {
+  background: linear-gradient(
+    155deg,
+    rgba(8, 32, 34, 0.54) 0%,
+    rgba(6, 18, 24, 0.42) 100%
+  );
+}
+
+/* Thème clair */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  [data-theme='light'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-title .home-title-line {
+    background: linear-gradient(180deg, rgba(22, 24, 32, 0.96) 0%, rgba(40, 44, 58, 0.9) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.4));
+  }
+}
+
+[data-theme='light'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-eyebrow {
+  color: rgba(0, 0, 0, 0.42);
+}
+
+[data-theme='light'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-lead {
+  color: rgba(0, 0, 0, 0.68);
+}
+
+[data-theme='light'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-lead-wrap {
+  border-left-color: rgba(0, 0, 0, 0.14);
+  background: linear-gradient(98deg, rgba(0, 0, 0, 0.04) 0%, transparent 88%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='light'] .shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap {
+  border-color: rgba(0, 0, 0, 0.07);
+  background:
+    radial-gradient(95% 140% at 50% 0%, rgba(255, 255, 255, 0.75) 0%, transparent 55%),
+    linear-gradient(168deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.01) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 10px 32px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] .shell[data-home-card='studio'] .home-panel.home-panel--studio {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(245, 246, 252, 0.92) 100%
+  );
+  border-color: rgba(0, 0, 0, 0.09);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+[data-theme='light'] .shell[data-home-card='studio'] .home-panel.home-panel--studio::before {
+  background: radial-gradient(
+    120% 85% at 8% 0%,
+    rgba(255, 120, 60, 0.04) 0%,
+    transparent 52%
+  );
+}
+
+/* Densité compacte */
+[data-density='compact'] .shell[data-home-card='studio'] .home-panel--studio .home-panel-inner {
+  padding: 1.15rem 1.35rem 1.1rem;
+}
+
+[data-density='compact'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-tags-row .home-hero-tags {
+  gap: 0.38rem;
+}
+
+/* ——— Barre latérale v2.0 (Launcher UI Default) : rail + groupe haut + accent actif ——— */
+.shell[data-home-card='studio'] .shell-sidebar {
+  width: 82px;
+  padding: 0.72rem 0 0.88rem;
+  border-bottom-left-radius: 16px;
+}
+
+/* Sans chrome givré : dégradé v2.0 ; avec givré, le fond reste celui de [data-chrome-glass='1'] .shell-sidebar */
+html:not([data-chrome-glass='1']) .shell[data-home-card='studio'] .shell-sidebar {
+  background: linear-gradient(
+    188deg,
+    color-mix(in srgb, var(--bg-card) 58%, rgba(6, 4, 16, 0.98)) 0%,
+    color-mix(in srgb, var(--bg-sidebar) 90%, #020208) 44%,
+    rgba(2, 2, 10, 0.99) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    4px 0 36px rgba(0, 0, 0, 0.34);
+}
+
+/* Studio : mêmes repères que le rail global (squircles + canal packs). */
+.shell[data-home-card='studio'] .sb-rail-section--top,
+.shell[data-home-card='studio'] .sb-rail-section--bottom {
+  gap: 0.62rem;
+}
+
+.shell[data-home-card='studio'] .sb-rail-section--top {
+  margin-top: 2px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.58rem;
+}
+
+.shell[data-home-card='studio'] .sb-rail-section--bottom {
+  padding-top: 0.52rem;
+  padding-bottom: 0.52rem;
+}
+
+.shell[data-home-card='studio'] .sb-rail-section--top .sb-btn:not(.sb-btn-pack),
+.shell[data-home-card='studio'] .sb-rail-section--bottom .sb-btn:not(.sb-btn-pack) {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+
+.shell[data-home-card='studio'] .sb-rail-section--middle {
+  gap: 0.56rem;
+  margin: 0.32rem 0 0.48rem;
+  padding: 1.45rem 2px 0.72rem;
+  width: calc(100% - 16px);
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+[data-theme='light'] html:not([data-chrome-glass='1']) .shell[data-home-card='studio'] .shell-sidebar {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    4px 0 24px rgba(0, 0, 0, 0.08);
+}
+
+[data-chrome-glass='1'] .shell[data-home-card='studio'] .shell-sidebar {
+  width: 82px;
+  padding: 0.72rem 0 0.88rem;
+  border-bottom-left-radius: 16px;
+}

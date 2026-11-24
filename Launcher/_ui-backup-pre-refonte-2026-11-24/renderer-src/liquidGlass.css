@@ -1,0 +1,104 @@
+/**
+ * Liquid Glass — surcharges « type Apple » lorsque `data-liquid-glass='1'`.
+ * Le vitrage de base reprend les règles `[data-chrome-glass='1']` (activé dès qu’un des deux modes est on).
+ */
+
+[data-chrome-glass='1'][data-liquid-glass='1'] .titlebar.titlebar--float {
+  background: transparent;
+}
+
+[data-chrome-glass='1'][data-liquid-glass='1'] .shell-sidebar {
+  background: linear-gradient(
+    200deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(22, 22, 32, 0.52) 38%,
+    rgba(10, 10, 18, 0.58) 100%
+  );
+  backdrop-filter: blur(44px) saturate(1.55) brightness(1.04);
+  -webkit-backdrop-filter: blur(44px) saturate(1.55) brightness(1.04);
+  border-right-color: color-mix(in srgb, rgba(255, 255, 255, 0.22) 70%, rgba(255, 255, 255, 0.04));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    6px 0 48px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme='dark'][data-chrome-glass='1'][data-liquid-glass='1'] .shell-sidebar {
+  background: linear-gradient(
+    200deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(18, 18, 28, 0.62) 42%,
+    rgba(6, 6, 14, 0.72) 100%
+  );
+}
+
+[data-theme='light'][data-chrome-glass='1'][data-liquid-glass='1'] .shell-sidebar {
+  background: linear-gradient(
+    200deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.38) 52%,
+    rgba(248, 248, 252, 0.45) 100%
+  );
+  border-right-color: rgba(0, 0, 0, 0.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    6px 0 36px rgba(0, 0, 0, 0.08);
+}
+
+[data-chrome-glass='1'][data-liquid-glass='1'] .shell-sidebar .sb-btn {
+  background: color-mix(in srgb, rgba(255, 255, 255, 0.08) 45%, rgba(0, 0, 0, 0.22));
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-chrome-glass='1'][data-liquid-glass='1'] .shell-sidebar .sb-btn:hover {
+  background: color-mix(in srgb, rgba(255, 255, 255, 0.18) 50%, rgba(0, 0, 0, 0.18));
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-chrome-glass='1'][data-liquid-glass='1'] .settings-nav {
+  backdrop-filter: blur(40px) saturate(1.42) brightness(1.03);
+  -webkit-backdrop-filter: blur(40px) saturate(1.42) brightness(1.03);
+}
+
+[data-theme='dark'][data-chrome-glass='1'][data-liquid-glass='1'] .settings-nav {
+  background: linear-gradient(
+    185deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(14, 14, 22, 0.72) 45%,
+    rgba(8, 8, 16, 0.78) 100%
+  );
+}
+
+[data-chrome-glass='1'][data-liquid-glass='1'] .settings-body,
+[data-chrome-glass='1'][data-liquid-glass='1'] .account-scroll {
+  backdrop-filter: blur(36px) saturate(1.38);
+  -webkit-backdrop-filter: blur(36px) saturate(1.38);
+}
+
+[data-chrome-glass='1'][data-liquid-glass='1'] .home-panel {
+  background: linear-gradient(
+    168deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(20, 20, 30, 0.38) 42%,
+    rgba(10, 10, 18, 0.46) 100%
+  );
+  backdrop-filter: blur(22px) saturate(1.22);
+  -webkit-backdrop-filter: blur(22px) saturate(1.22);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='light'][data-chrome-glass='1'][data-liquid-glass='1'] .home-panel {
+  background: linear-gradient(
+    168deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.32) 100%
+  );
+}
+
+[data-theme='dark'][data-chrome-glass='1'][data-liquid-glass='1'] details.set-card {
+  backdrop-filter: blur(26px) saturate(1.25);
+  -webkit-backdrop-filter: blur(26px) saturate(1.25);
+  border-color: color-mix(in srgb, rgba(255, 255, 255, 0.14) 40%, var(--border));
+}

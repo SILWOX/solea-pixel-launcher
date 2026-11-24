@@ -1,5 +1,11 @@
 /** Notes affichées dans « Nouveautés » — clé = version semver du package. */
 export const RELEASE_NOTES: Record<string, { en: string; fr: string }> = {
+  '26.5.0': {
+    en:
+      '**26.5 | Release** (package **26.5.0**): **AETHER UI V4** redesign, **Better MC** first in the list, new **Popular** / **Extreme Popularity** tags (Better MC: Extreme + Small). **Windows setup:** branded NSIS installer installs **for the whole PC**.',
+    fr:
+      '**26.5 | Release** (paquet **26.5.0**) : refonte **AETHER UI V4**, **Better MC** en tête de liste, étiquettes **Popular** / **Extreme Popularité** (Better MC : Extreme + Small). **Installateur Windows :** setup NSIS Solea — installation **pour tout le PC**.'
+  },
   '26.4.2': {
     en:
       'Patch **26.4.2 | Release** (package **26.4.2**): **Better MC** now installs the full Modrinth pack **bmcpack** (~100 mods), not the standalone mod. **SOLEA OPTIMISED** Fabric install fixed (`fabric-loader`). NeoForge version auto-detected from pack/mods + latest compatible Maven release.',

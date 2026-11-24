@@ -1,0 +1,238 @@
+/* AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
+
+.crash-reporter-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg-void, #050505);
+  color: var(--text);
+}
+
+.crash-reporter-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 90% 50% at 50% -12%, color-mix(in srgb, #f87171 14%, var(--accent-orange) 8%, transparent), transparent 52%),
+    linear-gradient(168deg, #120a0c 0%, var(--bg-void) 55%, #060508 100%);
+}
+
+.crash-reporter-titlebar {
+  position: relative;
+  z-index: 3;
+  flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-card) 32%, rgba(36, 22, 28, 0.97)) 0%,
+    color-mix(in srgb, var(--bg-void) 48%, rgba(18, 12, 18, 0.98)) 55%,
+    color-mix(in srgb, var(--bg-void) 82%, #08060a) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.07);
+  -webkit-backdrop-filter: blur(20px) saturate(1.07);
+  border-bottom: 1px solid color-mix(in srgb, #f87171 22%, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+.crash-reporter-titlebar-text {
+  color: color-mix(in srgb, #fecaca 55%, var(--accent-orange) 35%, rgba(255, 255, 255, 0.8)) !important;
+}
+
+.crash-reporter-scroll {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 1rem 1.15rem 1.35rem;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent-orange) 50%, #888) rgba(0, 0, 0, 0.35);
+}
+
+.crash-reporter-demo-strip {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  color: #fef3c7;
+  background: color-mix(in srgb, #ca8a04 22%, rgba(0, 0, 0, 0.35));
+  border: 1px solid rgba(250, 204, 21, 0.35);
+}
+
+.crash-reporter-card {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 1.2rem 1.25rem 1.15rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-card) 92%, #2a1014 8%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 18px 48px rgba(0, 0, 0, 0.42);
+}
+
+.crash-reporter-card--wait {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.crash-reporter-wait {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.crash-reporter-eyebrow {
+  margin: 0 0 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #f87171 55%, var(--accent-orange));
+}
+
+.crash-reporter-heading {
+  margin: 0 0 0.55rem;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+}
+
+.crash-reporter-lead {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.crash-reporter-kv {
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.2rem 0.75rem;
+  grid-template-columns: minmax(6rem, 8.5rem) 1fr;
+}
+
+.crash-reporter-kv dt {
+  margin: 0;
+  padding-top: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.crash-reporter-kv dd {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.crash-reporter-message {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.76rem;
+  color: #fecaca;
+}
+
+.crash-reporter-stack {
+  margin: 0 0 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.crash-reporter-stack summary {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.crash-reporter-stack summary:hover {
+  color: var(--text);
+}
+
+.crash-reporter-pre {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  max-height: 12rem;
+  overflow: auto;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: rgba(255, 220, 220, 0.88);
+  border-top: 1px solid var(--border);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.crash-reporter-feedback {
+  margin: 0 0 0.75rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+}
+
+.crash-reporter-feedback--ok {
+  background: rgba(22, 101, 52, 0.22);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #bbf7d0;
+}
+
+.crash-reporter-feedback--err {
+  background: rgba(127, 29, 29, 0.28);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+}
+
+.crash-reporter-feedback--info {
+  background: color-mix(in srgb, var(--accent-orange) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-orange) 28%, transparent);
+  color: color-mix(in srgb, var(--accent-orange) 85%, #fff);
+}
+
+.crash-reporter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.crash-reporter-actions--secondary {
+  margin-bottom: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.crash-reporter-quit {
+  margin-left: auto;
+}
+
+[data-theme='light'] .crash-reporter-root::before {
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 0%, color-mix(in srgb, #fecaca 35%, var(--accent-orange) 15%, transparent), transparent 50%),
+    linear-gradient(168deg, #f4f4f6 0%, #e8e8ee 100%);
+}
+
+[data-theme='light'] .crash-reporter-card {
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .crash-reporter-message {
+  color: #991b1b;
+}
+
+[data-theme='light'] .crash-reporter-pre {
+  color: #450a0a;
+  background: #fef2f2;
+}

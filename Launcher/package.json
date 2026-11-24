@@ -1,6 +1,6 @@
 {
   "name": "solea-pixel-launcher",
-  "version": "26.4.2",
+  "version": "26.5.0",
   "description": "Launcher Solea Pixel — modpack Modrinth, NeoForge 1.21.1",
   "main": "out/main/index.js",
   "type": "module",
@@ -16,7 +16,8 @@
     "dev:test": "cross-env SOLEA_TEST_MODE=1 electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "predist": "node scripts/generate-icon.mjs",
+    "installer:assets": "node scripts/generate-installer-assets.mjs",
+    "predist": "node scripts/generate-installer-assets.mjs",
     "dist": "npm run predist && npm run build && electron-builder",
     "dist:win": "npm run predist && npm run build && electron-builder --win",
     "dist:mac": "npm run predist && npm run build && electron-builder --mac",
@@ -116,13 +117,28 @@
     "afterPack": "./scripts/after-pack-win-icon.mjs",
     "nsis": {
       "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/installerHeaderIcon.ico",
+      "installerHeader": "build/installerHeader.bmp",
+      "installerSidebar": "build/installerSidebar.bmp",
+      "uninstallerSidebar": "build/uninstallerSidebar.bmp",
+      "include": "build/installer.nsh",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Solea Pixel",
-      "artifactName": "Solea-Pixel-Setup-${version}.${ext}"
+      "menuCategory": "Games",
+      "artifactName": "Solea-Pixel-Setup-${version}.${ext}",
+      "displayLanguageSelector": false,
+      "installerLanguages": [
+        "fr_FR",
+        "en_US"
+      ]
     },
     "publish": [
       {

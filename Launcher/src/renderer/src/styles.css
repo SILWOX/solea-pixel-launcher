@@ -1,14 +1,15 @@
 /* AETHER UI — V1 | Solea Pixel Launcher (proprietary interface layer). */
 
 :root {
-  --bg-void: #050505;
-  --bg-sidebar: #0a0a0a;
-  --bg-panel: rgba(12, 12, 14, 0.72);
-  --bg-card: #141414;
-  --bg-card-hover: #1a1a1a;
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #f5f5f5;
-  --text-muted: #9a9a9a;
+  /* AETHER V4 — void chaud + or abeille */
+  --bg-void: #060508;
+  --bg-sidebar: #0c0a0e;
+  --bg-panel: rgba(16, 14, 18, 0.78);
+  --bg-card: #16141a;
+  --bg-card-hover: #1e1a22;
+  --border: rgba(255, 220, 140, 0.1);
+  --text: #f7f2ea;
+  --text-muted: #a89f92;
   --accent-bee: #ffd54a;
   --accent-bee-bright: #ffe082;
   --accent-bee-deep: #ffb300;
@@ -17,19 +18,25 @@
   --v3-primary-btn-text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
   --accent-orange: var(--accent, var(--accent-bee));
   --accent-orange-hover: color-mix(in srgb, var(--accent-bee-bright, #ffe082) 88%, white);
-  --accent-glow: color-mix(in srgb, var(--accent-orange) 52%, transparent);
-  --glass: rgba(20, 20, 22, 0.55);
+  --accent-glow: color-mix(in srgb, var(--accent-orange) 48%, transparent);
+  --glass: rgba(22, 18, 24, 0.58);
   /* Scrollbars AETHER — largeur par défaut (surchargée sur certains panneaux) */
   --aether-scroll-w: 9px;
   --aether-scroll-track: rgba(255, 255, 255, 0.035);
   --aether-scroll-track-edge: rgba(255, 255, 255, 0.07);
   --aether-scroll-thumb-mid: color-mix(in srgb, var(--accent-orange) 52%, #2c2c34);
   --aether-scroll-thumb-deep: color-mix(in srgb, var(--accent-orange) 38%, #121216);
-  /* Hiérarchie typographique */
+  /* Hiérarchie typographique V4 */
   --font-detail: 'Inter', system-ui, sans-serif;
   --font-minecraft: 'Mac Minecraft', 'Segoe UI', sans-serif;
-  --font-display: 'Minecraft Fifty Solid', 'Mac Minecraft', fantasy;
+  --font-display: 'Minecraft Ten', 'Minecraft Fifty Solid', 'Mac Minecraft', fantasy;
   --font: var(--font-detail);
+  --v4-radius-xl: 22px;
+  --v4-radius-lg: 16px;
+  --v4-radius-md: 12px;
+  --v4-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --v4-gold-edge: color-mix(in srgb, var(--accent-bee) 38%, transparent);
+  --v4-shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.42);
 }
 
 .font-display {

@@ -6826,6 +6826,38 @@ html[data-reduce-motion='1'] .shell-content-news.news-hub-layout--v2 .news-hub-g
     0 2px 14px rgba(0, 0, 0, 0.3);
 }
 
+/* Popular — ambre / or abeille */
+.tag-pill--preset-popular {
+  color: #fffbeb;
+  border-color: rgba(251, 191, 36, 0.55);
+  background: linear-gradient(
+    145deg,
+    rgba(251, 191, 36, 0.4) 0%,
+    rgba(217, 119, 6, 0.55) 52%,
+    rgba(146, 64, 14, 0.65) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 1px rgba(251, 191, 36, 0.12),
+    0 2px 14px rgba(0, 0, 0, 0.3);
+}
+
+/* Extreme Popularité — or intense + rose chaud */
+.tag-pill--preset-extreme-popular {
+  color: #fff7ed;
+  border-color: rgba(251, 146, 60, 0.65);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 213, 74, 0.5) 0%,
+    rgba(249, 115, 22, 0.58) 48%,
+    rgba(194, 65, 12, 0.72) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 180, 40, 0.18),
+    0 2px 16px rgba(255, 140, 20, 0.22);
+}
+
 .home-body .lead {
   margin: 0;
   max-width: 38rem;
@@ -8221,6 +8253,34 @@ html[data-reduce-motion='1'] .home-action-deck .play-row .btn-play.btn-play--act
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.92),
     0 2px 12px rgba(109, 40, 217, 0.1);
+}
+
+[data-theme='light'] .tag-pill--preset-popular {
+  color: rgba(146, 64, 14, 0.96);
+  border-color: rgba(251, 191, 36, 0.5);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 251, 235, 0.98) 0%,
+    rgba(253, 230, 138, 0.88) 52%,
+    rgba(252, 211, 77, 0.82) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 12px rgba(217, 119, 6, 0.12);
+}
+
+[data-theme='light'] .tag-pill--preset-extreme-popular {
+  color: rgba(154, 52, 18, 0.96);
+  border-color: rgba(251, 146, 60, 0.55);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 247, 237, 0.98) 0%,
+    rgba(254, 215, 170, 0.9) 48%,
+    rgba(253, 186, 116, 0.85) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 2px 14px rgba(234, 88, 12, 0.14);
 }
 
 [data-theme='light'] .tag-pill__tip {

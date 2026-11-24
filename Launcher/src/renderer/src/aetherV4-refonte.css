@@ -1,0 +1,843 @@
+/**
+ * AETHER UI V4 — refonte visuelle A→Z
+ * Nature Solea conservée : void chaud, or abeille, Minecraft Ten display.
+ * Backup UI : Launcher/_ui-backup-pre-refonte-2026-11-24/
+ * Chargé après aetherV3 / login-v3 — surcharge uniquement le look.
+ */
+
+/* ─── Tokens V4 ─────────────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'],
+html[data-ui-v3='1'] {
+  --v4-ink: #f7f2ea;
+  --v4-muted: #b0a698;
+  --v4-void: #060508;
+  --v4-surface: rgba(18, 14, 20, 0.72);
+  --v4-surface-2: rgba(28, 22, 30, 0.78);
+  --v4-edge: rgba(255, 220, 140, 0.14);
+  --v4-edge-strong: rgba(255, 213, 74, 0.42);
+  --v4-gold: var(--accent-bee, #ffd54a);
+  --v4-gold-bright: var(--accent-bee-bright, #ffe082);
+  --v4-gold-deep: var(--accent-bee-deep, #ffb300);
+  --v4-radius-xl: 26px;
+  --v4-radius-lg: 18px;
+  --v4-radius-md: 14px;
+  --v4-radius-sm: 10px;
+  --v4-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --v4-shadow: 0 22px 56px rgba(0, 0, 0, 0.48);
+  --v4-shadow-gold: 0 0 48px rgba(255, 180, 40, 0.14);
+  --v3-radius-xl: var(--v4-radius-xl);
+  --v3-radius-lg: var(--v4-radius-lg);
+  --v3-radius-md: var(--v4-radius-md);
+  --v3-home-card-radius: 28px;
+  --v3-action-wrap-radius: 24px;
+  --v3-play-radius: 18px;
+  --v3-ease: var(--v4-ease);
+  --v3-text: var(--v4-ink);
+  --v3-muted: var(--v4-muted);
+  --v3-border-soft: var(--v4-edge);
+  --v3-shadow-xl: var(--v4-shadow);
+  --v3-shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.36);
+}
+
+/* ─── Ambiance globale ──────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .app-fill {
+  background:
+    radial-gradient(ellipse 90% 55% at 18% 8%, rgba(255, 180, 40, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 88% 92%, rgba(255, 140, 20, 0.05) 0%, transparent 50%),
+    transparent;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode):not(.shell-main-news)::before {
+  background: linear-gradient(
+    128deg,
+    rgba(6, 4, 8, 0.28) 0%,
+    rgba(8, 6, 10, 0.08) 42%,
+    transparent 78%
+  ) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main.shell-main-news::before {
+  background: linear-gradient(
+    118deg,
+    rgba(10, 8, 14, 0.42) 0%,
+    rgba(16, 12, 18, 0.18) 48%,
+    rgba(8, 6, 12, 0.28) 100%
+  ) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-content {
+  color: var(--v4-ink);
+}
+
+/* ─── Titlebar ──────────────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .titlebar.titlebar--float {
+  min-height: 52px;
+  border-bottom: 1px solid var(--v4-edge);
+  background: linear-gradient(
+    180deg,
+    rgba(12, 10, 14, 0.55) 0%,
+    rgba(8, 6, 10, 0.28) 100%
+  );
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+
+.app-chrome[data-ui-v3='1'] .titlebar-float-title {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--v4-gold) 70%, var(--v4-ink));
+  opacity: 0.85;
+}
+
+.app-chrome[data-ui-v3='1'] .win-btn {
+  border-radius: 8px;
+  transition: background 0.18s var(--v4-ease), color 0.18s var(--v4-ease), transform 0.18s var(--v4-ease);
+}
+
+.app-chrome[data-ui-v3='1'] .win-btn:hover {
+  background: rgba(255, 220, 140, 0.12);
+  color: var(--v4-gold-bright);
+}
+
+.app-chrome[data-ui-v3='1'] .win-btn.close:hover {
+  background: rgba(220, 60, 60, 0.88);
+  color: #fff;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────── */
+.shell.shell--v3 .shell-sidebar,
+.app-chrome[data-ui-v3='1'] .shell-sidebar {
+  width: 84px;
+  padding: 1.05rem 0 1.1rem;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 8, 12, 0.88) 0%,
+    rgba(8, 6, 10, 0.72) 100%
+  ) !important;
+  border-right: 1px solid var(--v4-edge);
+  box-shadow: inset -1px 0 0 rgba(255, 213, 74, 0.04);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-sidebar::before {
+  opacity: 0.55;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 200, 80, 0.08) 0%,
+    transparent 42%,
+    rgba(255, 160, 40, 0.05) 100%
+  );
+}
+
+[data-chrome-glass='1'] .shell-sidebar .sb-btn:not(.sb-btn-pack),
+.app-chrome[data-ui-v3='1'] .shell-sidebar .sb-btn:not(.sb-btn-pack) {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--v4-muted);
+  transition:
+    background 0.22s var(--v4-ease),
+    border-color 0.22s var(--v4-ease),
+    color 0.22s var(--v4-ease),
+    box-shadow 0.22s var(--v4-ease),
+    transform 0.22s var(--v4-ease);
+}
+
+[data-chrome-glass='1'] .shell-sidebar .sb-btn:not(.sb-btn-pack):hover,
+.app-chrome[data-ui-v3='1'] .shell-sidebar .sb-btn:not(.sb-btn-pack):hover {
+  background: rgba(255, 220, 140, 0.08);
+  border-color: rgba(255, 220, 140, 0.18);
+  color: var(--v4-gold-bright);
+  transform: translateY(-1px);
+}
+
+[data-chrome-glass='1'] .shell-sidebar .sb-btn:not(.sb-btn-pack).active,
+.app-chrome[data-ui-v3='1'] .shell-sidebar .sb-btn:not(.sb-btn-pack).active {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--v4-gold) 28%, transparent),
+    color-mix(in srgb, var(--v4-gold-deep) 16%, transparent)
+  );
+  border-color: var(--v4-edge-strong);
+  color: var(--v4-gold-bright);
+  box-shadow:
+    0 0 0 1px rgba(255, 213, 74, 0.12),
+    0 8px 24px rgba(255, 170, 40, 0.18);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-sidebar .sb-btn-pack {
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--v4-edge);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-sidebar .sb-btn-discord:hover {
+  color: #7289da;
+  border-color: rgba(114, 137, 218, 0.35);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-sidebar-tip-bubble {
+  border-radius: 12px;
+  border: 1px solid var(--v4-edge);
+  background: rgba(14, 12, 16, 0.92);
+  box-shadow: var(--v4-shadow);
+  font-family: var(--font-detail);
+}
+
+/* ─── Shell layout ──────────────────────────────────────────── */
+.shell[data-ui-v3='1'] .shell-main {
+  padding: clamp(0.85rem, 1.7vw, 1.25rem);
+}
+
+.shell[data-ui-v3='1'] .shell-main.settings-mode .shell-view-shell {
+  border-radius: var(--v4-radius-xl);
+  border: 1px solid var(--v4-edge);
+  background: linear-gradient(
+    165deg,
+    rgba(12, 10, 14, 0.42) 0%,
+    rgba(8, 6, 12, 0.28) 100%
+  );
+  box-shadow: var(--v4-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main.settings-mode::before {
+  background: linear-gradient(
+    140deg,
+    rgba(8, 6, 12, 0.55) 0%,
+    rgba(12, 10, 14, 0.22) 50%,
+    rgba(6, 4, 10, 0.4) 100%
+  ) !important;
+}
+
+/* ─── Cartes / panneaux ─────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .news-card,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .set-card,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .account-card,
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .screenshots-card,
+.app-chrome[data-ui-v3='1'] .account-aether-card {
+  border: 1px solid var(--v4-edge) !important;
+  border-radius: var(--v4-radius-lg) !important;
+  background: linear-gradient(
+    158deg,
+    rgba(10, 8, 14, 0.72) 0%,
+    rgba(14, 12, 18, 0.58) 48%,
+    rgba(6, 5, 10, 0.7) 100%
+  ) !important;
+  box-shadow:
+    var(--v4-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(255, 180, 40, 0.04) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel {
+  border-radius: var(--v3-home-card-radius) !important;
+  background: linear-gradient(
+    152deg,
+    rgba(8, 6, 12, 0.55) 0%,
+    color-mix(in srgb, var(--bg-panel) 32%, rgba(0, 0, 0, 0.55)) 46%,
+    rgba(4, 3, 8, 0.68) 100%
+  ) !important;
+  border-color: color-mix(in srgb, var(--v4-gold) 22%, rgba(255, 255, 255, 0.08)) !important;
+  box-shadow:
+    0 28px 64px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    var(--v4-shadow-gold) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel::before {
+  background: linear-gradient(
+    115deg,
+    rgba(255, 213, 74, 0.12) 0%,
+    transparent 42%,
+    transparent 100%
+  ) !important;
+  opacity: 0.7;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .screenshots-card {
+  background: linear-gradient(168deg, #1a161c 0%, #121014 56%, #0c0a0e 100%) !important;
+  border-color: var(--v4-edge) !important;
+}
+
+/* Studio card */
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel.home-panel--studio {
+  border-radius: var(--v3-home-card-radius) !important;
+  background: linear-gradient(
+    150deg,
+    rgba(10, 8, 14, 0.62) 0%,
+    rgba(8, 6, 12, 0.7) 50%,
+    rgba(4, 3, 8, 0.74) 100%
+  ) !important;
+  border: 1px solid color-mix(in srgb, var(--v4-gold) 28%, rgba(255, 255, 255, 0.08)) !important;
+}
+
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel.home-panel--studio::before {
+  background: radial-gradient(
+    ellipse 70% 50% at 20% 0%,
+    rgba(255, 200, 80, 0.16) 0%,
+    transparent 60%
+  ) !important;
+}
+
+/* ─── Typographie display ───────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .home-title,
+.app-chrome[data-ui-v3='1'] .home-title-line,
+.app-chrome[data-ui-v3='1'] .settings-nav-brand-title,
+.app-chrome[data-ui-v3='1'] .news-title,
+.app-chrome[data-ui-v3='1'] .account-aether-card-title,
+.app-chrome[data-ui-v3='1'] .pack-confirm-title,
+.app-chrome[data-ui-v3='1'] .login-welcome-title {
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 0 28px rgba(255, 180, 40, 0.12);
+}
+
+.app-chrome[data-ui-v3='1'] .home-title-line {
+  font-size: clamp(1.65rem, 3.2vw, 2.35rem);
+  line-height: 1.15;
+  color: var(--v4-ink);
+}
+
+.app-chrome[data-ui-v3='1'] .account-aether-eyebrow,
+.app-chrome[data-ui-v3='1'] .pack-confirm-eyebrow,
+.app-chrome[data-ui-v3='1'] .settings-nav-section-label {
+  font-family: var(--font-detail);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--v4-gold) 75%, var(--v4-muted));
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav-section-label,
+.app-chrome[data-ui-v3='1'] .settings-body p {
+  color: var(--v4-muted);
+}
+
+/* ─── Home action deck / Play ───────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel:not(.home-panel--studio) .home-action-deck {
+  border-radius: var(--v3-action-wrap-radius) !important;
+  border: 1px solid var(--v4-edge);
+  background: linear-gradient(
+    165deg,
+    rgba(12, 10, 14, 0.55) 0%,
+    rgba(8, 6, 12, 0.42) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.app-chrome[data-ui-v3='1'] .btn-play,
+html[data-ui-v3='1'] .app-chrome .shell-main:not(.settings-mode) .btn-play:not(.btn-play-close) {
+  border-radius: var(--v3-play-radius) !important;
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid color-mix(in srgb, var(--v4-gold) 55%, transparent) !important;
+  box-shadow:
+    0 10px 28px rgba(255, 160, 30, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  transition:
+    transform 0.22s var(--v4-ease),
+    box-shadow 0.22s var(--v4-ease),
+    filter 0.22s var(--v4-ease) !important;
+}
+
+html[data-ui-v3='1']
+  .app-chrome
+  .shell-main:not(.settings-mode):not(.theme-palamod):not(.theme-wither-storm):not(.theme-mythic-trials-1):not(.theme-mythic-trials-2):not(.theme-aeloria):not(.theme-solea-optimised)
+  .btn-play:not(.btn-play-close) {
+  background: linear-gradient(
+    168deg,
+    var(--v4-gold-bright) 0%,
+    var(--v4-gold) 42%,
+    var(--v4-gold-deep) 100%
+  ) !important;
+  color: var(--v3-primary-btn-fg, #1a1008) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .btn-play:hover:not(:disabled),
+html[data-ui-v3='1']
+  .app-chrome
+  .shell-main:not(.settings-mode):not(.theme-palamod):not(.theme-wither-storm):not(.theme-mythic-trials-1):not(.theme-mythic-trials-2):not(.theme-aeloria):not(.theme-solea-optimised)
+  .btn-play:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.015) !important;
+  filter: brightness(1.06);
+  box-shadow:
+    0 14px 36px rgba(255, 170, 40, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .btn-play .btn-play-label {
+  font-size: 1.05em;
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row > .btn-check-update {
+  border-radius: 14px;
+  border: 1px solid var(--v4-edge);
+  background: rgba(255, 255, 255, 0.05);
+  transition: border-color 0.2s var(--v4-ease), background 0.2s var(--v4-ease);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row > .btn-check-update:hover:not(:disabled) {
+  border-color: var(--v4-edge-strong);
+  background: rgba(255, 213, 74, 0.1);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row .profile-bar {
+  border-radius: 14px;
+  border: 1px solid var(--v4-edge);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .play-row .profile-bar:hover {
+  border-color: var(--v4-edge-strong);
+  background: rgba(255, 213, 74, 0.08);
+}
+
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap,
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap {
+  border-radius: var(--v4-radius-lg);
+  border: 1px solid var(--v4-edge);
+  background: rgba(8, 6, 12, 0.45);
+  transition: border-color 0.22s var(--v4-ease), box-shadow 0.22s var(--v4-ease);
+}
+
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-studio-info-wrap:hover,
+html[data-ui-v3='1'] .shell[data-home-card='studio'] .home-panel--studio .home-action-deck-wrap:hover {
+  border-color: var(--v4-edge-strong);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), 0 0 24px rgba(255, 180, 40, 0.08);
+}
+
+/* ─── Settings ──────────────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .settings-nav,
+.app-chrome[data-ui-v3='1'] .settings-body {
+  border: 1px solid var(--v4-edge) !important;
+  border-radius: var(--v4-radius-lg) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(16, 14, 18, 0.72) 0%,
+    rgba(10, 8, 14, 0.62) 100%
+  ) !important;
+  box-shadow: var(--v3-shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(16px) saturate(1.1) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.1) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav button.nav-item {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: var(--v4-muted);
+  transition:
+    background 0.2s var(--v4-ease),
+    border-color 0.2s var(--v4-ease),
+    color 0.2s var(--v4-ease),
+    transform 0.2s var(--v4-ease);
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav button.nav-item:hover {
+  background: rgba(255, 220, 140, 0.07);
+  border-color: rgba(255, 220, 140, 0.14);
+  color: var(--v4-ink);
+}
+
+.app-chrome[data-ui-v3='1'] .settings-nav button.nav-item.on {
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--v4-gold) 22%, transparent),
+    color-mix(in srgb, var(--v4-gold-deep) 12%, transparent)
+  );
+  border-color: var(--v4-edge-strong);
+  color: var(--v4-gold-bright);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.app-chrome[data-ui-v3='1'] .settings-toggle-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--v4-edge);
+}
+
+.app-chrome[data-ui-v3='1'] .settings-toggle-input:checked + .settings-toggle-track {
+  background: linear-gradient(90deg, var(--v4-gold-deep), var(--v4-gold));
+  border-color: color-mix(in srgb, var(--v4-gold) 60%, transparent);
+}
+
+.app-chrome[data-ui-v3='1'] .settings-toggle-thumb {
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.app-chrome[data-ui-v3='1'] .set-card,
+.app-chrome[data-ui-v3='1'] .settings-body .set-card {
+  border-radius: var(--v4-radius-md);
+  border: 1px solid var(--v4-edge);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+html[data-ui-v3='1'][data-ui-preset='solea_pixel'] .app-chrome .shell-main.settings-mode .btn-save,
+html[data-ui-v3='1']:not([data-ui-preset='solea_pixel']) .app-chrome .shell-main.settings-mode .btn-save {
+  border-radius: 14px !important;
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.06em;
+  background: linear-gradient(168deg, var(--v4-gold-bright), var(--v4-gold-deep)) !important;
+  color: var(--v3-primary-btn-fg, #1a1008) !important;
+  border: 1px solid color-mix(in srgb, var(--v4-gold) 50%, transparent) !important;
+  box-shadow: 0 8px 22px rgba(255, 160, 30, 0.28) !important;
+}
+
+.app-chrome[data-ui-v3='1'] .btn-muted,
+.app-chrome[data-ui-v3='1'] .btn-login-offline {
+  border-radius: 12px;
+  border: 1px solid var(--v4-edge);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--v4-ink);
+  transition: border-color 0.2s var(--v4-ease), background 0.2s var(--v4-ease);
+}
+
+.app-chrome[data-ui-v3='1'] .btn-muted:hover:not(:disabled),
+.app-chrome[data-ui-v3='1'] .btn-login-offline:hover:not(:disabled) {
+  border-color: var(--v4-edge-strong);
+  background: rgba(255, 213, 74, 0.1);
+}
+
+/* ─── Login V4 ──────────────────────────────────────────────── */
+.login-root--aether-v3::before {
+  background:
+    radial-gradient(ellipse 95% 70% at 50% 38%, rgba(255, 200, 80, 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 80% 85%, rgba(255, 140, 20, 0.1) 0%, transparent 50%),
+    linear-gradient(
+      180deg,
+      rgba(6, 4, 8, 0.15) 0%,
+      rgba(10, 6, 8, 0.42) 48%,
+      rgba(4, 3, 8, 0.82) 100%
+    ) !important;
+}
+
+.login-root--aether-v3 .login-lang-trigger,
+.login-root--aether-v3 .login-info-trigger {
+  border-radius: 14px !important;
+  border-color: var(--v4-edge) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(16, 12, 10, 0.78) 0%,
+    rgba(8, 6, 12, 0.88) 100%
+  ) !important;
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.login-root--aether-v3 .login-lang-trigger:hover,
+.login-root--aether-v3 .login-info-trigger:hover {
+  border-color: var(--v4-edge-strong) !important;
+  color: var(--v4-gold-bright);
+}
+
+.login-card--aether-v3 {
+  width: min(460px, 94vw) !important;
+  margin-top: clamp(4rem, 12vh, 8.5rem) !important;
+  padding: 2rem 1.9rem 1.75rem !important;
+  border-radius: 28px !important;
+  background: linear-gradient(
+    168deg,
+    rgba(14, 10, 12, 0.82) 0%,
+    rgba(8, 6, 12, 0.68) 48%,
+    rgba(4, 3, 8, 0.62) 100%
+  ) !important;
+  border: 1px solid color-mix(in srgb, var(--v4-gold) 28%, rgba(255, 255, 255, 0.1)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 196, 80, 0.1) inset,
+    0 32px 88px rgba(0, 0, 0, 0.58),
+    0 0 140px rgba(255, 170, 40, 0.16) !important;
+  backdrop-filter: blur(36px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(1.3) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card--aether-v3::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% -10%,
+    rgba(255, 200, 80, 0.14) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.login-card--aether-v3::after {
+  inset: 12px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 220, 140, 0.08) !important;
+}
+
+.login-wordmark--aether-v3 {
+  width: min(320px, 88%) !important;
+  max-height: min(128px, 19vh) !important;
+  filter: drop-shadow(0 10px 32px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 48px rgba(255, 180, 60, 0.28)) !important;
+}
+
+.login-card--aether-v3 .login-welcome-title {
+  font-size: clamp(1.45rem, 2.4vw, 1.7rem) !important;
+  margin-bottom: 0.6rem !important;
+  color: var(--v4-ink) !important;
+}
+
+.login-card--aether-v3 .login-lead,
+.login-card--aether-v3 .login-welcome-extra {
+  color: rgba(247, 242, 234, 0.78) !important;
+  line-height: 1.55;
+}
+
+.login-card--aether-v3 .btn-ms {
+  margin-top: 1.25rem !important;
+  border-radius: 16px !important;
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.06em;
+  background: linear-gradient(168deg, var(--v4-gold-bright), var(--v4-gold-deep)) !important;
+  color: var(--v3-primary-btn-fg, #1a1008) !important;
+  border: 1px solid color-mix(in srgb, var(--v4-gold) 55%, transparent) !important;
+  box-shadow: 0 10px 28px rgba(255, 160, 30, 0.32) !important;
+  transition: transform 0.22s var(--v4-ease), box-shadow 0.22s var(--v4-ease) !important;
+}
+
+.login-card--aether-v3 .btn-ms:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 14px 36px rgba(255, 170, 40, 0.4) !important;
+}
+
+.login-card--aether-v3 .btn-login-offline {
+  border-radius: 14px !important;
+  border-color: var(--v4-edge) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.login-card--aether-v3 .btn-login-offline:hover:not(:disabled) {
+  border-color: var(--v4-edge-strong) !important;
+  background: rgba(255, 196, 80, 0.12) !important;
+}
+
+.login-card--aether-v3 .login-legal {
+  color: rgba(176, 166, 152, 0.75);
+  font-size: 0.72rem;
+}
+
+.login-lang-menu {
+  border-radius: 14px !important;
+  border: 1px solid var(--v4-edge) !important;
+  background: rgba(12, 10, 14, 0.95) !important;
+  box-shadow: var(--v4-shadow) !important;
+  backdrop-filter: blur(16px);
+}
+
+/* ─── Account / skins ───────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .account-aether-card {
+  padding: 1.15rem 1.2rem;
+}
+
+.app-chrome[data-ui-v3='1'] .account-skin-tile {
+  border-radius: 14px;
+  border: 1px solid var(--v4-edge);
+  background: rgba(255, 255, 255, 0.04);
+  transition: border-color 0.2s var(--v4-ease), transform 0.2s var(--v4-ease), box-shadow 0.2s var(--v4-ease);
+}
+
+.app-chrome[data-ui-v3='1'] .account-skin-tile:hover {
+  border-color: var(--v4-edge-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.app-chrome[data-ui-v3='1'] .account-skin-tile-add {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--v4-gold) 35%, transparent);
+  color: var(--v4-gold);
+}
+
+.app-chrome[data-ui-v3='1'] .account-skins-beta {
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  background: rgba(255, 213, 74, 0.15);
+  color: var(--v4-gold-bright);
+  border: 1px solid var(--v4-edge-strong);
+}
+
+.app-chrome[data-ui-v3='1'] .account-segment {
+  border-radius: 12px;
+  border: 1px solid var(--v4-edge);
+  background: rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.app-chrome[data-ui-v3='1'] .account-viewer-inner {
+  border-radius: var(--v4-radius-md);
+  border: 1px solid var(--v4-edge);
+  background: radial-gradient(ellipse at 50% 30%, rgba(255, 200, 80, 0.08), transparent 60%),
+    rgba(0, 0, 0, 0.35);
+}
+
+/* ─── News / Actus ──────────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .news-hub-change-head {
+  gap: 0.65rem;
+}
+
+.app-chrome[data-ui-v3='1'] .news-hub-change-icon {
+  color: var(--v4-gold);
+}
+
+.app-chrome[data-ui-v3='1'] .news-hub-change-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+.app-chrome[data-ui-v3='1'] .news-hub-change-list {
+  color: var(--v4-muted);
+}
+
+.app-chrome[data-ui-v3='1'] .news-card {
+  transition: border-color 0.22s var(--v4-ease), box-shadow 0.22s var(--v4-ease);
+}
+
+.app-chrome[data-ui-v3='1'] .news-card:hover {
+  border-color: var(--v4-edge-strong) !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4), 0 0 28px rgba(255, 180, 40, 0.08) !important;
+}
+
+/* ─── Screenshots ───────────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] .screenshots-grid img,
+.app-chrome[data-ui-v3='1'] .screenshots-card img {
+  border-radius: 12px;
+}
+
+.app-chrome[data-ui-v3='1'] .screenshots-card button,
+.app-chrome[data-ui-v3='1'] .screenshots-card .btn-muted {
+  border-radius: 12px;
+}
+
+/* ─── Modales ───────────────────────────────────────────────── */
+html[data-ui-v3='1'] .settings-unsaved-backdrop,
+html[data-ui-v3='1'] .account-modal-backdrop,
+html[data-ui-v3='1'] .pack-confirm-backdrop {
+  background: rgba(4, 3, 8, 0.62) !important;
+  backdrop-filter: blur(10px) saturate(1.05);
+  -webkit-backdrop-filter: blur(10px) saturate(1.05);
+}
+
+html[data-ui-v3='1'] .settings-unsaved-modal,
+html[data-ui-v3='1'] .account-modal,
+html[data-ui-v3='1'] .pack-confirm-modal {
+  border-radius: 22px !important;
+  border: 1px solid color-mix(in srgb, var(--v4-gold) 30%, rgba(255, 255, 255, 0.1)) !important;
+  background: linear-gradient(
+    168deg,
+    rgba(16, 12, 14, 0.94) 0%,
+    rgba(8, 6, 12, 0.92) 100%
+  ) !important;
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(255, 170, 40, 0.1) !important;
+}
+
+html[data-ui-v3='1'] .account-modal-title,
+html[data-ui-v3='1'] .pack-confirm-title {
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.04em;
+}
+
+html[data-ui-v3='1'] .login-offline-input,
+html[data-ui-v3='1'] .account-modal input,
+html[data-ui-v3='1'] .settings-body input,
+html[data-ui-v3='1'] .settings-body select,
+html[data-ui-v3='1'] .settings-body textarea {
+  border-radius: 12px;
+  border: 1px solid var(--v4-edge);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--v4-ink);
+  transition: border-color 0.2s var(--v4-ease), box-shadow 0.2s var(--v4-ease);
+}
+
+html[data-ui-v3='1'] .login-offline-input:focus,
+html[data-ui-v3='1'] .account-modal input:focus,
+html[data-ui-v3='1'] .settings-body input:focus,
+html[data-ui-v3='1'] .settings-body select:focus,
+html[data-ui-v3='1'] .settings-body textarea:focus {
+  outline: none;
+  border-color: var(--v4-edge-strong);
+  box-shadow: 0 0 0 3px rgba(255, 213, 74, 0.18);
+}
+
+/* ─── Scrollbars ────────────────────────────────────────────── */
+.app-chrome[data-ui-v3='1'] {
+  --aether-scroll-thumb-mid: color-mix(in srgb, var(--v4-gold) 48%, #2a2420);
+  --aether-scroll-thumb-deep: color-mix(in srgb, var(--v4-gold-deep) 32%, #121016);
+  --aether-scroll-track: rgba(255, 255, 255, 0.03);
+}
+
+/* ─── Light theme soft overrides ────────────────────────────── */
+html[data-theme='light'] .app-chrome[data-ui-v3='1'] {
+  --v4-ink: #1a1410;
+  --v4-muted: #6b6258;
+  --v4-edge: rgba(120, 90, 40, 0.18);
+  --v4-edge-strong: rgba(200, 140, 40, 0.4);
+  --v4-surface: rgba(255, 252, 246, 0.82);
+}
+
+html[data-theme='light'] .app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .screenshots-card {
+  background: linear-gradient(170deg, #fcfbf9 0%, #f5f2ec 100%) !important;
+  border-color: #d8cec2 !important;
+}
+
+html[data-theme='light'] .app-chrome[data-ui-v3='1'] .settings-nav,
+html[data-theme='light'] .app-chrome[data-ui-v3='1'] .settings-body {
+  background: linear-gradient(165deg, rgba(255, 252, 246, 0.9), rgba(248, 244, 236, 0.85)) !important;
+}
+
+/* ─── Motion / accessibilité ────────────────────────────────── */
+@keyframes v4-fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel,
+.app-chrome[data-ui-v3='1'] .login-card--aether-v3 {
+  animation: v4-fade-rise 0.55s var(--v4-ease) both;
+}
+
+html[data-reduce-motion='1'] .app-chrome[data-ui-v3='1'] .shell-main:not(.settings-mode) .home-panel,
+html[data-reduce-motion='1'] .app-chrome[data-ui-v3='1'] .login-card--aether-v3,
+html[data-reduce-motion='1'] .app-chrome[data-ui-v3='1'] .btn-play,
+html[data-reduce-motion='1'] .app-chrome[data-ui-v3='1'] .shell-sidebar .sb-btn {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 720px) {
+  .login-card--aether-v3 {
+    margin-top: clamp(4.5rem, 16vh, 10rem) !important;
+    padding: 1.65rem 1.35rem 1.45rem !important;
+  }
+
+  .shell.shell--v3 .shell-sidebar,
+  .app-chrome[data-ui-v3='1'] .shell-sidebar {
+    width: 72px;
+  }
+}

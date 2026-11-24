@@ -11,6 +11,8 @@ export type HomeTagPresetId =
   | 'news'
   | 'featured'
   | 'most_popular'
+  | 'popular'
+  | 'extreme_popular'
   | 'vanilla'
   | 'huge'
   | 'medium'
@@ -22,6 +24,8 @@ export const HOME_TAG_PRESET_IDS: HomeTagPresetId[] = [
   'news',
   'featured',
   'most_popular',
+  'popular',
+  'extreme_popular',
   'vanilla',
   'small',
   'medium',
@@ -34,13 +38,13 @@ export function homeTagsForModpack(modpackId: string): HomeTagPresetId[] {
   const tags: HomeTagPresetId[] = ['modded_survival']
 
   if (modpackId === 'palamod-recreated') {
-    tags.push('most_popular', 'small')
+    tags.push('popular', 'small')
   } else if (modpackId === 'wither-storm') {
     tags.push('small')
   } else if (modpackId === 'mythic-trials-1' || modpackId === 'mythic-trials-2') {
     tags.push('huge')
   } else if (modpackId === 'aeloria') {
-    tags.push('news', 'huge')
+    tags.push('extreme_popular', 'small')
   } else if (modpackId === 'solea-optimised') {
     tags.push('featured', 'vanilla', 'small')
   }

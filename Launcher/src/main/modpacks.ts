@@ -35,6 +35,16 @@ export interface ModpackSpec {
 
 export const MODPACKS: ModpackSpec[] = [
   {
+    id: 'aeloria',
+    displayName: 'Better MC',
+    projectSlug: 'bmcpack',
+    gameVersion: '1.21.1',
+    loader: 'neoforge',
+    recommendedJava: '21',
+    discordLargeImageKey: 'solea_pack_aeloria',
+    discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
+  },
+  {
     id: 'palamod-recreated',
     displayName: 'Palamod Recreated',
     projectSlug: 'paladium-mc',
@@ -72,16 +82,6 @@ export const MODPACKS: ModpackSpec[] = [
     loader: 'forge',
     recommendedJava: '17',
     discordLargeImageKey: 'solea_pack_mythic_trials_2',
-    discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
-  },
-  {
-    id: 'aeloria',
-    displayName: 'Better MC',
-    projectSlug: 'bmcpack',
-    gameVersion: '1.21.1',
-    loader: 'neoforge',
-    recommendedJava: '21',
-    discordLargeImageKey: 'solea_pack_aeloria',
     discordUrl: 'https://discord.gg/jVGq5aZ6Wc'
   },
   {

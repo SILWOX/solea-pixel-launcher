@@ -13,6 +13,22 @@ export type LauncherChangelogEntry = {
 
 export const LAUNCHER_CHANGELOG: LauncherChangelogEntry[] = [
   {
+    version: '26.5',
+    date: '2026-11-24',
+    added: [
+      '**AETHER UI V4:** full visual redesign of every surface — login, titlebar, sidebar, home, play deck, settings, account/skins, news hub, and modals — while keeping Solea’s warm void and **bee gold** identity.',
+      '**Home tags — Popular** and **Extreme Popularity** (`Popular` / `Extreme Popularité`) for clearer pack discovery.'
+    ],
+    changed: [
+      '**Modpack sidebar:** **Better MC** is now first in the list.',
+      '**Palamod Recreated** home tags: **Popular** (+ Small).',
+      '**Better MC** home tags: **Extreme Popularity** + **Small** (replaces Huge / News).',
+      '**Typography:** Minecraft Ten display titles on hero / play / login.',
+      '**Windows installer (NSIS):** branded Solea sidebar/header, welcome & finish screens; **per-machine only** (Program Files, all Windows accounts — not a single-user install).',
+      '**Release branding:** footer and Home & news badge show **26.5 | Release** (package **26.5.0**).'
+    ]
+  },
+  {
     version: '26.4.2',
     date: '2026-05-24',
     fixed: [

@@ -550,6 +550,12 @@ export const EN: Record<string, string> = {
   'home.tagPreset.most_popular.label': 'Most popular',
   'home.tagPreset.most_popular.desc':
     'One of the most downloaded and played modpacks in our community right now.',
+  'home.tagPreset.popular.label': 'Popular',
+  'home.tagPreset.popular.desc':
+    'A popular community pick — strong player interest and steady playtime.',
+  'home.tagPreset.extreme_popular.label': 'Extreme Popularity',
+  'home.tagPreset.extreme_popular.desc':
+    'Extremely popular — among the most requested and played packs on Solea Pixel.',
   'home.tagPreset.vanilla.label': 'Vanilla',
   'home.tagPreset.vanilla.desc':
     'Stays close to vanilla Minecraft — light touches, familiar feel, fewer sweeping changes.',
